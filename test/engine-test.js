@@ -80,9 +80,15 @@ async function main() {
   assert(blob instanceof Blob, "stroke: devuelve preview");
   assert(s.canUndo, "undo: disponible tras stroke");
 
-  // 3. undo
+  // 3. undo / redo
   blob = await s.undo();
   assert(blob instanceof Blob, "undo: restaura preview");
+  assert(s.canRedo, "redo: disponible tras deshacer");
+  blob = await s.redo();
+  assert(blob instanceof Blob, "redo: restaura el estado deshecho");
+  assert(!s.canRedo, "redo: stack vacío tras rehacer");
+  blob = await s.undo(); // volver al estado sin el stroke para el resto del test
+  assert(blob instanceof Blob, "undo: de nuevo tras redo");
 
   // 4. composite sólido
   const solid = await s.composite({ type: "solid", color: [255, 0, 0, 255] });

@@ -1,0 +1,53 @@
+{
+  "generated": "2026-06-11",
+  "entries": [
+    {
+      "name": "@tauri-apps/api",
+      "version": "2.11.0",
+      "license": "Apache-2.0 OR MIT",
+      "source": "npm"
+    },
+    {
+      "name": "@tauri-apps/plugin-dialog",
+      "version": "2.7.1",
+      "license": "MIT OR Apache-2.0",
+      "source": "npm"
+    },
+    {
+      "name": "@tauri-apps/plugin-fs",
+      "version": "2.5.1",
+      "license": "MIT OR Apache-2.0",
+      "source": "npm"
+    },
+    {
+      "name": "image",
+      "version": "0.25",
+      "license": "MIT OR Apache-2.0",
+      "source": "crates.io"
+    },
+    {
+      "name": "nalgebra",
+      "version": "0.33",
+      "license": "Apache-2.0",
+      "source": "crates.io"
+    },
+    {
+      "name": "react",
+      "version": "18.3.1",
+      "license": "MIT",
+      "source": "npm"
+    },
+    {
+      "name": "react-dom",
+      "version": "18.3.1",
+      "license": "MIT",
+      "source": "npm"
+    },
+    {
+      "name": "thiserror",
+      "version": "2",
+      "license": "MIT OR Apache-2.0",
+      "source": "crates.io"
+    }
+  ]
+}

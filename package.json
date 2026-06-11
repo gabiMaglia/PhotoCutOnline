@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:web": "node test/run-tests.mjs",
+    "licenses": "node scripts/gen-licenses.mjs",
     "tauri": "tauri"
   },
   "dependencies": {

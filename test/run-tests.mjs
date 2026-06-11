@@ -16,10 +16,17 @@ const TESTS = [
   "errorboundary-test",
   "icons-test",
   "imagefile-test",
+  "mobile-test",
   "preview-test",
   "worker-test",
   "perf-test",
 ];
+
+// viewport por suite (por defecto escritorio)
+const VIEWPORTS = {
+  "mobile-test": { width: 390, height: 844 }, // iPhone-ish
+};
+const DESKTOP = { width: 1280, height: 800 };
 
 async function waitForServer(url, ms = 15000) {
   const t0 = Date.now();
@@ -55,6 +62,7 @@ try {
 
   for (const name of TESTS) {
     process.stdout.write(`\n■ ${name}\n`);
+    await page.setViewportSize(VIEWPORTS[name] || DESKTOP);
     await page.goto(`http://localhost:${PORT}/test/${name}.html`);
     try {
       await page.waitForFunction(

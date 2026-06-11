@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import CanvasEditor from "./components/CanvasEditor.jsx";
 import IconStudio from "./components/IconStudio.jsx";
+import AboutModal from "./components/AboutModal.jsx";
 import { backend } from "./lib/backend.js";
+import pkg from "../package.json";
 import {
   inspectImageFile,
   bitmapToDataUrl,
@@ -22,11 +24,13 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [hasCut, setHasCut] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
   const [format, setFormat] = useState("png");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewBg, setPreviewBg] = useState("checker"); // checker | white | black | color
   const [previewColor, setPreviewColor] = useState("#ffffff");
   const [dragging, setDragging] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const toastId = useRef(0);
   const dragDepth = useRef(0);
@@ -37,7 +41,10 @@ export default function App() {
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3400);
   }, []);
 
-  const refreshUndo = useCallback(() => setCanUndo(backend.canUndo()), []);
+  const refreshUndo = useCallback(() => {
+    setCanUndo(backend.canUndo());
+    setCanRedo(backend.canRedo());
+  }, []);
 
   const [pendingLarge, setPendingLarge] = useState(null); // {file,bitmap,width,height}
 
@@ -212,6 +219,16 @@ export default function App() {
     refreshUndo();
   }, [refreshUndo]);
 
+  const handleRedo = useCallback(async () => {
+    if (!backend.canRedo()) return;
+    const url = await backend.redo();
+    if (url) {
+      setResultUrl(url);
+      setHasCut(true);
+    }
+    refreshUndo();
+  }, [refreshUndo]);
+
   const featherTimer = useRef(null);
   const handleFeather = useCallback((value) => {
     setFeather(value);
@@ -275,7 +292,8 @@ export default function App() {
       if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement) return;
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
         e.preventDefault();
-        handleUndo();
+        if (e.shiftKey) handleRedo();
+        else handleUndo();
         return;
       }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -345,10 +363,19 @@ export default function App() {
           </button>
         </nav>
 
-        <label className="btn btn-primary">
-          Abrir foto
-          <input type="file" accept="image/*" hidden onChange={onFileInput} />
-        </label>
+        <div className="topbar-actions">
+          <label className="btn btn-primary">
+            Abrir foto
+            <input type="file" accept="image/*" hidden onChange={onFileInput} />
+          </label>
+          <button
+            className="btn-icon"
+            aria-label="Acerca de y licencias"
+            onClick={() => setAboutOpen(true)}
+          >
+            ⓘ
+          </button>
+        </div>
       </header>
 
       {tab === "cut" && (
@@ -404,9 +431,14 @@ export default function App() {
               )}
 
               {backend.features.undo && (
-                <button className="btn btn-small" disabled={!canUndo || busy} onClick={handleUndo}>
-                  ↩ Deshacer <kbd>⌘Z</kbd>
-                </button>
+                <div className="row-2">
+                  <button className="btn btn-small" disabled={!canUndo || busy} onClick={handleUndo}>
+                    ↩ Deshacer <kbd>⌘Z</kbd>
+                  </button>
+                  <button className="btn btn-small" disabled={!canRedo || busy} onClick={handleRedo}>
+                    ↪ Rehacer
+                  </button>
+                </div>
               )}
             </section>
 
@@ -540,6 +572,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {aboutOpen && <AboutModal version={pkg.version} onClose={() => setAboutOpen(false)} />}
 
       {pendingLarge && (
         <div className="modal-veil" role="dialog" aria-modal="true" aria-labelledby="modal-large-title">

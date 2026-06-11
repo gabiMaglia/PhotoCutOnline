@@ -84,6 +84,8 @@ async function callInline(cmd, args = {}) {
       return s.addStroke(args.stroke);
     case "undo":
       return s.undo();
+    case "redo":
+      return s.redo();
     case "setFeather":
       s.setFeather(args.px);
       return s.hasCut ? s.previewBlob() : null;
@@ -117,9 +119,15 @@ function exportUrlFrom(blob) {
   return url;
 }
 
-// El historial vive en el motor (cap 15); este contador lo refleja en el
-// hilo principal para que `canUndo` sea síncrono para la UI.
+// El historial vive en el motor (cap 15); estos contadores lo reflejan en el
+// hilo principal para que `canUndo`/`canRedo` sean síncronos para la UI.
 let undoDepth = 0;
+let redoDepth = 0;
+
+function afterOp() {
+  undoDepth = Math.min(undoDepth + 1, 15);
+  redoDepth = 0;
+}
 
 // ---- API pública ----
 
@@ -140,6 +148,7 @@ export const backend = {
       return inv("load_image", { dataUrl });
     }
     undoDepth = 0;
+    redoDepth = 0;
     previewUrlFrom(null);
     return call("load", { dataUrl });
   },
@@ -150,14 +159,14 @@ export const backend = {
       return inv("cut_rect", { rect, iters });
     }
     const blob = await call("cutRect", { rect });
-    undoDepth = Math.min(undoDepth + 1, 15);
+    afterOp();
     return previewUrlFrom(blob);
   },
 
   async autoCut() {
     if (IS_DESKTOP) throw new Error("Auto no disponible en escritorio todavía");
     const blob = await call("autoCut");
-    undoDepth = Math.min(undoDepth + 1, 15);
+    afterOp();
     return previewUrlFrom(blob);
   },
 
@@ -170,7 +179,7 @@ export const backend = {
       return inv("refine", { strokes, iters });
     }
     const blob = await call("addStroke", { stroke });
-    undoDepth = Math.min(undoDepth + 1, 15);
+    afterOp();
     return previewUrlFrom(blob);
   },
 
@@ -178,10 +187,23 @@ export const backend = {
     return !IS_DESKTOP && undoDepth > 0;
   },
 
+  canRedo() {
+    return !IS_DESKTOP && redoDepth > 0;
+  },
+
   async undo() {
     if (IS_DESKTOP) return null;
     const blob = await call("undo");
     undoDepth = Math.max(0, undoDepth - 1);
+    redoDepth = Math.min(redoDepth + 1, 15);
+    return previewUrlFrom(blob);
+  },
+
+  async redo() {
+    if (IS_DESKTOP) return null;
+    const blob = await call("redo");
+    redoDepth = Math.max(0, redoDepth - 1);
+    undoDepth = Math.min(undoDepth + 1, 15);
     return previewUrlFrom(blob);
   },
 

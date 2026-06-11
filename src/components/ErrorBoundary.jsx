@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { reportError } from "../lib/telemetry.js";
 
 // Pantalla de recuperación: cualquier throw en render muestra esto en vez de
 // una pantalla blanca. "Reiniciar" recarga la app (estado limpio); el detalle
@@ -14,6 +15,7 @@ export default class ErrorBoundary extends Component {
 
   componentDidCatch(error, info) {
     console.error("ErrorBoundary:", error, info?.componentStack);
+    reportError(error, { componentStack: info?.componentStack });
   }
 
   handleReset = () => {

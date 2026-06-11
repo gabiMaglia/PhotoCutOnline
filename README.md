@@ -55,6 +55,20 @@ The single decision point is `src/lib/backend.js`: it detects Tauri at runtime
 and calls the Rust commands when present, otherwise runs in-browser. The React UI
 never changes between the two products.
 
+## Browser support (web build)
+
+Evergreen browsers. Minimum tested versions:
+
+| Browser | Min | Notes |
+|---|---|---|
+| Chrome / Edge | 111+ | full experience (worker engine) |
+| Firefox | 113+ | full experience |
+| Safari | 16.4+ | full experience |
+| Safari | 16.2–16.3 | works; engine runs inline on the main thread (no OffscreenCanvas) — brief UI freezes on large photos |
+
+Below those versions, `color-mix()` / `backdrop-filter` degrade the visuals
+but the app remains functional. No IE, no legacy Edge.
+
 ## Prerequisites
 
 - Node.js 18+

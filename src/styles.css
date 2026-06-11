@@ -365,6 +365,41 @@ kbd {
   cursor: not-allowed;
 }
 
+.row-2 {
+  display: flex;
+  gap: 8px;
+}
+
+.row-2 .btn {
+  flex: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink-dim);
+  font-size: 15px;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.btn-icon:hover {
+  color: var(--acid);
+  border-color: var(--acid);
+}
+
 /* chips de formato */
 .format-row {
   display: flex;
@@ -737,6 +772,65 @@ kbd {
 
 .modal-actions .btn {
   flex: 1;
+}
+
+.modal-about {
+  max-height: min(80vh, 640px);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.about-light {
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+.about-version {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--acid);
+  margin-left: 6px;
+}
+
+.about-subtitle {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 8px;
+}
+
+.license-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.license-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12.5px;
+  padding: 6px 9px;
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.license-name {
+  font-weight: 600;
+}
+
+.license-meta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  white-space: nowrap;
 }
 
 /* ---------------------------------- vista previa flotante ---------------------------------- */
@@ -1124,6 +1218,123 @@ kbd {
 ::selection {
   background: var(--acid);
   color: #10130a;
+}
+
+/* ---------------------------------- mobile ---------------------------------- */
+/* En pantallas chicas el rail pasa a ser una bandeja inferior con scroll
+   horizontal: el lienzo arriba (lo importante), los controles bajo el pulgar. */
+@media (max-width: 760px) {
+  .topbar {
+    padding: 0 12px;
+    gap: 8px;
+    height: 54px;
+  }
+
+  .brand-sub,
+  .brand-env {
+    display: none;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .tab {
+    padding: 6px 12px;
+    font-size: 12.5px;
+  }
+
+  .topbar-actions .btn {
+    padding: 8px 10px;
+    font-size: 12.5px;
+  }
+
+  .body {
+    flex-direction: column-reverse;
+  }
+
+  .rail {
+    width: 100%;
+    max-height: 42vh;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-right: 0;
+    border-top: 1px solid var(--line);
+    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .rail-group {
+    min-width: 210px;
+    flex-shrink: 0;
+  }
+
+  .rail-help {
+    display: none;
+  }
+
+  kbd {
+    display: none; /* atajos de teclado no aplican en touch */
+  }
+
+  .canvas-wrap {
+    padding: 12px;
+  }
+
+  .canvas-empty {
+    padding: 32px 20px;
+  }
+
+  .canvas-empty h2 {
+    font-size: 21px;
+  }
+
+  .preview-panel {
+    top: 64px;
+    right: 10px;
+    width: 168px;
+  }
+
+  .preview-body {
+    height: 148px;
+  }
+
+  .icon-studio {
+    flex-direction: column-reverse;
+  }
+
+  .icon-preview {
+    padding: 14px;
+  }
+
+  .icon-hero {
+    width: 180px;
+    height: 180px;
+    border-radius: 40px;
+  }
+
+  .icon-hero canvas {
+    width: 180px;
+    height: 180px;
+  }
+
+  .icon-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .toasts {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    right: 12px;
+    left: 12px;
+  }
+
+  .toast {
+    text-align: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

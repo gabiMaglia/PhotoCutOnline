@@ -45,19 +45,23 @@ Estado del audit PO/QA del 2026-06-11. Cada ítem tiene criterio de aceptación
 
 ## P1 — Antes de cobrar
 
-- [ ] **Responsive / mobile**
+- [x] **Responsive / mobile** *(2026-06-11)*
   CA: usable en 390px de ancho; el rail colapsa a barra inferior o drawer;
   pinceles funcionan con dedo (pointer events ya están).
+  Hecho: media query ≤760px — rail como bandeja inferior con scroll
+  horizontal, safe-area, toasts full-width. Test: `test/mobile-test.html`
+  (el runner usa viewport 390×844 para esa suite).
 
-- [ ] **Redo**
+- [x] **Redo** *(2026-06-11)*
   CA: ⇧⌘Z rehace; el stack sobrevive a cambios de feather.
-  Dónde: `CutoutSession` ya guarda historia; añadir puntero en vez de pop
-  destructivo.
+  Hecho: pilas undo/redo en `CutoutSession` (snapshot/restore), comando
+  `redo` en worker y backend, botón Rehacer en la UI. Tests en
+  engine-test y worker-test.
 
-- [ ] **Matriz de navegadores**
-  CA: documentada en README; `color-mix()`/`backdrop-filter` requieren
-  Safari 16.2+/Chrome 111+/Firefox 113+; decidir fallbacks o evergreen-only.
-  El worker ya degrada a inline sin OffscreenCanvas.
+- [x] **Matriz de navegadores** *(2026-06-11)*
+  CA: documentada en README.
+  Hecho: tabla "Browser support" en README — Chrome/Edge 111+, Firefox
+  113+, Safari 16.4+ (16.2–16.3 con motor inline); evergreen-only.
 
 - [x] **CI (GitHub Actions)** *(2026-06-11)*
   CA: en cada push corre `npm run build` + `npm run test:web` +
@@ -67,13 +71,19 @@ Estado del audit PO/QA del 2026-06-11. Cada ítem tiene criterio de aceptación
   Pendiente menor: convertir los tiempos de `perf-test` en umbrales que
   fallen.
 
-- [ ] **Telemetría de errores**
-  CA: errores JS de producción llegan a Sentry (o similar) con sourcemaps;
-  sin PII, sin imágenes (privacidad es el selling point).
+- [x] **Telemetría de errores** *(2026-06-11)*
+  CA: errores JS de producción llegan a Sentry; sin PII, sin imágenes.
+  Hecho: `src/lib/telemetry.js` sin SDK (0 KB extra) — opt-in vía
+  `VITE_SENTRY_DSN` en el build; hooks `error`/`unhandledrejection` +
+  ErrorBoundary; cap de 10 eventos/sesión. Pendiente menor: subir
+  sourcemaps al activar el DSN real.
 
-- [ ] **Licencias de terceros**
-  CA: pantalla "Acerca de / Licencias" generada desde `npm ls --json` y
-  `cargo about generate`.
+- [x] **Licencias de terceros** *(2026-06-11)*
+  CA: pantalla "Acerca de / Licencias".
+  Hecho: `npm run licenses` (scripts/gen-licenses.mjs) genera
+  `src/generated/licenses.json` (deps npm + crates Rust); modal ⓘ en la
+  topbar con versión y promesa de privacidad. Verificar en release con
+  `cargo about` para el árbol transitivo de Rust.
 
 ## P2 — Pulido
 

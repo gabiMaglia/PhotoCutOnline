@@ -39,7 +39,8 @@ export class CutoutSession {
     this.rect = null; // rect en coords de trabajo
     this.trimap = null;
     this.label = null; // 1 fg / 0 bg, resolución de trabajo
-    this.history = [];
+    this.undoStack = [];
+    this.redoStack = [];
     this.featherPx = 2; // en px de imagen completa
     this.maskCanvasFull = null; // cache del último alfa a resolución completa
   }
@@ -49,7 +50,11 @@ export class CutoutSession {
   }
 
   get canUndo() {
-    return this.history.length > 0;
+    return this.undoStack.length > 0;
+  }
+
+  get canRedo() {
+    return this.redoStack.length > 0;
   }
 
   load(imageData) {
@@ -77,22 +82,39 @@ export class CutoutSession {
     this.featherPx = Math.max(0, px);
   }
 
-  pushHistory() {
-    this.history.push({
+  snapshot() {
+    return {
       trimap: Uint8Array.from(this.trimap),
       label: this.label ? Uint8Array.from(this.label) : null,
       rect: this.rect ? { ...this.rect } : null,
-    });
-    if (this.history.length > 15) this.history.shift();
+    };
+  }
+
+  restore(s) {
+    this.trimap = s.trimap;
+    this.label = s.label;
+    this.rect = s.rect;
+  }
+
+  /** Guarda el estado actual antes de una operación; invalida el redo. */
+  pushHistory() {
+    this.undoStack.push(this.snapshot());
+    if (this.undoStack.length > 15) this.undoStack.shift();
+    this.redoStack = [];
   }
 
   undo() {
-    const prev = this.history.pop();
-    if (!prev) return null;
-    this.trimap = prev.trimap;
-    this.label = prev.label;
-    this.rect = prev.rect;
-    return this.previewBlob();
+    if (!this.undoStack.length) return null;
+    this.redoStack.push(this.snapshot());
+    this.restore(this.undoStack.pop());
+    return this.label ? this.previewBlob() : null;
+  }
+
+  redo() {
+    if (!this.redoStack.length) return null;
+    this.undoStack.push(this.snapshot());
+    this.restore(this.redoStack.pop());
+    return this.label ? this.previewBlob() : null;
   }
 
   /** rect en coords de imagen completa. */

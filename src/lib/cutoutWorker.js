@@ -24,6 +24,7 @@ const handlers = {
   autoCut: () => session.autoCut(),
   addStroke: ({ stroke }) => session.addStroke(stroke),
   undo: () => session.undo(),
+  redo: () => session.redo(),
 
   setFeather({ px }) {
     session.setFeather(px);

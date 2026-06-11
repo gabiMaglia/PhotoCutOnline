@@ -69,6 +69,12 @@ async function main() {
   await backend.undo();
   await backend.undo();
   assert(!backend.canUndo(), "undo: contador llega a cero");
+  assert(backend.canRedo(), "redo: disponible tras deshacer");
+
+  const urlRedo = await backend.redo();
+  assert(urlRedo?.startsWith("blob:"), "redo: restaura el recorte");
+  assert(backend.canUndo(), "redo: undo vuelve a estar disponible");
+  await backend.undo(); // volver al estado sin recorte para el guard de export
 
   // exportar sin recorte activo debe fallar con mensaje claro, no con null
   let guarded = false;
