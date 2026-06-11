@@ -59,12 +59,13 @@ Estado del audit PO/QA del 2026-06-11. Cada ítem tiene criterio de aceptación
   Safari 16.2+/Chrome 111+/Firefox 113+; decidir fallbacks o evergreen-only.
   El worker ya degrada a inline sin OffscreenCanvas.
 
-- [ ] **CI (GitHub Actions)**
+- [x] **CI (GitHub Actions)** *(2026-06-11)*
   CA: en cada push corre `npm run build` + `npm run test:web` +
   `cargo test -p photocut-core`.
-  El runner ya existe (`test/run-tests.mjs`, playwright-core + Chrome del
-  sistema); en CI usar la imagen con Chrome o `npx playwright install chrome`.
-  Pendiente: convertir los tiempos de `perf-test` en umbrales que fallen.
+  Hecho: `.github/workflows/ci.yml` (jobs web + rust); el runner usa el
+  Chrome preinstalado del runner de GitHub con `--no-sandbox` en CI.
+  Pendiente menor: convertir los tiempos de `perf-test` en umbrales que
+  fallen.
 
 - [ ] **Telemetría de errores**
   CA: errores JS de producción llegan a Sentry (o similar) con sourcemaps;

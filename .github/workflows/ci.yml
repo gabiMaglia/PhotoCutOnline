@@ -1,0 +1,33 @@
+# CI — en cada push/PR: build web + 7 suites en Chrome headless + motor Rust.
+# El runner de tests usa el Chrome preinstalado del runner de GitHub
+# (playwright-core channel "chrome"), sin descargar navegadores.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  web:
+    name: Web (build + tests en Chrome)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:web
+
+  rust:
+    name: Rust (photocut-core)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test -p photocut-core

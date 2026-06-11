@@ -44,7 +44,12 @@ let failed = 0;
 let browser;
 try {
   await waitForServer(`http://localhost:${PORT}/`);
-  browser = await chromium.launch({ channel: "chrome", headless: true });
+  browser = await chromium.launch({
+    channel: process.env.CHROME_CHANNEL || "chrome",
+    headless: true,
+    // en CI (contenedores/runners) el sandbox de Chrome suele no estar disponible
+    args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
+  });
   const page = await browser.newPage();
   page.on("pageerror", (e) => console.error("  [pageerror]", e.message));
 
