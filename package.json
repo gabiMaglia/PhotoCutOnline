@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test:web": "node test/run-tests.mjs",
     "licenses": "node scripts/gen-licenses.mjs",
+    "brand-assets": "node scripts/gen-brand-assets.mjs",
     "tauri": "tauri"
   },
   "dependencies": {

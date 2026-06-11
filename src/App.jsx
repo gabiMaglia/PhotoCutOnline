@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import CanvasEditor from "./components/CanvasEditor.jsx";
 import IconStudio from "./components/IconStudio.jsx";
 import AboutModal from "./components/AboutModal.jsx";
+import HelpModal from "./components/HelpModal.jsx";
+import Onboarding from "./components/Onboarding.jsx";
 import { backend } from "./lib/backend.js";
 import pkg from "../package.json";
 import {
@@ -31,6 +33,10 @@ export default function App() {
   const [previewColor, setPreviewColor] = useState("#ffffff");
   const [dragging, setDragging] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [onboarding, setOnboarding] = useState(
+    () => !localStorage.getItem("pc-onboarded")
+  );
   const [toasts, setToasts] = useState([]);
   const toastId = useRef(0);
   const dragDepth = useRef(0);
@@ -296,6 +302,17 @@ export default function App() {
         else handleUndo();
         return;
       }
+      if (e.key === "Escape") {
+        setHelpOpen(false);
+        setAboutOpen(false);
+        setPreviewOpen(false);
+        cancelLarge();
+        return;
+      }
+      if (e.key === "?") {
+        setHelpOpen((v) => !v);
+        return;
+      }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       switch (e.key) {
         case "1":
@@ -330,7 +347,7 @@ export default function App() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [imageUrl, hasCut, busy, handleUndo, handleAuto, exportAs]);
+  }, [imageUrl, hasCut, busy, handleUndo, handleRedo, handleAuto, exportAs, cancelLarge]);
 
   const getCutout = useCallback(() => backend.exportTransparent({ format: "png" }), []);
 
@@ -573,7 +590,17 @@ export default function App() {
         </div>
       )}
 
+      {onboarding && (
+        <Onboarding
+          onDismiss={() => {
+            localStorage.setItem("pc-onboarded", "1");
+            setOnboarding(false);
+          }}
+        />
+      )}
+
       {aboutOpen && <AboutModal version={pkg.version} onClose={() => setAboutOpen(false)} />}
+      {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
 
       {pendingLarge && (
         <div className="modal-veil" role="dialog" aria-modal="true" aria-labelledby="modal-large-title">

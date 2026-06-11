@@ -14,7 +14,7 @@
   --line-bright: #2f3540;
   --ink: #edf0e8;
   --ink-dim: #9aa194;
-  --ink-faint: #5d6357;
+  --ink-faint: #7e8676; /* AA sobre --panel para texto pequeño */
   --acid: #d6f64b;
   --acid-soft: rgba(214, 246, 75, 0.14);
   --acid-glow: rgba(214, 246, 75, 0.35);
@@ -657,6 +657,122 @@ kbd {
   }
 }
 
+/* ---------------------------------- onboarding ---------------------------------- */
+.onboarding-card {
+  width: min(480px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid var(--line-bright);
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65), 0 0 60px rgba(214, 246, 75, 0.06);
+  animation: panel-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.onboarding-card .brand {
+  margin-bottom: 16px;
+}
+
+.onboarding-card h2 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 27px;
+  letter-spacing: -0.7px;
+  margin: 0 0 6px;
+}
+
+.onboarding-privacy {
+  font-size: 13.5px;
+  color: var(--acid);
+  margin: 0 0 22px;
+}
+
+.onboarding-steps {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.onboarding-steps li {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.step-n {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--acid);
+  border: 1px solid color-mix(in srgb, var(--acid) 45%, transparent);
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onboarding-steps strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.onboarding-steps p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+  margin: 0;
+}
+
+.onboarding-go {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+}
+
+/* ---------------------------------- ayuda de atajos ---------------------------------- */
+.modal-help {
+  text-align: left;
+}
+
+.shortcut-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcut-list li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13.5px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.shortcut-keys {
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.shortcut-keys kbd {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 6px;
+}
+
+.shortcut-label {
+  color: var(--ink-dim);
+}
+
 /* ---------------------------------- pantalla de error ---------------------------------- */
 .crash-screen {
   position: fixed;
@@ -1275,7 +1391,7 @@ kbd {
     display: none;
   }
 
-  kbd {
+  .rail kbd {
     display: none; /* atajos de teclado no aplican en touch */
   }
 

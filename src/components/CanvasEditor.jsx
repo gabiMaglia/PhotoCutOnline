@@ -257,8 +257,8 @@ export default function CanvasEditor({
             onPointerCancel={handleUp}
           />
           {busy && (
-            <div className="canvas-busy">
-              <span className="busy-dot" /> procesando…
+            <div className="canvas-busy" role="status" aria-live="polite">
+              <span className="busy-dot" aria-hidden /> procesando…
             </div>
           )}
         </div>

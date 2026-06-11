@@ -16,8 +16,38 @@ const tick = () => new Promise((r) => setTimeout(r, 50));
 async function main() {
   assert(window.innerWidth <= 760, `viewport móvil (${window.innerWidth}px ≤ 760)`);
 
+  localStorage.removeItem("pc-onboarded"); // forzar primera visita
   createRoot(document.getElementById("root")).render(<App />);
   await tick();
+
+  // onboarding de primera visita
+  const ob = document.querySelector(".onboarding-card");
+  assert(!!ob, "onboarding: aparece en la primera visita");
+  assert(ob.querySelectorAll(".onboarding-steps li").length === 3, "onboarding: 3 pasos");
+  assert(/nunca se suben/.test(ob.textContent), "onboarding: promesa de privacidad");
+  ob.querySelector(".onboarding-go").click();
+  await tick();
+  assert(!document.querySelector(".onboarding-card"), "onboarding: se cierra");
+  assert(localStorage.getItem("pc-onboarded") === "1", "onboarding: no volverá a aparecer");
+
+  // modal de atajos con "?" y cierre con Esc
+  window.dispatchEvent(new KeyboardEvent("keydown", { key: "?" }));
+  await tick();
+  const help = document.querySelector(".modal-help");
+  assert(!!help, "ayuda: «?» abre el modal de atajos");
+  assert(help.querySelectorAll(".shortcut-list li").length >= 9, "ayuda: lista de atajos completa");
+  window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+  await tick();
+  assert(!document.querySelector(".modal-help"), "ayuda: Esc cierra");
+
+  // PWA / SEO: lo declarado en index.html y los archivos servidos
+  const indexHtml = await (await fetch("/")).text();
+  assert(indexHtml.includes('rel="manifest"'), "pwa: manifest enlazado en index.html");
+  assert(indexHtml.includes('property="og:image"'), "seo: og:image en index.html");
+  assert((await fetch("/site.webmanifest")).ok, "pwa: site.webmanifest servido");
+  assert((await fetch("/sw.js")).ok, "pwa: sw.js servido");
+  assert((await fetch("/icons/icon-512.png")).ok, "pwa: icono 512 servido");
+  assert((await fetch("/og.png")).ok, "seo: og.png servido");
 
   // layout: bandeja inferior
   const body = document.querySelector(".body");

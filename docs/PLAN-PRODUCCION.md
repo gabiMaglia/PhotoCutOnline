@@ -89,12 +89,20 @@ Estado del audit PO/QA del 2026-06-11. Cada ítem tiene criterio de aceptación
 
 - [ ] **i18n ES/EN** — extraer strings a diccionario; detección por
   `navigator.language` con switch manual.
-- [ ] **PWA instalable** — manifest + service worker offline (la app genera
-  manifests para otros y no tiene el suyo).
-- [ ] **Onboarding** — overlay de 3 pasos la primera vez (localStorage).
-- [ ] **SEO/OG** — meta tags, og:image, landing.
-- [ ] **Accesibilidad** — `aria-live` para "procesando", contraste de
-  `--ink-faint` (límite AA), atajos documentados en un modal `?`.
+- [x] **PWA instalable** *(2026-06-11)* — `site.webmanifest` + iconos propios
+  (`npm run brand-assets`, generados con el propio motivo de marca) +
+  `public/sw.js` (precache del HTML y sus assets en install, runtime
+  stale-while-revalidate, `ignoreVary` por el header Vary: Origin).
+  Verificado: la app monta completa offline tras la primera visita.
+- [x] **Onboarding** *(2026-06-11)* — overlay de 3 pasos en la primera visita
+  (localStorage `pc-onboarded`), con promesa de privacidad. Testeado.
+- [x] **SEO/OG** *(2026-06-11)* — metas description/OG/Twitter + `og.png`
+  1200×630 generado con la identidad darkroom. Pendiente: og:url/canonical
+  cuando exista dominio (ítem hosting).
+- [x] **Accesibilidad** *(2026-06-11)* — `aria-live` en "procesando", contraste
+  AA de `--ink-faint` (#7e8676), modal `?` de atajos, Esc cierra paneles,
+  roles/aria en modales. Pendiente conocido: el lienzo no es operable por
+  teclado (limitación de la interacción de pincel).
 - [ ] **Decodificador HEIC real** — ver P0 HEIC.
 - [ ] **WASM del motor Rust** — compilar `photocut-core` a WebAssembly para
   paridad web/desktop (el README ya lo contempla); el worker actual es el
