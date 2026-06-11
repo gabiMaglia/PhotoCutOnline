@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PhotoCut Studio",
+  "version": "0.1.0",
+  "identifier": "com.yourcompany.photocutstudio",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "PhotoCut Studio",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
+    "copyright": "© 2026 Your Company. All rights reserved.",
+    "category": "Photography",
+    "shortDescription": "Remove image backgrounds with interactive cutout.",
+    "longDescription": "PhotoCut Studio isolates a foreground object from any photo using an interactive GrabCut engine. Mark the object, refine with brushes, and export to transparent PNG or a new background.",
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    },
+    "windows": {
+      "wix": {},
+      "nsis": {}
+    }
+  }
+}

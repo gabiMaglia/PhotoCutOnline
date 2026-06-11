@@ -1,0 +1,32 @@
+# cargo-deny configuration — run `cargo deny check` before each release.
+# This is the resale safeguard: it fails the build if any dependency carries a
+# copyleft or unknown license, so you never accidentally ship something you
+# can't sell.
+
+[licenses]
+# Allow only permissive licenses across the whole dependency tree.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "MPL-2.0",
+    "CC0-1.0",
+]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "warn"
+wildcards = "warn"
+
+[advisories]
+yanked = "warn"
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
