@@ -1,10 +1,14 @@
-// Backend abstraction layer.
+// Capa de abstracción de backend.
 //
-// On desktop (Tauri) the heavy GrabCut work runs in Rust via `invoke`.
-// In a plain browser build, Tauri is absent, so we fall back to a JS engine
-// (see ./jsEngine.js). This lets the *same* React UI ship as both products.
+// En escritorio (Tauri) el trabajo pesado corre en Rust vía `invoke`.
+// En navegador usamos CutoutSession (./jsEngine.js). La misma UI React se
+// distribuye como ambos productos.
+//
+// `backend.features` indica qué hay disponible en el entorno actual para que
+// la UI oculte lo que no aplica (auto/undo/feather/webp son web-only hasta que
+// el motor Rust los implemente).
 
-import { runGrabCutJS } from "./jsEngine.js";
+import { CutoutSession, loadHtmlImage } from "./jsEngine.js";
 
 function hasTauri() {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -18,21 +22,25 @@ async function getInvoke() {
   return invoke;
 }
 
-// Browser-side session state (mirrors what the Rust Session holds).
-const jsSession = {
-  imageData: null, // {width,height,rgba}
-  mask: null,
-};
+const session = new CutoutSession();
+const IS_DESKTOP = hasTauri();
 
 export const backend = {
-  isDesktop: hasTauri(),
+  isDesktop: IS_DESKTOP,
+
+  features: {
+    auto: !IS_DESKTOP,
+    undo: !IS_DESKTOP,
+    feather: !IS_DESKTOP,
+    formats: !IS_DESKTOP,
+    clipboard: typeof navigator !== "undefined" && !!navigator.clipboard?.write,
+  },
 
   async loadImage(dataUrl) {
-    if (hasTauri()) {
+    if (IS_DESKTOP) {
       const inv = await getInvoke();
       return inv("load_image", { dataUrl });
     }
-    // browser: decode into an offscreen canvas
     const img = await loadHtmlImage(dataUrl);
     const { width, height } = img;
     const canvas = document.createElement("canvas");
@@ -40,114 +48,91 @@ export const backend = {
     canvas.height = height;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
-    jsSession.imageData = ctx.getImageData(0, 0, width, height);
-    jsSession.mask = null;
+    session.load(ctx.getImageData(0, 0, width, height));
     return { width, height };
   },
 
   async cutRect(rect, iters) {
-    if (hasTauri()) {
+    if (IS_DESKTOP) {
       const inv = await getInvoke();
       return inv("cut_rect", { rect, iters });
     }
-    const { dataUrl, mask } = runGrabCutJS(jsSession.imageData, rect, null, iters);
-    jsSession.mask = mask;
-    return dataUrl;
+    return session.cutRect(rect);
   },
 
-  async refine(strokes, iters) {
-    if (hasTauri()) {
+  async autoCut() {
+    if (IS_DESKTOP) throw new Error("Auto no disponible en escritorio todavía");
+    return session.autoCut();
+  },
+
+  /** stroke: {points:[{x,y}…], radius, foreground} */
+  async refine(stroke, iters) {
+    if (IS_DESKTOP) {
       const inv = await getInvoke();
+      // El comando Rust espera listas de píxeles [x,y]; expandimos los discos.
+      const strokes = [expandStrokeToPixels(stroke)];
       return inv("refine", { strokes, iters });
     }
-    const { dataUrl, mask } = runGrabCutJS(
-      jsSession.imageData,
-      null,
-      { strokes, prevMask: jsSession.mask },
-      iters
-    );
-    jsSession.mask = mask;
-    return dataUrl;
+    return session.addStroke(stroke);
   },
 
-  async exportTransparent() {
-    if (hasTauri()) {
+  canUndo() {
+    return !IS_DESKTOP && session.canUndo;
+  },
+
+  async undo() {
+    if (IS_DESKTOP) return null;
+    return session.undo();
+  },
+
+  async setFeather(px) {
+    if (IS_DESKTOP) return null;
+    session.setFeather(px);
+    return session.hasCut ? session.previewUrl() : null;
+  },
+
+  async exportTransparent(opts = {}) {
+    if (IS_DESKTOP) {
       const inv = await getInvoke();
       return inv("export_transparent", {});
     }
-    return compositeJS(jsSession, { type: "transparent" });
+    return session.composite({ type: "transparent", ...opts });
   },
 
-  async exportSolid(color) {
-    if (hasTauri()) {
+  async exportSolid(color, opts = {}) {
+    if (IS_DESKTOP) {
       const inv = await getInvoke();
       return inv("export_solid", { color });
     }
-    return compositeJS(jsSession, { type: "solid", color });
+    return session.composite({ type: "solid", color, ...opts });
   },
 
-  async exportImageBg(bgDataUrl) {
-    if (hasTauri()) {
+  async exportImageBg(bgDataUrl, opts = {}) {
+    if (IS_DESKTOP) {
       const inv = await getInvoke();
       return inv("export_image_bg", { bgDataUrl });
     }
-    return compositeJS(jsSession, { type: "image", bgDataUrl });
+    return session.composite({ type: "image", bgDataUrl, ...opts });
   },
 };
 
-function loadHtmlImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
-// Browser compositing (desktop path does this in Rust).
-async function compositeJS(session, opts) {
-  const { width, height } = session.imageData;
-  const src = session.imageData.data;
-  const mask = session.mask;
-  const out = new ImageData(width, height);
-
-  let bgData = null;
-  if (opts.type === "image") {
-    const img = await loadHtmlImage(opts.bgDataUrl);
-    const c = document.createElement("canvas");
-    c.width = width;
-    c.height = height;
-    const cx = c.getContext("2d");
-    cx.drawImage(img, 0, 0, width, height);
-    bgData = cx.getImageData(0, 0, width, height).data;
-  }
-
-  for (let i = 0; i < width * height; i++) {
-    const fg = mask ? mask[i] === 255 : false;
-    const o = i * 4;
-    if (fg) {
-      out.data[o] = src[o];
-      out.data[o + 1] = src[o + 1];
-      out.data[o + 2] = src[o + 2];
-      out.data[o + 3] = 255;
-    } else if (opts.type === "transparent") {
-      out.data[o + 3] = 0;
-    } else if (opts.type === "solid") {
-      out.data[o] = opts.color[0];
-      out.data[o + 1] = opts.color[1];
-      out.data[o + 2] = opts.color[2];
-      out.data[o + 3] = opts.color[3];
-    } else if (opts.type === "image" && bgData) {
-      out.data[o] = bgData[o];
-      out.data[o + 1] = bgData[o + 1];
-      out.data[o + 2] = bgData[o + 2];
-      out.data[o + 3] = 255;
+function expandStrokeToPixels(stroke) {
+  const r = Math.max(1, Math.round((stroke.radius || 12) / 2));
+  const seen = new Set();
+  const points = [];
+  for (const p of stroke.points) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (dx * dx + dy * dy > r * r) continue;
+        const x = Math.round(p.x + dx);
+        const y = Math.round(p.y + dy);
+        const key = y * 100000 + x;
+        if (x >= 0 && y >= 0 && !seen.has(key)) {
+          seen.add(key);
+          points.push([x, y]);
+        }
+      }
     }
   }
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  canvas.getContext("2d").putImageData(out, 0, 0);
-  return canvas.toDataURL("image/png");
+  return { points, foreground: stroke.foreground };
 }

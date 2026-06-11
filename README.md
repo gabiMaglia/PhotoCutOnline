@@ -3,7 +3,30 @@
 Interactive background-removal tool. One React codebase ships as:
 
 - a **desktop app** (Tauri + Rust) — full-quality GrabCut engine running natively, offline; and
-- a **web app** (plain browser) — same UI, lighter JS fallback segmenter.
+- a **web app** (plain browser) — same UI, with its own GrabCut-lite segmenter
+  (k-means color models, hard-constraint trimap, component cleanup, alpha
+  feathering) running fully client-side.
+
+## Features
+
+- **Cutout workspace** — box select, one-click auto cut (border background
+  modeling), keep/remove brushes with live ghost cursor, marching-ants
+  selection, edge feathering, undo, keyboard shortcuts (`A` `1` `2` `3`
+  `[` `]` `E` `⌘Z`), drag & drop and clipboard paste.
+- **Export** — transparent PNG, WebP/JPEG, solid color or image background,
+  copy straight to the clipboard.
+- **Icon Studio** — turns the cutout (or any PNG) into complete app icon sets:
+  iOS `AppIcon.appiconset` (+ legacy sizes), Android mipmaps + adaptive +
+  Play Store, macOS `AppIcon.iconset`, a real multi-resolution Windows `.ico`,
+  favicons + PWA manifest + maskable icon — all zipped in the browser with
+  zero dependencies (own ZIP/ICO writers in `src/lib/zip.js` / `icons.js`).
+- **`make_icons.py`** — the same icon pipeline as a Python CLI
+  (`public/make_icons.py`, Pillow only; auto-`.icns` via `iconutil` on macOS):
+
+  ```bash
+  pip install pillow
+  python make_icons.py logo.png -o app-icons --padding 0.08 --name "Mi App"
+  ```
 
 This is an original implementation. It is **not** affiliated with, derived from, or
 a copy of any existing product. The cutout engine (`photocut-core`) is written from
@@ -69,10 +92,21 @@ Desktop installers (.dmg / .msi / .deb / .AppImage):
 npm run tauri build  # outputs to src-tauri/target/release/bundle/
 ```
 
-## Test the engine
+## Test the engines
+
+Rust (desktop):
 
 ```bash
 cargo test -p photocut-core
+```
+
+Web (smoke tests in a real browser — synthetic-image segmentation accuracy,
+undo, compositing, icon ZIP):
+
+```bash
+npm run dev
+# then open http://localhost:5173/test/engine-test.html
+# and  http://localhost:5173/test/icons-test.html  — expect all PASS
 ```
 
 ## Workflow in the app

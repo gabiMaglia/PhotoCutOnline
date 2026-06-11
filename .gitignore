@@ -10,3 +10,6 @@ src-tauri/gen/
 *.log
 .vscode/
 .idea/
+
+.agents/
+.claude/

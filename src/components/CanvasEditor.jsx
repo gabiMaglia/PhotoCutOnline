@@ -1,12 +1,13 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 
-// The interactive canvas. Handles three input modes:
-//  - "rect":  drag a bounding box around the object
-//  - "fg":    paint definite-foreground strokes
-//  - "bg":    paint definite-background strokes
+// Lienzo interactivo. Tres modos de entrada:
+//  - "rect": arrastrar un recuadro alrededor del sujeto (marching ants)
+//  - "fg":   pincel mantener (pinta restricciones de primer plano)
+//  - "bg":   pincel quitar  (pinta restricciones de fondo)
 //
-// It reports a rect (on mouse-up) or a stroke (on mouse-up) to the parent,
-// and renders the current cutout preview underneath a checkerboard.
+// Capas (de abajo a arriba): checker → base → result → guide.
+// La base queda como "fantasma" tenue cuando hay resultado, para poder
+// recuperar zonas con el pincel mantener viendo el original.
 
 export default function CanvasEditor({
   imageUrl,
@@ -20,17 +21,24 @@ export default function CanvasEditor({
 }) {
   const wrapRef = useRef(null);
   const baseRef = useRef(null);
-  const overlayRef = useRef(null);
+  const resultRef = useRef(null);
+  const guideRef = useRef(null);
   const [scale, setScale] = useState(1);
+  const [cursorPos, setCursorPos] = useState(null);
+
   const drawing = useRef(false);
   const start = useRef(null);
+  const currentRect = useRef(null);
   const strokePoints = useRef([]);
+  const antsRaf = useRef(0);
+  const antsPhase = useRef(0);
 
-  // Fit the image to the available width while preserving aspect ratio.
+  // Ajustar la imagen al espacio disponible (ancho Y alto).
   const recomputeScale = useCallback(() => {
     if (!imageSize || !wrapRef.current) return;
-    const avail = wrapRef.current.clientWidth - 32;
-    const s = Math.min(1, avail / imageSize.width);
+    const availW = wrapRef.current.clientWidth - 48;
+    const availH = wrapRef.current.clientHeight - 48;
+    const s = Math.min(1, availW / imageSize.width, availH / imageSize.height);
     setScale(s > 0 ? s : 1);
   }, [imageSize]);
 
@@ -40,147 +48,189 @@ export default function CanvasEditor({
     return () => window.removeEventListener("resize", recomputeScale);
   }, [recomputeScale]);
 
-  // Draw the base photo whenever it changes.
+  // Dibujar la foto base cuando cambia.
   useEffect(() => {
     if (!imageUrl || !imageSize) return;
-    const base = baseRef.current;
-    base.width = imageSize.width;
-    base.height = imageSize.height;
-    const ctx = base.getContext("2d");
+    for (const ref of [baseRef, resultRef, guideRef]) {
+      ref.current.width = imageSize.width;
+      ref.current.height = imageSize.height;
+    }
+    const ctx = baseRef.current.getContext("2d");
     const img = new Image();
     img.onload = () => ctx.drawImage(img, 0, 0);
     img.src = imageUrl;
-    // Overlay must match base dimensions so mouse events cover the full canvas.
-    const overlay = overlayRef.current;
-    overlay.width = imageSize.width;
-    overlay.height = imageSize.height;
   }, [imageUrl, imageSize]);
 
-  // The result preview lives in its own layer on top of the checkerboard.
+  // El resultado vive en su propia capa.
   useEffect(() => {
-    if (!resultUrl || !imageSize) return;
-    const canvas = overlayRef.current;
-    canvas.width = imageSize.width;
-    canvas.height = imageSize.height;
+    if (!imageSize) return;
+    const canvas = resultRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!resultUrl) return;
     const img = new Image();
-    img.onload = () => ctx.drawImage(img, 0, 0);
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
     img.src = resultUrl;
   }, [resultUrl, imageSize]);
 
+  useEffect(() => () => cancelAnimationFrame(antsRaf.current), []);
+
   function toImageCoords(e) {
-    const rect = baseRef.current.getBoundingClientRect();
-    const x = Math.round((e.clientX - rect.left) / scale);
-    const y = Math.round((e.clientY - rect.top) / scale);
+    const rect = guideRef.current.getBoundingClientRect();
+    const x = Math.round(((e.clientX - rect.left) / rect.width) * imageSize.width);
+    const y = Math.round(((e.clientY - rect.top) / rect.height) * imageSize.height);
     return {
       x: Math.max(0, Math.min(imageSize.width - 1, x)),
       y: Math.max(0, Math.min(imageSize.height - 1, y)),
     };
   }
 
+  function ctxGuide() {
+    return guideRef.current.getContext("2d");
+  }
+
+  function clearGuide() {
+    const c = guideRef.current;
+    if (c) c.getContext("2d").clearRect(0, 0, c.width, c.height);
+  }
+
+  // ---- marching ants ----
+  function drawAnts() {
+    const r = currentRect.current;
+    if (!r) return;
+    const ctx = ctxGuide();
+    const c = guideRef.current;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.save();
+    const lw = Math.max(1.5, 2 / scale);
+    ctx.lineWidth = lw;
+    ctx.setLineDash([8 / scale, 6 / scale]);
+    ctx.lineDashOffset = -antsPhase.current;
+    ctx.strokeStyle = "rgba(214, 246, 75, 0.95)";
+    ctx.shadowColor = "rgba(214, 246, 75, 0.6)";
+    ctx.shadowBlur = 6 / scale;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(214, 246, 75, 0.06)";
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.restore();
+  }
+
+  function antsLoop() {
+    antsPhase.current += 0.9 / scale;
+    drawAnts();
+    if (drawing.current && mode === "rect") {
+      antsRaf.current = requestAnimationFrame(antsLoop);
+    }
+  }
+
+  // ---- input ----
   function handleDown(e) {
-    if (busy) return;
+    if (busy || !imageSize) return;
+    e.preventDefault();
+    guideRef.current.setPointerCapture?.(e.pointerId);
     drawing.current = true;
     const p = toImageCoords(e);
     start.current = p;
-    strokePoints.current = [];
-    if (mode !== "rect") {
-      collectStroke(p);
+    strokePoints.current = [p];
+    if (mode === "rect") {
+      currentRect.current = { x: p.x, y: p.y, w: 0, h: 0 };
+      cancelAnimationFrame(antsRaf.current);
+      antsRaf.current = requestAnimationFrame(antsLoop);
+    } else {
+      paintGuideDisc(p);
     }
   }
 
   function handleMove(e) {
+    if (imageSize) setCursorPos({ x: e.clientX, y: e.clientY });
     if (!drawing.current || busy) return;
     const p = toImageCoords(e);
     if (mode === "rect") {
-      drawRectGuide(start.current, p);
+      currentRect.current = normRect(start.current, p);
     } else {
-      collectStroke(p);
+      const pts = strokePoints.current;
+      const last = pts[pts.length - 1];
+      if (Math.abs(p.x - last.x) + Math.abs(p.y - last.y) >= 2) {
+        pts.push(p);
+        paintGuideSegment(last, p);
+      }
     }
   }
 
   function handleUp(e) {
-    if (!drawing.current || busy) return;
+    if (!drawing.current) return;
     drawing.current = false;
-    const p = toImageCoords(e);
+    cancelAnimationFrame(antsRaf.current);
+    if (busy) {
+      clearGuide();
+      return;
+    }
     if (mode === "rect") {
-      const r = normRect(start.current, p);
+      const r = currentRect.current || normRect(start.current, toImageCoords(e));
+      currentRect.current = null;
       clearGuide();
       if (r.w > 4 && r.h > 4) onRect(r);
     } else {
-      onStroke({ points: strokePoints.current, foreground: mode === "fg" });
+      const pts = strokePoints.current;
       clearGuide();
-    }
-  }
-
-  // Brush: fill a disc of `brushSize` radius around the point, collect pixels.
-  function collectStroke(center) {
-    const r = Math.max(1, Math.round(brushSize / 2));
-    const pts = strokePoints.current;
-    for (let dy = -r; dy <= r; dy++) {
-      for (let dx = -r; dx <= r; dx++) {
-        if (dx * dx + dy * dy > r * r) continue;
-        const x = center.x + dx;
-        const y = center.y + dy;
-        if (x >= 0 && y >= 0 && x < imageSize.width && y < imageSize.height) {
-          pts.push([x, y]);
-        }
+      if (pts.length) {
+        onStroke({
+          points: pts,
+          radius: Math.max(2, Math.round(brushSize / 2)),
+          foreground: mode === "fg",
+        });
       }
     }
-    paintGuideDisc(center, r, mode === "fg");
   }
 
-  function ctxGuide() {
-    return overlayRef.current.getContext("2d");
+  function handleLeave() {
+    setCursorPos(null);
   }
 
-  function paintGuideDisc(center, r, fg) {
+  // ---- guías de pincel ----
+  function brushColor() {
+    return mode === "fg" ? "rgba(214, 246, 75, 0.55)" : "rgba(255, 94, 99, 0.55)";
+  }
+
+  function paintGuideDisc(p) {
     const ctx = ctxGuide();
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = fg ? "#e8a33d" : "#3d7de8";
+    ctx.fillStyle = brushColor();
     ctx.beginPath();
-    ctx.arc(center.x, center.y, r, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, Math.max(1, brushSize / 2), 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
   }
 
-  function drawRectGuide(a, b) {
+  function paintGuideSegment(a, b) {
     const ctx = ctxGuide();
-    ctx.clearRect(0, 0, overlayRef.current.width, overlayRef.current.height);
-    if (resultUrl) {
-      const img = new Image();
-      img.src = resultUrl; // best-effort; guide redrawn over it
-    }
-    const r = normRect(a, b);
-    ctx.save();
-    ctx.strokeStyle = "#e8a33d";
-    ctx.lineWidth = 2 / scale;
-    ctx.setLineDash([6 / scale, 4 / scale]);
-    ctx.strokeRect(r.x, r.y, r.w, r.h);
-    ctx.restore();
+    ctx.strokeStyle = brushColor();
+    ctx.lineWidth = Math.max(2, brushSize);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
   }
 
-  function clearGuide() {
-    // re-render result preview cleanly
-    const ctx = ctxGuide();
-    ctx.clearRect(0, 0, overlayRef.current.width, overlayRef.current.height);
-    if (resultUrl) {
-      const img = new Image();
-      img.onload = () => ctx.drawImage(img, 0, 0);
-      img.src = resultUrl;
-    }
-  }
-
-  const cursor =
-    mode === "rect" ? "crosshair" : busy ? "wait" : "cell";
+  const isBrush = mode === "fg" || mode === "bg";
+  const showGhost = isBrush && cursorPos && !busy;
 
   return (
-    <div className="canvas-wrap" ref={wrapRef}>
+    <div className="canvas-wrap" ref={wrapRef} onPointerLeave={handleLeave}>
       {!imageUrl && (
         <div className="canvas-empty">
-          <p>Open a photo to begin. Drag a box around the object you want to keep.</p>
+          <div className="empty-glyph" aria-hidden>◐</div>
+          <h2>Suelta una imagen aquí</h2>
+          <p>
+            Arrastra un archivo, pega desde el portapapeles (⌘V) o usa
+            «Abrir foto». Luego dibuja un recuadro alrededor del sujeto — o
+            prueba el recorte automático.
+          </p>
         </div>
       )}
       {imageUrl && imageSize && (
@@ -192,28 +242,36 @@ export default function CanvasEditor({
           }}
         >
           <div className="checker" />
-          <canvas ref={baseRef} className="layer base" style={layerStyle(scale)} />
+          <canvas ref={baseRef} className="layer base" />
+          <canvas ref={resultRef} className="layer result" />
           <canvas
-            ref={overlayRef}
-            className="layer overlay"
-            style={{ ...layerStyle(scale), cursor }}
-            onMouseDown={handleDown}
-            onMouseMove={handleMove}
-            onMouseUp={handleUp}
-            onMouseLeave={handleUp}
+            ref={guideRef}
+            className="layer guide"
+            style={{ cursor: mode === "rect" ? "crosshair" : "none", touchAction: "none" }}
+            onPointerDown={handleDown}
+            onPointerMove={handleMove}
+            onPointerUp={handleUp}
+            onPointerCancel={handleUp}
           />
-          {busy && <div className="canvas-busy">Computing cutout…</div>}
+          {busy && (
+            <div className="canvas-busy">
+              <span className="busy-dot" /> procesando…
+            </div>
+          )}
         </div>
+      )}
+      {showGhost && (
+        <div
+          className={`brush-ghost ${mode === "bg" ? "brush-ghost-bg" : ""}`}
+          style={{
+            width: brushSize * scale,
+            height: brushSize * scale,
+            transform: `translate(${cursorPos.x}px, ${cursorPos.y}px) translate(-50%, -50%)`,
+          }}
+        />
       )}
     </div>
   );
-}
-
-function layerStyle(scale) {
-  return {
-    transform: `scale(${scale})`,
-    transformOrigin: "top left",
-  };
 }
 
 function normRect(a, b) {
