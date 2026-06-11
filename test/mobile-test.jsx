@@ -63,7 +63,16 @@ async function main() {
     Math.abs(rail.getBoundingClientRect().width - window.innerWidth) < 2,
     "layout: el rail ocupa todo el ancho"
   );
-  assert(getComputedStyle(rail).flexDirection === "row", "layout: rail horizontal con scroll");
+  assert(getComputedStyle(rail).flexDirection === "column", "layout: secciones apiladas en columna");
+  const groups = rail.querySelectorAll(".rail-group");
+  assert(
+    groups[1].getBoundingClientRect().top >= groups[0].getBoundingClientRect().bottom,
+    "layout: Exportar debajo de Marcar (no al lado)"
+  );
+  assert(
+    rail.scrollWidth <= rail.clientWidth + 1,
+    "layout: sin scroll horizontal en la bandeja"
+  );
   assert(
     getComputedStyle(document.querySelector(".brand-env")).display === "none",
     "layout: chips de entorno ocultos en móvil"
