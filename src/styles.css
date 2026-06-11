@@ -380,6 +380,32 @@ kbd {
   gap: 10px;
 }
 
+.lang-select {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--ink-dim);
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 6px 10px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.lang-select:hover {
+  color: var(--acid);
+  border-color: var(--acid);
+}
+
+.lang-select option {
+  background: var(--panel);
+  color: var(--ink);
+}
+
 .btn-icon {
   width: 32px;
   height: 32px;

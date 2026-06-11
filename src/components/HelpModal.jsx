@@ -1,16 +1,17 @@
 // Atajos de teclado, abrible con "?" (accesibilidad y descubribilidad).
+import { t } from "../lib/i18n.js";
 
 const SHORTCUTS = [
-  ["A", "Recorte automático"],
-  ["1", "Recuadro"],
-  ["2 / 3", "Pincel mantener / quitar"],
-  ["[ ]", "Tamaño del pincel"],
-  ["P", "Vista previa"],
-  ["E", "Exportar PNG transparente"],
-  ["⌘Z / ⇧⌘Z", "Deshacer / Rehacer"],
-  ["⌘V", "Pegar imagen del portapapeles"],
-  ["?", "Esta ayuda"],
-  ["Esc", "Cerrar paneles"],
+  ["A", "sc.auto"],
+  ["1", "sc.rect"],
+  ["2 / 3", "sc.brushes"],
+  ["[ ]", "sc.brushsize"],
+  ["P", "sc.preview"],
+  ["E", "sc.export"],
+  ["⌘Z / ⇧⌘Z", "sc.undoredo"],
+  ["⌘V", "sc.paste"],
+  ["?", "sc.help"],
+  ["Esc", "sc.close"],
 ];
 
 export default function HelpModal({ onClose }) {
@@ -23,9 +24,9 @@ export default function HelpModal({ onClose }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="modal modal-help">
-        <h3 id="help-title">Atajos de teclado</h3>
+        <h3 id="help-title">{t("help.title")}</h3>
         <ul className="shortcut-list">
-          {SHORTCUTS.map(([keys, label]) => (
+          {SHORTCUTS.map(([keys, labelKey]) => (
             <li key={keys}>
               <span className="shortcut-keys">
                 {keys.split(" / ").map((k, i) => (
@@ -35,13 +36,13 @@ export default function HelpModal({ onClose }) {
                   </span>
                 ))}
               </span>
-              <span className="shortcut-label">{label}</span>
+              <span className="shortcut-label">{t(labelKey)}</span>
             </li>
           ))}
         </ul>
         <div className="modal-actions">
           <button className="btn btn-primary" autoFocus onClick={onClose}>
-            Cerrar
+            {t("close")}
           </button>
         </div>
       </div>

@@ -87,8 +87,11 @@ Estado del audit PO/QA del 2026-06-11. Cada ítem tiene criterio de aceptación
 
 ## P2 — Pulido
 
-- [ ] **i18n ES/EN** — extraer strings a diccionario; detección por
-  `navigator.language` con switch manual.
+- [x] **i18n ES/EN/PT** *(2026-06-11)* — `src/lib/i18n.js` sin dependencias:
+  diccionario completo en tres idiomas, detección por `navigator.language`
+  con fallback EN, selector en la topbar, persistencia en localStorage,
+  cambio en vivo y `html[lang]` sincronizado. Test: `test/i18n-test.html`
+  (agnóstico al locale de la máquina).
 - [x] **PWA instalable** *(2026-06-11)* — `site.webmanifest` + iconos propios
   (`npm run brand-assets`, generados con el propio motivo de marca) +
   `public/sw.js` (precache del HTML y sus assets en install, runtime

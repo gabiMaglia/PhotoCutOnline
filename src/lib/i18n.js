@@ -1,0 +1,426 @@
+// i18n mínimo, sin dependencias: ES / EN / PT.
+//
+// - Detección por localStorage ("pc-lang") → navigator.language → "en".
+// - `t(key, vars)` interpola {tokens}; cae a EN y luego a la propia key.
+// - `useLang()` re-suscribe el componente al cambio de idioma (con llamarlo
+//   en App basta: todos los hijos se re-renderizan).
+
+import { useState, useEffect } from "react";
+
+export const LANGS = [
+  { code: "es", label: "ES" },
+  { code: "en", label: "EN" },
+  { code: "pt", label: "PT" },
+];
+
+const DICT = {
+  es: {
+    "tab.cut": "Recorte",
+    openPhoto: "Abrir foto",
+    "about.aria": "Acerca de y licencias",
+    "lang.aria": "Idioma",
+
+    "rail.mark": "Marcar",
+    "rail.export": "Exportar",
+    "tool.auto": "Recorte automático",
+    "tool.rect": "Recuadro",
+    "tool.keep": "Pincel mantener",
+    "tool.remove": "Pincel quitar",
+    "brush.label": "Pincel — {n}px",
+    "feather.label": "Suavizado de borde — {n}px",
+    undo: "↩ Deshacer",
+    redo: "↪ Rehacer",
+    "preview.show": "Vista previa",
+    "preview.hide": "Ocultar vista previa",
+    "export.png": "PNG transparente",
+    "export.clipboard": "Copiar al portapapeles",
+    "export.solid": "Color sólido",
+    "export.bgcolor.aria": "Color de fondo",
+    "export.image": "Fondo con otra imagen",
+    "export.icons": "→ Crear iconos de app",
+    "rail.help":
+      "A automático · 1 recuadro · 2/3 pinceles · P vista previa · E exportar · ? atajos. Arrastra o pega (⌘V) cualquier imagen.",
+
+    "toast.loaded": "{w} × {h} px cargados",
+    "toast.cut": "Recorte listo — pinta para afinar bordes",
+    "toast.auto": "Recorte automático aplicado",
+    "toast.exported": "Exportado ✓",
+    "toast.copied": "PNG copiado al portapapeles ✓",
+    "toast.copyfail": "No se pudo copiar: {e}",
+    "toast.heic": "HEIC del iPhone no soportado — exporta la foto como JPG o PNG",
+    "toast.unreadable": "No se pudo leer ese archivo como imagen",
+    "toast.reduced": "Reducida a 4K (original {w} × {h} px)",
+    "toast.zip": "ZIP listo — {n}+ iconos en {p} plataformas",
+    "toast.py": "make_icons.py descargado — pip install pillow y listo",
+    "toast.cutfail": "No se pudo obtener el recorte: {e}",
+    "toast.iconsfail": "Error generando iconos: {e}",
+
+    "large.title": "Imagen muy grande",
+    "large.body":
+      "{w} × {h} px ({mp} MP). Procesarla entera puede agotar la memoria del navegador.",
+    "large.reduce": "Reducir a 4K (recomendado)",
+    "large.cancel": "Cancelar",
+    "drop.here": "Suéltala aquí",
+
+    "canvas.empty.title": "Suelta una imagen aquí",
+    "canvas.empty.body":
+      "Arrastra un archivo, pega desde el portapapeles (⌘V) o usa «Abrir foto». Luego dibuja un recuadro alrededor del sujeto — o prueba el recorte automático.",
+    busy: "procesando…",
+
+    "previewPanel.title": "Vista previa",
+    "previewPanel.alt": "Vista previa del recorte sobre el fondo elegido",
+    "previewPanel.transparent": "Fondo transparente",
+    "previewPanel.white": "Fondo blanco",
+    "previewPanel.black": "Fondo negro",
+    "previewPanel.custom": "Color de fondo personalizado",
+    "previewPanel.close": "Cerrar vista previa",
+    "previewPanel.bgAria": "Fondo de la vista previa",
+
+    "icon.source": "Fuente",
+    "icon.useCurrent": "Usar recorte actual",
+    "icon.openPng": "Abrir PNG…",
+    "icon.currentTag": "recorte actual",
+    "icon.settings": "Ajustes",
+    "icon.margin": "Margen — {n}%",
+    "icon.bg": "Fondo",
+    "icon.bgAria": "Color de fondo del icono",
+    "icon.appName": "Nombre de la app",
+    "icon.platforms": "Plataformas",
+    "icon.generate": "Generar",
+    "icon.zipBtn": "Descargar ZIP de iconos",
+    "icon.building": "Generando…",
+    "icon.pyBtn": "Script Python (CLI)",
+    "icon.py1": "El script",
+    "icon.py2": "genera las mismas medidas desde la terminal:",
+    "icon.py3": "Solo requiere Pillow.",
+    "icon.emptyBody":
+      "Usa el recorte actual o abre un PNG transparente. Generamos todas las medidas para iOS, Android, macOS, Windows y Web — listas para pegar en tu proyecto.",
+    "icon.note":
+      "Vista pixel-perfect — así se verá el icono en el dock, la barra de pestañas y la home screen.",
+
+    "about.body": "Recorte de fondo y generación de iconos, 100% en tu navegador.",
+    "about.privacy": "Tus imágenes nunca se suben a ningún servidor.",
+    "about.thirdparty": "Software de terceros",
+    close: "Cerrar",
+
+    "help.title": "Atajos de teclado",
+    "sc.auto": "Recorte automático",
+    "sc.rect": "Recuadro",
+    "sc.brushes": "Pincel mantener / quitar",
+    "sc.brushsize": "Tamaño del pincel",
+    "sc.preview": "Vista previa",
+    "sc.export": "Exportar PNG transparente",
+    "sc.undoredo": "Deshacer / Rehacer",
+    "sc.paste": "Pegar imagen del portapapeles",
+    "sc.help": "Esta ayuda",
+    "sc.close": "Cerrar paneles",
+
+    "ob.title": "Quita el fondo en tres pasos",
+    "ob.privacy":
+      "Todo ocurre en tu navegador — tus fotos nunca se suben a ningún servidor.",
+    "ob.1.title": "Abre una foto",
+    "ob.1.body": "Arrastra un archivo, pega con ⌘V o toca «Abrir foto».",
+    "ob.2.title": "Marca el sujeto",
+    "ob.2.body": "Dibuja un recuadro alrededor — o usa el recorte automático (A).",
+    "ob.3.title": "Afina y exporta",
+    "ob.3.body":
+      "Pinceles mantener/quitar para los bordes. Exporta PNG transparente o crea iconos de app.",
+    "ob.go": "¡A recortar!",
+
+    "crash.title": "Algo salió mal",
+    "crash.body":
+      "La aplicación encontró un error inesperado. Tu imagen no se ha enviado a ningún sitio — todo ocurre en tu navegador.",
+    "crash.reset": "Reiniciar",
+    "crash.detail": "Detalle técnico",
+  },
+
+  en: {
+    "tab.cut": "Cutout",
+    openPhoto: "Open photo",
+    "about.aria": "About & licenses",
+    "lang.aria": "Language",
+
+    "rail.mark": "Mark",
+    "rail.export": "Export",
+    "tool.auto": "Auto cutout",
+    "tool.rect": "Box select",
+    "tool.keep": "Keep brush",
+    "tool.remove": "Remove brush",
+    "brush.label": "Brush — {n}px",
+    "feather.label": "Edge feather — {n}px",
+    undo: "↩ Undo",
+    redo: "↪ Redo",
+    "preview.show": "Preview",
+    "preview.hide": "Hide preview",
+    "export.png": "Transparent PNG",
+    "export.clipboard": "Copy to clipboard",
+    "export.solid": "Solid color",
+    "export.bgcolor.aria": "Background color",
+    "export.image": "New background image",
+    "export.icons": "→ Create app icons",
+    "rail.help":
+      "A auto · 1 box · 2/3 brushes · P preview · E export · ? shortcuts. Drag or paste (⌘V) any image.",
+
+    "toast.loaded": "{w} × {h} px loaded",
+    "toast.cut": "Cutout ready — paint to refine edges",
+    "toast.auto": "Auto cutout applied",
+    "toast.exported": "Exported ✓",
+    "toast.copied": "PNG copied to clipboard ✓",
+    "toast.copyfail": "Couldn't copy: {e}",
+    "toast.heic": "iPhone HEIC isn't supported — export the photo as JPG or PNG",
+    "toast.unreadable": "Couldn't read that file as an image",
+    "toast.reduced": "Reduced to 4K (original {w} × {h} px)",
+    "toast.zip": "ZIP ready — {n}+ icons across {p} platforms",
+    "toast.py": "make_icons.py downloaded — pip install pillow and go",
+    "toast.cutfail": "Couldn't get the cutout: {e}",
+    "toast.iconsfail": "Error generating icons: {e}",
+
+    "large.title": "Very large image",
+    "large.body":
+      "{w} × {h} px ({mp} MP). Processing it at full size can exhaust the browser's memory.",
+    "large.reduce": "Reduce to 4K (recommended)",
+    "large.cancel": "Cancel",
+    "drop.here": "Drop it here",
+
+    "canvas.empty.title": "Drop an image here",
+    "canvas.empty.body":
+      "Drag a file in, paste from the clipboard (⌘V) or use “Open photo”. Then draw a box around the subject — or try the auto cutout.",
+    busy: "processing…",
+
+    "previewPanel.title": "Preview",
+    "previewPanel.alt": "Cutout preview over the chosen background",
+    "previewPanel.transparent": "Transparent background",
+    "previewPanel.white": "White background",
+    "previewPanel.black": "Black background",
+    "previewPanel.custom": "Custom background color",
+    "previewPanel.close": "Close preview",
+    "previewPanel.bgAria": "Preview background",
+
+    "icon.source": "Source",
+    "icon.useCurrent": "Use current cutout",
+    "icon.openPng": "Open PNG…",
+    "icon.currentTag": "current cutout",
+    "icon.settings": "Settings",
+    "icon.margin": "Margin — {n}%",
+    "icon.bg": "Background",
+    "icon.bgAria": "Icon background color",
+    "icon.appName": "App name",
+    "icon.platforms": "Platforms",
+    "icon.generate": "Generate",
+    "icon.zipBtn": "Download icon ZIP",
+    "icon.building": "Generating…",
+    "icon.pyBtn": "Python script (CLI)",
+    "icon.py1": "The",
+    "icon.py2": "script generates the same sizes from the terminal:",
+    "icon.py3": "Only needs Pillow.",
+    "icon.emptyBody":
+      "Use the current cutout or open a transparent PNG. We generate every size for iOS, Android, macOS, Windows and Web — ready to drop into your project.",
+    "icon.note":
+      "Pixel-perfect preview — exactly how the icon will look in the dock, tab bar and home screen.",
+
+    "about.body": "Background removal and app-icon generation, 100% in your browser.",
+    "about.privacy": "Your images never get uploaded to any server.",
+    "about.thirdparty": "Third-party software",
+    close: "Close",
+
+    "help.title": "Keyboard shortcuts",
+    "sc.auto": "Auto cutout",
+    "sc.rect": "Box select",
+    "sc.brushes": "Keep / remove brush",
+    "sc.brushsize": "Brush size",
+    "sc.preview": "Preview",
+    "sc.export": "Export transparent PNG",
+    "sc.undoredo": "Undo / redo",
+    "sc.paste": "Paste image from clipboard",
+    "sc.help": "This help",
+    "sc.close": "Close panels",
+
+    "ob.title": "Remove the background in three steps",
+    "ob.privacy":
+      "Everything happens in your browser — your photos never get uploaded anywhere.",
+    "ob.1.title": "Open a photo",
+    "ob.1.body": "Drag a file in, paste with ⌘V or tap “Open photo”.",
+    "ob.2.title": "Mark the subject",
+    "ob.2.body": "Draw a box around it — or use the auto cutout (A).",
+    "ob.3.title": "Refine and export",
+    "ob.3.body":
+      "Keep/remove brushes for the edges. Export a transparent PNG or create app icons.",
+    "ob.go": "Let's cut!",
+
+    "crash.title": "Something went wrong",
+    "crash.body":
+      "The app hit an unexpected error. Your image was never sent anywhere — everything happens in your browser.",
+    "crash.reset": "Restart",
+    "crash.detail": "Technical details",
+  },
+
+  pt: {
+    "tab.cut": "Recorte",
+    openPhoto: "Abrir foto",
+    "about.aria": "Sobre e licenças",
+    "lang.aria": "Idioma",
+
+    "rail.mark": "Marcar",
+    "rail.export": "Exportar",
+    "tool.auto": "Recorte automático",
+    "tool.rect": "Retângulo",
+    "tool.keep": "Pincel manter",
+    "tool.remove": "Pincel remover",
+    "brush.label": "Pincel — {n}px",
+    "feather.label": "Suavização de borda — {n}px",
+    undo: "↩ Desfazer",
+    redo: "↪ Refazer",
+    "preview.show": "Pré-visualização",
+    "preview.hide": "Ocultar pré-visualização",
+    "export.png": "PNG transparente",
+    "export.clipboard": "Copiar para a área de transferência",
+    "export.solid": "Cor sólida",
+    "export.bgcolor.aria": "Cor de fundo",
+    "export.image": "Fundo com outra imagem",
+    "export.icons": "→ Criar ícones de app",
+    "rail.help":
+      "A automático · 1 retângulo · 2/3 pincéis · P pré-visualização · E exportar · ? atalhos. Arraste ou cole (⌘V) qualquer imagem.",
+
+    "toast.loaded": "{w} × {h} px carregados",
+    "toast.cut": "Recorte pronto — pinte para refinar as bordas",
+    "toast.auto": "Recorte automático aplicado",
+    "toast.exported": "Exportado ✓",
+    "toast.copied": "PNG copiado ✓",
+    "toast.copyfail": "Não foi possível copiar: {e}",
+    "toast.heic": "HEIC do iPhone não é suportado — exporte a foto como JPG ou PNG",
+    "toast.unreadable": "Não foi possível ler esse arquivo como imagem",
+    "toast.reduced": "Reduzida para 4K (original {w} × {h} px)",
+    "toast.zip": "ZIP pronto — {n}+ ícones em {p} plataformas",
+    "toast.py": "make_icons.py baixado — pip install pillow e pronto",
+    "toast.cutfail": "Não foi possível obter o recorte: {e}",
+    "toast.iconsfail": "Erro ao gerar ícones: {e}",
+
+    "large.title": "Imagem muito grande",
+    "large.body":
+      "{w} × {h} px ({mp} MP). Processá-la inteira pode esgotar a memória do navegador.",
+    "large.reduce": "Reduzir para 4K (recomendado)",
+    "large.cancel": "Cancelar",
+    "drop.here": "Solte aqui",
+
+    "canvas.empty.title": "Solte uma imagem aqui",
+    "canvas.empty.body":
+      "Arraste um arquivo, cole da área de transferência (⌘V) ou use «Abrir foto». Depois desenhe um retângulo ao redor do sujeito — ou experimente o recorte automático.",
+    busy: "processando…",
+
+    "previewPanel.title": "Pré-visualização",
+    "previewPanel.alt": "Pré-visualização do recorte sobre o fundo escolhido",
+    "previewPanel.transparent": "Fundo transparente",
+    "previewPanel.white": "Fundo branco",
+    "previewPanel.black": "Fundo preto",
+    "previewPanel.custom": "Cor de fundo personalizada",
+    "previewPanel.close": "Fechar pré-visualização",
+    "previewPanel.bgAria": "Fundo da pré-visualização",
+
+    "icon.source": "Fonte",
+    "icon.useCurrent": "Usar recorte atual",
+    "icon.openPng": "Abrir PNG…",
+    "icon.currentTag": "recorte atual",
+    "icon.settings": "Ajustes",
+    "icon.margin": "Margem — {n}%",
+    "icon.bg": "Fundo",
+    "icon.bgAria": "Cor de fundo do ícone",
+    "icon.appName": "Nome do app",
+    "icon.platforms": "Plataformas",
+    "icon.generate": "Gerar",
+    "icon.zipBtn": "Baixar ZIP de ícones",
+    "icon.building": "Gerando…",
+    "icon.pyBtn": "Script Python (CLI)",
+    "icon.py1": "O script",
+    "icon.py2": "gera as mesmas medidas pelo terminal:",
+    "icon.py3": "Só precisa do Pillow.",
+    "icon.emptyBody":
+      "Use o recorte atual ou abra um PNG transparente. Geramos todas as medidas para iOS, Android, macOS, Windows e Web — prontas para colar no seu projeto.",
+    "icon.note":
+      "Visualização pixel-perfect — é assim que o ícone vai aparecer no dock, na barra de abas e na home screen.",
+
+    "about.body": "Remoção de fundo e geração de ícones, 100% no seu navegador.",
+    "about.privacy": "Suas imagens nunca são enviadas a nenhum servidor.",
+    "about.thirdparty": "Software de terceiros",
+    close: "Fechar",
+
+    "help.title": "Atalhos de teclado",
+    "sc.auto": "Recorte automático",
+    "sc.rect": "Retângulo",
+    "sc.brushes": "Pincel manter / remover",
+    "sc.brushsize": "Tamanho do pincel",
+    "sc.preview": "Pré-visualização",
+    "sc.export": "Exportar PNG transparente",
+    "sc.undoredo": "Desfazer / refazer",
+    "sc.paste": "Colar imagem da área de transferência",
+    "sc.help": "Esta ajuda",
+    "sc.close": "Fechar painéis",
+
+    "ob.title": "Remova o fundo em três passos",
+    "ob.privacy":
+      "Tudo acontece no seu navegador — suas fotos nunca são enviadas a nenhum servidor.",
+    "ob.1.title": "Abra uma foto",
+    "ob.1.body": "Arraste um arquivo, cole com ⌘V ou toque em «Abrir foto».",
+    "ob.2.title": "Marque o sujeito",
+    "ob.2.body": "Desenhe um retângulo ao redor — ou use o recorte automático (A).",
+    "ob.3.title": "Refine e exporte",
+    "ob.3.body":
+      "Pincéis manter/remover para as bordas. Exporte PNG transparente ou crie ícones de app.",
+    "ob.go": "Vamos recortar!",
+
+    "crash.title": "Algo deu errado",
+    "crash.body":
+      "O aplicativo encontrou um erro inesperado. Sua imagem não foi enviada a lugar nenhum — tudo acontece no seu navegador.",
+    "crash.reset": "Reiniciar",
+    "crash.detail": "Detalhes técnicos",
+  },
+};
+
+function detectLang() {
+  try {
+    const stored = localStorage.getItem("pc-lang");
+    if (stored && DICT[stored]) return stored;
+  } catch {
+    /* sin storage */
+  }
+  const nav = (typeof navigator !== "undefined" && navigator.language) || "en";
+  const prefix = nav.slice(0, 2).toLowerCase();
+  return DICT[prefix] ? prefix : "en";
+}
+
+let lang = detectLang();
+const listeners = new Set();
+
+if (typeof document !== "undefined") {
+  document.documentElement.lang = lang;
+}
+
+export function getLang() {
+  return lang;
+}
+
+export function setLang(next) {
+  if (!DICT[next] || next === lang) return;
+  lang = next;
+  try {
+    localStorage.setItem("pc-lang", next);
+  } catch {
+    /* sin storage */
+  }
+  if (typeof document !== "undefined") document.documentElement.lang = next;
+  for (const fn of listeners) fn(next);
+}
+
+/** Suscribe el componente al idioma actual (re-render al cambiar). */
+export function useLang() {
+  const [current, setCurrent] = useState(lang);
+  useEffect(() => {
+    listeners.add(setCurrent);
+    return () => listeners.delete(setCurrent);
+  }, []);
+  return current;
+}
+
+export function t(key, vars) {
+  const s = DICT[lang][key] ?? DICT.en[key] ?? key;
+  return vars ? s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? "")) : s;
+}

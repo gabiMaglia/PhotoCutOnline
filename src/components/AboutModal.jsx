@@ -1,4 +1,5 @@
 import licenses from "../generated/licenses.json";
+import { t } from "../lib/i18n.js";
 
 // "Acerca de / Licencias": versión, promesa de privacidad y atribución de
 // dependencias open source (regenerar con `npm run licenses`).
@@ -18,10 +19,9 @@ export default function AboutModal({ version, onClose }) {
           <span className="about-version">v{version}</span>
         </h3>
         <p>
-          Recorte de fondo y generación de iconos, 100% en tu navegador.
-          <strong> Tus imágenes nunca se suben a ningún servidor.</strong>
+          {t("about.body")} <strong>{t("about.privacy")}</strong>
         </p>
-        <h4 className="about-subtitle">Software de terceros</h4>
+        <h4 className="about-subtitle">{t("about.thirdparty")}</h4>
         <ul className="license-list">
           {licenses.entries.map((d) => (
             <li key={`${d.source}-${d.name}`}>
@@ -34,7 +34,7 @@ export default function AboutModal({ version, onClose }) {
         </ul>
         <div className="modal-actions">
           <button className="btn btn-primary" autoFocus onClick={onClose}>
-            Cerrar
+            {t("close")}
           </button>
         </div>
       </div>

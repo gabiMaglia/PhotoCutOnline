@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { reportError } from "../lib/telemetry.js";
+import { t } from "../lib/i18n.js";
 
 // Pantalla de recuperación: cualquier throw en render muestra esto en vez de
 // una pantalla blanca. "Reiniciar" recarga la app (estado limpio); el detalle
@@ -30,16 +31,13 @@ export default class ErrorBoundary extends Component {
       <div className="crash-screen" role="alert">
         <div className="crash-card">
           <span className="brand-mark" aria-hidden>◑</span>
-          <h2>Algo salió mal</h2>
-          <p>
-            La aplicación encontró un error inesperado. Tu imagen no se ha
-            enviado a ningún sitio — todo ocurre en tu navegador.
-          </p>
+          <h2>{t("crash.title")}</h2>
+          <p>{t("crash.body")}</p>
           <button className="btn btn-primary" autoFocus onClick={this.handleReset}>
-            Reiniciar
+            {t("crash.reset")}
           </button>
           <details className="crash-detail">
-            <summary>Detalle técnico</summary>
+            <summary>{t("crash.detail")}</summary>
             <pre>{String(this.state.error?.stack || this.state.error)}</pre>
           </details>
         </div>

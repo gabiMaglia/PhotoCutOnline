@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { PLATFORMS, renderIcon, buildIconZip } from "../lib/icons.js";
 import { loadHtmlImage } from "../lib/jsEngine.js";
+import { t } from "../lib/i18n.js";
 
 // Icon Studio: convierte cualquier PNG (idealmente el recorte transparente)
 // en sets de iconos completos para iOS, Android, macOS, Windows y Web/PWA.
@@ -48,9 +49,9 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
       const dataUrl = await getCutout();
       const img = await loadHtmlImage(dataUrl);
       setSource(img);
-      setSourceName("recorte actual");
+      setSourceName(t("icon.currentTag"));
     } catch (e) {
-      onToast(`No se pudo obtener el recorte: ${e}`, "error");
+      onToast(t("toast.cutfail", { e }), "error");
     }
   }
 
@@ -77,9 +78,9 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
         0
       );
       downloadBlob(blob, "app-icons.zip");
-      onToast(`ZIP listo — ${total}+ iconos en ${selected.size} plataformas`, "ok");
+      onToast(t("toast.zip", { n: total, p: selected.size }), "ok");
     } catch (e) {
-      onToast(`Error generando iconos: ${e}`, "error");
+      onToast(t("toast.iconsfail", { e }), "error");
     } finally {
       setBuilding(false);
     }
@@ -92,19 +93,19 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    onToast("make_icons.py descargado — pip install pillow y listo", "ok");
+    onToast(t("toast.py"), "ok");
   }
 
   return (
     <div className="icon-studio">
       <aside className="rail">
         <section className="rail-group">
-          <h2 className="rail-title">Fuente</h2>
+          <h2 className="rail-title">{t("icon.source")}</h2>
           <button className="btn btn-primary" disabled={!hasCut} onClick={useCurrentCutout}>
-            Usar recorte actual
+            {t("icon.useCurrent")}
           </button>
           <label className="btn">
-            Abrir PNG…
+            {t("icon.openPng")}
             <input
               type="file"
               accept="image/png,image/webp"
@@ -116,9 +117,9 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
         </section>
 
         <section className="rail-group">
-          <h2 className="rail-title">Ajustes</h2>
+          <h2 className="rail-title">{t("icon.settings")}</h2>
           <div className="slider">
-            <label htmlFor="icon-pad">Margen — {padding}%</label>
+            <label htmlFor="icon-pad">{t("icon.margin", { n: padding })}</label>
             <input
               id="icon-pad"
               type="range"
@@ -131,18 +132,18 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
           <div className="row">
             <label className="check">
               <input type="checkbox" checked={bgOn} onChange={(e) => setBgOn(e.target.checked)} />
-              Fondo
+              {t("icon.bg")}
             </label>
             <input
               type="color"
               value={bgColor}
               disabled={!bgOn}
               onChange={(e) => setBgColor(e.target.value)}
-              aria-label="Color de fondo del icono"
+              aria-label={t("icon.bgAria")}
             />
           </div>
           <div className="field">
-            <label htmlFor="app-name">Nombre de la app</label>
+            <label htmlFor="app-name">{t("icon.appName")}</label>
             <input
               id="app-name"
               type="text"
@@ -154,7 +155,7 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
         </section>
 
         <section className="rail-group">
-          <h2 className="rail-title">Plataformas</h2>
+          <h2 className="rail-title">{t("icon.platforms")}</h2>
           {PLATFORMS.map((p) => (
             <label key={p.id} className={`platform ${selected.has(p.id) ? "platform-on" : ""}`}>
               <input
@@ -169,22 +170,21 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
         </section>
 
         <section className="rail-group">
-          <h2 className="rail-title">Generar</h2>
+          <h2 className="rail-title">{t("icon.generate")}</h2>
           <button
             className="btn btn-primary"
             disabled={!source || selected.size === 0 || building}
             onClick={downloadZip}
           >
-            {building ? "Generando…" : "Descargar ZIP de iconos"}
+            {building ? t("icon.building") : t("icon.zipBtn")}
           </button>
           <button className="btn" onClick={downloadPython}>
-            Script Python (CLI)
+            {t("icon.pyBtn")}
           </button>
           <div className="rail-help">
             <p>
-              El script <code>make_icons.py</code> genera las mismas medidas
-              desde la terminal: <code>python make_icons.py logo.png</code>.
-              Solo requiere Pillow.
+              {t("icon.py1")} <code>make_icons.py</code> {t("icon.py2")}{" "}
+              <code>python make_icons.py logo.png</code>. {t("icon.py3")}
             </p>
           </div>
         </section>
@@ -195,11 +195,7 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
           <div className="canvas-empty">
             <div className="empty-glyph" aria-hidden>▣</div>
             <h2>Icon Studio</h2>
-            <p>
-              Usa el recorte actual o abre un PNG transparente. Generamos
-              todas las medidas para iOS, Android, macOS, Windows y Web —
-              listas para pegar en tu proyecto.
-            </p>
+            <p>{t("icon.emptyBody")}</p>
           </div>
         )}
         {source && (
@@ -213,10 +209,7 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
                 <SizePreview key={s} source={source} size={s} opts={renderOpts} />
               ))}
             </div>
-            <p className="icon-note">
-              Vista pixel-perfect — así se verá el icono en el dock, la barra
-              de pestañas y la home screen.
-            </p>
+            <p className="icon-note">{t("icon.note")}</p>
           </div>
         )}
       </main>

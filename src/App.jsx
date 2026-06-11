@@ -5,6 +5,7 @@ import AboutModal from "./components/AboutModal.jsx";
 import HelpModal from "./components/HelpModal.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import { backend } from "./lib/backend.js";
+import { t, useLang, setLang, LANGS } from "./lib/i18n.js";
 import pkg from "../package.json";
 import {
   inspectImageFile,
@@ -16,6 +17,7 @@ import {
 const ITERS = 4;
 
 export default function App() {
+  useLang(); // re-render al cambiar idioma
   const [tab, setTab] = useState("cut"); // cut | icons
   const [imageUrl, setImageUrl] = useState(null);
   const [imageSize, setImageSize] = useState(null);
@@ -65,7 +67,7 @@ export default function App() {
         const { width, height } = await backend.loadImage(dataUrl);
         setImageSize({ width, height });
         setMode("rect");
-        toast(note || `${width} × ${height} px cargados`, "ok");
+        toast(note || t("toast.loaded", { w: width, h: height }), "ok");
       } catch (e) {
         toast(String(e), "error");
       }
@@ -77,11 +79,11 @@ export default function App() {
     async (file) => {
       const res = await inspectImageFile(file);
       if (res.kind === "heic") {
-        toast("HEIC del iPhone no soportado — exporta la foto como JPG o PNG", "error");
+        toast(t("toast.heic"), "error");
         return;
       }
       if (res.kind === "undecodable") {
-        toast("No se pudo leer ese archivo como imagen", "error");
+        toast(t("toast.unreadable"), "error");
         return;
       }
       if (res.kind === "oversized") {
@@ -101,7 +103,7 @@ export default function App() {
     setPendingLarge(null);
     const dataUrl = bitmapToDataUrl(p.bitmap, DOWNSCALE_MAX_DIM, p.file.type);
     p.bitmap.close();
-    await loadDataUrl(dataUrl, `Reducida a 4K (original ${p.width} × ${p.height} px)`);
+    await loadDataUrl(dataUrl, t("toast.reduced", { w: p.width, h: p.height }));
   }, [pendingLarge, loadDataUrl]);
 
   const cancelLarge = useCallback(() => {
@@ -172,7 +174,7 @@ export default function App() {
         setHasCut(true);
         setMode("fg");
         refreshUndo();
-        toast("Recorte listo — pinta para afinar bordes", "ok");
+        toast(t("toast.cut"), "ok");
       } catch (e) {
         toast(String(e), "error");
       } finally {
@@ -191,7 +193,7 @@ export default function App() {
       setHasCut(true);
       setMode("fg");
       refreshUndo();
-      toast("Recorte automático aplicado", "ok");
+      toast(t("toast.auto"), "ok");
     } catch (e) {
       toast(String(e), "error");
     } finally {
@@ -259,7 +261,7 @@ export default function App() {
         else if (kind === "image") url = await backend.exportImageBg(arg, opts);
         const ext = format === "jpeg" ? "jpg" : format;
         downloadDataUrl(url, `photocut-${kind}.${kind === "transparent" ? "png" : ext}`);
-        toast("Exportado ✓", "ok");
+        toast(t("toast.exported"), "ok");
       } catch (e) {
         toast(String(e), "error");
       } finally {
@@ -275,9 +277,9 @@ export default function App() {
       const url = await backend.exportTransparent({ format: "png" });
       const blob = await (await fetch(url)).blob();
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      toast("PNG copiado al portapapeles ✓", "ok");
+      toast(t("toast.copied"), "ok");
     } catch (e) {
-      toast(`No se pudo copiar: ${e}`, "error");
+      toast(t("toast.copyfail", { e }), "error");
     } finally {
       setBusy(false);
     }
@@ -368,7 +370,7 @@ export default function App() {
             className={`tab ${tab === "cut" ? "tab-active" : ""}`}
             onClick={() => setTab("cut")}
           >
-            Recorte
+            {t("tab.cut")}
           </button>
           <button
             role="tab"
@@ -382,12 +384,13 @@ export default function App() {
 
         <div className="topbar-actions">
           <label className="btn btn-primary">
-            Abrir foto
+            {t("openPhoto")}
             <input type="file" accept="image/*" hidden onChange={onFileInput} />
           </label>
+          <LangSwitch />
           <button
             className="btn-icon"
-            aria-label="Acerca de y licencias"
+            aria-label={t("about.aria")}
             onClick={() => setAboutOpen(true)}
           >
             ⓘ
@@ -399,28 +402,28 @@ export default function App() {
         <div className="body">
           <aside className="rail">
             <section className="rail-group">
-              <h2 className="rail-title">Marcar</h2>
+              <h2 className="rail-title">{t("rail.mark")}</h2>
               {backend.features.auto && (
                 <button
                   className="btn btn-auto"
                   disabled={!imageUrl || busy}
                   onClick={handleAuto}
                 >
-                  <span className="tool-key">A</span> Recorte automático
+                  <span className="tool-key">A</span> {t("tool.auto")}
                 </button>
               )}
               <ToolButton active={mode === "rect"} onClick={() => setMode("rect")} disabled={!imageUrl}>
-                <span className="tool-key">1</span> Recuadro
+                <span className="tool-key">1</span> {t("tool.rect")}
               </ToolButton>
               <ToolButton active={mode === "fg"} onClick={() => setMode("fg")} disabled={!hasCut}>
-                <span className="tool-key">2</span> Pincel mantener
+                <span className="tool-key">2</span> {t("tool.keep")}
               </ToolButton>
               <ToolButton active={mode === "bg"} onClick={() => setMode("bg")} disabled={!hasCut}>
-                <span className="tool-key">3</span> Pincel quitar
+                <span className="tool-key">3</span> {t("tool.remove")}
               </ToolButton>
 
               <div className={`slider ${mode === "rect" ? "slider-off" : ""}`}>
-                <label htmlFor="brush">Pincel — {brushSize}px <kbd>[</kbd><kbd>]</kbd></label>
+                <label htmlFor="brush">{t("brush.label", { n: brushSize })} <kbd>[</kbd><kbd>]</kbd></label>
                 <input
                   id="brush"
                   type="range"
@@ -434,7 +437,7 @@ export default function App() {
 
               {backend.features.feather && (
                 <div className={`slider ${!hasCut ? "slider-off" : ""}`}>
-                  <label htmlFor="feather">Suavizado de borde — {feather}px</label>
+                  <label htmlFor="feather">{t("feather.label", { n: feather })}</label>
                   <input
                     id="feather"
                     type="range"
@@ -450,24 +453,24 @@ export default function App() {
               {backend.features.undo && (
                 <div className="row-2">
                   <button className="btn btn-small" disabled={!canUndo || busy} onClick={handleUndo}>
-                    ↩ Deshacer <kbd>⌘Z</kbd>
+                    {t("undo")} <kbd>⌘Z</kbd>
                   </button>
                   <button className="btn btn-small" disabled={!canRedo || busy} onClick={handleRedo}>
-                    ↪ Rehacer
+                    {t("redo")}
                   </button>
                 </div>
               )}
             </section>
 
             <section className="rail-group">
-              <h2 className="rail-title">Exportar</h2>
+              <h2 className="rail-title">{t("rail.export")}</h2>
               <button
                 className={`btn ${previewOpen ? "btn-primary" : ""}`}
                 disabled={!hasCut}
                 aria-pressed={previewOpen}
                 onClick={() => setPreviewOpen((v) => !v)}
               >
-                {previewOpen ? "Ocultar vista previa" : "Vista previa"} <kbd>P</kbd>
+                {previewOpen ? t("preview.hide") : t("preview.show")} <kbd>P</kbd>
               </button>
               {backend.features.formats && (
                 <div className="format-row" role="radiogroup" aria-label="Formato">
@@ -485,16 +488,16 @@ export default function App() {
                 </div>
               )}
               <button className="btn" disabled={!hasCut || busy} onClick={() => exportAs("transparent")}>
-                PNG transparente <kbd>E</kbd>
+                {t("export.png")} <kbd>E</kbd>
               </button>
               {backend.features.clipboard && (
                 <button className="btn" disabled={!hasCut || busy} onClick={copyToClipboard}>
-                  Copiar al portapapeles
+                  {t("export.clipboard")}
                 </button>
               )}
               <ColorExport disabled={!hasCut || busy} onExport={(c) => exportAs("solid", c)} />
               <label className={`btn ${!hasCut || busy ? "btn-disabled" : ""}`}>
-                Fondo con otra imagen
+                {t("export.image")}
                 <input
                   type="file"
                   accept="image/*"
@@ -508,16 +511,12 @@ export default function App() {
                 disabled={!hasCut || busy}
                 onClick={() => setTab("icons")}
               >
-                → Crear iconos de app
+                {t("export.icons")}
               </button>
             </section>
 
             <div className="rail-help">
-              <p>
-                <strong>A</strong> automático · <strong>1</strong> recuadro ·{" "}
-                <strong>2/3</strong> pinceles · <strong>P</strong> vista previa ·{" "}
-                <strong>E</strong> exportar. Arrastra o pega (⌘V) cualquier imagen.
-              </p>
+              <p>{t("rail.help")}</p>
             </div>
           </aside>
 
@@ -545,24 +544,24 @@ export default function App() {
       {tab === "cut" && previewOpen && hasCut && resultUrl && (
         <div className="preview-panel">
           <div className="preview-panel-head">
-            <span className="preview-panel-title">Vista previa</span>
-            <div className="preview-bg-switch" role="radiogroup" aria-label="Fondo de la vista previa">
+            <span className="preview-panel-title">{t("previewPanel.title")}</span>
+            <div className="preview-bg-switch" role="radiogroup" aria-label={t("previewPanel.bgAria")}>
               <button
                 className={`bg-chip bg-chip-checker ${previewBg === "checker" ? "bg-chip-on" : ""}`}
                 onClick={() => setPreviewBg("checker")}
-                aria-label="Fondo transparente"
+                aria-label={t("previewPanel.transparent")}
                 aria-pressed={previewBg === "checker"}
               />
               <button
                 className={`bg-chip bg-chip-white ${previewBg === "white" ? "bg-chip-on" : ""}`}
                 onClick={() => setPreviewBg("white")}
-                aria-label="Fondo blanco"
+                aria-label={t("previewPanel.white")}
                 aria-pressed={previewBg === "white"}
               />
               <button
                 className={`bg-chip bg-chip-black ${previewBg === "black" ? "bg-chip-on" : ""}`}
                 onClick={() => setPreviewBg("black")}
-                aria-label="Fondo negro"
+                aria-label={t("previewPanel.black")}
                 aria-pressed={previewBg === "black"}
               />
               <input
@@ -573,10 +572,10 @@ export default function App() {
                   setPreviewColor(e.target.value);
                   setPreviewBg("color");
                 }}
-                aria-label="Color de fondo personalizado"
+                aria-label={t("previewPanel.custom")}
               />
             </div>
-            <button className="preview-close" onClick={() => setPreviewOpen(false)} aria-label="Cerrar vista previa">
+            <button className="preview-close" onClick={() => setPreviewOpen(false)} aria-label={t("previewPanel.close")}>
               ×
             </button>
           </div>
@@ -585,7 +584,7 @@ export default function App() {
             style={previewBg === "color" ? { background: previewColor } : undefined}
           >
             {previewBg === "checker" && <div className="checker" />}
-            <img src={resultUrl} alt="Vista previa del recorte sobre el fondo elegido" />
+            <img src={resultUrl} alt={t("previewPanel.alt")} />
           </div>
         </div>
       )}
@@ -605,18 +604,20 @@ export default function App() {
       {pendingLarge && (
         <div className="modal-veil" role="dialog" aria-modal="true" aria-labelledby="modal-large-title">
           <div className="modal">
-            <h3 id="modal-large-title">Imagen muy grande</h3>
+            <h3 id="modal-large-title">{t("large.title")}</h3>
             <p>
-              {pendingLarge.width} × {pendingLarge.height} px (
-              {formatMegapixels(pendingLarge.width, pendingLarge.height)} MP).
-              Procesarla entera puede agotar la memoria del navegador.
+              {t("large.body", {
+                w: pendingLarge.width,
+                h: pendingLarge.height,
+                mp: formatMegapixels(pendingLarge.width, pendingLarge.height),
+              })}
             </p>
             <div className="modal-actions">
               <button className="btn btn-primary" autoFocus onClick={confirmReduceLarge}>
-                Reducir a 4K (recomendado)
+                {t("large.reduce")}
               </button>
               <button className="btn" onClick={cancelLarge}>
-                Cancelar
+                {t("large.cancel")}
               </button>
             </div>
           </div>
@@ -625,7 +626,7 @@ export default function App() {
 
       {dragging && (
         <div className="drop-veil" aria-hidden>
-          <div className="drop-veil-inner">Suéltala aquí</div>
+          <div className="drop-veil-inner">{t("drop.here")}</div>
         </div>
       )}
 
@@ -637,6 +638,24 @@ export default function App() {
         ))}
       </div>
     </div>
+  );
+}
+
+function LangSwitch() {
+  const lang = useLang();
+  return (
+    <select
+      className="lang-select"
+      value={lang}
+      aria-label={t("lang.aria")}
+      onChange={(e) => setLang(e.target.value)}
+    >
+      {LANGS.map((l) => (
+        <option key={l.code} value={l.code}>
+          {l.label}
+        </option>
+      ))}
+    </select>
   );
 }
 
@@ -657,10 +676,10 @@ function ColorExport({ disabled, onExport }) {
         value={color}
         disabled={disabled}
         onChange={(e) => setColor(e.target.value)}
-        aria-label="Color de fondo"
+        aria-label={t("export.bgcolor.aria")}
       />
       <button className="btn btn-small" disabled={disabled} onClick={() => onExport(hexToRgba(color))}>
-        Color sólido
+        {t("export.solid")}
       </button>
     </div>
   );

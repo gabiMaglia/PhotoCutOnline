@@ -15,6 +15,7 @@ const TESTS = [
   "engine-test",
   "errorboundary-test",
   "icons-test",
+  "i18n-test",
   "imagefile-test",
   "mobile-test",
   "preview-test",

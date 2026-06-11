@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>i18n test</title>
+  </head>
+  <body>
+    <script>
+      // estado limpio: detección por navigator.language (en-US en headless)
+      localStorage.removeItem("pc-lang");
+      localStorage.removeItem("pc-onboarded");
+    </script>
+    <div id="root"></div>
+    <pre id="out" style="position:fixed;bottom:0;left:0;background:#000;color:#0f0;z-index:9999;padding:8px;font-size:11px">RUNNING</pre>
+    <script type="module" src="./i18n-test.jsx"></script>
+  </body>
+</html>

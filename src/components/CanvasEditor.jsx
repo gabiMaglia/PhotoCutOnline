@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
+import { t } from "../lib/i18n.js";
 
 // Lienzo interactivo. Tres modos de entrada:
 //  - "rect": arrastrar un recuadro alrededor del sujeto (marching ants)
@@ -228,12 +229,8 @@ export default function CanvasEditor({
       {!imageUrl && (
         <div className="canvas-empty">
           <div className="empty-glyph" aria-hidden>◐</div>
-          <h2>Suelta una imagen aquí</h2>
-          <p>
-            Arrastra un archivo, pega desde el portapapeles (⌘V) o usa
-            «Abrir foto». Luego dibuja un recuadro alrededor del sujeto — o
-            prueba el recorte automático.
-          </p>
+          <h2>{t("canvas.empty.title")}</h2>
+          <p>{t("canvas.empty.body")}</p>
         </div>
       )}
       {imageUrl && imageSize && (
@@ -258,7 +255,7 @@ export default function CanvasEditor({
           />
           {busy && (
             <div className="canvas-busy" role="status" aria-live="polite">
-              <span className="busy-dot" aria-hidden /> procesando…
+              <span className="busy-dot" aria-hidden /> {t("busy")}
             </div>
           )}
         </div>
