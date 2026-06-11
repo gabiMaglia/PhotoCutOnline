@@ -622,6 +622,123 @@ kbd {
   }
 }
 
+/* ---------------------------------- pantalla de error ---------------------------------- */
+.crash-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  z-index: 400;
+  padding: 24px;
+}
+
+.crash-card {
+  max-width: 440px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line-bright);
+  border-radius: 16px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  animation: panel-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.crash-card .brand-mark {
+  font-size: 36px;
+  animation: none;
+}
+
+.crash-card h2 {
+  font-family: var(--display);
+  font-weight: 750;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+  margin: 12px 0 8px;
+}
+
+.crash-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-dim);
+  margin: 0 0 20px;
+}
+
+.crash-detail {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.crash-detail summary {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+
+.crash-detail pre {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 160px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------------------------------- modal ---------------------------------- */
+.modal-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(7, 8, 10, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: veil-in 0.15s ease both;
+}
+
+.modal {
+  width: min(420px, calc(100vw - 40px));
+  background: var(--panel);
+  border: 1px solid var(--line-bright);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 50px rgba(214, 246, 75, 0.05);
+  animation: panel-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.modal h3 {
+  font-family: var(--display);
+  font-weight: 750;
+  font-size: 20px;
+  letter-spacing: -0.4px;
+  margin: 0 0 10px;
+}
+
+.modal p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-dim);
+  margin: 0 0 18px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
 /* ---------------------------------- vista previa flotante ---------------------------------- */
 .preview-panel {
   position: fixed;

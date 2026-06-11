@@ -84,8 +84,9 @@ function PreviewHarness({ resultUrl }) {
 async function main() {
   const session = new CutoutSession();
   session.load(syntheticImage(200, 150));
-  const resultUrl = session.cutRect({ x: 35, y: 25, w: 130, h: 100 });
-  assert(resultUrl.startsWith("data:image/png"), "engine: cutRect produce PNG");
+  const blob = await session.cutRect({ x: 35, y: 25, w: 130, h: 100 });
+  assert(blob instanceof Blob && blob.type === "image/png", "engine: cutRect produce PNG");
+  const resultUrl = URL.createObjectURL(blob);
 
   const root = document.createElement("div");
   document.body.appendChild(root);

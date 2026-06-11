@@ -72,7 +72,10 @@ export default function CanvasEditor({
     const img = new Image();
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
+      // el preview llega a resolución de trabajo; se escala al lienzo completo
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
     img.src = resultUrl;
   }, [resultUrl, imageSize]);

@@ -100,14 +100,15 @@ Rust (desktop):
 cargo test -p photocut-core
 ```
 
-Web (smoke tests in a real browser — synthetic-image segmentation accuracy,
-undo, compositing, icon ZIP):
+Web (smoke tests in your installed Chrome, headless — segmentation accuracy,
+worker RPC, compositing, icon ZIP, preview panel, 12MP perf benchmark):
 
 ```bash
-npm run dev
-# then open http://localhost:5173/test/engine-test.html
-# and  http://localhost:5173/test/icons-test.html  — expect all PASS
+npm run test:web
 ```
+
+(Each suite is also a plain page under `test/*.html` if you want to watch it
+run: `npm run dev` and open them.)
 
 ## Workflow in the app
 

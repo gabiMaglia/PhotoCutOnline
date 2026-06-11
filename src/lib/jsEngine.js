@@ -11,6 +11,10 @@
 //
 // La app de escritorio (Tauri) usa el motor Rust de photocut-core; este motor
 // existe para que la web funcione sola, sin servidor y sin dependencias.
+//
+// Agnóstico de entorno: corre tanto en la ventana como dentro de un Web
+// Worker (usa OffscreenCanvas si no hay DOM). Los previews/exports se
+// devuelven como Blob para viajar baratos por postMessage.
 
 const WORK_MAX = 1400;
 const K = 5; // clusters por modelo
@@ -58,9 +62,7 @@ export class CutoutSession {
     if (s < 1) {
       const w = Math.max(1, Math.round(width * s));
       const h = Math.max(1, Math.round(height * s));
-      const c = document.createElement("canvas");
-      c.width = w;
-      c.height = h;
+      const c = createCanvas(w, h);
       const ctx = c.getContext("2d");
       ctx.imageSmoothingQuality = "high";
       ctx.drawImage(this.fullCanvas, 0, 0, w, h);
@@ -90,7 +92,7 @@ export class CutoutSession {
     this.trimap = prev.trimap;
     this.label = prev.label;
     this.rect = prev.rect;
-    return this.previewUrl();
+    return this.previewBlob();
   }
 
   /** rect en coords de imagen completa. */
@@ -110,7 +112,7 @@ export class CutoutSession {
     this.trimap = new Uint8Array(this.work.width * this.work.height);
     this.label = null;
     this.segment();
-    return this.previewUrl();
+    return this.previewBlob();
   }
 
   /** Recorte automático: el fondo se modela desde el anillo del borde. */
@@ -129,7 +131,7 @@ export class CutoutSession {
     }
     this.label = null;
     this.segment();
-    return this.previewUrl();
+    return this.previewBlob();
   }
 
   /** stroke: {points:[{x,y}…], radius, foreground} en coords completas. */
@@ -155,13 +157,14 @@ export class CutoutSession {
         val
       );
     }
-    this.segment();
-    return this.previewUrl();
+    // refinamiento: las etiquetas apenas cambian, 1 iteración EM basta
+    this.segment(1);
+    return this.previewBlob();
   }
 
   // ---- núcleo de segmentación ----
 
-  segment() {
+  segment(emIters = EM_ITERS) {
     const { width, height, data } = this.work;
     const N = width * height;
     const rect = this.rect;
@@ -179,7 +182,7 @@ export class CutoutSession {
     }
     applyConstraints(label, tri);
 
-    for (let it = 0; it < EM_ITERS; it++) {
+    for (let it = 0; it < emIters; it++) {
       const fgC = clustersFor(data, label, 1);
       const bgC = clustersFor(data, label, 0);
       if (!fgC || !bgC) break;
@@ -214,8 +217,8 @@ export class CutoutSession {
 
   // ---- alfa, preview y exportación ----
 
-  /** Canvas a resolución completa cuyo canal alfa es la máscara con feather. */
-  buildMaskCanvasFull() {
+  /** Alfa con feather a resolución de trabajo. */
+  buildAlphaWork() {
     const { width, height } = this.work;
     let alpha = new Uint8ClampedArray(width * height);
     for (let i = 0; i < alpha.length; i++) alpha[i] = this.label[i] ? 255 : 0;
@@ -225,6 +228,13 @@ export class CutoutSession {
       alpha = boxBlurAlpha(alpha, width, height, r);
       alpha = boxBlurAlpha(alpha, width, height, Math.max(1, r >> 1));
     }
+    return alpha;
+  }
+
+  /** Canvas a resolución completa cuyo canal alfa es la máscara con feather. */
+  buildMaskCanvasFull() {
+    const { width, height } = this.work;
+    const alpha = this.buildAlphaWork();
 
     const maskImg = new ImageData(width, height);
     for (let i = 0; i < alpha.length; i++) {
@@ -238,9 +248,7 @@ export class CutoutSession {
 
     const fullW = this.full.width;
     const fullH = this.full.height;
-    const fullMask = document.createElement("canvas");
-    fullMask.width = fullW;
-    fullMask.height = fullH;
+    const fullMask = createCanvas(fullW, fullH);
     const ctx = fullMask.getContext("2d");
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
@@ -252,9 +260,7 @@ export class CutoutSession {
   /** Canvas del recorte (imagen original con alfa aplicado), full-res. */
   cutoutCanvas() {
     const mask = this.buildMaskCanvasFull();
-    const out = document.createElement("canvas");
-    out.width = this.full.width;
-    out.height = this.full.height;
+    const out = createCanvas(this.full.width, this.full.height);
     const ctx = out.getContext("2d");
     ctx.drawImage(this.fullCanvas, 0, 0);
     ctx.globalCompositeOperation = "destination-in";
@@ -262,9 +268,22 @@ export class CutoutSession {
     return out;
   }
 
-  previewUrl() {
-    if (!this.label) return null;
-    return this.cutoutCanvas().toDataURL("image/png");
+  previewBlob() {
+    if (!this.label) return Promise.resolve(null);
+    // Preview a resolución de trabajo (≤ WORK_MAX px): el editor lo escala a
+    // pantalla de todos modos, y codificar PNG full-res en cada trazo cuesta
+    // ~800 ms en una foto de 12MP. Full-res solo al exportar.
+    const { width, height, data } = this.work;
+    const alpha = this.buildAlphaWork();
+    const out = new ImageData(width, height);
+    for (let i = 0; i < alpha.length; i++) {
+      const o = i * 4;
+      out.data[o] = data[o];
+      out.data[o + 1] = data[o + 1];
+      out.data[o + 2] = data[o + 2];
+      out.data[o + 3] = alpha[i];
+    }
+    return canvasToBlob(canvasFromImageData(out));
   }
 
   /**
@@ -273,10 +292,9 @@ export class CutoutSession {
    *        format?:'png'|'webp'|'jpeg', quality?:number}
    */
   async composite(opts) {
+    if (!this.label) throw new Error("No hay recorte para exportar");
     const cut = this.cutoutCanvas();
-    const out = document.createElement("canvas");
-    out.width = cut.width;
-    out.height = cut.height;
+    const out = createCanvas(cut.width, cut.height);
     const ctx = out.getContext("2d");
 
     if (opts.type === "solid") {
@@ -284,7 +302,7 @@ export class CutoutSession {
       ctx.fillStyle = `rgba(${r},${g},${b},${(a ?? 255) / 255})`;
       ctx.fillRect(0, 0, out.width, out.height);
     } else if (opts.type === "image") {
-      const img = await loadHtmlImage(opts.bgDataUrl);
+      const img = await decodeImage(opts.bgDataUrl);
       drawCover(ctx, img, out.width, out.height);
     }
     ctx.drawImage(cut, 0, 0);
@@ -292,7 +310,7 @@ export class CutoutSession {
     const format = opts.format || "png";
     const mime =
       format === "webp" ? "image/webp" : format === "jpeg" ? "image/jpeg" : "image/png";
-    return out.toDataURL(mime, opts.quality ?? 0.92);
+    return canvasToBlob(out, mime, opts.quality ?? 0.92);
   }
 }
 
@@ -576,11 +594,39 @@ function clamp(v, lo, hi) {
 }
 
 function canvasFromImageData(imageData) {
-  const c = document.createElement("canvas");
-  c.width = imageData.width;
-  c.height = imageData.height;
+  const c = createCanvas(imageData.width, imageData.height);
   c.getContext("2d").putImageData(imageData, 0, 0);
   return c;
+}
+
+/** Canvas según entorno: HTMLCanvas en ventana, OffscreenCanvas en worker. */
+function createCanvas(w, h) {
+  if (typeof document !== "undefined") {
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    return c;
+  }
+  return new OffscreenCanvas(w, h);
+}
+
+export function canvasToBlob(canvas, type = "image/png", quality) {
+  if (canvas.convertToBlob) return canvas.convertToBlob({ type, quality }); // OffscreenCanvas
+  // HTMLCanvas (fallback sin worker): síncrono vía dataURL — toBlob programa
+  // el encode en otro hilo y su callback es frágil en headless/virtual-time.
+  const dataUrl = canvas.toDataURL(type, quality);
+  const [head, b64] = dataUrl.split(",");
+  const mime = head.slice(5, head.indexOf(";"));
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return Promise.resolve(new Blob([out], { type: mime }));
+}
+
+/** Decodifica un dataURL/Blob a ImageBitmap (funciona en ventana y worker). */
+export async function decodeImage(src) {
+  const blob = typeof src === "string" ? await (await fetch(src)).blob() : src;
+  return createImageBitmap(blob);
 }
 
 function drawCover(ctx, img, w, h) {

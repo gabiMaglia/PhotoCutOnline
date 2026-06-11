@@ -2,6 +2,12 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import CanvasEditor from "./components/CanvasEditor.jsx";
 import IconStudio from "./components/IconStudio.jsx";
 import { backend } from "./lib/backend.js";
+import {
+  inspectImageFile,
+  bitmapToDataUrl,
+  formatMegapixels,
+  DOWNSCALE_MAX_DIM,
+} from "./lib/imageFile.js";
 
 const ITERS = 4;
 
@@ -33,13 +39,10 @@ export default function App() {
 
   const refreshUndo = useCallback(() => setCanUndo(backend.canUndo()), []);
 
-  const openFile = useCallback(
-    async (file) => {
-      if (!file.type.startsWith("image/")) {
-        toast("Ese archivo no es una imagen", "error");
-        return;
-      }
-      const dataUrl = await fileToDataUrl(file);
+  const [pendingLarge, setPendingLarge] = useState(null); // {file,bitmap,width,height}
+
+  const loadDataUrl = useCallback(
+    async (dataUrl, note) => {
       setImageUrl(dataUrl);
       setResultUrl(null);
       setHasCut(false);
@@ -49,13 +52,49 @@ export default function App() {
         const { width, height } = await backend.loadImage(dataUrl);
         setImageSize({ width, height });
         setMode("rect");
-        toast(`${width} × ${height} px cargados`, "ok");
+        toast(note || `${width} × ${height} px cargados`, "ok");
       } catch (e) {
         toast(String(e), "error");
       }
     },
     [toast]
   );
+
+  const openFile = useCallback(
+    async (file) => {
+      const res = await inspectImageFile(file);
+      if (res.kind === "heic") {
+        toast("HEIC del iPhone no soportado — exporta la foto como JPG o PNG", "error");
+        return;
+      }
+      if (res.kind === "undecodable") {
+        toast("No se pudo leer ese archivo como imagen", "error");
+        return;
+      }
+      if (res.kind === "oversized") {
+        // no decidir por el usuario: ofrecer reducir a 4K o cancelar
+        setPendingLarge({ file, ...res });
+        return;
+      }
+      res.bitmap.close();
+      await loadDataUrl(await fileToDataUrl(file));
+    },
+    [toast, loadDataUrl]
+  );
+
+  const confirmReduceLarge = useCallback(async () => {
+    const p = pendingLarge;
+    if (!p) return;
+    setPendingLarge(null);
+    const dataUrl = bitmapToDataUrl(p.bitmap, DOWNSCALE_MAX_DIM, p.file.type);
+    p.bitmap.close();
+    await loadDataUrl(dataUrl, `Reducida a 4K (original ${p.width} × ${p.height} px)`);
+  }, [pendingLarge, loadDataUrl]);
+
+  const cancelLarge = useCallback(() => {
+    pendingLarge?.bitmap.close();
+    setPendingLarge(null);
+  }, [pendingLarge]);
 
   function onFileInput(e) {
     const f = e.target.files?.[0];
@@ -173,14 +212,17 @@ export default function App() {
     refreshUndo();
   }, [refreshUndo]);
 
-  const handleFeather = useCallback(
-    async (value) => {
-      setFeather(value);
+  const featherTimer = useRef(null);
+  const handleFeather = useCallback((value) => {
+    setFeather(value);
+    // debounce: el slider dispara muchos eventos seguidos; recalcular el
+    // preview solo cuando el usuario se detiene
+    clearTimeout(featherTimer.current);
+    featherTimer.current = setTimeout(async () => {
       const url = await backend.setFeather(value);
       if (url) setResultUrl(url);
-    },
-    []
-  );
+    }, 120);
+  }, []);
 
   // ---- exportación ----
   const exportAs = useCallback(
@@ -495,6 +537,27 @@ export default function App() {
           >
             {previewBg === "checker" && <div className="checker" />}
             <img src={resultUrl} alt="Vista previa del recorte sobre el fondo elegido" />
+          </div>
+        </div>
+      )}
+
+      {pendingLarge && (
+        <div className="modal-veil" role="dialog" aria-modal="true" aria-labelledby="modal-large-title">
+          <div className="modal">
+            <h3 id="modal-large-title">Imagen muy grande</h3>
+            <p>
+              {pendingLarge.width} × {pendingLarge.height} px (
+              {formatMegapixels(pendingLarge.width, pendingLarge.height)} MP).
+              Procesarla entera puede agotar la memoria del navegador.
+            </p>
+            <div className="modal-actions">
+              <button className="btn btn-primary" autoFocus onClick={confirmReduceLarge}>
+                Reducir a 4K (recomendado)
+              </button>
+              <button className="btn" onClick={cancelLarge}>
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

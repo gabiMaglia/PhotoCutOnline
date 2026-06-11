@@ -7,7 +7,20 @@ import { CutoutSession } from "../src/lib/jsEngine.js";
 const out = [];
 const log = (s) => out.push(s);
 
+// PRNG con semilla (mulberry32): el test debe ser determinista — sin esto,
+// una distribución desafortunada del ruido hace fallar autoCut a veces.
+function mulberry32(seed) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 function syntheticImage(w, h) {
+  const rnd = mulberry32(42);
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
@@ -16,8 +29,8 @@ function syntheticImage(w, h) {
   ctx.fillRect(0, 0, w, h);
   // ruido de fondo
   for (let i = 0; i < 400; i++) {
-    ctx.fillStyle = `rgba(${20 + Math.random() * 30},${30 + Math.random() * 30},${50 + Math.random() * 30},1)`;
-    ctx.fillRect(Math.random() * w, Math.random() * h, 3, 3);
+    ctx.fillStyle = `rgba(${20 + rnd() * 30},${30 + rnd() * 30},${50 + rnd() * 30},1)`;
+    ctx.fillRect(rnd() * w, rnd() * h, 3, 3);
   }
   // sujeto: rectángulo lima con esquina coral
   ctx.fillStyle = "#d6f64b";
@@ -57,37 +70,38 @@ async function main() {
   assert(s.work.width === W, "carga: resolución de trabajo");
 
   // 1. cutRect alrededor del sujeto (con margen)
-  let url = s.cutRect({ x: 45, y: 28, w: 150, h: 115 });
-  assert(typeof url === "string" && url.startsWith("data:image/png"), "cutRect: preview dataURL");
+  let blob = await s.cutRect({ x: 45, y: 28, w: 150, h: 115 });
+  assert(blob instanceof Blob && blob.type === "image/png", "cutRect: preview Blob PNG");
   const accRect = subjectAccuracy(s, W, H);
   assert(accRect > 0.93, `cutRect: precisión ${(accRect * 100).toFixed(1)}% > 93%`);
 
   // 2. stroke quitar en una esquina del fondo dentro del rect
-  url = s.addStroke({ points: [{ x: 50, y: 33 }, { x: 56, y: 36 }], radius: 4, foreground: false });
-  assert(typeof url === "string", "stroke: devuelve preview");
+  blob = await s.addStroke({ points: [{ x: 50, y: 33 }, { x: 56, y: 36 }], radius: 4, foreground: false });
+  assert(blob instanceof Blob, "stroke: devuelve preview");
   assert(s.canUndo, "undo: disponible tras stroke");
 
   // 3. undo
-  url = s.undo();
-  assert(typeof url === "string", "undo: restaura preview");
+  blob = await s.undo();
+  assert(blob instanceof Blob, "undo: restaura preview");
 
   // 4. composite sólido
   const solid = await s.composite({ type: "solid", color: [255, 0, 0, 255] });
-  assert(solid.startsWith("data:image/png"), "composite sólido: PNG");
+  assert(solid instanceof Blob && solid.type === "image/png", "composite sólido: PNG");
   const webp = await s.composite({ type: "transparent", format: "webp" });
-  assert(webp.startsWith("data:image/webp"), "composite: formato webp");
+  assert(webp instanceof Blob && webp.type === "image/webp", "composite: formato webp");
 
   // 5. autoCut en sesión nueva
   const s2 = new CutoutSession();
   s2.load(syntheticImage(W, H));
-  url = s2.autoCut();
-  assert(typeof url === "string", "autoCut: preview");
+  blob = await s2.autoCut();
+  assert(blob instanceof Blob, "autoCut: preview");
   const accAuto = subjectAccuracy(s2, W, H);
   assert(accAuto > 0.9, `autoCut: precisión ${(accAuto * 100).toFixed(1)}% > 90%`);
 
   // 6. feather no rompe nada
   s2.setFeather(6);
-  assert(s2.previewUrl().startsWith("data:image/png"), "feather: preview OK");
+  const fblob = await s2.previewBlob();
+  assert(fblob instanceof Blob && fblob.type === "image/png", "feather: preview OK");
 
   log("ALL_DONE");
 }
