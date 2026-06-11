@@ -43,6 +43,18 @@ export class CutoutSession {
     this.redoStack = [];
     this.featherPx = 2; // en px de imagen completa
     this.maskCanvasFull = null; // cache del último alfa a resolución completa
+    if (this.wasmCut?.free) this.wasmCut.free();
+    this.wasmCut = null; // instancia WASM ligada a la imagen actual
+  }
+
+  /** Conecta la clase WasmCut (photocut-wasm). El motor GrabCut de Rust
+   *  reemplaza al segmentador k-means; si falla, se cae al camino JS. */
+  attachWasm(WasmCutClass) {
+    this.WasmCut = WasmCutClass;
+  }
+
+  get engineName() {
+    return this.WasmCut ? "wasm" : "js";
   }
 
   get hasCut() {
@@ -187,6 +199,51 @@ export class CutoutSession {
   // ---- núcleo de segmentación ----
 
   segment(emIters = EM_ITERS) {
+    if (this.WasmCut) {
+      try {
+        this.segmentWasm(emIters);
+        return;
+      } catch (e) {
+        // degradar a JS para el resto de la sesión
+        console.warn("photocut-wasm falló; usando el motor JS:", e);
+        this.WasmCut = null;
+        if (this.wasmCut?.free) this.wasmCut.free();
+        this.wasmCut = null;
+      }
+    }
+    this.segmentJs(emIters);
+  }
+
+  /** GrabCut real (Rust→WASM): trimap completo por llamada, stateless. */
+  segmentWasm(iters) {
+    const { width, height, data } = this.work;
+    const N = width * height;
+    if (!this.wasmCut) {
+      this.wasmCut = new this.WasmCut(width, height, new Uint8Array(data.buffer.slice(0)));
+    }
+    const rect = this.rect;
+    const tri = new Uint8Array(N); // 0=BG 1=FG 2=quizásBG 3=quizásFG
+    const prev = this.label;
+    for (let y = 0; y < height; y++) {
+      const row = y * width;
+      const inRow = y >= rect.y && y < rect.y + rect.h;
+      for (let x = 0; x < width; x++) {
+        const i = row + x;
+        if (this.trimap[i] === TRI_FG) tri[i] = 1;
+        else if (this.trimap[i] === TRI_BG) tri[i] = 0;
+        else if (!inRow || x < rect.x || x >= rect.x + rect.w) tri[i] = 0;
+        else tri[i] = prev ? (prev[i] ? 3 : 2) : 3;
+      }
+    }
+    const mask = this.wasmCut.segment(tri, Math.max(1, iters));
+    const label = new Uint8Array(N);
+    for (let i = 0; i < N; i++) label[i] = mask[i] ? 1 : 0;
+    cleanComponents(label, this.trimap, width, height);
+    this.label = label;
+  }
+
+  /** Fallback JS: k-means EM (sin WASM o si éste falla). */
+  segmentJs(emIters = EM_ITERS) {
     const { width, height, data } = this.work;
     const N = width * height;
     const rect = this.rect;

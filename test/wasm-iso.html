@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<pre id="out">RUNNING</pre>
+<script type="module">
+const out = document.getElementById('out');
+const log = (s) => { out.textContent += '\n' + s; console.log(s); };
+try {
+  const t0 = performance.now();
+  const mod = await import('/src/lib/wasm/photocut_wasm.js');
+  await mod.default();
+  log('init: ' + Math.round(performance.now() - t0) + 'ms');
+  const W = 240, H = 180, N = W * H;
+  // imagen EXACTA de engine-test: mulberry32(42) + ruido + esquina coral
+  function mulberry32(seed) {
+    return () => {
+      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const rnd = mulberry32(42);
+  const c2 = document.createElement('canvas'); c2.width = W; c2.height = H;
+  const cx = c2.getContext('2d');
+  cx.fillStyle = '#1a2030'; cx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 400; i++) {
+    cx.fillStyle = `rgba(${20 + rnd() * 30},${30 + rnd() * 30},${50 + rnd() * 30},1)`;
+    cx.fillRect(rnd() * W, rnd() * H, 3, 3);
+  }
+  cx.fillStyle = '#d6f64b'; cx.fillRect(60, 40, 120, 90);
+  cx.fillStyle = '#ff5e63'; cx.fillRect(60, 40, 30, 30);
+  const rgba = new Uint8Array(cx.getImageData(0, 0, W, H).data.buffer);
+  const t1 = performance.now();
+  const cut = new mod.WasmCut(W, H, rgba);
+  log('ctor: ' + Math.round(performance.now() - t1) + 'ms');
+  const tri = new Uint8Array(N);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    tri[y*W+x] = (x >= 45 && x < 195 && y >= 28 && y < 143) ? 3 : 0;
+  }
+  const t2 = performance.now();
+  const mask = cut.segment(tri, 3);
+  log('segment: ' + Math.round(performance.now() - t2) + 'ms');
+  let fg = 0; for (let i = 0; i < N; i++) if (mask[i]) fg++;
+  log('fg: ' + fg + ' / ' + N);
+  log('ALL_DONE');
+} catch (e) { log('ERROR: ' + e.message); }
+</script></body></html>

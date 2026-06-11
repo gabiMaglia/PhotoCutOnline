@@ -1,0 +1,13 @@
+[package]
+name = "photocut-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "WASM bindings for the photocut-core GrabCut engine (web build parity)."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+photocut-core = { path = "../photocut-core" }
+wasm-bindgen = "0.2"

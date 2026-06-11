@@ -36,8 +36,9 @@ async function main() {
   assert(typeof OffscreenCanvas !== "undefined", "entorno: OffscreenCanvas disponible (camino worker)");
   assert(!backend.isDesktop, "entorno: modo web");
 
-  const { width, height } = await backend.loadImage(syntheticDataUrl(240, 180));
+  const { width, height, engine } = await backend.loadImage(syntheticDataUrl(240, 180));
   assert(width === 240 && height === 180, "loadImage: dimensiones vía worker");
+  assert(engine === "wasm", `motor: GrabCut WASM activo (${engine})`);
   assert(!backend.canUndo(), "canUndo: false tras cargar");
 
   // medir bloqueo del main thread durante el corte: un intervalo de 10ms no

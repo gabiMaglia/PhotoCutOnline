@@ -1,0 +1,17 @@
+{
+  "name": "photocut-wasm",
+  "type": "module",
+  "description": "WASM bindings for the photocut-core GrabCut engine (web build parity).",
+  "version": "0.1.0",
+  "license": "MIT OR Apache-2.0",
+  "files": [
+    "photocut_wasm_bg.wasm",
+    "photocut_wasm.js",
+    "photocut_wasm.d.ts"
+  ],
+  "main": "photocut_wasm.js",
+  "types": "photocut_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

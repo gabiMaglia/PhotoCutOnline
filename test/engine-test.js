@@ -3,9 +3,13 @@
 // Se ejecuta en Chrome headless; escribe PASS/FAIL en #out.
 
 import { CutoutSession } from "../src/lib/jsEngine.js";
+import wasmInit, { WasmCut } from "../src/lib/wasm/photocut_wasm.js";
 
 const out = [];
-const log = (s) => out.push(s);
+const log = (s) => {
+  out.push(s);
+  console.log("[test]", s);
+};
 
 // PRNG con semilla (mulberry32): el test debe ser determinista — sin esto,
 // una distribución desafortunada del ruido hace fallar autoCut a veces.
@@ -108,6 +112,21 @@ async function main() {
   s2.setFeather(6);
   const fblob = await s2.previewBlob();
   assert(fblob instanceof Blob && fblob.type === "image/png", "feather: preview OK");
+
+  // 7. motor WASM (GrabCut real): misma API, precisión igual o mejor
+  await wasmInit();
+  const s3 = new CutoutSession();
+  s3.attachWasm(WasmCut);
+  assert(s3.engineName === "wasm", "wasm: motor conectado");
+  s3.load(syntheticImage(W, H));
+  blob = await s3.cutRect({ x: 45, y: 28, w: 150, h: 115 });
+  assert(blob instanceof Blob, "wasm: cutRect produce preview");
+  const accWasm = subjectAccuracy(s3, W, H);
+  assert(accWasm > 0.93, `wasm: precisión ${(accWasm * 100).toFixed(1)}% > 93%`);
+  blob = await s3.addStroke({ points: [{ x: 50, y: 33 }], radius: 4, foreground: false });
+  assert(blob instanceof Blob, "wasm: stroke refina");
+  blob = await s3.undo();
+  assert(blob instanceof Blob && s3.canRedo, "wasm: undo/redo operativos");
 
   log("ALL_DONE");
 }

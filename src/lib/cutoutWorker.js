@@ -6,18 +6,37 @@
 // como Blob (clon barato), nunca como base64.
 
 import { CutoutSession } from "./jsEngine.js";
+import wasmInit, { WasmCut } from "./wasm/photocut_wasm.js";
 
 const session = new CutoutSession();
 
+// Motor GrabCut real (Rust→WASM); si no carga, el motor JS sigue funcionando.
+let wasmReady = null;
+function ensureWasm() {
+  if (!wasmReady) {
+    wasmReady = wasmInit()
+      .then(() => {
+        session.attachWasm(WasmCut);
+        return "wasm";
+      })
+      .catch((e) => {
+        console.warn("photocut-wasm no disponible; motor JS:", e);
+        return "js";
+      });
+  }
+  return wasmReady;
+}
+
 const handlers = {
   async load({ dataUrl }) {
+    const engine = await ensureWasm();
     const bmp = await createImageBitmap(await (await fetch(dataUrl)).blob());
     const c = new OffscreenCanvas(bmp.width, bmp.height);
     const ctx = c.getContext("2d");
     ctx.drawImage(bmp, 0, 0);
     session.load(ctx.getImageData(0, 0, bmp.width, bmp.height));
     bmp.close();
-    return { width: c.width, height: c.height };
+    return { width: c.width, height: c.height, engine };
   },
 
   cutRect: ({ rect }) => session.cutRect(rect),

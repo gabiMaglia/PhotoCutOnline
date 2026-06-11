@@ -164,6 +164,13 @@ impl GrabCut {
         }
     }
 
+    /// Re-seed the colour models from the current `mask`. Required after
+    /// writing the trimap directly (e.g. via the WASM bindings) instead of
+    /// going through `init_with_rect`; `run` assumes the GMMs were seeded.
+    pub fn reinit_models(&mut self) {
+        self.init_gmms();
+    }
+
     fn init_gmms(&mut self) {
         // simple k-means-free init: assign by luminance buckets, then learn.
         // Collect fg/bg pixels.
@@ -229,10 +236,16 @@ impl GrabCut {
                     Trimap::FgFixed => (max_w, 0.0),
                     Trimap::BgFixed => (0.0, max_w),
                     _ => {
+                        // prob() es una *densidad* y puede superar 1 (covarianzas
+                        // pequeñas en zonas planas) → -ln() negativo. Capacidades
+                        // negativas rompen el max-flow (no converge). Restar el
+                        // mínimo a ambos términos del mismo píxel no cambia el
+                        // min-cut y garantiza capacidades ≥ 0.
                         let fg_p = -self.fg_gmm.prob(&c).ln();
                         let bg_p = -self.bg_gmm.prob(&c).ln();
+                        let m = fg_p.min(bg_p);
                         // source = foreground link weight = bg cost; sink = fg cost
-                        (bg_p, fg_p)
+                        (bg_p - m, fg_p - m)
                     }
                 };
                 mf.add_terminal(i, to_src, to_sink);

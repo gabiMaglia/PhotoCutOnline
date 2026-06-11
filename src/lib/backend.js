@@ -67,6 +67,17 @@ async function callInline(cmd, args = {}) {
   const s = inlineSession;
   switch (cmd) {
     case "load": {
+      // intentar WASM también en el camino inline (no requiere OffscreenCanvas)
+      if (!s.WasmCut && !s.wasmTried) {
+        s.wasmTried = true;
+        try {
+          const mod = await import("./wasm/photocut_wasm.js");
+          await mod.default();
+          s.attachWasm(mod.WasmCut);
+        } catch (e) {
+          console.warn("photocut-wasm no disponible; motor JS:", e);
+        }
+      }
       const bmp = await createImageBitmap(await (await fetch(args.dataUrl)).blob());
       const c = document.createElement("canvas");
       c.width = bmp.width;
@@ -74,7 +85,7 @@ async function callInline(cmd, args = {}) {
       const ctx = c.getContext("2d");
       ctx.drawImage(bmp, 0, 0);
       s.load(ctx.getImageData(0, 0, bmp.width, bmp.height));
-      return { width: bmp.width, height: bmp.height };
+      return { width: bmp.width, height: bmp.height, engine: s.engineName };
     }
     case "cutRect":
       return s.cutRect(args.rect);

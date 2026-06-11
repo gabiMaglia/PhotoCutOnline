@@ -3,6 +3,7 @@
 // slider de feather. Imprime ms por operación.
 
 import { CutoutSession } from "../src/lib/jsEngine.js";
+import wasmInit, { WasmCut } from "../src/lib/wasm/photocut_wasm.js";
 
 const out = [];
 const log = (s) => out.push(s);
@@ -58,6 +59,18 @@ async function main() {
   s.setFeather(8);
   await time("feather=8 + preview", () => s.previewBlob());
   await time("export transparente full-res", () => s.composite({ type: "transparent" }));
+
+  // mismo flujo con el motor WASM (GrabCut real)
+  await wasmInit();
+  const sw = new CutoutSession();
+  sw.attachWasm(WasmCut);
+  sw.load(img);
+  await time("[wasm] cutRect + preview", () =>
+    sw.cutRect({ x: 800, y: 300, w: 2400, h: 2400 })
+  );
+  await time("[wasm] trazo pincel + preview", () =>
+    sw.addStroke({ points: [{ x: 1200, y: 600 }, { x: 1600, y: 800 }], radius: 40, foreground: true })
+  );
   log("ALL_DONE");
 }
 
