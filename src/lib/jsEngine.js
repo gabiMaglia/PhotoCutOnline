@@ -829,7 +829,7 @@ function drawCover(ctx, img, w, h) {
  *  2. Limpieza por componentes: se conservan los sujetos principales
  *     (componentes ≥ 12% del mayor) y se elimina el alfa del resto.
  */
-function refineMatte(matte, width, height) {
+export function refineMatte(matte, width, height) {
   const N = width * height;
   // 1. estiramiento: [50..205] → [0..255]
   const LO = 50;

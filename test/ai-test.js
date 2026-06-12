@@ -111,6 +111,16 @@ async function main() {
   assert(url3?.startsWith("blob:"), "undo: restaura el matte IA");
   assert(backend.canRedo(), "redo: disponible");
 
+  // removeBg: matte para una imagen arbitraria (Icon Studio) sin tocar sesión
+  const photo2 = syntheticPhoto(256, 256);
+  const ctx2 = photo2.getContext("2d");
+  const matte = await backend.removeBg(ctx2.getImageData(0, 0, 256, 256));
+  assert(matte.length === 256 * 256, "removeBg: matte del tamaño correcto");
+  const center = matte[140 * 256 + 128];
+  const corner = matte[10 * 256 + 10];
+  assert(center > 200 && corner < 30, `removeBg: separa sujeto/fondo (centro ${center}, esquina ${corner})`);
+  assert(backend.canRedo(), "removeBg: no toca el historial del editor");
+
   log("ALL_DONE");
 }
 

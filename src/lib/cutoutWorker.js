@@ -5,7 +5,7 @@
 // simple: {id, cmd, args} → {id, ok, result|error}. Los previews viajan
 // como Blob (clon barato), nunca como base64.
 
-import { CutoutSession } from "./jsEngine.js";
+import { CutoutSession, refineMatte } from "./jsEngine.js";
 import wasmInit, { WasmCut } from "./wasm/photocut_wasm.js";
 import { aiMatte, warmupAi } from "./aiSegmenter.js";
 
@@ -48,6 +48,14 @@ const handlers = {
   async aiCut() {
     const matte = await aiMatte(session.work);
     return session.aiCutFromMatte(matte);
+  },
+
+  /** Quita el fondo de una imagen arbitraria (Icon Studio) sin tocar la
+   *  sesión del editor. Devuelve el matte refinado. */
+  async removeBg({ width, height, rgba }) {
+    const img = new ImageData(new Uint8ClampedArray(rgba), width, height);
+    const matte = await aiMatte(img);
+    return refineMatte(matte, width, height);
   },
   addStroke: ({ stroke }) => session.addStroke(stroke),
   undo: () => session.undo(),

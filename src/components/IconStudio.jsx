@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { backend } from "../lib/backend.js";
 import { PLATFORMS, renderIcon, buildIconZip, faviconSnippet } from "../lib/icons.js";
 import { loadHtmlImage } from "../lib/jsEngine.js";
 import { t } from "../lib/i18n.js";
@@ -17,6 +18,8 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
   const [appName, setAppName] = useState("Mi App");
   const [selected, setSelected] = useState(() => new Set(PLATFORMS.map((p) => p.id)));
   const [building, setBuilding] = useState(false);
+  const [removing, setRemoving] = useState(false);
+  const aiWarned = useRef(false);
   const heroRef = useRef(null);
 
   const renderOpts = {
@@ -52,6 +55,62 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
       setSourceName(t("icon.currentTag"));
     } catch (e) {
       onToast(t("toast.cutfail", { e }), "error");
+    }
+  }
+
+  async function removeBackground() {
+    if (!source || removing) return;
+    setRemoving(true);
+    try {
+      if (!aiWarned.current) {
+        onToast(t("toast.aiDownloading"), "ok");
+        aiWarned.current = true;
+      }
+      const W = source.naturalWidth || source.width;
+      const H = source.naturalHeight || source.height;
+      // inferencia a resolución de trabajo; el alfa se reescala al original
+      const scale = Math.min(1, 1400 / Math.max(W, H));
+      const w = Math.max(1, Math.round(W * scale));
+      const h = Math.max(1, Math.round(H * scale));
+      const workC = document.createElement("canvas");
+      workC.width = w;
+      workC.height = h;
+      const wctx = workC.getContext("2d");
+      wctx.imageSmoothingQuality = "high";
+      wctx.drawImage(source, 0, 0, w, h);
+      const matte = await backend.removeBg(wctx.getImageData(0, 0, w, h));
+
+      // máscara work-res → alfa full-res con suavizado
+      const maskImg = new ImageData(w, h);
+      for (let i = 0; i < matte.length; i++) {
+        const o = i * 4;
+        maskImg.data[o] = 255;
+        maskImg.data[o + 1] = 255;
+        maskImg.data[o + 2] = 255;
+        maskImg.data[o + 3] = matte[i];
+      }
+      const maskC = document.createElement("canvas");
+      maskC.width = w;
+      maskC.height = h;
+      maskC.getContext("2d").putImageData(maskImg, 0, 0);
+
+      const out = document.createElement("canvas");
+      out.width = W;
+      out.height = H;
+      const octx = out.getContext("2d");
+      octx.drawImage(source, 0, 0, W, H);
+      octx.globalCompositeOperation = "destination-in";
+      octx.imageSmoothingEnabled = true;
+      octx.imageSmoothingQuality = "high";
+      octx.drawImage(maskC, 0, 0, W, H);
+
+      setSource(out);
+      setSourceName((n) => `${n || ""} ${t("icon.noBgTag")}`.trim());
+      onToast(t("icon.bgRemoved"), "ok");
+    } catch (e) {
+      onToast(String(e), "error");
+    } finally {
+      setRemoving(false);
     }
   }
 
@@ -122,6 +181,15 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
               onChange={(e) => e.target.files?.[0] && loadFromFile(e.target.files[0])}
             />
           </label>
+          {backend.features.ai && (
+            <button
+              className="btn btn-ai"
+              disabled={!source || removing}
+              onClick={removeBackground}
+            >
+              {removing ? t("icon.removing") : t("icon.removeBg")}
+            </button>
+          )}
           {sourceName && <div className="source-tag">{sourceName}</div>}
         </section>
 

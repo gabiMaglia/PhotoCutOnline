@@ -100,6 +100,17 @@ async function callInline(cmd, args = {}) {
       const matte = await mod.aiMatte(s.work);
       return s.aiCutFromMatte(matte);
     }
+    case "removeBg": {
+      const mod = await import("./aiSegmenter.js");
+      const eng = await import("./jsEngine.js");
+      const img = new ImageData(
+        new Uint8ClampedArray(args.rgba),
+        args.width,
+        args.height
+      );
+      const matte = await mod.aiMatte(img);
+      return eng.refineMatte(matte, args.width, args.height);
+    }
     case "addStroke":
       return s.addStroke(args.stroke);
     case "undo":
@@ -206,6 +217,16 @@ export const backend = {
     const blob = await call("aiCut");
     afterOp();
     return previewUrlFrom(blob);
+  },
+
+  /** Matte IA para una imagen arbitraria (no toca la sesión del editor). */
+  async removeBg(imageData) {
+    if (IS_DESKTOP) throw new Error("IA no disponible en escritorio todavía");
+    return call("removeBg", {
+      width: imageData.width,
+      height: imageData.height,
+      rgba: imageData.data,
+    });
   },
 
   /** stroke: {points:[{x,y}…], radius, foreground} */
