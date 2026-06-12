@@ -7,6 +7,7 @@
 
 import { CutoutSession } from "./jsEngine.js";
 import wasmInit, { WasmCut } from "./wasm/photocut_wasm.js";
+import { aiMatte, warmupAi } from "./aiSegmenter.js";
 
 const session = new CutoutSession();
 
@@ -41,6 +42,13 @@ const handlers = {
 
   cutRect: ({ rect }) => session.cutRect(rect),
   autoCut: () => session.autoCut(),
+
+  warmupAi: () => warmupAi(),
+
+  async aiCut() {
+    const matte = await aiMatte(session.work);
+    return session.aiCutFromMatte(matte);
+  },
   addStroke: ({ stroke }) => session.addStroke(stroke),
   undo: () => session.undo(),
   redo: () => session.redo(),

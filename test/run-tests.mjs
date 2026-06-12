@@ -12,6 +12,7 @@ import { chromium } from "playwright-core";
 
 const PORT = 5187;
 const TESTS = [
+  "ai-test",
   "engine-test",
   "errorboundary-test",
   "icons-test",

@@ -5,6 +5,11 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   clearScreen: false,
+  worker: {
+    // el worker de recorte hace import() dinámico (onnxruntime-web):
+    // requiere workers en formato ES (soportado por toda nuestra matriz)
+    format: "es",
+  },
   server: {
     port: 5173,
     strictPort: true,

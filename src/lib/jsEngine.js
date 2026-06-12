@@ -39,6 +39,7 @@ export class CutoutSession {
     this.rect = null; // rect en coords de trabajo
     this.trimap = null;
     this.label = null; // 1 fg / 0 bg, resolución de trabajo
+    this.softAlpha = null; // matte suave 0..255 (recorte IA); null = binario
     this.undoStack = [];
     this.redoStack = [];
     this.featherPx = 2; // en px de imagen completa
@@ -105,6 +106,7 @@ export class CutoutSession {
     return {
       trimap: Uint8Array.from(this.trimap),
       label: this.label ? Uint8Array.from(this.label) : null,
+      softAlpha: this.softAlpha ? Uint8ClampedArray.from(this.softAlpha) : null,
       rect: this.rect ? { ...this.rect } : null,
     };
   }
@@ -112,6 +114,7 @@ export class CutoutSession {
   restore(s) {
     this.trimap = s.trimap;
     this.label = s.label;
+    this.softAlpha = s.softAlpha ?? null;
     this.rect = s.rect;
   }
 
@@ -152,6 +155,7 @@ export class CutoutSession {
     );
     this.trimap = new Uint8Array(this.work.width * this.work.height);
     this.label = null;
+    this.softAlpha = null;
     this.segment();
     return this.previewBlob();
   }
@@ -171,7 +175,25 @@ export class CutoutSession {
       }
     }
     this.label = null;
+    this.softAlpha = null;
     this.segment();
+    return this.previewBlob();
+  }
+
+  /**
+   * Recorte IA: recibe el matte suave (0..255, resolución de trabajo) ya
+   * calculado por aiSegmenter y lo adopta como alfa. Los pinceles posteriores
+   * editan el matte directamente (sin re-segmentar).
+   */
+  aiCutFromMatte(matte) {
+    this.pushHistory();
+    const { width, height } = this.work;
+    this.rect = { x: 0, y: 0, w: width, h: height };
+    this.trimap = new Uint8Array(width * height);
+    this.softAlpha = Uint8ClampedArray.from(matte);
+    const label = new Uint8Array(width * height);
+    for (let i = 0; i < label.length; i++) label[i] = matte[i] > 127 ? 1 : 0;
+    this.label = label;
     return this.previewBlob();
   }
 
@@ -181,8 +203,24 @@ export class CutoutSession {
     this.pushHistory();
     const s = this.scale;
     const r = Math.max(1, Math.round((stroke.radius || 12) * s));
-    const val = stroke.foreground ? TRI_FG : TRI_BG;
     const pts = stroke.points;
+
+    if (this.softAlpha) {
+      // modo IA: el pincel edita el matte directamente (255 mantener / 0 quitar)
+      const aVal = stroke.foreground ? 255 : 0;
+      const lVal = stroke.foreground ? 1 : 0;
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i];
+        const b = pts[i + 1] || a;
+        stampLine(this.softAlpha, this.work.width, this.work.height,
+          a.x * s, a.y * s, b.x * s, b.y * s, r, aVal);
+        stampLine(this.label, this.work.width, this.work.height,
+          a.x * s, a.y * s, b.x * s, b.y * s, r, lVal);
+      }
+      return this.previewBlob();
+    }
+
+    const val = stroke.foreground ? TRI_FG : TRI_BG;
     for (let i = 0; i < pts.length; i++) {
       const a = pts[i];
       const b = pts[i + 1] || a;
@@ -306,8 +344,13 @@ export class CutoutSession {
   /** Alfa con feather a resolución de trabajo. */
   buildAlphaWork() {
     const { width, height } = this.work;
-    let alpha = new Uint8ClampedArray(width * height);
-    for (let i = 0; i < alpha.length; i++) alpha[i] = this.label[i] ? 255 : 0;
+    let alpha;
+    if (this.softAlpha) {
+      alpha = Uint8ClampedArray.from(this.softAlpha); // matte IA: bordes suaves nativos
+    } else {
+      alpha = new Uint8ClampedArray(width * height);
+      for (let i = 0; i < alpha.length; i++) alpha[i] = this.label[i] ? 255 : 0;
+    }
 
     const r = Math.round(this.featherPx * this.scale);
     if (r > 0) {

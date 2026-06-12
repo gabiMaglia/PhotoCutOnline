@@ -343,6 +343,16 @@ kbd {
   box-shadow: 0 0 20px var(--acid-glow);
 }
 
+.btn-ai {
+  border-color: var(--acid);
+  background: linear-gradient(135deg, rgba(214, 246, 75, 0.22), rgba(214, 246, 75, 0.05) 70%);
+  font-weight: 650;
+}
+
+.btn-ai:hover:not(:disabled) {
+  box-shadow: 0 0 22px var(--acid-glow);
+}
+
 .btn-auto {
   border-color: color-mix(in srgb, var(--acid) 50%, var(--line));
   background: linear-gradient(135deg, var(--acid-soft), transparent 70%);

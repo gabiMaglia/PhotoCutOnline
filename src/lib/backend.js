@@ -91,6 +91,15 @@ async function callInline(cmd, args = {}) {
       return s.cutRect(args.rect);
     case "autoCut":
       return s.autoCut();
+    case "warmupAi": {
+      const mod = await import("./aiSegmenter.js");
+      return mod.warmupAi();
+    }
+    case "aiCut": {
+      const mod = await import("./aiSegmenter.js");
+      const matte = await mod.aiMatte(s.work);
+      return s.aiCutFromMatte(matte);
+    }
     case "addStroke":
       return s.addStroke(args.stroke);
     case "undo":
@@ -150,6 +159,7 @@ export const backend = {
 
   features: {
     auto: !IS_DESKTOP,
+    ai: !IS_DESKTOP, // u2netp local vía onnxruntime-web (worker)
     undo: !IS_DESKTOP,
     feather: !IS_DESKTOP,
     finish: !IS_DESKTOP, // sticker/sombra/presets: motor web
@@ -181,6 +191,19 @@ export const backend = {
   async autoCut() {
     if (IS_DESKTOP) throw new Error("Auto no disponible en escritorio todavía");
     const blob = await call("autoCut");
+    afterOp();
+    return previewUrlFrom(blob);
+  },
+
+  /** Pre-carga el modelo IA (primera vez: ~18MB runtime+modelo, luego caché). */
+  async warmupAi() {
+    if (IS_DESKTOP) return false;
+    return call("warmupAi");
+  },
+
+  async aiCut() {
+    if (IS_DESKTOP) throw new Error("IA no disponible en escritorio todavía");
+    const blob = await call("aiCut");
     afterOp();
     return previewUrlFrom(blob);
   },

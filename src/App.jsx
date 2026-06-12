@@ -192,6 +192,29 @@ export default function App() {
     [toast, refreshUndo]
   );
 
+  const aiWarm = useRef(false);
+  const handleAi = useCallback(async () => {
+    if (!imageUrl || busy) return;
+    setBusy(true);
+    try {
+      if (!aiWarm.current) {
+        toast(t("toast.aiDownloading"), "ok");
+        await backend.warmupAi();
+        aiWarm.current = true;
+      }
+      const url = await backend.aiCut();
+      setResultUrl(url);
+      setHasCut(true);
+      setMode("fg");
+      refreshUndo();
+      toast(t("toast.ai"), "ok");
+    } catch (e) {
+      toast(String(e), "error");
+    } finally {
+      setBusy(false);
+    }
+  }, [imageUrl, busy, toast, refreshUndo]);
+
   const handleAuto = useCallback(async () => {
     if (!imageUrl || busy) return;
     setBusy(true);
@@ -355,6 +378,10 @@ export default function App() {
         case "A":
           if (backend.features.auto) handleAuto();
           break;
+        case "i":
+        case "I":
+          if (backend.features.ai) handleAi();
+          break;
         case "[":
           setBrushSize((s) => Math.max(4, s - 4));
           break;
@@ -374,7 +401,7 @@ export default function App() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [imageUrl, hasCut, busy, handleUndo, handleRedo, handleAuto, exportAs, cancelLarge]);
+  }, [imageUrl, hasCut, busy, handleUndo, handleRedo, handleAuto, handleAi, exportAs, cancelLarge]);
 
   const getCutout = useCallback(() => backend.exportTransparent({ format: "png" }), []);
 
@@ -438,6 +465,15 @@ export default function App() {
           <aside className="rail">
             <section className="rail-group">
               <h2 className="rail-title">{t("rail.mark")}</h2>
+              {backend.features.ai && (
+                <button
+                  className="btn btn-ai"
+                  disabled={!imageUrl || busy}
+                  onClick={handleAi}
+                >
+                  <span className="tool-key">I</span> {t("tool.ai")}
+                </button>
+              )}
               {backend.features.auto && (
                 <button
                   className="btn btn-auto"

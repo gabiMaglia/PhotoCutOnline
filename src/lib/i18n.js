@@ -22,6 +22,7 @@ const DICT = {
 
     "rail.mark": "Marcar",
     "rail.export": "Exportar",
+    "tool.ai": "Recorte IA ✨",
     "tool.auto": "Recorte automático",
     "tool.rect": "Recuadro",
     "tool.keep": "Pincel mantener",
@@ -42,6 +43,8 @@ const DICT = {
       "A automático · 1 recuadro · 2/3 pinceles · P vista previa · E exportar · ? atajos. Arrastra o pega (⌘V) cualquier imagen.",
 
     "toast.loaded": "{w} × {h} px cargados",
+    "toast.ai": "Recorte IA aplicado — pinta para afinar",
+    "toast.aiDownloading": "Descargando el modelo IA (~18 MB, solo la primera vez)…",
     "toast.cut": "Recorte listo — pinta para afinar bordes",
     "toast.auto": "Recorte automático aplicado",
     "toast.exported": "Exportado ✓",
@@ -106,7 +109,7 @@ const DICT = {
     close: "Cerrar",
 
     "help.title": "Atajos de teclado",
-    "sc.auto": "Recorte automático",
+    "sc.ai": "Recorte IA", "sc.auto": "Recorte automático",
     "sc.rect": "Recuadro",
     "sc.brushes": "Pincel mantener / quitar",
     "sc.brushsize": "Tamaño del pincel",
@@ -170,6 +173,7 @@ const DICT = {
 
     "rail.mark": "Mark",
     "rail.export": "Export",
+    "tool.ai": "AI cutout ✨",
     "tool.auto": "Auto cutout",
     "tool.rect": "Box select",
     "tool.keep": "Keep brush",
@@ -190,6 +194,8 @@ const DICT = {
       "A auto · 1 box · 2/3 brushes · P preview · E export · ? shortcuts. Drag or paste (⌘V) any image.",
 
     "toast.loaded": "{w} × {h} px loaded",
+    "toast.ai": "AI cutout applied — paint to refine",
+    "toast.aiDownloading": "Downloading the AI model (~18 MB, first time only)…",
     "toast.cut": "Cutout ready — paint to refine edges",
     "toast.auto": "Auto cutout applied",
     "toast.exported": "Exported ✓",
@@ -254,7 +260,7 @@ const DICT = {
     close: "Close",
 
     "help.title": "Keyboard shortcuts",
-    "sc.auto": "Auto cutout",
+    "sc.ai": "AI cutout", "sc.auto": "Auto cutout",
     "sc.rect": "Box select",
     "sc.brushes": "Keep / remove brush",
     "sc.brushsize": "Brush size",
@@ -318,6 +324,7 @@ const DICT = {
 
     "rail.mark": "Marcar",
     "rail.export": "Exportar",
+    "tool.ai": "Recorte IA ✨",
     "tool.auto": "Recorte automático",
     "tool.rect": "Retângulo",
     "tool.keep": "Pincel manter",
@@ -338,6 +345,8 @@ const DICT = {
       "A automático · 1 retângulo · 2/3 pincéis · P pré-visualização · E exportar · ? atalhos. Arraste ou cole (⌘V) qualquer imagem.",
 
     "toast.loaded": "{w} × {h} px carregados",
+    "toast.ai": "Recorte IA aplicado — pinte para refinar",
+    "toast.aiDownloading": "Baixando o modelo de IA (~18 MB, só na primeira vez)…",
     "toast.cut": "Recorte pronto — pinte para refinar as bordas",
     "toast.auto": "Recorte automático aplicado",
     "toast.exported": "Exportado ✓",
@@ -402,7 +411,7 @@ const DICT = {
     close: "Fechar",
 
     "help.title": "Atalhos de teclado",
-    "sc.auto": "Recorte automático",
+    "sc.ai": "Recorte IA", "sc.auto": "Recorte automático",
     "sc.rect": "Retângulo",
     "sc.brushes": "Pincel manter / remover",
     "sc.brushsize": "Tamanho do pincel",

@@ -2,6 +2,7 @@
 import { t } from "../lib/i18n.js";
 
 const SHORTCUTS = [
+  ["I", "sc.ai"],
   ["A", "sc.auto"],
   ["1", "sc.rect"],
   ["2 / 3", "sc.brushes"],
