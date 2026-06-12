@@ -101,9 +101,25 @@ def save(img: Image.Image, path: Path):
     print(f"  {path}")
 
 
+def to_tinted(img: Image.Image) -> Image.Image:
+    """iOS 18 tinted: escala de grises conservando alfa."""
+    gray = img.convert("LA").convert("RGBA")
+    return gray
+
+
+def to_monochrome(img: Image.Image) -> Image.Image:
+    """Android themed: silueta blanca desde el canal alfa."""
+    out = Image.new("RGBA", img.size, (255, 255, 255, 0))
+    out.putalpha(img.getchannel("A"))
+    return out
+
+
 def gen_ios(src, out, padding, bg):
     base = out / "ios" / "AppIcon.appiconset"
     save(render(src, 1024, padding, bg), base / "icon-1024.png")
+    # iOS 18: dark (transparente) y tinted (grises)
+    save(render(src, 1024, padding, None), base / "icon-1024-dark.png")
+    save(to_tinted(render(src, 1024, padding, None)), base / "icon-1024-tinted.png")
     contents = {
         "images": [
             {
@@ -111,7 +127,21 @@ def gen_ios(src, out, padding, bg):
                 "idiom": "universal",
                 "platform": "ios",
                 "size": "1024x1024",
-            }
+            },
+            {
+                "appearances": [{"appearance": "luminosity", "value": "dark"}],
+                "filename": "icon-1024-dark.png",
+                "idiom": "universal",
+                "platform": "ios",
+                "size": "1024x1024",
+            },
+            {
+                "appearances": [{"appearance": "luminosity", "value": "tinted"}],
+                "filename": "icon-1024-tinted.png",
+                "idiom": "universal",
+                "platform": "ios",
+                "size": "1024x1024",
+            },
         ],
         "info": {"author": "photocut-studio", "version": 1},
     }
@@ -129,10 +159,10 @@ def gen_android(src, out, padding, bg):
     for dpi, s in ANDROID_ADAPTIVE.items():
         # adaptive foreground: zona segura central de 66/108 dp
         fg_pad = 0.2 + padding * 0.5
-        save(
-            render(src, s, fg_pad, None),
-            out / "android" / f"mipmap-{dpi}" / "ic_launcher_foreground.png",
-        )
+        fg = render(src, s, fg_pad, None)
+        save(fg, out / "android" / f"mipmap-{dpi}" / "ic_launcher_foreground.png")
+        # Android 13+ themed icons (añade <monochrome> al adaptive-icon XML)
+        save(to_monochrome(fg), out / "android" / f"mipmap-{dpi}" / "ic_launcher_monochrome.png")
     save(render(src, 512, padding, bg), out / "android" / "play_store_512.png")
 
 
@@ -191,6 +221,15 @@ def gen_web(src, out, padding, bg, name):
     }
     (web / "site.webmanifest").write_text(json.dumps(manifest, indent=2))
     print(f"  {web / 'site.webmanifest'}")
+    snippet = (
+        '<link rel="icon" href="/favicon.ico" sizes="48x48">\n'
+        '<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">\n'
+        '<link rel="apple-touch-icon" href="/apple-touch-icon-180.png">\n'
+        '<link rel="manifest" href="/site.webmanifest">\n'
+        '<meta name="theme-color" content="#111317">\n'
+    )
+    (web / "snippet.html").write_text(snippet)
+    print(f"  {web / 'snippet.html'}")
 
 
 def main():

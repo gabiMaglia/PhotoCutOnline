@@ -100,6 +100,9 @@ async function callInline(cmd, args = {}) {
     case "setFeather":
       s.setFeather(args.px);
       return s.hasCut ? s.previewBlob() : null;
+    case "setFinish":
+      s.setFinish(args.finish);
+      return s.hasCut ? s.previewBlob() : null;
     case "composite":
       return s.composite(args.opts);
     default:
@@ -149,6 +152,7 @@ export const backend = {
     auto: !IS_DESKTOP,
     undo: !IS_DESKTOP,
     feather: !IS_DESKTOP,
+    finish: !IS_DESKTOP, // sticker/sombra/presets: motor web
     formats: !IS_DESKTOP,
     clipboard: typeof navigator !== "undefined" && !!navigator.clipboard?.write,
   },
@@ -221,6 +225,12 @@ export const backend = {
   async setFeather(px) {
     if (IS_DESKTOP) return null;
     const blob = await call("setFeather", { px });
+    return blob ? previewUrlFrom(blob) : null;
+  },
+
+  async setFinish(finish) {
+    if (IS_DESKTOP) return null;
+    const blob = await call("setFinish", { finish });
     return blob ? previewUrlFrom(blob) : null;
   },
 

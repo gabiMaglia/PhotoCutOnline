@@ -16,14 +16,14 @@ export const PLATFORMS = [
   {
     id: "ios",
     name: "iOS / iPadOS",
-    detail: "AppIcon.appiconset + legacy 20–1024 px",
-    count: 14,
+    detail: "appiconset + iOS 18 dark/tinted + legacy",
+    count: 16,
   },
   {
     id: "android",
     name: "Android",
-    detail: "mipmaps mdpi–xxxhdpi, adaptive, Play Store",
-    count: 11,
+    detail: "mipmaps, adaptive, themed (13+), Play Store",
+    count: 16,
   },
   {
     id: "macos",
@@ -40,8 +40,8 @@ export const PLATFORMS = [
   {
     id: "web",
     name: "Web / PWA",
-    detail: "favicons, manifest, maskable, apple-touch",
-    count: 8,
+    detail: "favicons, manifest, maskable, snippet HTML",
+    count: 9,
   },
 ];
 
@@ -75,7 +75,9 @@ const WEB_PNGS = [
  * opts: { padding: 0..0.3, bg: null | "#rrggbb", radius: 0..0.5 }
  */
 export function renderIcon(source, size, opts = {}) {
-  const { padding = 0.08, bg = null, radius = 0 } = opts;
+  const { padding = 0.08, radius = 0, variant = "normal" } = opts;
+  // dark/tinted/monochrome van SIEMPRE sobre transparente (el SO pone el fondo)
+  const bg = variant === "normal" ? opts.bg ?? null : null;
   const c = document.createElement("canvas");
   c.width = size;
   c.height = size;
@@ -100,7 +102,30 @@ export function renderIcon(source, size, opts = {}) {
   const dw = source.width * s;
   const dh = source.height * s;
   ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
-  return c;
+  return applyVariant(c, variant);
+}
+
+/**
+ * Variantes 2026 del arte:
+ *  - "tinted" (iOS 18): escala de grises sobre transparente; el sistema tiñe.
+ *  - "monochrome" (Android 13 themed): silueta blanca desde el canal alfa.
+ * El arte llega como canvas YA compuesto (con margen) y fondo transparente.
+ */
+function applyVariant(canvas, variant) {
+  if (variant !== "tinted" && variant !== "monochrome") return canvas;
+  const ctx = canvas.getContext("2d");
+  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    if (variant === "tinted") {
+      const g = Math.round(0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]);
+      d[i] = d[i + 1] = d[i + 2] = g;
+    } else {
+      d[i] = d[i + 1] = d[i + 2] = 255; // silueta blanca, conserva alfa
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return canvas;
 }
 
 function roundedRectPath(ctx, x, y, w, h, r) {
@@ -166,12 +191,35 @@ const IOS_CONTENTS = JSON.stringify(
   {
     images: [
       { filename: "icon-1024.png", idiom: "universal", platform: "ios", size: "1024x1024" },
+      {
+        appearances: [{ appearance: "luminosity", value: "dark" }],
+        filename: "icon-1024-dark.png",
+        idiom: "universal",
+        platform: "ios",
+        size: "1024x1024",
+      },
+      {
+        appearances: [{ appearance: "luminosity", value: "tinted" }],
+        filename: "icon-1024-tinted.png",
+        idiom: "universal",
+        platform: "ios",
+        size: "1024x1024",
+      },
     ],
     info: { author: "photocut-studio", version: 1 },
   },
   null,
   2
 );
+
+/** Snippet HTML listo para pegar (favicons + PWA). */
+export function faviconSnippet() {
+  return `<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon-180.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#111317">`;
+}
 
 function webManifest(name) {
   return JSON.stringify(
@@ -194,12 +242,16 @@ const ZIP_README = `Iconos generados con PhotoCut Studio
 =====================================
 
 ios/AppIcon.appiconset/   Arrastra la carpeta a Assets.xcassets (Xcode 14+).
+                          Incluye variantes iOS 18 dark y tinted.
 ios/legacy/               PNGs sueltos por si usas tooling antiguo.
 android/                  Copia los mipmap-* a app/src/main/res/.
                           play_store_512.png es el icono de Google Play.
+                          ic_launcher_monochrome.png = themed icons (Android
+                          13+): añade <monochrome> en tu adaptive-icon XML.
 macos/AppIcon.iconset/    En macOS: iconutil -c icns macos/AppIcon.iconset
 windows/app.ico           Úsalo directo como icono de la aplicación.
 web/                      favicon.ico + PNGs + site.webmanifest para PWA.
+                          snippet.html = etiquetas <link> listas para pegar.
 
 Generado también disponible por CLI: make_icons.py (Python + Pillow).
 `;
@@ -220,6 +272,16 @@ export async function buildIconZip(source, opts = {}) {
     files.push({
       path: "app-icons/ios/AppIcon.appiconset/icon-1024.png",
       data: await pngAt(source, 1024, render),
+    });
+    // iOS 18: variantes dark (mismo arte, fondo transparente) y tinted
+    // (escala de grises; el sistema aplica el tinte del usuario)
+    files.push({
+      path: "app-icons/ios/AppIcon.appiconset/icon-1024-dark.png",
+      data: await pngAt(source, 1024, { ...render, variant: "dark" }),
+    });
+    files.push({
+      path: "app-icons/ios/AppIcon.appiconset/icon-1024-tinted.png",
+      data: await pngAt(source, 1024, { ...render, variant: "tinted" }),
     });
     files.push({
       path: "app-icons/ios/AppIcon.appiconset/Contents.json",
@@ -244,9 +306,15 @@ export async function buildIconZip(source, opts = {}) {
     }
     for (const [dpi, size] of Object.entries(ANDROID_ADAPTIVE)) {
       // adaptive foreground: el arte debe ocupar la zona segura central (66/108)
+      const fgOpts = { ...render, padding: 0.2 + render.padding * 0.5 };
       files.push({
         path: `app-icons/android/mipmap-${dpi}/ic_launcher_foreground.png`,
-        data: await pngAt(source, size, { ...render, padding: 0.2 + render.padding * 0.5 }),
+        data: await pngAt(source, size, fgOpts),
+      });
+      // Android 13+ themed icons: capa monochrome (silueta blanca)
+      files.push({
+        path: `app-icons/android/mipmap-${dpi}/ic_launcher_monochrome.png`,
+        data: await pngAt(source, size, { ...fgOpts, variant: "monochrome" }),
       });
     }
     files.push({
@@ -293,6 +361,10 @@ export async function buildIconZip(source, opts = {}) {
     files.push({
       path: "app-icons/web/site.webmanifest",
       data: enc.encode(webManifest(appName)),
+    });
+    files.push({
+      path: "app-icons/web/snippet.html",
+      data: enc.encode(faviconSnippet() + "\n"),
     });
   }
 

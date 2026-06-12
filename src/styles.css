@@ -1387,6 +1387,22 @@ kbd {
   border-color: var(--acid);
 }
 
+.preset-select {
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 13px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.preset-select:focus {
+  outline: none;
+  border-color: var(--acid);
+}
+
 /* ---------------------------------- misc ---------------------------------- */
 ::-webkit-scrollbar {
   width: 10px;

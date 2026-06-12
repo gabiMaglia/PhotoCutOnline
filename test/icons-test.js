@@ -1,5 +1,5 @@
 // Smoke test de Icon Studio: renderIcon + buildIconZip con canvas reales.
-import { buildIconZip, renderIcon } from "../src/lib/icons.js";
+import { buildIconZip, renderIcon, faviconSnippet } from "../src/lib/icons.js";
 
 const out = [];
 const log = (s) => out.push(s);
@@ -36,7 +36,17 @@ async function main() {
       count++;
     }
   }
-  assert(count >= 50, `zip: ${count} entradas ≥ 50`);
+  assert(count >= 58, `zip: ${count} entradas ≥ 58 (con variantes 2026)`);
+
+  // variantes: tinted = grises (R==G==B), monochrome = silueta blanca
+  const tinted = renderIcon(src, 64, { variant: "tinted" });
+  const td = tinted.getContext("2d").getImageData(32, 32, 1, 1).data;
+  assert(td[0] === td[1] && td[1] === td[2], "tinted: píxel en escala de grises");
+  const mono = renderIcon(src, 64, { variant: "monochrome" });
+  const md = mono.getContext("2d").getImageData(32, 32, 1, 1).data;
+  assert(md[0] === 255 && md[1] === 255 && md[2] === 255 && md[3] > 0, "monochrome: silueta blanca");
+  assert(/apple-touch-icon/.test(faviconSnippet()), "snippet: contiene apple-touch-icon");
+
   log("ALL_DONE");
 }
 

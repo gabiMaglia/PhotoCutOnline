@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { PLATFORMS, renderIcon, buildIconZip } from "../lib/icons.js";
+import { PLATFORMS, renderIcon, buildIconZip, faviconSnippet } from "../lib/icons.js";
 import { loadHtmlImage } from "../lib/jsEngine.js";
 import { t } from "../lib/i18n.js";
 
@@ -83,6 +83,15 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
       onToast(t("toast.iconsfail", { e }), "error");
     } finally {
       setBuilding(false);
+    }
+  }
+
+  async function copySnippet() {
+    try {
+      await navigator.clipboard.writeText(faviconSnippet());
+      onToast(t("icon.snippetCopied"), "ok");
+    } catch (e) {
+      onToast(String(e), "error");
     }
   }
 
@@ -180,6 +189,9 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
           </button>
           <button className="btn" onClick={downloadPython}>
             {t("icon.pyBtn")}
+          </button>
+          <button className="btn" onClick={copySnippet}>
+            {t("icon.snippetBtn")}
           </button>
           <div className="rail-help">
             <p>

@@ -50,6 +50,11 @@ const handlers = {
     return session.hasCut ? session.previewBlob() : null;
   },
 
+  setFinish({ finish }) {
+    session.setFinish(finish);
+    return session.hasCut ? session.previewBlob() : null;
+  },
+
   composite: ({ opts }) => session.composite(opts),
 };
 

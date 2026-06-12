@@ -113,7 +113,46 @@ async function main() {
   const fblob = await s2.previewBlob();
   assert(fblob instanceof Blob && fblob.type === "image/png", "feather: preview OK");
 
-  // 7. motor WASM (GrabCut real): misma API, precisión igual o mejor
+  // 7. acabado: sticker + sombra + preset
+  s2.setFeather(0); // el feather de la sección 6 mezclaría el borde con el contorno
+  s2.setFinish({ sticker: { width: 8, color: [255, 255, 255] }, shadow: null });
+  let fin = await s2.previewBlob();
+  assert(fin instanceof Blob, "sticker: preview con contorno");
+  // el contorno blanco debe aparecer justo fuera del sujeto
+  const finImg = await blobToImageData(fin);
+  const probe = px(finImg, 56, 85); // 4px a la izquierda del sujeto (x=60..180)
+  assert(
+    probe[3] > 200 && probe[0] > 240 && probe[1] > 240 && probe[2] > 240,
+    `sticker: píxel (56,85) blanco opaco (rgba ${probe.join(",")})`
+  );
+  s2.setFinish({ sticker: null, shadow: { blur: 10, dx: 0, dy: 8, opacity: 0.6 } });
+  fin = await s2.previewBlob();
+  const shImg = await blobToImageData(fin);
+  const below = px(shImg, 120, 140); // bajo el sujeto (y>130)
+  assert(below[3] > 10, `sombra: alfa presente bajo el sujeto (a=${below[3]})`);
+  s2.setFinish({ sticker: null, shadow: null });
+
+  // 8. preset: avatar circular 512 — tamaño exacto y esquinas transparentes
+  const av = await s2.composite({
+    type: "transparent",
+    preset: { w: 512, h: 512, padding: 0.1, bg: null, circle: true },
+  });
+  const avImg = await blobToImageData(av);
+  assert(avImg.width === 512 && avImg.height === 512, "preset: lienzo 512×512");
+  assert(px(avImg, 3, 3)[3] === 0, "preset circular: esquina transparente");
+  assert(px(avImg, 256, 256)[3] > 0, "preset circular: centro con contenido");
+  const amz = await s2.composite({
+    type: "transparent",
+    preset: { w: 2000, h: 2000, padding: 0.05, bg: "#ffffff" },
+  });
+  const amzImg = await blobToImageData(amz);
+  const corner = px(amzImg, 5, 5);
+  assert(
+    amzImg.width === 2000 && corner[0] === 255 && corner[3] === 255,
+    "preset amazon: 2000² con fondo blanco"
+  );
+
+  // 9. motor WASM (GrabCut real): misma API, precisión igual o mejor
   await wasmInit();
   const s3 = new CutoutSession();
   s3.attachWasm(WasmCut);
@@ -129,6 +168,21 @@ async function main() {
   assert(blob instanceof Blob && s3.canRedo, "wasm: undo/redo operativos");
 
   log("ALL_DONE");
+}
+
+async function blobToImageData(blob) {
+  const bmp = await createImageBitmap(blob);
+  const c = document.createElement("canvas");
+  c.width = bmp.width;
+  c.height = bmp.height;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(bmp, 0, 0);
+  return ctx.getImageData(0, 0, bmp.width, bmp.height);
+}
+
+function px(img, x, y) {
+  const o = (y * img.width + x) * 4;
+  return [img.data[o], img.data[o + 1], img.data[o + 2], img.data[o + 3]];
 }
 
 function assert(cond, name) {

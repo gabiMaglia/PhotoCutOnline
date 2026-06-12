@@ -6,6 +6,7 @@ import DownloadModal from "./components/DownloadModal.jsx";
 import HelpModal from "./components/HelpModal.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import { backend } from "./lib/backend.js";
+import { EXPORT_PRESETS } from "./lib/presets.js";
 import { t, useLang, setLang, LANGS } from "./lib/i18n.js";
 import pkg from "../package.json";
 import {
@@ -26,6 +27,11 @@ export default function App() {
   const [mode, setMode] = useState("rect");
   const [brushSize, setBrushSize] = useState(28);
   const [feather, setFeather] = useState(2);
+  const [stickerOn, setStickerOn] = useState(false);
+  const [stickerWidth, setStickerWidth] = useState(14);
+  const [shadowOn, setShadowOn] = useState(false);
+  const [shadowSize, setShadowSize] = useState(40);
+  const [presetId, setPresetId] = useState("original");
   const [busy, setBusy] = useState(false);
   const [hasCut, setHasCut] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
@@ -239,6 +245,21 @@ export default function App() {
     refreshUndo();
   }, [refreshUndo]);
 
+  const finishTimer = useRef(null);
+  const applyFinish = useCallback((sticker, sw, shadow, ss) => {
+    clearTimeout(finishTimer.current);
+    finishTimer.current = setTimeout(async () => {
+      const finish = {
+        sticker: sticker ? { width: sw, color: [255, 255, 255] } : null,
+        shadow: shadow
+          ? { blur: 8 + ss * 0.5, dx: 0, dy: 4 + ss * 0.3, opacity: 0.25 + ss * 0.004 }
+          : null,
+      };
+      const url = await backend.setFinish(finish);
+      if (url) setResultUrl(url);
+    }, 120);
+  }, []);
+
   const featherTimer = useRef(null);
   const handleFeather = useCallback((value) => {
     setFeather(value);
@@ -256,7 +277,8 @@ export default function App() {
     async (kind, arg) => {
       setBusy(true);
       try {
-        const opts = { format, quality: 0.92 };
+        const preset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
+        const opts = { format, quality: 0.92, ...(preset ? { preset } : {}) };
         let url;
         if (kind === "transparent") url = await backend.exportTransparent(opts);
         else if (kind === "solid") url = await backend.exportSolid(arg, opts);
@@ -270,7 +292,7 @@ export default function App() {
         setBusy(false);
       }
     },
-    [format, toast]
+    [format, presetId, toast]
   );
 
   const copyToClipboard = useCallback(async () => {
@@ -475,6 +497,68 @@ export default function App() {
               )}
             </section>
 
+            {backend.features.finish && (
+              <section className="rail-group">
+                <h2 className="rail-title">{t("finish.title")}</h2>
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={stickerOn}
+                    disabled={!hasCut}
+                    onChange={(e) => {
+                      setStickerOn(e.target.checked);
+                      applyFinish(e.target.checked, stickerWidth, shadowOn, shadowSize);
+                    }}
+                  />
+                  {t("finish.sticker")}
+                </label>
+                <div className={`slider ${!stickerOn || !hasCut ? "slider-off" : ""}`}>
+                  <label htmlFor="sticker-w">{t("finish.stickerWidth", { n: stickerWidth })}</label>
+                  <input
+                    id="sticker-w"
+                    type="range"
+                    min="4"
+                    max="48"
+                    value={stickerWidth}
+                    disabled={!stickerOn || !hasCut}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      setStickerWidth(v);
+                      applyFinish(stickerOn, v, shadowOn, shadowSize);
+                    }}
+                  />
+                </div>
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={shadowOn}
+                    disabled={!hasCut}
+                    onChange={(e) => {
+                      setShadowOn(e.target.checked);
+                      applyFinish(stickerOn, stickerWidth, e.target.checked, shadowSize);
+                    }}
+                  />
+                  {t("finish.shadow")}
+                </label>
+                <div className={`slider ${!shadowOn || !hasCut ? "slider-off" : ""}`}>
+                  <label htmlFor="shadow-s">{t("finish.shadowSize", { n: shadowSize })}</label>
+                  <input
+                    id="shadow-s"
+                    type="range"
+                    min="10"
+                    max="100"
+                    value={shadowSize}
+                    disabled={!shadowOn || !hasCut}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      setShadowSize(v);
+                      applyFinish(stickerOn, stickerWidth, shadowOn, v);
+                    }}
+                  />
+                </div>
+              </section>
+            )}
+
             <section className="rail-group">
               <h2 className="rail-title">{t("rail.export")}</h2>
               <button
@@ -485,6 +569,23 @@ export default function App() {
               >
                 {previewOpen ? t("preview.hide") : t("preview.show")} <kbd>P</kbd>
               </button>
+              {backend.features.finish && (
+                <div className="field">
+                  <label htmlFor="export-preset">{t("preset.label")}</label>
+                  <select
+                    id="export-preset"
+                    className="preset-select"
+                    value={presetId}
+                    onChange={(e) => setPresetId(e.target.value)}
+                  >
+                    {EXPORT_PRESETS.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {t(p.labelKey)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {backend.features.formats && (
                 <div className="format-row" role="radiogroup" aria-label="Formato">
                   {["png", "webp", "jpeg"].map((f) => (

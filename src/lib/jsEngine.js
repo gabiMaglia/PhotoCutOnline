@@ -42,6 +42,8 @@ export class CutoutSession {
     this.undoStack = [];
     this.redoStack = [];
     this.featherPx = 2; // en px de imagen completa
+    // acabado post-recorte (px en resolución completa)
+    this.finish = { sticker: null, shadow: null }; // {width,color} / {blur,dx,dy,opacity}
     this.maskCanvasFull = null; // cache del último alfa a resolución completa
     if (this.wasmCut?.free) this.wasmCut.free();
     this.wasmCut = null; // instancia WASM ligada a la imagen actual
@@ -92,6 +94,11 @@ export class CutoutSession {
 
   setFeather(px) {
     this.featherPx = Math.max(0, px);
+  }
+
+  /** finish: { sticker: null|{width,color}, shadow: null|{blur,dx,dy,opacity} } */
+  setFinish(finish) {
+    this.finish = { sticker: null, shadow: null, ...finish };
   }
 
   snapshot() {
@@ -362,7 +369,27 @@ export class CutoutSession {
       out.data[o + 2] = data[o + 2];
       out.data[o + 3] = alpha[i];
     }
-    return canvasToBlob(canvasFromImageData(out));
+    const cut = canvasFromImageData(out);
+    const c = createCanvas(width, height);
+    const ctx = c.getContext("2d");
+    drawFinish(ctx, alpha, width, height, this.scale, this.finish);
+    ctx.drawImage(cut, 0, 0);
+    return canvasToBlob(c);
+  }
+
+  /** Arte final a resolución completa: sombra + sticker + recorte, fondo transparente. */
+  renderArtFull() {
+    const cut = this.cutoutCanvas(); // también cachea maskCanvasFull
+    const W = cut.width;
+    const H = cut.height;
+    const c = createCanvas(W, H);
+    const ctx = c.getContext("2d");
+    if (this.finish.sticker || this.finish.shadow) {
+      const alphaFull = canvasAlpha(this.maskCanvasFull);
+      drawFinish(ctx, alphaFull, W, H, 1, this.finish);
+    }
+    ctx.drawImage(cut, 0, 0);
+    return c;
   }
 
   /**
@@ -372,8 +399,9 @@ export class CutoutSession {
    */
   async composite(opts) {
     if (!this.label) throw new Error("No hay recorte para exportar");
-    const cut = this.cutoutCanvas();
-    const out = createCanvas(cut.width, cut.height);
+    const art = this.renderArtFull();
+    if (opts.preset) return this.compositePreset(art, opts);
+    const out = createCanvas(art.width, art.height);
     const ctx = out.getContext("2d");
 
     if (opts.type === "solid") {
@@ -384,8 +412,41 @@ export class CutoutSession {
       const img = await decodeImage(opts.bgDataUrl);
       drawCover(ctx, img, out.width, out.height);
     }
-    ctx.drawImage(cut, 0, 0);
+    ctx.drawImage(art, 0, 0);
 
+    const format = opts.format || "png";
+    const mime =
+      format === "webp" ? "image/webp" : format === "jpeg" ? "image/jpeg" : "image/png";
+    return canvasToBlob(out, mime, opts.quality ?? 0.92);
+  }
+
+  /**
+   * Exportación con preset de marketplace/social:
+   * preset: { w, h, padding=0.06, bg=null|"#hex", circle=false }
+   * Recorta al bounding box del sujeto (incluido el acabado) y lo encaja.
+   */
+  compositePreset(art, opts) {
+    const { w: pw, h: ph, padding = 0.06, bg = null, circle = false } = opts.preset;
+    const box = alphaBBox(art);
+    const out = createCanvas(pw, ph);
+    const ctx = out.getContext("2d");
+    if (circle) {
+      ctx.beginPath();
+      ctx.arc(pw / 2, ph / 2, Math.min(pw, ph) / 2, 0, Math.PI * 2);
+      ctx.clip();
+    }
+    if (bg) {
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, pw, ph);
+    }
+    const availW = pw * (1 - padding * 2);
+    const availH = ph * (1 - padding * 2);
+    const s = Math.min(availW / box.w, availH / box.h);
+    const dw = box.w * s;
+    const dh = box.h * s;
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(art, box.x, box.y, box.w, box.h, (pw - dw) / 2, (ph - dh) / 2, dw, dh);
     const format = opts.format || "png";
     const mime =
       format === "webp" ? "image/webp" : format === "jpeg" ? "image/jpeg" : "image/png";
@@ -713,6 +774,117 @@ function drawCover(ctx, img, w, h) {
   const dw = img.width * s;
   const dh = img.height * s;
   ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+
+/** Canal alfa de un canvas como Uint8ClampedArray. */
+function canvasAlpha(canvas) {
+  const { width, height } = canvas;
+  const d = canvas.getContext("2d").getImageData(0, 0, width, height).data;
+  const a = new Uint8ClampedArray(width * height);
+  for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3];
+  return a;
+}
+
+/** Bounding box de los píxeles con alfa > 0 (todo el lienzo si está vacío). */
+function alphaBBox(canvas) {
+  const { width, height } = canvas;
+  const d = canvas.getContext("2d").getImageData(0, 0, width, height).data;
+  let minX = width;
+  let minY = height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (d[(y * width + x) * 4 + 3] > 0) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return { x: 0, y: 0, w: width, h: height };
+  return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+}
+
+/**
+ * Transformada de distancia chamfer (3/4) hacia FUERA del sujeto:
+ * dist=0 dentro (alfa>127), crece hacia fuera. Dos pasadas, O(N).
+ */
+function chamferDT(alpha, width, height) {
+  const INF = 1e7;
+  const d = new Float32Array(width * height);
+  for (let i = 0; i < d.length; i++) d[i] = alpha[i] > 127 ? 0 : INF;
+  // pasada adelante
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = y * width + x;
+      let v = d[i];
+      if (x > 0) v = Math.min(v, d[i - 1] + 3);
+      if (y > 0) {
+        v = Math.min(v, d[i - width] + 3);
+        if (x > 0) v = Math.min(v, d[i - width - 1] + 4);
+        if (x < width - 1) v = Math.min(v, d[i - width + 1] + 4);
+      }
+      d[i] = v;
+    }
+  }
+  // pasada atrás
+  for (let y = height - 1; y >= 0; y--) {
+    for (let x = width - 1; x >= 0; x--) {
+      const i = y * width + x;
+      let v = d[i];
+      if (x < width - 1) v = Math.min(v, d[i + 1] + 3);
+      if (y < height - 1) {
+        v = Math.min(v, d[i + width] + 3);
+        if (x < width - 1) v = Math.min(v, d[i + width + 1] + 4);
+        if (x > 0) v = Math.min(v, d[i + width - 1] + 4);
+      }
+      d[i] = v;
+    }
+  }
+  return d; // unidades chamfer: dividir por 3 ≈ px
+}
+
+/**
+ * Dibuja sombra y contorno sticker bajo el sujeto. Los parámetros del finish
+ * están en px de imagen completa; `pxScale` los lleva a la resolución actual.
+ */
+function drawFinish(ctx, alpha, width, height, pxScale, finish) {
+  if (!finish) return;
+  if (finish.shadow) {
+    const { blur = 24, dx = 0, dy = 14, opacity = 0.45 } = finish.shadow;
+    const r = Math.max(1, Math.round(blur * pxScale));
+    let sh = boxBlurAlpha(alpha, width, height, r);
+    sh = boxBlurAlpha(sh, width, height, Math.max(1, r >> 1));
+    const img = new ImageData(width, height);
+    for (let i = 0; i < sh.length; i++) {
+      img.data[i * 4 + 3] = Math.round(sh[i] * opacity);
+    }
+    ctx.drawImage(
+      canvasFromImageData(img),
+      Math.round(dx * pxScale),
+      Math.round(dy * pxScale)
+    );
+  }
+  if (finish.sticker) {
+    const { width: sw = 14, color = [255, 255, 255] } = finish.sticker;
+    const wpx = Math.max(1, sw * pxScale) * 3; // a unidades chamfer
+    const dist = chamferDT(alpha, width, height);
+    const img = new ImageData(width, height);
+    for (let i = 0; i < dist.length; i++) {
+      // 1 px de anti-alias en el borde exterior
+      const a = Math.max(0, Math.min(1, (wpx + 3 - dist[i]) / 3));
+      if (a > 0) {
+        const o = i * 4;
+        img.data[o] = color[0];
+        img.data[o + 1] = color[1];
+        img.data[o + 2] = color[2];
+        img.data[o + 3] = Math.round(a * 255);
+      }
+    }
+    ctx.drawImage(canvasFromImageData(img), 0, 0);
+  }
 }
 
 export function loadHtmlImage(src) {
