@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import CanvasEditor from "./components/CanvasEditor.jsx";
 import IconStudio from "./components/IconStudio.jsx";
+import AdSlot from "./components/AdSlot.jsx";
+import { DONATE_URL } from "./lib/ads.js";
 import AboutModal from "./components/AboutModal.jsx";
 import DownloadModal from "./components/DownloadModal.jsx";
 import HelpModal from "./components/HelpModal.jsx";
@@ -477,6 +479,18 @@ export default function App() {
             <input type="file" accept="image/*" hidden onChange={onFileInput} />
           </label>
           <LangSwitch />
+          {DONATE_URL && (
+            <a
+              className="btn-icon btn-icon-donate"
+              href={DONATE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t("donate.aria")}
+              title={t("donate.aria")}
+            >
+              ♥
+            </a>
+          )}
           {!backend.isDesktop && (
             <button
               className="btn-icon"
@@ -705,6 +719,8 @@ export default function App() {
             <div className="rail-help">
               <p>{t("rail.help")}</p>
             </div>
+
+            <AdSlot placement="cut-rail" onDownload={() => setDlOpen(true)} />
           </aside>
 
           <main className="workspace">
@@ -726,7 +742,12 @@ export default function App() {
 
       {tab === "icons" && (
         <div className="body">
-          <IconStudio getCutout={getCutout} hasCut={hasCut} onToast={toast} />
+          <IconStudio
+            getCutout={getCutout}
+            hasCut={hasCut}
+            onToast={toast}
+            onDownload={() => setDlOpen(true)}
+          />
         </div>
       )}
 

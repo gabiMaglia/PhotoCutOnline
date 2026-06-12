@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medidas de iconos de app en 2026: iOS, Android, macOS, Windows y Web — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Todas las medidas de iconos de aplicación vigentes en 2026: iOS 18 (incluidos dark y tinted), Android 13+ (adaptive y themed), macOS, Windows ICO y Web/PWA."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="stylesheet" href="/estaticas.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Medidas de iconos de app en 2026: iOS, Android, macOS, Windows y Web</h1>
+      <p class="meta">Actualizado: junio de 2026 · Lectura: 6 minutos</p>
+
+      <p>
+        Cada plataforma pide los iconos a su manera: Apple quiere un
+        <code>appiconset</code> con variantes claro/oscuro/tinted, Android pasó
+        a iconos adaptativos con capa monocroma para los temas de Material You,
+        y la web tiene su propio pequeño zoo de favicons. Esta guía reúne
+        <strong>todas las medidas vigentes en 2026</strong> en un solo lugar.
+      </p>
+
+      <h2>iOS / iPadOS (Xcode 16+)</h2>
+      <p>
+        Desde Xcode 14 basta con un único icono de
+        <strong>1024 × 1024&nbsp;px</strong> y Xcode genera el resto. Con iOS
+        18, Apple añadió dos variantes del mismo tamaño:
+      </p>
+      <table>
+        <tr><th>Variante</th><th>Tamaño</th><th>Notas</th></tr>
+        <tr><td>Estándar (any)</td><td>1024 × 1024</td><td>Sin transparencia ni esquinas redondeadas: el sistema aplica la máscara.</td></tr>
+        <tr><td>Dark</td><td>1024 × 1024</td><td>Fondo transparente u oscuro; el sujeto debe funcionar sobre el fondo oscuro del sistema.</td></tr>
+        <tr><td>Tinted</td><td>1024 × 1024</td><td>Escala de grises; iOS la tiñe con el color de acento del usuario.</td></tr>
+      </table>
+      <p>
+        Para proyectos que aún soportan versiones antiguas, las medidas legacy
+        siguen siendo: 20, 29, 40, 60, 76 y 83.5&nbsp;pt en @1x/@2x/@3x según
+        dispositivo (40, 58, 60, 80, 87, 120, 152, 167, 180&nbsp;px…).
+      </p>
+
+      <h2>Android (API 33+ / Android 13)</h2>
+      <table>
+        <tr><th>Recurso</th><th>Tamaño</th><th>Notas</th></tr>
+        <tr><td>mipmap-mdpi</td><td>48 × 48</td><td rowspan="5">Iconos «clásicos» por densidad.</td></tr>
+        <tr><td>mipmap-hdpi</td><td>72 × 72</td></tr>
+        <tr><td>mipmap-xhdpi</td><td>96 × 96</td></tr>
+        <tr><td>mipmap-xxhdpi</td><td>144 × 144</td></tr>
+        <tr><td>mipmap-xxxhdpi</td><td>192 × 192</td></tr>
+        <tr><td>Adaptive (foreground/background)</td><td>432 × 432</td><td>El contenido «seguro» debe caber en el círculo central de 264&nbsp;px: el sistema recorta la forma.</td></tr>
+        <tr><td>Themed / monochrome</td><td>432 × 432</td><td>Capa monocroma (blanca sobre transparente) para Material You en Android 13+.</td></tr>
+        <tr><td>Google Play Store</td><td>512 × 512</td><td>PNG de 32 bits, sin transparencia.</td></tr>
+      </table>
+
+      <h2>macOS</h2>
+      <p>
+        Un <code>AppIcon.iconset</code> con 10 archivos que después se compila
+        a <code>.icns</code> con <code>iconutil</code>:
+      </p>
+      <pre>16, 16@2x, 32, 32@2x, 128, 128@2x, 256, 256@2x, 512, 512@2x
+(es decir: 16, 32, 64, 128, 256, 512 y 1024 px)</pre>
+
+      <h2>Windows</h2>
+      <p>
+        Un único <code>app.ico</code> multi-resolución con 7 tamaños
+        incrustados: <strong>16, 24, 32, 48, 64, 128 y 256&nbsp;px</strong>.
+        Los instaladores y la barra de tareas eligen el que necesitan.
+      </p>
+
+      <h2>Web / PWA</h2>
+      <table>
+        <tr><th>Archivo</th><th>Tamaño</th><th>Para qué</th></tr>
+        <tr><td>favicon.ico</td><td>48 × 48 (multi)</td><td>Pestañas y marcadores en navegadores antiguos.</td></tr>
+        <tr><td>favicon-32.png</td><td>32 × 32</td><td>Pestaña estándar.</td></tr>
+        <tr><td>apple-touch-icon</td><td>180 × 180</td><td>Pantalla de inicio en iPhone/iPad.</td></tr>
+        <tr><td>icon-192.png</td><td>192 × 192</td><td>PWA instalada (manifest).</td></tr>
+        <tr><td>icon-512.png</td><td>512 × 512</td><td>Splash de PWA (manifest).</td></tr>
+        <tr><td>maskable-512.png</td><td>512 × 512</td><td>Variante «maskable»: el arte debe caber en el 80% central.</td></tr>
+      </table>
+
+      <h2>Reglas de diseño que ahorran disgustos</h2>
+      <ul>
+        <li><strong>Trabaja desde un PNG transparente de 1024&nbsp;px o más</strong> y genera todo hacia abajo.</li>
+        <li><strong>Margen de respiración:</strong> 8–12% alrededor del arte; en adaptive/maskable, recuerda que el sistema recorta los bordes.</li>
+        <li><strong>Verifica en tamaños pequeños:</strong> un icono que se ve bien a 256&nbsp;px puede ser ilegible a 16. Si a 32&nbsp;px no se reconoce, simplifica.</li>
+        <li><strong>Nada de texto pequeño:</strong> desaparece en los tamaños de barra de tareas.</li>
+      </ul>
+
+      <h2>Generarlos todos de una vez</h2>
+      <p>
+        El <strong>Icon Studio</strong> de <a href="/">PhotoCut Studio</a>
+        genera las ~58 medidas de las cinco plataformas desde un único PNG —
+        incluidas las variantes dark/tinted de iOS 18 y la capa monocroma de
+        Android 13 — y las descarga en un ZIP con la estructura de carpetas
+        lista para pegar en el proyecto. Gratis y sin subir tu logo a ningún
+        servidor.
+      </p>
+
+      <a class="cta" href="/">Abrir Icon Studio →</a>
+
+      <footer class="site">
+        <a href="/guias/">← Más guías</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos</a>
+      </footer>
+    </div>
+  </body>
+</html>

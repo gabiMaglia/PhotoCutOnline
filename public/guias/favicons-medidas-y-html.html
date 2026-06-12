@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favicons en 2026: medidas necesarias y HTML listo para copiar — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Los 5 archivos de favicon que de verdad necesitas en 2026 (favicon.ico, PNG 32px, apple-touch-icon 180px y los iconos del manifest) con el snippet HTML completo."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="stylesheet" href="/estaticas.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Favicons en 2026: qué medidas necesitas y el HTML listo para copiar</h1>
+      <p class="meta">Actualizado: junio de 2026 · Lectura: 4 minutos</p>
+
+      <p>
+        Durante años los generadores de favicons producían veinte archivos
+        «por si acaso»: tamaños para Internet Explorer en Windows Vista,
+        azulejos de Windows 8, Safari pinned tabs… La realidad de 2026 es
+        mucho más simple: con <strong>5 archivos y 5 líneas de HTML</strong>
+        cubres todos los navegadores y dispositivos actuales.
+      </p>
+
+      <h2>Los archivos imprescindibles</h2>
+      <table>
+        <tr><th>Archivo</th><th>Tamaño</th><th>Quién lo usa</th></tr>
+        <tr><td><code>favicon.ico</code></td><td>48 × 48</td><td>Navegadores antiguos, lectores RSS, marcadores. Aunque parezca jurásico, sigue siendo el fallback universal: muchos clientes lo piden directamente en <code>/favicon.ico</code>.</td></tr>
+        <tr><td><code>favicon-32.png</code></td><td>32 × 32</td><td>La pestaña del navegador en pantallas normales y retina.</td></tr>
+        <tr><td><code>apple-touch-icon-180.png</code></td><td>180 × 180</td><td>iPhone y iPad al añadir el sitio a la pantalla de inicio. Sin transparencia: iOS pone fondo negro a lo transparente.</td></tr>
+        <tr><td><code>icon-192.png</code> + <code>icon-512.png</code></td><td>192 / 512</td><td>El manifest de PWA: icono de la app instalada y pantalla de splash en Android/desktop.</td></tr>
+        <tr><td><code>maskable-512.png</code></td><td>512 × 512</td><td>Variante «maskable» del manifest: Android la recorta en círculo u otras formas, así que el arte debe caber en el 80% central.</td></tr>
+      </table>
+
+      <h2>El HTML</h2>
+      <pre>&lt;link rel="icon" href="/favicon.ico" sizes="48x48"&gt;
+&lt;link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"&gt;
+&lt;link rel="apple-touch-icon" href="/apple-touch-icon-180.png"&gt;
+&lt;link rel="manifest" href="/site.webmanifest"&gt;
+&lt;meta name="theme-color" content="#111317"&gt;</pre>
+
+      <p>Y el <code>site.webmanifest</code> mínimo que referencia los iconos de PWA:</p>
+      <pre>{
+  "name": "Mi App",
+  "short_name": "Mi App",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "display": "standalone"
+}</pre>
+
+      <h2>Errores comunes</h2>
+      <ul>
+        <li>
+          <strong>Usar el logo completo a 16&nbsp;px.</strong> En la pestaña
+          caben unos pocos trazos: usa el símbolo, no el logotipo con texto.
+        </li>
+        <li>
+          <strong>Olvidar el maskable.</strong> Sin él, Android mete tu icono
+          cuadrado dentro de un círculo blanco — el clásico «icono dentro de
+          un huevo frito».
+        </li>
+        <li>
+          <strong>Transparencia en el apple-touch-icon.</strong> iOS la
+          sustituye por negro. Pon siempre un fondo de color.
+        </li>
+        <li>
+          <strong>Un solo SVG para todo.</strong> El favicon SVG es ideal como
+          complemento moderno, pero los iconos del manifest y el
+          apple-touch-icon siguen requiriendo PNG.
+        </li>
+      </ul>
+
+      <h2>Generarlos en 30 segundos</h2>
+      <p>
+        El <strong>Icon Studio</strong> de <a href="/">PhotoCut Studio</a>
+        produce exactamente este set (y los de iOS, Android, macOS y Windows
+        si los necesitas) desde cualquier PNG, con vista previa pixel-perfect
+        a 16, 32 y 48&nbsp;px y un botón que copia el snippet HTML al
+        portapapeles. Todo en tu navegador: tu logo no se sube a ningún
+        servidor.
+      </p>
+
+      <a class="cta" href="/">Generar mis favicons →</a>
+
+      <footer class="site">
+        <a href="/guias/">← Más guías</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos</a>
+      </footer>
+    </div>
+  </body>
+</html>

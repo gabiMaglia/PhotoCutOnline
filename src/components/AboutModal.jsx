@@ -1,5 +1,6 @@
 import licenses from "../generated/licenses.json";
 import { t } from "../lib/i18n.js";
+import { DONATE_URL } from "../lib/ads.js";
 
 // "Acerca de / Licencias": versión, promesa de privacidad y atribución de
 // dependencias open source (regenerar con `npm run licenses`).
@@ -21,6 +22,27 @@ export default function AboutModal({ version, onClose }) {
         <p>
           {t("about.body")} <strong>{t("about.privacy")}</strong>
         </p>
+        {DONATE_URL && (
+          <a
+            className="btn btn-donate about-donate"
+            href={DONATE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("about.donate")}
+          </a>
+        )}
+        <nav className="about-links" aria-label={t("about.linksAria")}>
+          <a href="/legal/privacidad.html" target="_blank" rel="noopener">
+            {t("about.privacyLink")}
+          </a>
+          <a href="/legal/terminos.html" target="_blank" rel="noopener">
+            {t("about.termsLink")}
+          </a>
+          <a href="/guias/" target="_blank" rel="noopener">
+            {t("about.guides")}
+          </a>
+        </nav>
         <h4 className="about-subtitle">{t("about.thirdparty")}</h4>
         <ul className="license-list">
           {licenses.entries.map((d) => (

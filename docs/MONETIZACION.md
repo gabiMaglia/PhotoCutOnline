@@ -1,66 +1,105 @@
-# Monetización — investigación y plan (2026-06-11)
+# Monetización — estrategia y plan
 
-Objetivo: monetizar la página web con publicidad u otras vías, manteniendo el
-selling point del producto: **"tus fotos nunca salen de tu navegador"**.
+**Decisión (2026-06-12):** la página se monetiza **principalmente con
+publicidad por tráfico**, complementada con **donaciones** (Ko-fi:
+<https://ko-fi.com/gabrielmaglia>). Los bundles offline descargables serán de
+pago, pero es un tema aparte que se aborda más adelante. Restricción de
+diseño: mantener el selling point — **"tus fotos nunca salen de tu
+navegador"** — con publicidad discreta (1 slot por vista) y sin terceros por
+defecto.
 
-## 1. Google AdSense — posible, pero no como primera opción
+## 1. Qué hay implementado (jun 2026)
 
-**Lo que exige hoy (2025–2026):**
-- Sitio público con HTTPS, navegación clara y mobile-friendly.
-- Páginas legales personalizadas: About, Contact, **Privacy Policy**,
-  Disclaimer, Terms.
-- Contenido original "con profundidad": la guía práctica habla de 15–25
-  artículos humanos de 800–1500+ palabras. Google evalúa E-E-A-T.
-- **Riesgo principal para nosotros:** los sitios que son "solo una
-  herramienta" caen con frecuencia en el rechazo por **"low value content"**
-  — el crawler ve una SPA con poco texto indexable. Para aprobar, habría que
-  añadir una capa editorial (landing con contenido, guías de uso, blog sobre
-  recorte/diseño de iconos).
-- **Consentimiento (GDPR/EEA + UK):** Google exige un CMP certificado
-  (banner de cookies) para servir anuncios personalizados en Europa. Eso
-  añade fricción y matiza nuestra promesa de privacidad (las imágenes siguen
-  sin subirse, pero el usuario ya no navega "sin terceros").
-- Pago: umbral de 100 USD.
+- **Slot publicitario multi-proveedor** al pie del rail en ambas pestañas
+  (Recorte e Icon Studio; solo una visible a la vez → cumple "1 anuncio por
+  página" de EthicalAds/Carbon). Ver `src/lib/ads.js` y
+  `src/components/AdSlot.jsx`. Activación por build, un proveedor a la vez:
 
-**Veredicto:** viable a medio plazo *si* construimos contenido editorial
-(blog + guías). No para el lanzamiento.
+  | Variable | Red |
+  |---|---|
+  | `VITE_ETHICALADS_PUBLISHER=<id>` | EthicalAds |
+  | `VITE_CARBON_SERVE=<id>` + `VITE_CARBON_PLACEMENT=<dominio>` | Carbon Ads |
+  | `VITE_ADSENSE_CLIENT=ca-pub-XXXX` + `VITE_ADSENSE_SLOT=<id>` | Google AdSense |
+  | (ninguna) | **House-ad propio**: donación Ko-fi / app de escritorio. Cero terceros. |
 
-## 2. Redes orientadas a herramientas/dev — mejor encaje
+  `VITE_ADS_DEV=1` muestra el slot también en `npm run dev`.
+- **Donaciones**: corazón ♥ en la topbar, CTA del house-ad y botón en el
+  modal Acerca de. URL por defecto: el Ko-fi de Gabriel;
+  `VITE_DONATE_URL` la sobreescribe (`""` la oculta).
+- **Páginas legales** (requisito AdSense): `/legal/privacidad.html` y
+  `/legal/terminos.html`, enlazadas desde Acerca de.
+- **Capa editorial SEO** (requisito AdSense + captación de tráfico):
+  `/guias/` con 3 guías de ~800-1000 palabras (quitar fondo, medidas de
+  iconos 2026, favicons). Más `robots.txt` y plantilla de `ads.txt`.
 
-| Red | Modelo | Requisitos | Encaje |
-|---|---|---|---|
-| **EthicalAds** | contextual, sin tracking, 1 anuncio/página; ~70% para el publisher, ~$2.50 CPM (tráfico US/EU), pago mensual desde $50 | ~50 000 pageviews/mes, audiencia técnica, revisión manual | ⭐ El mejor: "privacy-first" **refuerza** nuestra promesa en vez de romperla; audiencia de Icon Studio es dev/diseño |
-| **Carbon Ads** (BuySellAds) | 1 anuncio curado/página para audiencia dev/design | invite-only, revisión manual de relevancia y tráfico | Muy bueno si nos aceptan; solicitar cuando haya tráfico |
-| AdSense | display clásico | ver arriba | Solo con capa editorial |
+## 2. Las redes, analizadas
 
-## 3. Vías que no son ads (ya tenemos la infraestructura)
+### Por las que vamos (en orden)
 
-- **Freemium desktop** ⭐ — la página ya ofrece "Descargar app" con
-  instaladores (Win + macOS x2 vía GitHub Releases). Modelo: web gratis
-  (motor WASM completo) + desktop de pago con extras (batch, formatos pro,
-  sin marca). Requiere pasarela (Gumroad/Lemon Squeezy/Paddle gestionan IVA).
-- **Donaciones** — Ko-fi / GitHub Sponsors / Buy Me a Coffee: cero fricción,
-  cero conflicto con privacidad. Botón en el modal Acerca de.
-- **Plantillas/packs** — venta de packs de iconos/fondos desde Icon Studio
-  (más adelante).
+| Red | Modelo | Requisito de entrada | CPM aprox. | Encaje |
+|---|---|---|---|---|
+| **EthicalAds** ⭐ primera | Contextual, sin cookies, 1 anuncio/página; ~70% para el publisher; pago mensual desde $50 | ~50k pageviews/mes, audiencia técnica, revisión manual | ~$2.50 (US/EU) | El "privacy-first" **refuerza** nuestra promesa; Icon Studio = audiencia dev |
+| **Carbon Ads** | 1 anuncio curado/página, audiencia dev/design | Invite-only, tráfico demostrable | $1.50–4 | Solicitar a la vez que EthicalAds; si aceptan, comparar eCPM real |
+| **Google AdSense** | Display clásico + Auto ads | Aprobación editorial (E-E-A-T); riesgo "low value content" en sitios-herramienta — por eso existen las guías | Muy variable ($0.20–3 efectivo según geo) | El mayor inventario y fill rate; exige CMP en EEA/UK y matiza la promesa de privacidad |
 
-## 4. Plan recomendado por fases
+### Descartadas (y por qué)
 
-1. **Lanzamiento (ya):** hosting + analytics de visitas respetuoso
-   (Plausible/Umami — sin cookies, sin banner) para MEDIR tráfico real.
-   Botón de donaciones. Página de descarga de la app como funnel.
-2. **≥50k pageviews/mes:** aplicar a **EthicalAds** (1 anuncio discreto en
-   el rail / bajo el lienzo). Aplicar también a Carbon.
-3. **Si el tráfico crece y compensa:** añadir capa editorial (guías SEO:
-   "cómo quitar el fondo", "medidas de iconos iOS/Android") → solicitar
-   AdSense con CMP de consentimiento. El loader ya está preparado:
-   compilar con `VITE_ADSENSE_CLIENT=ca-pub-XXXX npm run build` lo activa
-   (ver `src/main.jsx`); sin la variable, no se carga nada.
-4. **Monetización fuerte:** desktop de pago (freemium real).
+- **Mediavine / Raptive / Monumetric** (redes premium): exigen 50k–100k
+  *sesiones*/mes y contenido editorial extenso; reevaluar solo si el blog
+  despega de verdad.
+- **Media.net**: requiere mayoría de tráfico US/UK/CA y contenido editorial;
+  mal encaje con tráfico hispano de herramienta.
+- **Adsterra / Monetag / PropellerAds**: pagan con poco tráfico pero a base
+  de formatos agresivos (popunders, push). Destruirían la confianza que es
+  nuestro diferencial. No.
+- **Afiliados** (hosting de imágenes, stock, dominios): posible complemento
+  futuro dentro de las guías, no estructural.
 
-**Nota técnica:** al activar cualquier red, revisar el CSP del hosting para
-permitir los dominios del proveedor (p. ej. `pagead2.googlesyndication.com`),
-y añadir la Privacy Policy correspondiente.
+## 3. Donaciones
+
+- **Ko-fi** (activo): 0% de comisión en donaciones simples, página en
+  español, sin cuenta para el donante. <https://ko-fi.com/gabrielmaglia>
+- **GitHub Sponsors**: candidato a sumarse cuando el repo sea público o haya
+  comunidad dev (Icon Studio la atrae). Buy Me a Coffee no aporta nada sobre
+  Ko-fi (5% de comisión).
+- Regla de UX: la donación se pide *después* de entregar valor (house-ad y
+  Acerca de), nunca con modales ni interrupciones.
+
+## 4. Checklist de activación (en orden)
+
+1. **[bloqueante] Dominio propio (A5 del roadmap)** — sin él no hay AdSense,
+   ni sitemap, ni canonical. Al tenerlo: añadir `Sitemap:` en `robots.txt`,
+   crear `sitemap.xml` (raíz + 2 legales + 4 de guías), y `og:url`/canonical.
+2. **Analytics sin cookies** (Plausible/Umami, self-host o cloud) para MEDIR
+   pageviews reales — todas las redes lo van a preguntar y hoy estamos
+   ciegos. Sin banner de cookies: no usan identificadores.
+3. **Tráfico**: publicar las guías (índices ya enlazados), compartir en
+   comunidades dev/diseño, indexar en Search Console al tener dominio.
+4. **≥50k pageviews/mes** → aplicar a **EthicalAds** y **Carbon** en
+   paralelo. Activar la aprobada: un env var en el build de producción y
+   revisar el CSP del hosting (`media.ethicalads.io` o
+   `cdn.carbonads.com` + `srv.carbonads.net`).
+5. **AdSense** (cuando haya dominio + guías indexadas + tráfico estable):
+   - Crear cuenta → verificar dominio → descomentar la línea en
+     `public/ads.txt` con el `pub-` real.
+   - En la consola: activar **Privacidad y mensajes** (CMP certificado de
+     Google para EEA/UK — lo sirve el propio script, sin código extra).
+   - Build con `VITE_ADSENSE_CLIENT` + `VITE_ADSENSE_SLOT`.
+   - CSP: permitir `pagead2.googlesyndication.com`,
+     `googleads.g.doubleclick.net`, `tpc.googlesyndication.com`,
+     `fundingchoicesmessages.google.com`.
+   - Actualizar la fecha de `/legal/privacidad.html` (ya describe AdSense).
+6. **Comparar eCPM real** EthicalAds vs AdSense con 1–2 meses de datos y
+   quedarse con el mejor (o segmentar: AdSense en guías, EthicalAds en app).
+
+## 5. Lo que NO se hace todavía
+
+- **Bundles offline de pago / freemium desktop**: decidido que va aparte;
+  requiere pasarela (Lemon Squeezy/Paddle para IVA). Retomar cuando el
+  tráfico esté monetizando.
+- Venta de packs de plantillas/iconos.
+- Capa de cuentas de usuario (rompería la promesa de privacidad y no la
+  necesita ninguna vía elegida).
 
 ## Fuentes
 

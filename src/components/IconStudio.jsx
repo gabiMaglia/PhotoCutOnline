@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { backend } from "../lib/backend.js";
+import AdSlot from "./AdSlot.jsx";
 import { PLATFORMS, renderIcon, buildIconZip, faviconSnippet, trimToContent } from "../lib/icons.js";
 import { loadHtmlImage } from "../lib/jsEngine.js";
 import { t } from "../lib/i18n.js";
@@ -9,7 +10,7 @@ import { t } from "../lib/i18n.js";
 
 const PREVIEW_SIZES = [128, 64, 48, 32, 16];
 
-export default function IconStudio({ getCutout, hasCut, onToast }) {
+export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
   const [source, setSource] = useState(null); // HTMLImageElement | canvas
   const [sourceName, setSourceName] = useState(null);
   const [padding, setPadding] = useState(8);
@@ -283,6 +284,8 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
             </p>
           </div>
         </section>
+
+        <AdSlot placement="icons-rail" onDownload={onDownload} />
       </aside>
 
       <main className="icon-preview">

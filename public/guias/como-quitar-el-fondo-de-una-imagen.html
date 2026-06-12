@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cómo quitar el fondo de una imagen gratis y sin subirla — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Tres formas de quitar el fondo de una foto en 2026: IA automática, recorte interactivo y pinceles de refinado. Gratis, en tu navegador y sin subir la imagen a ningún servidor."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="stylesheet" href="/estaticas.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Cómo quitar el fondo de una imagen gratis (y sin subirla a ningún servidor)</h1>
+      <p class="meta">Actualizado: junio de 2026 · Lectura: 5 minutos</p>
+
+      <p>
+        Quitar el fondo de una foto es probablemente la edición más repetida
+        del mundo: para una tienda online, un sticker de WhatsApp, una foto de
+        perfil o el icono de una app. La mayoría de las herramientas populares
+        lo resuelven subiendo tu imagen a un servidor, procesándola allí y
+        devolviéndote el resultado — lo cual significa que tu foto viaja, se
+        almacena quién sabe cuánto tiempo y suele estar limitada por un muro
+        de pago. Hay otra forma: procesarla <strong>directamente en tu
+        navegador</strong>, sin que el archivo salga de tu equipo.
+      </p>
+
+      <h2>Los tres métodos (y cuándo usar cada uno)</h2>
+
+      <h3>1. Segmentación con IA: el camino rápido</h3>
+      <p>
+        Una red neuronal entrenada para separar «sujeto» y «fondo» analiza la
+        imagen y genera una máscara automáticamente. Es el mejor punto de
+        partida para fotos con personas, mascotas o productos sobre fondos
+        razonablemente distinguibles. En
+        <a href="/">PhotoCut Studio</a> esto es el botón
+        <strong>«Recorte IA»</strong> (atajo <code>I</code>): el modelo se
+        descarga una sola vez (~18&nbsp;MB), corre en tu navegador con
+        WebAssembly y funciona incluso sin conexión después de la primera
+        visita.
+      </p>
+
+      <h3>2. Recorte interactivo: tú marcas, el algoritmo decide</h3>
+      <p>
+        Cuando la IA se confunde — productos translúcidos, fondos muy
+        cargados, varios sujetos — el clásico algoritmo
+        <strong>GrabCut</strong> sigue siendo imbatible: dibujas un recuadro
+        alrededor del sujeto y el algoritmo estima qué píxeles pertenecen al
+        primer plano analizando color y contraste. Es determinista y predecible:
+        si el resultado no convence, ajustas el recuadro y listo.
+      </p>
+
+      <h3>3. Pinceles de refinado: el control fino</h3>
+      <p>
+        Ningún método automático es perfecto en los bordes difíciles. Por eso
+        el flujo correcto termina siempre con dos pinceles:
+        <strong>mantener</strong> (marca zonas que el recorte eliminó por
+        error) y <strong>quitar</strong> (borra restos de fondo). Con zoom
+        sobre el lienzo puedes trabajar a nivel de píxel.
+      </p>
+
+      <h2>El flujo recomendado, paso a paso</h2>
+      <ol>
+        <li>Abre la foto (o pégala con <code>Ctrl/⌘+V</code> desde el portapapeles).</li>
+        <li>Prueba primero el <strong>Recorte IA</strong>. En la mayoría de fotos ya queda bien.</li>
+        <li>Si falla, dibuja un <strong>recuadro</strong> ajustado al sujeto.</li>
+        <li>Activa el <strong>comparador antes/después</strong> para detectar restos.</li>
+        <li>Refina los bordes con los pinceles mantener/quitar (zoom con la rueda).</li>
+        <li>Ajusta el <strong>suavizado de borde</strong> (1–3&nbsp;px suele ser lo natural).</li>
+        <li>Exporta como <strong>PNG transparente</strong> — o aplica fondo de color, sticker o sombra.</li>
+      </ol>
+
+      <h2>Trucos para pelo y bordes finos</h2>
+      <ul>
+        <li>
+          <strong>Resolución manda:</strong> recorta sobre la imagen más
+          grande que tengas y reduce después; al revés se pierden los detalles.
+        </li>
+        <li>
+          <strong>Suavizado moderado:</strong> 1–3&nbsp;px de feather hace el
+          borde natural; más de 5&nbsp;px se nota «recortado con tijera roma».
+        </li>
+        <li>
+          <strong>Pincel pequeño en el pelo:</strong> mejor varias pasadas con
+          un pincel de 8–12&nbsp;px que una con uno de 40.
+        </li>
+        <li>
+          <strong>Comprueba sobre fondo claro y oscuro:</strong> los halos
+          claros solo se ven sobre fondo oscuro, y viceversa. Usa la vista
+          previa con fondo blanco/negro antes de exportar.
+        </li>
+      </ul>
+
+      <h2>¿En qué formato exportar?</h2>
+      <table>
+        <tr><th>Formato</th><th>Cuándo</th></tr>
+        <tr><td><strong>PNG</strong></td><td>El estándar con transparencia: stickers, logos, iconos, impresión.</td></tr>
+        <tr><td><strong>WebP</strong></td><td>Transparencia con archivos mucho más pequeños — ideal para la web.</td></tr>
+        <tr><td><strong>JPG</strong></td><td>Sin transparencia: solo si aplicas un fondo de color o imagen.</td></tr>
+      </table>
+
+      <h2>¿Por qué importa que no se suba la imagen?</h2>
+      <p>
+        Documentos de identidad, fotos de menores, productos sin lanzar,
+        material de clientes bajo NDA… buena parte de lo que se recorta a
+        diario es información sensible. Si la herramienta procesa la imagen en
+        tu navegador, esa pregunta desaparece: el archivo nunca abandona tu
+        equipo, no hay servidor que hackear ni política de retención que leer.
+        Esa es la diferencia técnica de fondo entre PhotoCut Studio y los
+        servicios de recorte en la nube.
+      </p>
+
+      <a class="cta" href="/">Probar PhotoCut Studio gratis →</a>
+
+      <footer class="site">
+        <a href="/guias/">← Más guías</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos</a>
+      </footer>
+    </div>
+  </body>
+</html>

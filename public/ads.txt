@@ -1,0 +1,7 @@
+# ads.txt — declaración de vendedores autorizados (IAB).
+# Activar la línea del proveedor cuando la cuenta esté aprobada:
+#
+# Google AdSense (reemplazar pub-0000000000000000 por el ID real):
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+#
+# EthicalAds y Carbon no requieren ads.txt.

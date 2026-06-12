@@ -1,0 +1,6 @@
+# PhotoCut Studio
+User-agent: *
+Allow: /
+
+# TODO(A5): al tener dominio propio, añadir la línea del sitemap:
+# Sitemap: https://<dominio>/sitemap.xml

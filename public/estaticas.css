@@ -1,0 +1,175 @@
+/* Estilo compartido de las páginas estáticas (legales y guías).
+   Misma identidad "darkroom ácido" de la app, pero con tipografía del
+   sistema: estas páginas deben pesar poco y no depender de Google Fonts. */
+
+:root {
+  --bg: #0b0d10;
+  --panel: #121419;
+  --line: #23272f;
+  --ink: #edf0e8;
+  --ink-dim: #9aa194;
+  --acid: #d6f64b;
+  --coral: #ff5e63;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Avenir Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+header.site {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+
+header.site .mark {
+  color: var(--acid);
+  font-size: 20px;
+  align-self: center;
+}
+
+header.site a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+header.site a span {
+  font-weight: 300;
+  color: var(--ink-dim);
+}
+
+h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin: 0 0 6px;
+}
+
+h2 {
+  font-size: 21px;
+  margin: 36px 0 10px;
+}
+
+h3 {
+  font-size: 17px;
+  margin: 26px 0 8px;
+}
+
+p,
+li {
+  color: var(--ink-dim);
+}
+
+strong {
+  color: var(--ink);
+}
+
+a {
+  color: var(--acid);
+  text-underline-offset: 3px;
+}
+
+.meta {
+  font-size: 13.5px;
+  color: var(--ink-dim);
+  margin-bottom: 28px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 14px 0;
+  font-size: 14.5px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+}
+
+th {
+  color: var(--ink);
+  background: var(--panel);
+}
+
+code,
+pre {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13.5px;
+  color: var(--acid);
+}
+
+pre {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+
+.cta {
+  display: inline-block;
+  margin: 18px 0;
+  background: var(--acid);
+  color: #10130a;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+}
+
+.card {
+  display: block;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 14px 0;
+  text-decoration: none;
+}
+
+.card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+.card p {
+  margin: 0;
+  font-size: 14.5px;
+}
+
+footer.site {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 13.5px;
+  color: var(--ink-dim);
+}
+
+footer.site a {
+  color: var(--ink-dim);
+}

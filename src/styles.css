@@ -194,7 +194,6 @@ body::after {
 }
 
 .rail-help {
-  margin-top: auto;
   font-size: 12.5px;
   line-height: 1.55;
   color: var(--ink-dim);
@@ -1756,4 +1755,78 @@ kbd {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ------------------------------ monetización ------------------------------ */
+/* Slot publicitario al pie del rail. Sin red configurada muestra el house-ad
+   (donaciones / app de escritorio); con red, su placement. El alto mínimo
+   evita layout shift cuando el anuncio llega tarde. */
+.ad-slot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  padding: 10px 12px 12px;
+  min-height: 96px;
+}
+
+.ad-label {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.house-body {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
+.btn-donate {
+  border-color: var(--coral);
+  color: var(--coral);
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-donate:hover {
+  background: var(--coral-soft);
+  border-color: var(--coral);
+}
+
+.btn-icon-donate {
+  color: var(--coral);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-donate {
+  align-self: flex-start;
+  margin: 4px 0 2px;
+}
+
+.about-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 6px 0 2px;
+  font-size: 12.5px;
+}
+
+.about-links a {
+  color: var(--ink-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.about-links a:hover {
+  color: var(--acid);
 }
