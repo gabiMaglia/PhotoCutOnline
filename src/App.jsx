@@ -41,6 +41,37 @@ export default function App() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewBg, setPreviewBg] = useState("checker"); // checker | white | black | color
   const [previewColor, setPreviewColor] = useState("#ffffff");
+  const [previewSize, setPreviewSize] = useState({ w: 220, h: 240 });
+  const previewResize = useRef(null);
+
+  function previewResizeDown(e) {
+    e.preventDefault();
+    previewResize.current = {
+      sx: e.clientX,
+      sy: e.clientY,
+      w0: previewSize.w,
+      h0: previewSize.h,
+    };
+    try {
+      e.target.setPointerCapture?.(e.pointerId);
+    } catch {
+      /* pointers sintéticos */
+    }
+  }
+
+  function previewResizeMove(e) {
+    const r = previewResize.current;
+    if (!r) return;
+    // anclado a la derecha: arrastrar hacia la izquierda agranda
+    setPreviewSize({
+      w: clampNum(r.w0 + (r.sx - e.clientX), 180, window.innerWidth * 0.7),
+      h: clampNum(r.h0 + (e.clientY - r.sy), 170, window.innerHeight * 0.75),
+    });
+  }
+
+  function previewResizeUp() {
+    previewResize.current = null;
+  }
   const [dragging, setDragging] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -700,7 +731,7 @@ export default function App() {
       )}
 
       {tab === "cut" && previewOpen && hasCut && resultUrl && (
-        <div className="preview-panel">
+        <div className="preview-panel" style={{ width: previewSize.w, height: previewSize.h }}>
           <div className="preview-panel-head">
             <span className="preview-panel-title">{t("previewPanel.title")}</span>
             <div className="preview-bg-switch" role="radiogroup" aria-label={t("previewPanel.bgAria")}>
@@ -744,6 +775,15 @@ export default function App() {
             {previewBg === "checker" && <div className="checker" />}
             <img src={resultUrl} alt={t("previewPanel.alt")} />
           </div>
+          <div
+            className="preview-resize"
+            role="separator"
+            aria-label={t("previewPanel.resize")}
+            onPointerDown={previewResizeDown}
+            onPointerMove={previewResizeMove}
+            onPointerUp={previewResizeUp}
+            onPointerCancel={previewResizeUp}
+          />
         </div>
       )}
 
@@ -842,6 +882,10 @@ function ColorExport({ disabled, onExport }) {
       </button>
     </div>
   );
+}
+
+function clampNum(v, lo, hi) {
+  return Math.max(lo, Math.min(hi, v));
 }
 
 function hexToRgba(hex) {

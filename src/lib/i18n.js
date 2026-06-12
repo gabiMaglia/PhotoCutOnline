@@ -78,6 +78,7 @@ const DICT = {
     "previewPanel.custom": "Color de fondo personalizado",
     "previewPanel.close": "Cerrar vista previa",
     "previewPanel.bgAria": "Fondo de la vista previa",
+    "previewPanel.resize": "Redimensionar la vista previa",
 
     "icon.source": "Fuente",
     "icon.useCurrent": "Usar recorte actual",
@@ -237,6 +238,7 @@ const DICT = {
     "previewPanel.custom": "Custom background color",
     "previewPanel.close": "Close preview",
     "previewPanel.bgAria": "Preview background",
+    "previewPanel.resize": "Resize the preview",
 
     "icon.source": "Source",
     "icon.useCurrent": "Use current cutout",
@@ -396,6 +398,7 @@ const DICT = {
     "previewPanel.custom": "Cor de fundo personalizada",
     "previewPanel.close": "Fechar pré-visualização",
     "previewPanel.bgAria": "Fundo da pré-visualização",
+    "previewPanel.resize": "Redimensionar a pré-visualização",
 
     "icon.source": "Fonte",
     "icon.useCurrent": "Usar recorte atual",

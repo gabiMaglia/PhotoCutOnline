@@ -1163,11 +1163,6 @@ kbd {
   z-index: 60;
   width: 220px;
   height: 240px;
-  min-width: 180px;
-  min-height: 170px;
-  max-width: 70vw;
-  max-height: 75vh;
-  resize: both; /* redimensionable desde la esquina inferior derecha */
   display: flex;
   flex-direction: column;
   background: var(--panel);
@@ -1178,18 +1173,29 @@ kbd {
   animation: panel-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 
-/* grip de resize visible sobre el fondo oscuro */
-.preview-panel::after {
-  content: "";
+/* handle de resize en la esquina inferior IZQUIERDA (el panel está anclado
+   a la derecha: se agranda arrastrando hacia dentro de la pantalla) */
+.preview-resize {
   position: absolute;
-  right: 3px;
-  bottom: 3px;
-  width: 10px;
-  height: 10px;
-  pointer-events: none;
+  left: 0;
+  bottom: 0;
+  width: 22px;
+  height: 22px;
+  cursor: nesw-resize;
+  touch-action: none;
+  z-index: 5;
   background:
-    linear-gradient(135deg, transparent 50%, var(--ink-faint) 50%, var(--ink-faint) 60%, transparent 60%),
-    linear-gradient(135deg, transparent 70%, var(--ink-faint) 70%, var(--ink-faint) 80%, transparent 80%);
+    linear-gradient(45deg, transparent 50%, var(--ink-faint) 50%, var(--ink-faint) 58%, transparent 58%),
+    linear-gradient(45deg, transparent 66%, var(--ink-faint) 66%, var(--ink-faint) 74%, transparent 74%);
+  background-size: 12px 12px;
+  background-position: 4px calc(100% - 4px);
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  transition: opacity 0.12s;
+}
+
+.preview-resize:hover {
+  opacity: 1;
 }
 
 @keyframes panel-in {
