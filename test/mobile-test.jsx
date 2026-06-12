@@ -82,8 +82,23 @@ async function main() {
     "layout: ayuda de atajos oculta en móvil"
   );
 
+  // modal Descargar app
+  const dlBtn = document.querySelector('[aria-label*="escritorio"]');
+  assert(!!dlBtn, "descarga: botón ⬇ presente en web");
+  dlBtn.click();
+  await tick();
+  const dlModal = document.querySelector(".modal-download");
+  assert(!!dlModal, "descarga: modal abre");
+  assert(
+    dlModal.querySelector('a[href*="github.com"][href*="releases"]'),
+    "descarga: enlace a releases siempre visible"
+  );
+  window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+  await tick();
+  assert(!document.querySelector(".modal-download"), "descarga: Esc cierra");
+
   // modal Acerca de / Licencias
-  document.querySelector(".btn-icon").click();
+  document.querySelector('[aria-label*="licencias"], [aria-label*="licenças"], [aria-label*="licenses"]').click();
   await tick();
   const modal = document.querySelector(".modal-about");
   assert(!!modal, "acerca de: el modal abre");

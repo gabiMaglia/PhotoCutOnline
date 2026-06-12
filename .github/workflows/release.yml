@@ -1,0 +1,68 @@
+# Release — construye los instaladores de escritorio y los publica como
+# GitHub Release. La página web ofrece estos artefactos en "Descargar app"
+# (DownloadModal consulta la API releases/latest).
+#
+# Disparo: push de un tag v* (p. ej. `git tag v0.1.0 && git push --tags`)
+# o manualmente desde la pestaña Actions (workflow_dispatch).
+#
+# Artefactos:
+#   Windows: NSIS .exe (x64)
+#   macOS:   .dmg Apple Silicon (aarch64) y .dmg Intel (x86_64)
+#
+# Nota: sin firma de código. macOS mostrará el aviso de Gatekeeper
+# (clic derecho → Abrir) y Windows el de SmartScreen, hasta tener
+# certificados (Apple Developer ID / Authenticode) — ver PLAN-PRODUCCION.
+
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
+          releaseName: "PhotoCut Studio ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}"
+          releaseBody: |
+            Instaladores de PhotoCut Studio.
+
+            - **Windows**: `*-setup.exe` (x64)
+            - **macOS Apple Silicon** (M1/M2/M3/M4): `*_aarch64.dmg`
+            - **macOS Intel**: `*_x64.dmg`
+
+            Builds sin firmar: en macOS, clic derecho → Abrir la primera vez.
+          releaseDraft: false
+          prerelease: false
+          args: --target ${{ matrix.target }}

@@ -107,9 +107,24 @@ Estado del audit PO/QA del 2026-06-11. Cada ítem tiene criterio de aceptación
   roles/aria en modales. Pendiente conocido: el lienzo no es operable por
   teclado (limitación de la interacción de pincel).
 - [ ] **Decodificador HEIC real** — ver P0 HEIC.
-- [ ] **WASM del motor Rust** — compilar `photocut-core` a WebAssembly para
-  paridad web/desktop (el README ya lo contempla); el worker actual es el
-  punto de integración natural.
+- [x] **WASM del motor Rust** *(2026-06-11)* — `crates/photocut-wasm`
+  (38KB): GrabCut real en la web vía el worker, con fallback automático al
+  k-means JS. De paso se cazaron y arreglaron 3 bugs de liveness en
+  `maxflow.rs` (self-loop de parents en adopción de huérfanos, capacidades
+  f64 → i64, raíces orfanadas con parent=TERMINAL). `npm run build:wasm`
+  regenera el paquete (commiteado).
+- [x] **Instaladores + descarga desde la web** *(2026-06-11)* —
+  `.github/workflows/release.yml` construye NSIS .exe (Win x64) y .dmg
+  (macOS aarch64 + x86_64) al pushear un tag `v*` y los publica como GitHub
+  Release; el botón ⬇ de la topbar (DownloadModal) detecta el SO/arquitectura
+  y ofrece el instalador correcto. Pendiente: firma de código (Apple
+  Developer ID / Authenticode) — los builds muestran aviso de Gatekeeper/
+  SmartScreen.
+- [ ] **Monetización** — investigación y plan por fases en
+  `docs/MONETIZACION.md`: lanzamiento con analytics sin cookies + donaciones
+  → EthicalAds a los 50k pageviews/mes (privacy-first, encaja con la promesa)
+  → AdSense solo con capa editorial (riesgo "low value content" en SPAs).
+  Loader de AdSense ya preparado, opt-in vía `VITE_ADSENSE_CLIENT`.
 
 ## Riesgos de producto (decisiones, no código)
 

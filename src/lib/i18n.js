@@ -127,6 +127,18 @@ const DICT = {
       "Pinceles mantener/quitar para los bordes. Exporta PNG transparente o crea iconos de app.",
     "ob.go": "¡A recortar!",
 
+    "dl.aria": "Descargar la app de escritorio",
+    "dl.title": "App de escritorio",
+    "dl.body":
+      "El motor Rust completo, sin navegador y 100% offline. Builds sin firmar: en macOS, clic derecho → Abrir la primera vez.",
+    "dl.loading": "Buscando la última versión…",
+    "dl.none": "Aún no hay instaladores publicados — muy pronto.",
+    "dl.win": "Windows (x64)",
+    "dl.macArm": "macOS Apple Silicon",
+    "dl.macIntel": "macOS Intel",
+    "dl.recommended": "tu equipo",
+    "dl.all": "Ver todas las versiones",
+
     "crash.title": "Algo salió mal",
     "crash.body":
       "La aplicación encontró un error inesperado. Tu imagen no se ha enviado a ningún sitio — todo ocurre en tu navegador.",
@@ -247,6 +259,18 @@ const DICT = {
       "Keep/remove brushes for the edges. Export a transparent PNG or create app icons.",
     "ob.go": "Let's cut!",
 
+    "dl.aria": "Download the desktop app",
+    "dl.title": "Desktop app",
+    "dl.body":
+      "The full Rust engine, no browser, 100% offline. Unsigned builds: on macOS, right-click → Open the first time.",
+    "dl.loading": "Looking up the latest version…",
+    "dl.none": "No installers published yet — coming very soon.",
+    "dl.win": "Windows (x64)",
+    "dl.macArm": "macOS Apple Silicon",
+    "dl.macIntel": "macOS Intel",
+    "dl.recommended": "your machine",
+    "dl.all": "See all releases",
+
     "crash.title": "Something went wrong",
     "crash.body":
       "The app hit an unexpected error. Your image was never sent anywhere — everything happens in your browser.",
@@ -366,6 +390,18 @@ const DICT = {
     "ob.3.body":
       "Pincéis manter/remover para as bordas. Exporte PNG transparente ou crie ícones de app.",
     "ob.go": "Vamos recortar!",
+
+    "dl.aria": "Baixar o app para desktop",
+    "dl.title": "App para desktop",
+    "dl.body":
+      "O motor Rust completo, sem navegador e 100% offline. Builds sem assinatura: no macOS, clique com o botão direito → Abrir na primeira vez.",
+    "dl.loading": "Buscando a última versão…",
+    "dl.none": "Ainda não há instaladores publicados — em breve.",
+    "dl.win": "Windows (x64)",
+    "dl.macArm": "macOS Apple Silicon",
+    "dl.macIntel": "macOS Intel",
+    "dl.recommended": "sua máquina",
+    "dl.all": "Ver todas as versões",
 
     "crash.title": "Algo deu errado",
     "crash.body":

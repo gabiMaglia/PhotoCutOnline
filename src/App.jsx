@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import CanvasEditor from "./components/CanvasEditor.jsx";
 import IconStudio from "./components/IconStudio.jsx";
 import AboutModal from "./components/AboutModal.jsx";
+import DownloadModal from "./components/DownloadModal.jsx";
 import HelpModal from "./components/HelpModal.jsx";
 import Onboarding from "./components/Onboarding.jsx";
 import { backend } from "./lib/backend.js";
@@ -36,6 +37,7 @@ export default function App() {
   const [dragging, setDragging] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [dlOpen, setDlOpen] = useState(false);
   const [onboarding, setOnboarding] = useState(
     () => !localStorage.getItem("pc-onboarded")
   );
@@ -307,6 +309,7 @@ export default function App() {
       if (e.key === "Escape") {
         setHelpOpen(false);
         setAboutOpen(false);
+        setDlOpen(false);
         setPreviewOpen(false);
         cancelLarge();
         return;
@@ -388,6 +391,16 @@ export default function App() {
             <input type="file" accept="image/*" hidden onChange={onFileInput} />
           </label>
           <LangSwitch />
+          {!backend.isDesktop && (
+            <button
+              className="btn-icon"
+              aria-label={t("dl.aria")}
+              title={t("dl.aria")}
+              onClick={() => setDlOpen(true)}
+            >
+              ⬇
+            </button>
+          )}
           <button
             className="btn-icon"
             aria-label={t("about.aria")}
@@ -600,6 +613,7 @@ export default function App() {
 
       {aboutOpen && <AboutModal version={pkg.version} onClose={() => setAboutOpen(false)} />}
       {helpOpen && <HelpModal onClose={() => setHelpOpen(false)} />}
+      {dlOpen && <DownloadModal onClose={() => setDlOpen(false)} />}
 
       {pendingLarge && (
         <div className="modal-veil" role="dialog" aria-modal="true" aria-labelledby="modal-large-title">
