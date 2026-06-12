@@ -32,6 +32,7 @@ export default function App() {
   const [shadowOn, setShadowOn] = useState(false);
   const [shadowSize, setShadowSize] = useState(40);
   const [presetId, setPresetId] = useState("original");
+  const [compare, setCompare] = useState(false);
   const [busy, setBusy] = useState(false);
   const [hasCut, setHasCut] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
@@ -70,6 +71,7 @@ export default function App() {
       setResultUrl(null);
       setHasCut(false);
       setCanUndo(false);
+      setCompare(false);
       setTab("cut");
       try {
         const { width, height } = await backend.loadImage(dataUrl);
@@ -396,6 +398,10 @@ export default function App() {
         case "P":
           if (hasCut) setPreviewOpen((v) => !v);
           break;
+        case "c":
+        case "C":
+          if (hasCut) setCompare((v) => !v);
+          break;
         default:
       }
     }
@@ -680,6 +686,8 @@ export default function App() {
               onRect={handleRect}
               onStroke={handleStroke}
               busy={busy}
+              compare={compare}
+              onCompareChange={setCompare}
             />
           </main>
         </div>

@@ -505,6 +505,7 @@ kbd {
   justify-content: center;
   padding: 24px;
   position: relative;
+  overflow: hidden; /* el stage se mueve con pan/zoom */
 }
 
 .canvas-empty {
@@ -603,6 +604,114 @@ kbd {
 
 .canvas-stage .result {
   filter: drop-shadow(0 0 0 transparent);
+}
+
+/* HUD: zoom + comparador */
+.canvas-hud {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 30;
+}
+
+.hud-btn {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  background: rgba(7, 8, 10, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--line-bright);
+  border-radius: 99px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.hud-btn:hover:not(:disabled) {
+  color: var(--acid);
+  border-color: var(--acid);
+}
+
+.hud-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.hud-btn-on {
+  color: #10130a;
+  background: var(--acid);
+  border-color: var(--acid);
+}
+
+/* comparador antes/después */
+.canvas-stage.comparing .base {
+  opacity: 1; /* lado "antes" a opacidad completa */
+}
+
+.compare-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px solid var(--acid);
+  box-shadow: 0 0 12px var(--acid-glow);
+  cursor: ew-resize;
+  z-index: 20;
+  touch-action: none;
+}
+
+.compare-divider::before {
+  /* zona de toque generosa */
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -14px;
+  width: 28px;
+}
+
+.compare-handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  background: var(--acid);
+  color: #10130a;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 6px 8px;
+  letter-spacing: -1px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.compare-tag {
+  position: absolute;
+  top: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: rgba(7, 8, 10, 0.7);
+  border-radius: 99px;
+  padding: 4px 10px;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.compare-tag-left {
+  left: 10px;
+}
+
+.compare-tag-right {
+  right: 10px;
 }
 
 .canvas-busy {

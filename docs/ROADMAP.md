@@ -51,8 +51,11 @@ themed: nos faltan, son acotados.
 *2026-06-12: N1, N4, N5, N6, N7 y N8 implementados y testeados (ver commits).
 N1: u2netp (Apache-2.0, 4.6MB) + onnxruntime-web same-origin en el worker,
 matte suave con IoU 98.5% en el test E2E; pinceles editan el matte; modelo
-cacheado offline por el SW. Quedan N2 (comparador), N3 (zoom/pan) y N9
-(firma de código).*
+cacheado offline por el SW. N2: comparador antes/después con divisor
+arrastrable (atajo C, etiquetas, HUD). N3: zoom hacia el cursor 1×–8×
+(rueda/pinch), pan (espacio/botón central/dos dedos), doble clic = reset,
+badge de zoom en HUD. Solo queda N9 (firma de código — requiere
+certificados).*
 
 | # | Ítem | Esfuerzo | Por qué |
 |---|---|---|---|
