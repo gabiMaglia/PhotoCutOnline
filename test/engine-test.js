@@ -132,6 +132,22 @@ async function main() {
   assert(below[3] > 10, `sombra: alfa presente bajo el sujeto (a=${below[3]})`);
   s2.setFinish({ sticker: null, shadow: null });
 
+  // 7b. refinado del matte IA: niebla decidida y fantasmas eliminados
+  const s4 = new CutoutSession();
+  s4.load(syntheticImage(W, H));
+  const matte = new Uint8ClampedArray(W * H);
+  for (let y = 40; y < 130; y++)
+    for (let x = 60; x < 180; x++) matte[y * W + x] = 230; // sujeto principal
+  for (let y = 150; y < 160; y++)
+    for (let x = 200; x < 215; x++) matte[y * W + x] = 200; // fantasma pequeño
+  for (let y = 0; y < 18; y++)
+    for (let x = 0; x < W; x++) matte[y * W + x] = 90; // niebla de confianza media
+  blob = await s4.aiCutFromMatte(matte);
+  assert(blob instanceof Blob, "matte: preview tras refinado");
+  assert(s4.softAlpha[80 * W + 120] === 255, "matte: sujeto decidido a opaco");
+  assert(s4.softAlpha[155 * W + 207] === 0, "matte: fantasma eliminado");
+  assert(s4.softAlpha[8 * W + 120] === 0, "matte: niebla (blur) eliminada");
+
   // 8. preset: avatar circular 512 — tamaño exacto y esquinas transparentes
   const av = await s2.composite({
     type: "transparent",

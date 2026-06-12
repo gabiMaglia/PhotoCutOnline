@@ -190,9 +190,10 @@ export class CutoutSession {
     const { width, height } = this.work;
     this.rect = { x: 0, y: 0, w: width, h: height };
     this.trimap = new Uint8Array(width * height);
-    this.softAlpha = Uint8ClampedArray.from(matte);
+    const refined = refineMatte(Uint8ClampedArray.from(matte), width, height);
+    this.softAlpha = refined;
     const label = new Uint8Array(width * height);
-    for (let i = 0; i < label.length; i++) label[i] = matte[i] > 127 ? 1 : 0;
+    for (let i = 0; i < label.length; i++) label[i] = refined[i] > 127 ? 1 : 0;
     this.label = label;
     return this.previewBlob();
   }
@@ -817,6 +818,75 @@ function drawCover(ctx, img, w, h) {
   const dw = img.width * s;
   const dh = img.height * s;
   ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+
+/**
+ * Post-proceso del matte de la IA (u2netp deja "niebla": zonas de confianza
+ * media que se ven como blur sobre el checker, y fantasmas sueltos en
+ * imágenes cargadas):
+ *  1. Estiramiento de contraste: lo dudoso se decide (0 o 255) y solo la
+ *     banda de borde conserva valores intermedios (pelo, bordes suaves).
+ *  2. Limpieza por componentes: se conservan los sujetos principales
+ *     (componentes ≥ 12% del mayor) y se elimina el alfa del resto.
+ */
+function refineMatte(matte, width, height) {
+  const N = width * height;
+  // 1. estiramiento: [50..205] → [0..255]
+  const LO = 50;
+  const HI = 205;
+  for (let i = 0; i < N; i++) {
+    const v = matte[i];
+    matte[i] = v <= LO ? 0 : v >= HI ? 255 : Math.round(((v - LO) / (HI - LO)) * 255);
+  }
+
+  // 2. componentes sobre la versión binaria
+  const bin = new Uint8Array(N);
+  for (let i = 0; i < N; i++) bin[i] = matte[i] > 127 ? 1 : 0;
+  const comp = new Int32Array(N).fill(-1);
+  const sizes = [];
+  const stack = new Int32Array(N);
+  for (let i = 0; i < N; i++) {
+    if (bin[i] !== 1 || comp[i] !== -1) continue;
+    const id = sizes.length;
+    let size = 0;
+    let sp = 0;
+    stack[sp++] = i;
+    comp[i] = id;
+    while (sp > 0) {
+      const p = stack[--sp];
+      size++;
+      const x = p % width;
+      const y = (p / width) | 0;
+      const tryQ = (q) => {
+        if (bin[q] === 1 && comp[q] === -1) {
+          comp[q] = id;
+          stack[sp++] = q;
+        }
+      };
+      if (x > 0) tryQ(p - 1);
+      if (x < width - 1) tryQ(p + 1);
+      if (y > 0) tryQ(p - width);
+      if (y < height - 1) tryQ(p + width);
+    }
+    sizes.push(size);
+  }
+  if (sizes.length > 1) {
+    const largest = Math.max(...sizes);
+    const keepMin = Math.max(64, largest * 0.12);
+    const keep = sizes.map((sz) => sz >= keepMin);
+    // anular el alfa fuera de los componentes conservados (adiós fantasmas),
+    // conservando una banda de ~4px alrededor para no cortar pelo/bordes
+    const keptAlpha = new Uint8ClampedArray(N);
+    for (let i = 0; i < N; i++) {
+      keptAlpha[i] = bin[i] === 1 && keep[comp[i]] ? 255 : 0;
+    }
+    const dist = chamferDT(keptAlpha, width, height); // 0 dentro, crece fuera
+    const BAND = 4 * 3; // ~4px en unidades chamfer
+    for (let i = 0; i < N; i++) {
+      if (dist[i] > BAND) matte[i] = 0;
+    }
+  }
+  return matte;
 }
 
 /** Canal alfa de un canvas como Uint8ClampedArray. */
