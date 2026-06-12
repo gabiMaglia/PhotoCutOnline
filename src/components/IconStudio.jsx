@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { backend } from "../lib/backend.js";
-import { PLATFORMS, renderIcon, buildIconZip, faviconSnippet } from "../lib/icons.js";
+import { PLATFORMS, renderIcon, buildIconZip, faviconSnippet, trimToContent } from "../lib/icons.js";
 import { loadHtmlImage } from "../lib/jsEngine.js";
 import { t } from "../lib/i18n.js";
 
@@ -114,6 +114,18 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
     }
   }
 
+  function trimSource() {
+    if (!source) return;
+    const trimmed = trimToContent(source);
+    if (!trimmed) {
+      onToast(t("icon.trimNone"), "ok");
+      return;
+    }
+    setSource(trimmed);
+    setSourceName((n) => `${(n || "").replace(/\s*\(recortado\)$/, "")} ${t("icon.trimTag")}`.trim());
+    onToast(t("icon.trimmed", { w: trimmed.width, h: trimmed.height }), "ok");
+  }
+
   function togglePlatform(id) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -190,6 +202,9 @@ export default function IconStudio({ getCutout, hasCut, onToast }) {
               {removing ? t("icon.removing") : t("icon.removeBg")}
             </button>
           )}
+          <button className="btn" disabled={!source} onClick={trimSource}>
+            {t("icon.trim")}
+          </button>
           {sourceName && <div className="source-tag">{sourceName}</div>}
         </section>
 

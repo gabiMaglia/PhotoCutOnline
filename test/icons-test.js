@@ -1,5 +1,5 @@
 // Smoke test de Icon Studio: renderIcon + buildIconZip con canvas reales.
-import { buildIconZip, renderIcon, faviconSnippet } from "../src/lib/icons.js";
+import { buildIconZip, renderIcon, faviconSnippet, trimToContent } from "../src/lib/icons.js";
 
 const out = [];
 const log = (s) => out.push(s);
@@ -46,6 +46,20 @@ async function main() {
   const md = mono.getContext("2d").getImageData(32, 32, 1, 1).data;
   assert(md[0] === 255 && md[1] === 255 && md[2] === 255 && md[3] > 0, "monochrome: silueta blanca");
   assert(/apple-touch-icon/.test(faviconSnippet()), "snippet: contiene apple-touch-icon");
+
+  // trim al contenido: arte de 100×80 centrado en un lienzo 300×300
+  const padded = document.createElement("canvas");
+  padded.width = 300;
+  padded.height = 300;
+  const pctx = padded.getContext("2d");
+  pctx.fillStyle = "#d6f64b";
+  pctx.fillRect(100, 110, 100, 80);
+  const trimmed = trimToContent(padded);
+  assert(trimmed && trimmed.width === 100 && trimmed.height === 80,
+    `trim: recorta al bbox exacto (${trimmed?.width}×${trimmed?.height})`);
+  const td2 = trimmed.getContext("2d").getImageData(0, 0, 1, 1).data;
+  assert(td2[3] === 255, "trim: la esquina del recorte es contenido");
+  assert(trimToContent(trimmed) === null, "trim: sin margen devuelve null");
 
   log("ALL_DONE");
 }

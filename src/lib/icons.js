@@ -212,6 +212,47 @@ const IOS_CONTENTS = JSON.stringify(
   2
 );
 
+/**
+ * Recorta la imagen al bounding box de su contenido (alfa > 0): elimina los
+ * márgenes transparentes para que el arte llene el lienzo del icono.
+ * Devuelve un canvas recortado, o null si no hay margen que quitar.
+ */
+export function trimToContent(source) {
+  const W = source.naturalWidth || source.width;
+  const H = source.naturalHeight || source.height;
+  const c = document.createElement("canvas");
+  c.width = W;
+  c.height = H;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(source, 0, 0);
+  const d = ctx.getImageData(0, 0, W, H).data;
+
+  let minX = W;
+  let minY = H;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      if (d[(y * W + x) * 4 + 3] > 0) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return null; // imagen vacía
+  const w = maxX - minX + 1;
+  const h = maxY - minY + 1;
+  if (minX === 0 && minY === 0 && w === W && h === H) return null; // sin margen
+
+  const out = document.createElement("canvas");
+  out.width = w;
+  out.height = h;
+  out.getContext("2d").drawImage(c, minX, minY, w, h, 0, 0, w, h);
+  return out;
+}
+
 /** Snippet HTML listo para pegar (favicons + PWA). */
 export function faviconSnippet() {
   return `<link rel="icon" href="/favicon.ico" sizes="48x48">
