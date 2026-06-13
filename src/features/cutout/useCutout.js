@@ -26,6 +26,5 @@ export function useCutout({ toast, onImageLoad }) {
   });
 
   const getCutout = useCallback(() => backend.exportTransparent({ format: "png" }), []);
-
   return { workspaceRef, loader, session, preview, exporter, getCutout };
 }

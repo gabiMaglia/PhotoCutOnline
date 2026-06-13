@@ -5,6 +5,7 @@ import { t } from "../../../lib/i18n.js";
 import { hexToRgba } from "../../../utils/color.js";
 import { fileToDataUrl, bgWithOpacity } from "../../../utils/image.js";
 import { downloadDataUrl } from "../../../utils/dom.js";
+import { trackEvent } from "../../../services/analytics.js";
 
 // Ajustes y acciones de exportación: modo de fondo (transparente/color/imagen),
 // formato, preset de tamaño, opacidad del fondo, descarga y portapapeles.
@@ -30,6 +31,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         else if (kind === "image") url = await backend.exportImageBg(arg, opts);
         const ext = effFormat === "jpeg" ? "jpg" : effFormat;
         downloadDataUrl(url, `photocut-${kind}.${ext}`);
+        trackEvent("export", { kind, format: effFormat });
         toast(t("toast.exported"), "ok");
       } catch (e) {
         toast(String(e), "error");

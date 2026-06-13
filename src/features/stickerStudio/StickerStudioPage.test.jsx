@@ -9,6 +9,7 @@ jest.mock("../../services/ads.js", () => ({
   loadSlot: jest.fn(),
   initAds: jest.fn(),
 }));
+jest.mock("../../services/analytics.js", () => ({ initAnalytics: jest.fn(), trackEvent: jest.fn() }));
 
 import { CutoutProvider } from "../cutout/CutoutContext.jsx";
 import StickerStudioPage from "./StickerStudioPage.jsx";

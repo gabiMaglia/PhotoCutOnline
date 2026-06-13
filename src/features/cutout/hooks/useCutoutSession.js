@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { backend } from "../../../lib/backend.js";
 import { t } from "../../../lib/i18n.js";
+import { trackEvent } from "../../../services/analytics.js";
 
 const ITERS = 4;
 
@@ -44,7 +45,7 @@ export function useCutoutSession({ imageUrl, toast }) {
 
   // envuelve una operación del motor: marca busy, aplica el preview y avisa
   const runOp = useCallback(
-    async (fn, okKey, { setCutMode = true } = {}) => {
+    async (fn, okKey, { setCutMode = true, method } = {}) => {
       setBusy(true);
       try {
         const url = await fn();
@@ -52,6 +53,7 @@ export function useCutoutSession({ imageUrl, toast }) {
         setHasCut(true);
         if (setCutMode) setMode("fg");
         refreshUndo();
+        if (method) trackEvent("cutout", { method });
         if (okKey) toast(t(okKey), "ok");
       } catch (e) {
         toast(String(e), "error");
@@ -63,20 +65,22 @@ export function useCutoutSession({ imageUrl, toast }) {
   );
 
   const handleRect = useCallback(
-    (rect) => runOp(() => backend.cutRect(rect, ITERS), "toast.cut"),
+    (rect) => runOp(() => backend.cutRect(rect, ITERS), "toast.cut", { method: "rect" }),
     [runOp]
   );
 
   // varita por color: cada clic suma una región; shift/clics siguientes acumulan
   const handleWand = useCallback(
     (seed, additive) =>
-      runOp(() => backend.wand(seed, wandTolerance, additive), additive ? null : "toast.wand"),
+      runOp(() => backend.wand(seed, wandTolerance, additive), additive ? null : "toast.wand", {
+        method: "wand",
+      }),
     [runOp, wandTolerance]
   );
 
   const handleAuto = useCallback(() => {
     if (!imageUrl || busy) return;
-    return runOp(() => backend.autoCut(), "toast.auto");
+    return runOp(() => backend.autoCut(), "toast.auto", { method: "auto" });
   }, [imageUrl, busy, runOp]);
 
   const handleAi = useCallback(() => {
@@ -88,7 +92,7 @@ export function useCutoutSession({ imageUrl, toast }) {
         aiWarm.current = true;
       }
       return backend.aiCut();
-    }, "toast.ai");
+    }, "toast.ai", { method: "ai" });
   }, [imageUrl, busy, runOp, toast]);
 
   const handleStroke = useCallback(

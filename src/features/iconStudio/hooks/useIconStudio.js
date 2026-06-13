@@ -9,6 +9,7 @@ import {
 } from "../../../lib/icons.js";
 import { loadHtmlImage } from "../../../lib/jsEngine.js";
 import { t } from "../../../lib/i18n.js";
+import { trackEvent } from "../../../services/analytics.js";
 
 // Lógica de Icon Studio: fuente del arte (recorte actual / PNG abierto), quitar
 // fondo con IA, recortar al contenido, ajustes de render y generación del ZIP.
@@ -148,6 +149,7 @@ export function useIconStudio({ getCutout, onToast }) {
       const blob = await buildIconZip(source, { ...renderOpts, platforms: selected, appName });
       const total = PLATFORMS.filter((p) => selected.has(p.id)).reduce((n, p) => n + p.count, 0);
       downloadBlob(blob, "app-icons.zip");
+      trackEvent("icons_zip", { platforms: selected.size });
       onToast(t("toast.zip", { n: total, p: selected.size }), "ok");
     } catch (e) {
       onToast(t("toast.iconsfail", { e }), "error");

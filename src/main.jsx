@@ -4,10 +4,12 @@ import App from "./App.jsx";
 import ErrorBoundary from "./components/feedback/ErrorBoundary.jsx";
 import { initTelemetry } from "./services/telemetry.js";
 import { initAds } from "./services/ads.js";
+import { initAnalytics } from "./services/analytics.js";
 import "./styles.css";
 
 initTelemetry();
 initAds();
+initAnalytics();
 
 // PWA: solo en producción (en dev interferiría con el HMR de Vite)
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
