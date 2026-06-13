@@ -125,6 +125,23 @@ const DICT = {
     "icon.note":
       "Vista pixel-perfect — así se verá el icono en el dock, la barra de pestañas y la home screen.",
 
+    "tab.stickers": "Stickers",
+    "sticker.look": "Look del sticker",
+    "sticker.outline": "Contorno",
+    "sticker.outlineColor": "Color del contorno",
+    "sticker.outlineWidth": "Grosor del contorno — {n}px",
+    "sticker.shadow": "Sombra",
+    "sticker.export": "Exportar",
+    "sticker.whatsapp": "WhatsApp · WebP 512",
+    "sticker.telegram": "Telegram · PNG 512",
+    "sticker.png": "PNG transparente 512",
+    "sticker.help":
+      "WhatsApp usa WebP de 512×512; Telegram, PNG de 512. El contorno hace que el sticker resalte sobre cualquier chat.",
+    "sticker.emptyBody":
+      "Usá el recorte actual o abrí un PNG transparente. Le agregamos contorno y sombra y lo exportamos listo para WhatsApp y Telegram.",
+    "sticker.note": "Así se verá tu sticker a 512×512 — el tamaño que usan WhatsApp y Telegram.",
+    "sticker.exported": "Sticker {target} descargado ✓",
+
     "about.body": "Recorte de fondo y generación de iconos, 100% en tu navegador.",
     "about.privacy": "Tus imágenes nunca se suben a ningún servidor.",
     "about.thirdparty": "Software de terceros",
@@ -318,6 +335,23 @@ const DICT = {
     "icon.note":
       "Pixel-perfect preview — exactly how the icon will look in the dock, tab bar and home screen.",
 
+    "tab.stickers": "Stickers",
+    "sticker.look": "Sticker look",
+    "sticker.outline": "Outline",
+    "sticker.outlineColor": "Outline color",
+    "sticker.outlineWidth": "Outline width — {n}px",
+    "sticker.shadow": "Shadow",
+    "sticker.export": "Export",
+    "sticker.whatsapp": "WhatsApp · WebP 512",
+    "sticker.telegram": "Telegram · PNG 512",
+    "sticker.png": "Transparent PNG 512",
+    "sticker.help":
+      "WhatsApp uses 512×512 WebP; Telegram, 512 PNG. The outline makes the sticker pop on any chat.",
+    "sticker.emptyBody":
+      "Use the current cutout or open a transparent PNG. We add outline and shadow and export it ready for WhatsApp and Telegram.",
+    "sticker.note": "This is how your sticker looks at 512×512 — the size WhatsApp and Telegram use.",
+    "sticker.exported": "{target} sticker downloaded ✓",
+
     "about.body": "Background removal and app-icon generation, 100% in your browser.",
     "about.privacy": "Your images never get uploaded to any server.",
     "about.thirdparty": "Third-party software",
@@ -510,6 +544,23 @@ const DICT = {
       "Use o recorte atual ou abra um PNG transparente. Geramos todas as medidas para iOS, Android, macOS, Windows e Web — prontas para colar no seu projeto.",
     "icon.note":
       "Visualização pixel-perfect — é assim que o ícone vai aparecer no dock, na barra de abas e na home screen.",
+
+    "tab.stickers": "Stickers",
+    "sticker.look": "Estilo do sticker",
+    "sticker.outline": "Contorno",
+    "sticker.outlineColor": "Cor do contorno",
+    "sticker.outlineWidth": "Espessura do contorno — {n}px",
+    "sticker.shadow": "Sombra",
+    "sticker.export": "Exportar",
+    "sticker.whatsapp": "WhatsApp · WebP 512",
+    "sticker.telegram": "Telegram · PNG 512",
+    "sticker.png": "PNG transparente 512",
+    "sticker.help":
+      "O WhatsApp usa WebP de 512×512; o Telegram, PNG de 512. O contorno faz o sticker se destacar em qualquer conversa.",
+    "sticker.emptyBody":
+      "Use o recorte atual ou abra um PNG transparente. Adicionamos contorno e sombra e exportamos pronto para WhatsApp e Telegram.",
+    "sticker.note": "É assim que seu sticker fica em 512×512 — o tamanho usado por WhatsApp e Telegram.",
+    "sticker.exported": "Sticker {target} baixado ✓",
 
     "about.body": "Remoção de fundo e geração de ícones, 100% no seu navegador.",
     "about.privacy": "Suas imagens nunca são enviadas a nenhum servidor.",

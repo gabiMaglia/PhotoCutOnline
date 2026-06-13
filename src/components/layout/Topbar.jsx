@@ -18,22 +18,21 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
       </div>
 
       <nav className="tabs" role="tablist" aria-label="Espacios de trabajo">
-        <button
-          role="tab"
-          aria-selected={tab === "cut"}
-          className={`tab ${tab === "cut" ? "tab-active" : ""}`}
-          onClick={() => onTab("cut")}
-        >
-          {t("tab.cut")}
-        </button>
-        <button
-          role="tab"
-          aria-selected={tab === "icons"}
-          className={`tab ${tab === "icons" ? "tab-active" : ""}`}
-          onClick={() => onTab("icons")}
-        >
-          Icon Studio
-        </button>
+        {[
+          { id: "cut", label: t("tab.cut") },
+          { id: "icons", label: "Icon Studio" },
+          { id: "stickers", label: t("tab.stickers") },
+        ].map((it) => (
+          <button
+            key={it.id}
+            role="tab"
+            aria-selected={tab === it.id}
+            className={`tab ${tab === it.id ? "tab-active" : ""}`}
+            onClick={() => onTab(it.id)}
+          >
+            {it.label}
+          </button>
+        ))}
       </nav>
 
       <div className="topbar-actions">

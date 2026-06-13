@@ -5,6 +5,7 @@ import { useToasts } from "./hooks/useToasts.js";
 import { CutoutProvider, useCutoutContext } from "./features/cutout/CutoutContext.jsx";
 import CutoutPage from "./features/cutout/CutoutPage.jsx";
 import IconStudioPage from "./features/iconStudio/IconStudioPage.jsx";
+import StickerStudioPage from "./features/stickerStudio/StickerStudioPage.jsx";
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
 import AboutModal from "./modals/AboutModal.jsx";
@@ -59,6 +60,8 @@ function AppShell({ tab, setTab, toasts, toast }) {
       />
 
       <IconStudioPage active={tab === "icons"} onToast={toast} onOpenDownload={openDownload} />
+
+      <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
 
       {onboarding && (
         <Onboarding

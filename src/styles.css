@@ -2032,3 +2032,14 @@ kbd {
   margin: 10px 0 4px;
   align-self: stretch;
 }
+
+/* preview de sticker: el canvas es 512 (tamaño real); se muestra a 256 y sin
+   la máscara redondeada de los iconos (los stickers son cuadrados/transparentes) */
+.icon-hero-sticker {
+  border-radius: 18px;
+}
+
+.icon-hero-sticker canvas {
+  width: 256px;
+  height: 256px;
+}
