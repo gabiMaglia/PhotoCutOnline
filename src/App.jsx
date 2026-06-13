@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import CanvasEditor from "./components/CanvasEditor.jsx";
 import IconStudio from "./components/IconStudio.jsx";
 import AdSlot from "./components/AdSlot.jsx";
+import Dropdown from "./components/Dropdown.jsx";
 import { DONATE_URL } from "./lib/ads.js";
 import AboutModal from "./components/AboutModal.jsx";
 import DownloadModal from "./components/DownloadModal.jsx";
@@ -581,35 +582,37 @@ export default function App() {
             <input type="file" accept="image/*" hidden onChange={onFileInput} />
           </label>
           <LangSwitch />
-          {DONATE_URL && (
-            <a
-              className="btn-icon btn-icon-donate"
-              href={DONATE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t("donate.aria")}
-              title={t("donate.aria")}
-            >
-              ☕
-            </a>
-          )}
-          {!backend.isDesktop && (
+          <div className="topbar-icons">
+            {DONATE_URL && (
+              <a
+                className="btn-icon btn-icon-donate"
+                href={DONATE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t("donate.aria")}
+                title={t("donate.aria")}
+              >
+                ☕
+              </a>
+            )}
+            {!backend.isDesktop && (
+              <button
+                className="btn-icon"
+                aria-label={t("dl.aria")}
+                title={t("dl.aria")}
+                onClick={() => setDlOpen(true)}
+              >
+                ⬇
+              </button>
+            )}
             <button
               className="btn-icon"
-              aria-label={t("dl.aria")}
-              title={t("dl.aria")}
-              onClick={() => setDlOpen(true)}
+              aria-label={t("about.aria")}
+              onClick={() => setAboutOpen(true)}
             >
-              ⬇
+              ⓘ
             </button>
-          )}
-          <button
-            className="btn-icon"
-            aria-label={t("about.aria")}
-            onClick={() => setAboutOpen(true)}
-          >
-            ⓘ
-          </button>
+          </div>
         </div>
       </header>
 
@@ -761,18 +764,16 @@ export default function App() {
               {backend.features.finish && (
                 <div className="field">
                   <label htmlFor="export-preset">{t("preset.label")}</label>
-                  <select
+                  <Dropdown
                     id="export-preset"
-                    className="preset-select"
+                    ariaLabel={t("preset.label")}
                     value={presetId}
-                    onChange={(e) => setPresetId(e.target.value)}
-                  >
-                    {EXPORT_PRESETS.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {t(p.labelKey)}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setPresetId}
+                    options={EXPORT_PRESETS.map((p) => ({
+                      value: p.id,
+                      label: t(p.labelKey),
+                    }))}
+                  />
                 </div>
               )}
               {/* fondo de la exportación: selector de única opción */}

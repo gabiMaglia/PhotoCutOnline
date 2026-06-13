@@ -396,7 +396,17 @@ kbd {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+/* los botones-ícono (☕ ⬇ ⓘ) van como grupo compacto, separados del bloque
+   de acciones por un divisor sutil para que la navbar no se vea apretada */
+.topbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
 }
 
 .lang-select {
@@ -1544,20 +1554,111 @@ kbd {
   border-color: var(--acid);
 }
 
-.preset-select {
-  background: var(--bg-deep);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  color: var(--ink);
-  font-family: var(--display);
-  font-size: 13px;
-  padding: 8px 10px;
-  cursor: pointer;
+/* --------------------------- dropdown (design system) --------------------------- */
+.dd {
+  position: relative;
+  width: 100%;
 }
 
-.preset-select:focus {
-  outline: none;
+.dd-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 13.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.dd-trigger:hover {
+  border-color: var(--line-bright);
+}
+
+.dd-trigger.dd-open {
   border-color: var(--acid);
+  background: var(--acid-soft);
+}
+
+.dd-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dd-caret {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--ink-dim);
+  transition: transform 0.15s, color 0.12s;
+}
+
+.dd-trigger.dd-open .dd-caret {
+  transform: rotate(180deg);
+  color: var(--acid);
+}
+
+.dd-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 70;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  max-height: 264px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--line-bright);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.2);
+  animation: dd-in 0.12s ease;
+}
+
+@keyframes dd-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.dd-option {
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--ink-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dd-option.dd-active {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.dd-option.dd-selected {
+  color: var(--acid);
+}
+
+.dd-option.dd-selected::before {
+  content: "▸";
+  font-size: 9px;
+}
+
+.dd-option:not(.dd-selected)::before {
+  content: "";
+  width: 0;
 }
 
 /* ---------------------------------- misc ---------------------------------- */
@@ -1612,13 +1713,18 @@ kbd {
   }
 
   .topbar-actions {
-    gap: 6px;
+    gap: 8px;
   }
 
   .topbar-actions .btn {
     padding: 8px 10px;
     font-size: 12.5px;
     white-space: nowrap;
+  }
+
+  .topbar-icons {
+    padding-left: 8px;
+    gap: 2px;
   }
 
   .lang-select {
@@ -1874,16 +1980,23 @@ kbd {
 }
 
 /* --------------------------- donaciones: espaciado --------------------------- */
-.ad-slot {
-  gap: 10px;
-}
-
 .ad-slot .btn {
   width: 100%;
 }
 
-.house-body {
-  margin: 0;
+/* house-ad: etiqueta arriba, texto debajo con poco espacio y el botón
+   separado claramente al pie (no pegado al disclaimer) */
+.ad-slot-house {
+  gap: 6px;
+  min-height: 120px;
+}
+
+.ad-slot-house .house-body {
+  margin: 0 0 4px;
+}
+
+.ad-slot-house .btn-donate {
+  margin-top: auto;
 }
 
 .btn-icon-donate {
