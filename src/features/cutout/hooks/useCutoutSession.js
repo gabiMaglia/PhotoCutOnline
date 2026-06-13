@@ -9,8 +9,9 @@ const ITERS = 4;
 // acabado). Se reinicia solo cuando cambia la imagen de trabajo.
 export function useCutoutSession({ imageUrl, toast }) {
   const [resultUrl, setResultUrl] = useState(null);
-  const [mode, setMode] = useState("rect"); // rect | fg | bg
+  const [mode, setMode] = useState("rect"); // rect | wand | fg | bg
   const [brushSize, setBrushSize] = useState(28);
+  const [wandTolerance, setWandTolerance] = useState(30);
   const [feather, setFeather] = useState(2);
   const [stickerOn, setStickerOn] = useState(false);
   const [stickerWidth, setStickerWidth] = useState(14);
@@ -64,6 +65,13 @@ export function useCutoutSession({ imageUrl, toast }) {
   const handleRect = useCallback(
     (rect) => runOp(() => backend.cutRect(rect, ITERS), "toast.cut"),
     [runOp]
+  );
+
+  // varita por color: cada clic suma una región; shift/clics siguientes acumulan
+  const handleWand = useCallback(
+    (seed, additive) =>
+      runOp(() => backend.wand(seed, wandTolerance, additive), additive ? null : "toast.wand"),
+    [runOp, wandTolerance]
   );
 
   const handleAuto = useCallback(() => {
@@ -185,6 +193,8 @@ export function useCutoutSession({ imageUrl, toast }) {
     brushSize,
     setBrushSize,
     nudgeBrush,
+    wandTolerance,
+    setWandTolerance,
     feather,
     handleFeather,
     stickerOn,
@@ -204,6 +214,7 @@ export function useCutoutSession({ imageUrl, toast }) {
     canRedo,
     // operaciones
     handleRect,
+    handleWand,
     handleAi,
     handleAuto,
     handleStroke,

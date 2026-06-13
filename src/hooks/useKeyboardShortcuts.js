@@ -28,6 +28,8 @@ export function useKeyboardShortcuts(handlers) {
         1: handlers.modeRect,
         2: handlers.modeKeep,
         3: handlers.modeRemove,
+        w: handlers.modeWand,
+        W: handlers.modeWand,
         a: handlers.auto,
         A: handlers.auto,
         i: handlers.ai,

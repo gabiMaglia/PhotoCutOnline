@@ -58,6 +58,7 @@ const handlers = {
     return refineMatte(matte, width, height);
   },
   addStroke: ({ stroke }) => session.addStroke(stroke),
+  wand: ({ seed, tolerance, additive }) => session.wandSelect(seed, tolerance, additive),
   undo: () => session.undo(),
   redo: () => session.redo(),
 

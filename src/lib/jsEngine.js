@@ -239,6 +239,60 @@ export class CutoutSession {
     return this.previewBlob();
   }
 
+  /**
+   * Varita mágica por color: flood-fill desde un punto (coords completas),
+   * selecciona la región CONTIGUA cuyo color difiere del píxel semilla en menos
+   * que `tolerance` (0..~120 por canal) y la marca como sujeto. Con `additive`
+   * suma a la selección actual (multi-selección); si no, empieza una nueva.
+   * Todo lo no seleccionado queda fuera del recorte (alfa 0).
+   */
+  wandSelect(seedFull, tolerance = 30, additive = false) {
+    if (!this.work) return null;
+    this.pushHistory();
+    const { width, height, data } = this.work;
+    const N = width * height;
+    const s = this.scale;
+    const sx = clamp(Math.round(seedFull.x * s), 0, width - 1);
+    const sy = clamp(Math.round(seedFull.y * s), 0, height - 1);
+
+    // base binaria: selección nueva, o sumar a la existente
+    const label = additive && this.label ? Uint8Array.from(this.label) : new Uint8Array(N);
+    this.softAlpha = null; // la varita produce máscara binaria (no matte IA)
+    this.rect = { x: 0, y: 0, w: width, h: height };
+
+    const seed = sy * width + sx;
+    const so = seed * 4;
+    const sr = data[so];
+    const sg = data[so + 1];
+    const sb = data[so + 2];
+    const tol2 = tolerance * tolerance * 3; // umbral por canal → distancia²
+
+    const stack = new Int32Array(N);
+    const visited = new Uint8Array(N);
+    let sp = 0;
+    stack[sp++] = seed;
+    visited[seed] = 1;
+    while (sp > 0) {
+      const p = stack[--sp];
+      const o = p * 4;
+      const dr = data[o] - sr;
+      const dg = data[o + 1] - sg;
+      const db = data[o + 2] - sb;
+      if (dr * dr + dg * dg + db * db > tol2) continue; // fuera de tolerancia: borde
+      label[p] = 1;
+      this.trimap[p] = TRI_FG; // restricción dura por si se re-segmenta luego
+      const x = p % width;
+      const y = (p / width) | 0;
+      if (x > 0 && !visited[p - 1]) (visited[p - 1] = 1), (stack[sp++] = p - 1);
+      if (x < width - 1 && !visited[p + 1]) (visited[p + 1] = 1), (stack[sp++] = p + 1);
+      if (y > 0 && !visited[p - width]) (visited[p - width] = 1), (stack[sp++] = p - width);
+      if (y < height - 1 && !visited[p + width]) (visited[p + width] = 1), (stack[sp++] = p + width);
+    }
+
+    this.label = label;
+    return this.previewBlob();
+  }
+
   // ---- núcleo de segmentación ----
 
   segment(emIters = EM_ITERS) {

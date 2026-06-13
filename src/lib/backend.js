@@ -113,6 +113,8 @@ async function callInline(cmd, args = {}) {
     }
     case "addStroke":
       return s.addStroke(args.stroke);
+    case "wand":
+      return s.wandSelect(args.seed, args.tolerance, args.additive);
     case "undo":
       return s.undo();
     case "redo":
@@ -171,6 +173,7 @@ export const backend = {
   features: {
     auto: !IS_DESKTOP,
     ai: !IS_DESKTOP, // u2netp local vía onnxruntime-web (worker)
+    wand: !IS_DESKTOP, // varita por color (flood-fill)
     undo: !IS_DESKTOP,
     feather: !IS_DESKTOP,
     finish: !IS_DESKTOP, // sticker/sombra/presets: motor web
@@ -238,6 +241,14 @@ export const backend = {
       return inv("refine", { strokes, iters });
     }
     const blob = await call("addStroke", { stroke });
+    afterOp();
+    return previewUrlFrom(blob);
+  },
+
+  /** Varita por color: flood-fill desde un punto. seed:{x,y} en coords completas. */
+  async wand(seed, tolerance, additive) {
+    if (IS_DESKTOP) throw new Error("Varita no disponible en escritorio todavía");
+    const blob = await call("wand", { seed, tolerance, additive });
     afterOp();
     return previewUrlFrom(blob);
   },

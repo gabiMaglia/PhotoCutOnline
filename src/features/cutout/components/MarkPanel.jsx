@@ -13,6 +13,8 @@ export default function MarkPanel({
   setMode,
   brushSize,
   setBrushSize,
+  wandTolerance,
+  setWandTolerance,
   feather,
   onFeather,
   canUndo,
@@ -40,6 +42,11 @@ export default function MarkPanel({
       <ToolButton active={mode === "rect"} onClick={() => setMode("rect")} disabled={!imageUrl}>
         <span className="tool-key">1</span> {t("tool.rect")}
       </ToolButton>
+      {backend.features.wand && (
+        <ToolButton active={mode === "wand"} onClick={() => setMode("wand")} disabled={!imageUrl}>
+          <span className="tool-key">W</span> {t("tool.wand")}
+        </ToolButton>
+      )}
       <ToolButton active={mode === "fg"} onClick={() => setMode("fg")} disabled={!hasCut}>
         <span className="tool-key">2</span> {t("tool.keep")}
       </ToolButton>
@@ -47,22 +54,33 @@ export default function MarkPanel({
         <span className="tool-key">3</span> {t("tool.remove")}
       </ToolButton>
 
-      <Slider
-        id="brush"
-        label={t("brush.label", { n: brushSize })}
-        hint={
-          <>
-            <kbd>[</kbd>
-            <kbd>]</kbd>
-          </>
-        }
-        min={4}
-        max={120}
-        value={brushSize}
-        onChange={setBrushSize}
-        disabled={mode === "rect"}
-        off={mode === "rect"}
-      />
+      {mode === "wand" ? (
+        <Slider
+          id="wand-tol"
+          label={t("wand.tolerance", { n: wandTolerance })}
+          min={5}
+          max={120}
+          value={wandTolerance}
+          onChange={setWandTolerance}
+        />
+      ) : (
+        <Slider
+          id="brush"
+          label={t("brush.label", { n: brushSize })}
+          hint={
+            <>
+              <kbd>[</kbd>
+              <kbd>]</kbd>
+            </>
+          }
+          min={4}
+          max={120}
+          value={brushSize}
+          onChange={setBrushSize}
+          disabled={mode === "rect"}
+          off={mode === "rect"}
+        />
+      )}
 
       {backend.features.feather && (
         <Slider

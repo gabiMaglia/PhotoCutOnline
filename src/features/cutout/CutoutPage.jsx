@@ -23,6 +23,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
     undo: session.handleUndo,
     redo: session.handleRedo,
     modeRect: () => loader.imageUrl && session.setMode("rect"),
+    modeWand: () => loader.imageUrl && backend.features.wand && session.setMode("wand"),
     modeKeep: () => session.hasCut && session.setMode("fg"),
     modeRemove: () => session.hasCut && session.setMode("bg"),
     auto: () => backend.features.auto && session.handleAuto(),
@@ -59,6 +60,8 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
             setMode={session.setMode}
             brushSize={session.brushSize}
             setBrushSize={session.setBrushSize}
+            wandTolerance={session.wandTolerance}
+            setWandTolerance={session.setWandTolerance}
             feather={session.feather}
             onFeather={session.handleFeather}
             canUndo={session.canUndo}
@@ -123,6 +126,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
             brushSize={session.brushSize}
             onRect={session.handleRect}
             onStroke={session.handleStroke}
+            onWand={session.handleWand}
             busy={session.busy}
             compare={session.compare}
             onCompareChange={session.setCompare}

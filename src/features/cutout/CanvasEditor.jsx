@@ -24,6 +24,7 @@ export default function CanvasEditor({
   brushSize,
   onRect,
   onStroke,
+  onWand,
   busy,
   compare,
   onCompareChange,
@@ -274,6 +275,13 @@ export default function CanvasEditor({
     }
 
     if (busy || compare) return;
+
+    // varita: un clic selecciona (shift = sumar a la selección); no arrastra
+    if (mode === "wand") {
+      onWand?.(toImageCoords(e), e.shiftKey);
+      return;
+    }
+
     drawing.current = true;
     const p = toImageCoords(e);
     start.current = p;
@@ -436,7 +444,7 @@ export default function CanvasEditor({
     ? "grab"
     : compare
       ? "default"
-      : mode === "rect"
+      : mode === "rect" || mode === "wand"
         ? "crosshair"
         : "none";
   const clipRight = `inset(0 0 0 ${comparePos * 100}%)`;

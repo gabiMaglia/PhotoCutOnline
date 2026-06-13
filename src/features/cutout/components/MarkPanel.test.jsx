@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../lib/backend.js", () => ({
-  backend: { features: { ai: true, auto: true, feather: true, undo: true } },
+  backend: { features: { ai: true, auto: true, wand: true, feather: true, undo: true } },
 }));
 
 import MarkPanel from "./MarkPanel.jsx";
@@ -16,6 +16,8 @@ function setup(props = {}) {
     setMode: jest.fn(),
     brushSize: 28,
     setBrushSize: jest.fn(),
+    wandTolerance: 30,
+    setWandTolerance: jest.fn(),
     feather: 2,
     onFeather: jest.fn(),
     canUndo: true,
@@ -40,10 +42,20 @@ describe("MarkPanel", () => {
 
   it("cambia de modo con las herramientas", async () => {
     const { setMode } = setup({ mode: "rect" });
-    // hay 3 tool-buttons (recuadro/mantener/quitar); el 2º cambia a fg
+    // orden de tools: recuadro · varita · mantener(fg) · quitar(bg)
     const tools = document.querySelectorAll(".tool");
-    await userEvent.click(tools[1]);
+    await userEvent.click(tools[2]);
     expect(setMode).toHaveBeenCalledWith("fg");
+  });
+
+  it("ofrece la varita y muestra su tolerancia en modo wand", async () => {
+    const { setMode } = setup({ mode: "rect" });
+    const wand = screen.getByText(/varita|magic wand|varinha/i).closest("button");
+    await userEvent.click(wand);
+    expect(setMode).toHaveBeenCalledWith("wand");
+    // en modo wand, el slider pasa a ser el de tolerancia
+    setup({ mode: "wand" });
+    expect(screen.getByLabelText(/tolerancia|tolerance|tolerância/i)).toBeInTheDocument();
   });
 
   it("respeta el estado de undo/redo", () => {
