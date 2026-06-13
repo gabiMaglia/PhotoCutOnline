@@ -10,14 +10,25 @@
 // consentimiento (CMP). El que provee AdSense al activarse sirve también para
 // GA. Hasta entonces va con anonimización de IP y sin señales de publicidad.
 
+import { getConsent } from "./consent.js";
+
 // import.meta.env siempre existe en Vite; el `?? {}` protege los tests (Jest).
 const ENV = import.meta.env ?? {};
 const GA_ID = ENV.VITE_GA_ID || "";
 
 let ready = false;
 
+/** ¿Hay analítica que requiera consentimiento? (GA configurado en producción) */
+export function analyticsConfigured() {
+  return !!GA_ID && !!ENV.PROD;
+}
+
+// Carga gtag.js. Solo procede si GA está configurado Y el usuario dio
+// consentimiento (GA usa cookies → en la UE no puede cargar sin "granted").
 export function initAnalytics() {
-  if (!GA_ID || !ENV.PROD || typeof document === "undefined") return false;
+  if (!analyticsConfigured() || getConsent() !== "granted" || typeof document === "undefined") {
+    return false;
+  }
 
   const s = document.createElement("script");
   s.async = true;

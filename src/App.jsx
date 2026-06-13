@@ -8,6 +8,7 @@ import IconStudioPage from "./features/iconStudio/IconStudioPage.jsx";
 import StickerStudioPage from "./features/stickerStudio/StickerStudioPage.jsx";
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
+import ConsentBanner from "./components/feedback/ConsentBanner.jsx";
 import AboutModal from "./modals/AboutModal.jsx";
 import DownloadModal from "./modals/DownloadModal.jsx";
 import HelpModal from "./modals/HelpModal.jsx";
@@ -79,6 +80,7 @@ function AppShell({ tab, setTab, toasts, toast }) {
       {dlOpen && <DownloadModal onClose={() => setDlOpen(false)} />}
 
       <Toasts toasts={toasts} />
+      <ConsentBanner />
     </div>
   );
 }

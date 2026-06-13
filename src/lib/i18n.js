@@ -154,6 +154,11 @@ const DICT = {
     "about.termsLink": "Términos de uso",
     "about.guides": "Guías",
     "donate.aria": "Apoyar el proyecto en Ko-fi",
+    "consent.aria": "Aviso de cookies",
+    "consent.text":
+      "Usamos analítica con cookies para medir el tráfico y mejorar el sitio. Tus imágenes nunca se suben a ningún servidor. Más info en",
+    "consent.accept": "Aceptar",
+    "consent.reject": "Rechazar",
     "ad.label": "Publicidad",
     "house.label": "Proyecto independiente",
     "house.body":
@@ -367,6 +372,11 @@ const DICT = {
     "about.termsLink": "Terms of use",
     "about.guides": "Guides",
     "donate.aria": "Support the project on Ko-fi",
+    "consent.aria": "Cookie notice",
+    "consent.text":
+      "We use cookie-based analytics to measure traffic and improve the site. Your images are never uploaded to any server. More in our",
+    "consent.accept": "Accept",
+    "consent.reject": "Reject",
     "ad.label": "Advertisement",
     "house.label": "Independent project",
     "house.body":
@@ -580,6 +590,11 @@ const DICT = {
     "about.termsLink": "Termos de uso",
     "about.guides": "Guias",
     "donate.aria": "Apoiar o projeto no Ko-fi",
+    "consent.aria": "Aviso de cookies",
+    "consent.text":
+      "Usamos analítica com cookies para medir o tráfego e melhorar o site. Suas imagens nunca são enviadas a nenhum servidor. Mais em",
+    "consent.accept": "Aceitar",
+    "consent.reject": "Recusar",
     "ad.label": "Publicidade",
     "house.label": "Projeto independente",
     "house.body":
