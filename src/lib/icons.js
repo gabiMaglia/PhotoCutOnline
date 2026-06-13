@@ -75,9 +75,10 @@ const WEB_PNGS = [
  * opts: { padding: 0..0.3, bg: null | "#rrggbb", radius: 0..0.5 }
  */
 export function renderIcon(source, size, opts = {}) {
-  const { padding = 0.08, radius = 0, variant = "normal" } = opts;
+  const { padding = 0.08, radius = 0, variant = "normal", fit = "contain" } = opts;
   // dark/tinted/monochrome van SIEMPRE sobre transparente (el SO pone el fondo)
   const bg = variant === "normal" ? opts.bg ?? null : null;
+  const bgImage = variant === "normal" ? opts.bgImage ?? null : null;
   const c = document.createElement("canvas");
   c.width = size;
   c.height = size;
@@ -95,14 +96,57 @@ export function renderIcon(source, size, opts = {}) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, size, size);
   }
+  if (bgImage) {
+    // el fondo siempre cubre el cuadro completo (cover, recorta el sobrante)
+    const bs = Math.max(size / bgImage.width, size / bgImage.height);
+    const bw = bgImage.width * bs;
+    const bh = bgImage.height * bs;
+    ctx.drawImage(bgImage, (size - bw) / 2, (size - bh) / 2, bw, bh);
+  }
 
   const pad = size * padding;
   const avail = size - pad * 2;
-  const s = Math.min(avail / source.width, avail / source.height);
-  const dw = source.width * s;
-  const dh = source.height * s;
-  ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
+  if (fit === "cover") {
+    // el arte llena el área interior y el sobrante se recorta (no se achica)
+    const s = Math.max(avail / source.width, avail / source.height);
+    const dw = source.width * s;
+    const dh = source.height * s;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(pad, pad, avail, avail);
+    ctx.clip();
+    ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
+    ctx.restore();
+  } else {
+    const s = Math.min(avail / source.width, avail / source.height);
+    const dw = source.width * s;
+    const dh = source.height * s;
+    ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
+  }
   return applyVariant(c, variant);
+}
+
+/** ¿Tiene la imagen margen transparente recortable? (para habilitar el botón) */
+export function hasTrimmableMargin(source) {
+  const W = source.naturalWidth || source.width;
+  const H = source.naturalHeight || source.height;
+  const c = document.createElement("canvas");
+  c.width = W;
+  c.height = H;
+  const ctx = c.getContext("2d");
+  ctx.drawImage(source, 0, 0);
+  const d = ctx.getImageData(0, 0, W, H).data;
+  // basta con que el perímetro sea totalmente transparente en alguna franja:
+  // si algún píxel del borde tiene alfa, no hay margen que recortar
+  for (let x = 0; x < W; x++) {
+    if (d[x * 4 + 3] > 0 || d[((H - 1) * W + x) * 4 + 3] > 0) return false;
+  }
+  for (let y = 0; y < H; y++) {
+    if (d[y * W * 4 + 3] > 0 || d[(y * W + W - 1) * 4 + 3] > 0) return false;
+  }
+  // borde limpio: hay al menos 1px de margen (y la imagen no está vacía)
+  for (let i = 3; i < d.length; i += 4) if (d[i] > 0) return true;
+  return false;
 }
 
 /**
@@ -305,7 +349,13 @@ Generado también disponible por CLI: make_icons.py (Python + Pillow).
 export async function buildIconZip(source, opts = {}) {
   const platforms = opts.platforms ?? new Set(PLATFORMS.map((p) => p.id));
   const appName = opts.appName || "Mi App";
-  const render = { padding: opts.padding ?? 0.08, bg: opts.bg ?? null, radius: 0 };
+  const render = {
+    padding: opts.padding ?? 0.08,
+    bg: opts.bg ?? null,
+    bgImage: opts.bgImage ?? null,
+    fit: opts.fit ?? "contain",
+    radius: 0,
+  };
   const enc = new TextEncoder();
   const files = [{ path: "app-icons/LEEME.txt", data: enc.encode(ZIP_README) }];
 

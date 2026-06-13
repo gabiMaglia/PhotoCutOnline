@@ -221,24 +221,21 @@ export class CutoutSession {
       return this.previewBlob();
     }
 
+    // El pincel edita la máscara DIRECTAMENTE (igual que el camino IA): es
+    // determinista y cuesta ~nada. Re-segmentar todo el lienzo por trazo
+    // (GrabCut completo) tardaba >1 s por trazo y encolaba minutos de CPU al
+    // pintar rápido. El trimap se sigue marcando como restricción dura para
+    // cualquier segmentación futura (nuevo recuadro / auto).
     const val = stroke.foreground ? TRI_FG : TRI_BG;
+    const lVal = stroke.foreground ? 1 : 0;
     for (let i = 0; i < pts.length; i++) {
       const a = pts[i];
       const b = pts[i + 1] || a;
-      stampLine(
-        this.trimap,
-        this.work.width,
-        this.work.height,
-        a.x * s,
-        a.y * s,
-        b.x * s,
-        b.y * s,
-        r,
-        val
-      );
+      stampLine(this.trimap, this.work.width, this.work.height,
+        a.x * s, a.y * s, b.x * s, b.y * s, r, val);
+      stampLine(this.label, this.work.width, this.work.height,
+        a.x * s, a.y * s, b.x * s, b.y * s, r, lVal);
     }
-    // refinamiento: las etiquetas apenas cambian, 1 iteración EM basta
-    this.segment(1);
     return this.previewBlob();
   }
 

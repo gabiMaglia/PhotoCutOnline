@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { backend } from "../lib/backend.js";
 import AdSlot from "./AdSlot.jsx";
-import { PLATFORMS, renderIcon, buildIconZip, faviconSnippet, trimToContent } from "../lib/icons.js";
+import {
+  PLATFORMS,
+  renderIcon,
+  buildIconZip,
+  faviconSnippet,
+  trimToContent,
+  hasTrimmableMargin,
+} from "../lib/icons.js";
 import { loadHtmlImage } from "../lib/jsEngine.js";
 import { t } from "../lib/i18n.js";
 
@@ -10,23 +17,33 @@ import { t } from "../lib/i18n.js";
 
 const PREVIEW_SIZES = [128, 64, 48, 32, 16];
 
-export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
+export default function IconStudio({ getCutout, hasCut, onToast, onDownload, active = true }) {
   const [source, setSource] = useState(null); // HTMLImageElement | canvas
   const [sourceName, setSourceName] = useState(null);
   const [padding, setPadding] = useState(8);
+  const [fit, setFit] = useState("contain"); // contain: entera | cover: recorta el sobrante
   const [bgOn, setBgOn] = useState(false);
   const [bgColor, setBgColor] = useState("#111317");
+  const [bgImage, setBgImage] = useState(null); // HTMLImageElement | null
   const [appName, setAppName] = useState("Mi App");
   const [selected, setSelected] = useState(() => new Set(PLATFORMS.map((p) => p.id)));
   const [building, setBuilding] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [canTrim, setCanTrim] = useState(false);
   const aiWarned = useRef(false);
   const heroRef = useRef(null);
 
   const renderOpts = {
     padding: padding / 100,
+    fit,
     bg: bgOn ? bgColor : null,
+    bgImage,
   };
+
+  // ¿hay margen transparente que recortar? (habilita/deshabilita el botón)
+  useEffect(() => {
+    setCanTrim(source ? hasTrimmableMargin(source) : false);
+  }, [source]);
 
   // Preview grande
   useEffect(() => {
@@ -35,7 +52,7 @@ export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
     const ctx = c.getContext("2d");
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.drawImage(renderIcon(source, 256, renderOpts), 0, 0);
-  }, [source, padding, bgOn, bgColor]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, padding, fit, bgOn, bgColor, bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadFromFile = useCallback(async (file) => {
     const url = URL.createObjectURL(file);
@@ -203,7 +220,7 @@ export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
               {removing ? t("icon.removing") : t("icon.removeBg")}
             </button>
           )}
-          <button className="btn" disabled={!source} onClick={trimSource}>
+          <button className="btn" disabled={!source || !canTrim} onClick={trimSource}>
             {t("icon.trim")}
           </button>
           {sourceName && <div className="source-tag">{sourceName}</div>}
@@ -222,6 +239,19 @@ export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
               onChange={(e) => setPadding(Number(e.target.value))}
             />
           </div>
+          <div className="format-row" role="radiogroup" aria-label={t("icon.fitAria")}>
+            {["contain", "cover"].map((f) => (
+              <button
+                key={f}
+                role="radio"
+                aria-checked={fit === f}
+                className={`chip ${fit === f ? "chip-on" : ""}`}
+                onClick={() => setFit(f)}
+              >
+                {t(`icon.fit.${f}`)}
+              </button>
+            ))}
+          </div>
           <div className="row">
             <label className="check">
               <input type="checkbox" checked={bgOn} onChange={(e) => setBgOn(e.target.checked)} />
@@ -235,6 +265,31 @@ export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
               aria-label={t("icon.bgAria")}
             />
           </div>
+          {!bgImage ? (
+            <label className="btn btn-small">
+              {t("icon.bgImage")}
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!f) return;
+                  const url = URL.createObjectURL(f);
+                  try {
+                    setBgImage(await loadHtmlImage(url));
+                  } finally {
+                    URL.revokeObjectURL(url);
+                  }
+                }}
+              />
+            </label>
+          ) : (
+            <button className="btn btn-small" onClick={() => setBgImage(null)}>
+              {t("icon.bgImageRemove")}
+            </button>
+          )}
           <div className="field">
             <label htmlFor="app-name">{t("icon.appName")}</label>
             <input
@@ -285,7 +340,8 @@ export default function IconStudio({ getCutout, hasCut, onToast, onDownload }) {
           </div>
         </section>
 
-        <AdSlot placement="icons-rail" onDownload={onDownload} />
+        {/* solo en la pestaña activa: las redes exigen 1 anuncio por página */}
+        {active && <AdSlot placement="icons-rail" onDownload={onDownload} />}
       </aside>
 
       <main className="icon-preview">
@@ -322,7 +378,7 @@ function SizePreview({ source, size, opts }) {
     const ctx = c.getContext("2d");
     ctx.clearRect(0, 0, size, size);
     ctx.drawImage(renderIcon(source, size, opts), 0, 0);
-  }, [source, size, opts.padding, opts.bg]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, size, opts.padding, opts.fit, opts.bg, opts.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <figure className="size-preview">
       <div className="size-box">

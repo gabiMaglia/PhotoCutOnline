@@ -1830,3 +1830,68 @@ kbd {
 .about-links a:hover {
   color: var(--acid);
 }
+
+/* --------------------------- preview interactiva --------------------------- */
+.preview-panel-head {
+  cursor: grab;
+  user-select: none;
+}
+
+.preview-panel-head:active {
+  cursor: grabbing;
+}
+
+/* fondo "otra imagen" del modo de exportación, con fader de opacidad */
+.preview-bgimg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-cutout {
+  position: relative;
+  cursor: grab;
+}
+
+/* fantasma del recorte mientras se arrastra hacia el lienzo */
+.cut-ghost {
+  position: fixed;
+  z-index: 90;
+  max-width: 150px;
+  max-height: 150px;
+  transform: translate(-50%, -50%);
+  opacity: 0.75;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5));
+}
+
+.color-export-hex {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-dim);
+}
+
+/* --------------------------- donaciones: espaciado --------------------------- */
+.ad-slot {
+  gap: 10px;
+}
+
+.ad-slot .btn {
+  width: 100%;
+}
+
+.house-body {
+  margin: 0;
+}
+
+.btn-icon-donate {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.about-donate {
+  margin: 10px 0 4px;
+  align-self: stretch;
+}

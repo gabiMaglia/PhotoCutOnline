@@ -40,11 +40,21 @@ export default function App() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [format, setFormat] = useState("png");
+  const [exportMode, setExportMode] = useState("transparent"); // transparent | solid | image
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [bgImage, setBgImage] = useState(null); // dataURL del fondo "imagen"
+  const [bgOpacity, setBgOpacity] = useState(100);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewBg, setPreviewBg] = useState("checker"); // checker | white | black | color
   const [previewColor, setPreviewColor] = useState("#ffffff");
   const [previewSize, setPreviewSize] = useState({ w: 220, h: 240 });
+  const [previewPos, setPreviewPos] = useState(null); // null = anclado por CSS
+  const [cutGhost, setCutGhost] = useState(null); // fantasma al arrastrar el recorte
   const previewResize = useRef(null);
+  const previewDrag = useRef(null);
+  const cutDrag = useRef(null);
+  const workspaceRef = useRef(null);
+  const previewPanelRef = useRef(null);
 
   function previewResizeDown(e) {
     e.preventDefault();
@@ -53,6 +63,8 @@ export default function App() {
       sy: e.clientY,
       w0: previewSize.w,
       h0: previewSize.h,
+      x0: previewPos?.x ?? null,
+      y0: previewPos?.y ?? null,
     };
     try {
       e.target.setPointerCapture?.(e.pointerId);
@@ -64,15 +76,85 @@ export default function App() {
   function previewResizeMove(e) {
     const r = previewResize.current;
     if (!r) return;
-    // anclado a la derecha: arrastrar hacia la izquierda agranda
+    // el handle está abajo-izquierda: arrastrar hacia la izquierda agranda
+    const w = clampNum(r.w0 + (r.sx - e.clientX), 180, window.innerWidth * 0.7);
     setPreviewSize({
-      w: clampNum(r.w0 + (r.sx - e.clientX), 180, window.innerWidth * 0.7),
+      w,
       h: clampNum(r.h0 + (e.clientY - r.sy), 170, window.innerHeight * 0.75),
     });
+    // si el panel fue arrastrado (posición por left/top), el borde derecho
+    // debe quedarse quieto mientras crece hacia la izquierda
+    if (r.x0 != null) setPreviewPos({ x: r.x0 - (w - r.w0), y: r.y0 });
   }
 
   function previewResizeUp() {
     previewResize.current = null;
+  }
+
+  // ---- mover el panel de vista previa (por la cabecera) ----
+  function previewDragDown(e) {
+    if (e.target.closest("button, input")) return; // chips y cerrar siguen vivos
+    e.preventDefault();
+    const rect = previewPanelRef.current.getBoundingClientRect();
+    previewDrag.current = { dx: e.clientX - rect.left, dy: e.clientY - rect.top };
+    try {
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    } catch {
+      /* pointers sintéticos */
+    }
+  }
+
+  function previewDragMove(e) {
+    if (!previewDrag.current) return;
+    const d = previewDrag.current;
+    setPreviewPos({
+      x: clampNum(e.clientX - d.dx, 8, window.innerWidth - 80),
+      y: clampNum(e.clientY - d.dy, 8, window.innerHeight - 60),
+    });
+  }
+
+  function previewDragUp() {
+    previewDrag.current = null;
+  }
+
+  // ---- arrastrar el RECORTE del preview y soltarlo en el lienzo ----
+  // (cargarlo como nueva imagen de trabajo para seguir editando sobre él)
+  function cutDragDown(e) {
+    e.preventDefault();
+    cutDrag.current = { sx: e.clientX, sy: e.clientY };
+    try {
+      e.target.setPointerCapture?.(e.pointerId);
+    } catch {
+      /* pointers sintéticos */
+    }
+    setCutGhost({ x: e.clientX, y: e.clientY });
+  }
+
+  function cutDragMove(e) {
+    if (cutDrag.current) setCutGhost({ x: e.clientX, y: e.clientY });
+  }
+
+  function cutDragCancel() {
+    cutDrag.current = null;
+    setCutGhost(null);
+  }
+
+  async function cutDragUp(e) {
+    const d = cutDrag.current;
+    cutDragCancel();
+    if (!d) return;
+    const moved = Math.hypot(e.clientX - d.sx, e.clientY - d.sy) > 24;
+    const ws = workspaceRef.current?.getBoundingClientRect();
+    const panel = previewPanelRef.current?.getBoundingClientRect();
+    const inside = (r) =>
+      r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    if (!moved || !inside(ws) || inside(panel)) return;
+    try {
+      const url = await backend.exportTransparent({ format: "png" });
+      await loadDataUrl(url, t("toast.cutLoaded"));
+    } catch (err) {
+      toast(String(err), "error");
+    }
   }
   const [dragging, setDragging] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -336,13 +418,15 @@ export default function App() {
       setBusy(true);
       try {
         const preset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
-        const opts = { format, quality: 0.92, ...(preset ? { preset } : {}) };
+        // JPEG no tiene alfa: el modo transparente cae a PNG
+        const effFormat = kind === "transparent" && format === "jpeg" ? "png" : format;
+        const opts = { format: effFormat, quality: 0.92, ...(preset ? { preset } : {}) };
         let url;
         if (kind === "transparent") url = await backend.exportTransparent(opts);
         else if (kind === "solid") url = await backend.exportSolid(arg, opts);
         else if (kind === "image") url = await backend.exportImageBg(arg, opts);
-        const ext = format === "jpeg" ? "jpg" : format;
-        downloadDataUrl(url, `photocut-${kind}.${kind === "transparent" ? "png" : ext}`);
+        const ext = effFormat === "jpeg" ? "jpg" : effFormat;
+        downloadDataUrl(url, `photocut-${kind}.${ext}`);
         toast(t("toast.exported"), "ok");
       } catch (e) {
         toast(String(e), "error");
@@ -352,6 +436,16 @@ export default function App() {
     },
     [format, presetId, toast]
   );
+
+  /** Exportación según el modo elegido (selector único). */
+  const handleDownload = useCallback(async () => {
+    if (exportMode === "solid") return exportAs("solid", hexToRgba(bgColor));
+    if (exportMode === "image") {
+      if (!bgImage) return;
+      return exportAs("image", await bgWithOpacity(bgImage, bgOpacity, imageSize));
+    }
+    return exportAs("transparent");
+  }, [exportMode, bgColor, bgImage, bgOpacity, imageSize, exportAs]);
 
   const copyToClipboard = useCallback(async () => {
     setBusy(true);
@@ -371,8 +465,11 @@ export default function App() {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    const dataUrl = await fileToDataUrl(f);
-    exportAs("image", dataUrl);
+    // ya no exporta directo: queda como fondo previsualizable del modo "imagen"
+    setBgImage(await fileToDataUrl(f));
+    setExportMode("image");
+    setPreviewOpen(true);
+    toast(t("toast.bgSet"), "ok");
   }
 
   // ---- atajos de teclado ----
@@ -425,7 +522,7 @@ export default function App() {
           break;
         case "e":
         case "E":
-          if (hasCut && !busy) exportAs("transparent");
+          if (hasCut && !busy) handleDownload();
           break;
         case "p":
         case "P":
@@ -440,7 +537,12 @@ export default function App() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [imageUrl, hasCut, busy, handleUndo, handleRedo, handleAuto, handleAi, exportAs, cancelLarge]);
+  }, [imageUrl, hasCut, busy, handleUndo, handleRedo, handleAuto, handleAi, handleDownload, cancelLarge]);
+
+  // al volver a Recorte, el lienzo estuvo display:none → re-encajar
+  useEffect(() => {
+    if (tab === "cut") window.dispatchEvent(new Event("resize"));
+  }, [tab]);
 
   const getCutout = useCallback(() => backend.exportTransparent({ format: "png" }), []);
 
@@ -488,7 +590,7 @@ export default function App() {
               aria-label={t("donate.aria")}
               title={t("donate.aria")}
             >
-              ♥
+              ☕
             </a>
           )}
           {!backend.isDesktop && (
@@ -511,9 +613,9 @@ export default function App() {
         </div>
       </header>
 
-      {tab === "cut" && (
-        <div className="body">
-          <aside className="rail">
+      {/* ambas pestañas quedan montadas (display:none) para no perder estado */}
+      <div className="body" style={tab === "cut" ? undefined : { display: "none" }}>
+        <aside className="rail">
             <section className="rail-group">
               <h2 className="rail-title">{t("rail.mark")}</h2>
               {backend.features.ai && (
@@ -673,6 +775,65 @@ export default function App() {
                   </select>
                 </div>
               )}
+              {/* fondo de la exportación: selector de única opción */}
+              <div className="format-row" role="radiogroup" aria-label={t("export.modeAria")}>
+                {["transparent", "solid", "image"].map((m) => (
+                  <button
+                    key={m}
+                    role="radio"
+                    aria-checked={exportMode === m}
+                    className={`chip ${exportMode === m ? "chip-on" : ""}`}
+                    disabled={!hasCut}
+                    onClick={() => setExportMode(m)}
+                  >
+                    {t(`export.mode.${m}`)}
+                  </button>
+                ))}
+              </div>
+              {exportMode === "solid" && (
+                <div className="color-export">
+                  <input
+                    type="color"
+                    value={bgColor}
+                    disabled={!hasCut}
+                    onChange={(e) => setBgColor(e.target.value)}
+                    aria-label={t("export.bgcolor.aria")}
+                  />
+                  <span className="color-export-hex">{bgColor}</span>
+                </div>
+              )}
+              {exportMode === "image" && (
+                <>
+                  {!bgImage ? (
+                    <label className={`btn btn-small ${!hasCut ? "btn-disabled" : ""}`}>
+                      {t("export.bgChoose")}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        disabled={!hasCut}
+                        onChange={chooseBackgroundImage}
+                      />
+                    </label>
+                  ) : (
+                    <button className="btn btn-small" onClick={() => setBgImage(null)}>
+                      {t("export.bgRemove")}
+                    </button>
+                  )}
+                  <div className={`slider ${!bgImage ? "slider-off" : ""}`}>
+                    <label htmlFor="bg-opacity">{t("export.bgOpacity", { n: bgOpacity })}</label>
+                    <input
+                      id="bg-opacity"
+                      type="range"
+                      min="10"
+                      max="100"
+                      value={bgOpacity}
+                      disabled={!bgImage}
+                      onChange={(e) => setBgOpacity(Number(e.target.value))}
+                    />
+                  </div>
+                </>
+              )}
               {backend.features.formats && (
                 <div className="format-row" role="radiogroup" aria-label="Formato">
                   {["png", "webp", "jpeg"].map((f) => (
@@ -681,6 +842,7 @@ export default function App() {
                       role="radio"
                       aria-checked={format === f}
                       className={`chip ${format === f ? "chip-on" : ""}`}
+                      disabled={f === "jpeg" && exportMode === "transparent"}
                       onClick={() => setFormat(f)}
                     >
                       {f.toUpperCase()}
@@ -688,25 +850,18 @@ export default function App() {
                   ))}
                 </div>
               )}
-              <button className="btn" disabled={!hasCut || busy} onClick={() => exportAs("transparent")}>
-                {t("export.png")} <kbd>E</kbd>
+              <button
+                className="btn btn-primary"
+                disabled={!hasCut || busy || (exportMode === "image" && !bgImage)}
+                onClick={handleDownload}
+              >
+                {t("export.download")} <kbd>E</kbd>
               </button>
               {backend.features.clipboard && (
                 <button className="btn" disabled={!hasCut || busy} onClick={copyToClipboard}>
                   {t("export.clipboard")}
                 </button>
               )}
-              <ColorExport disabled={!hasCut || busy} onExport={(c) => exportAs("solid", c)} />
-              <label className={`btn ${!hasCut || busy ? "btn-disabled" : ""}`}>
-                {t("export.image")}
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  disabled={!hasCut || busy}
-                  onChange={chooseBackgroundImage}
-                />
-              </label>
               <button
                 className="btn"
                 disabled={!hasCut || busy}
@@ -716,85 +871,128 @@ export default function App() {
               </button>
             </section>
 
-            <div className="rail-help">
-              <p>{t("rail.help")}</p>
-            </div>
+          <div className="rail-help">
+            <p>{t("rail.help")}</p>
+          </div>
 
-            <AdSlot placement="cut-rail" onDownload={() => setDlOpen(true)} />
-          </aside>
+          {/* solo en la pestaña activa: las redes exigen 1 anuncio por página */}
+          {tab === "cut" && <AdSlot placement="cut-rail" onDownload={() => setDlOpen(true)} />}
+        </aside>
 
-          <main className="workspace">
-            <CanvasEditor
-              imageUrl={imageUrl}
-              imageSize={imageSize}
-              resultUrl={resultUrl}
-              mode={mode}
-              brushSize={brushSize}
-              onRect={handleRect}
-              onStroke={handleStroke}
-              busy={busy}
-              compare={compare}
-              onCompareChange={setCompare}
-            />
-          </main>
-        </div>
-      )}
-
-      {tab === "icons" && (
-        <div className="body">
-          <IconStudio
-            getCutout={getCutout}
-            hasCut={hasCut}
-            onToast={toast}
-            onDownload={() => setDlOpen(true)}
+        <main className="workspace" ref={workspaceRef}>
+          <CanvasEditor
+            imageUrl={imageUrl}
+            imageSize={imageSize}
+            resultUrl={resultUrl}
+            mode={mode}
+            brushSize={brushSize}
+            onRect={handleRect}
+            onStroke={handleStroke}
+            busy={busy}
+            compare={compare}
+            onCompareChange={setCompare}
           />
-        </div>
-      )}
+        </main>
+      </div>
+
+      <div className="body" style={tab === "icons" ? undefined : { display: "none" }}>
+        <IconStudio
+          getCutout={getCutout}
+          hasCut={hasCut}
+          onToast={toast}
+          onDownload={() => setDlOpen(true)}
+          active={tab === "icons"}
+        />
+      </div>
 
       {tab === "cut" && previewOpen && hasCut && resultUrl && (
-        <div className="preview-panel" style={{ width: previewSize.w, height: previewSize.h }}>
-          <div className="preview-panel-head">
+        <div
+          className="preview-panel"
+          ref={previewPanelRef}
+          style={{
+            width: previewSize.w,
+            height: previewSize.h,
+            ...(previewPos
+              ? { left: previewPos.x, top: previewPos.y, right: "auto" }
+              : {}),
+          }}
+        >
+          <div
+            className="preview-panel-head"
+            onPointerDown={previewDragDown}
+            onPointerMove={previewDragMove}
+            onPointerUp={previewDragUp}
+            onPointerCancel={previewDragUp}
+          >
             <span className="preview-panel-title">{t("previewPanel.title")}</span>
-            <div className="preview-bg-switch" role="radiogroup" aria-label={t("previewPanel.bgAria")}>
-              <button
-                className={`bg-chip bg-chip-checker ${previewBg === "checker" ? "bg-chip-on" : ""}`}
-                onClick={() => setPreviewBg("checker")}
-                aria-label={t("previewPanel.transparent")}
-                aria-pressed={previewBg === "checker"}
-              />
-              <button
-                className={`bg-chip bg-chip-white ${previewBg === "white" ? "bg-chip-on" : ""}`}
-                onClick={() => setPreviewBg("white")}
-                aria-label={t("previewPanel.white")}
-                aria-pressed={previewBg === "white"}
-              />
-              <button
-                className={`bg-chip bg-chip-black ${previewBg === "black" ? "bg-chip-on" : ""}`}
-                onClick={() => setPreviewBg("black")}
-                aria-label={t("previewPanel.black")}
-                aria-pressed={previewBg === "black"}
-              />
-              <input
-                type="color"
-                className={`bg-chip bg-chip-color ${previewBg === "color" ? "bg-chip-on" : ""}`}
-                value={previewColor}
-                onChange={(e) => {
-                  setPreviewColor(e.target.value);
-                  setPreviewBg("color");
-                }}
-                aria-label={t("previewPanel.custom")}
-              />
-            </div>
+            {exportMode === "transparent" && (
+              <div className="preview-bg-switch" role="radiogroup" aria-label={t("previewPanel.bgAria")}>
+                <button
+                  className={`bg-chip bg-chip-checker ${previewBg === "checker" ? "bg-chip-on" : ""}`}
+                  onClick={() => setPreviewBg("checker")}
+                  aria-label={t("previewPanel.transparent")}
+                  aria-pressed={previewBg === "checker"}
+                />
+                <button
+                  className={`bg-chip bg-chip-white ${previewBg === "white" ? "bg-chip-on" : ""}`}
+                  onClick={() => setPreviewBg("white")}
+                  aria-label={t("previewPanel.white")}
+                  aria-pressed={previewBg === "white"}
+                />
+                <button
+                  className={`bg-chip bg-chip-black ${previewBg === "black" ? "bg-chip-on" : ""}`}
+                  onClick={() => setPreviewBg("black")}
+                  aria-label={t("previewPanel.black")}
+                  aria-pressed={previewBg === "black"}
+                />
+                <input
+                  type="color"
+                  className={`bg-chip bg-chip-color ${previewBg === "color" ? "bg-chip-on" : ""}`}
+                  value={previewColor}
+                  onChange={(e) => {
+                    setPreviewColor(e.target.value);
+                    setPreviewBg("color");
+                  }}
+                  aria-label={t("previewPanel.custom")}
+                />
+              </div>
+            )}
             <button className="preview-close" onClick={() => setPreviewOpen(false)} aria-label={t("previewPanel.close")}>
               ×
             </button>
           </div>
           <div
-            className={`preview-body preview-bg-${previewBg}`}
-            style={previewBg === "color" ? { background: previewColor } : undefined}
+            className={`preview-body preview-bg-${exportMode === "transparent" ? previewBg : "none"}`}
+            style={
+              exportMode === "solid"
+                ? { background: bgColor }
+                : exportMode === "transparent" && previewBg === "color"
+                  ? { background: previewColor }
+                  : undefined
+            }
           >
-            {previewBg === "checker" && <div className="checker" />}
-            <img src={resultUrl} alt={t("previewPanel.alt")} />
+            {((exportMode === "transparent" && previewBg === "checker") ||
+              (exportMode === "image" && !bgImage)) && <div className="checker" />}
+            {exportMode === "image" && bgImage && (
+              <img
+                className="preview-bgimg"
+                src={bgImage}
+                style={{ opacity: bgOpacity / 100 }}
+                alt=""
+                aria-hidden
+              />
+            )}
+            <img
+              className="preview-cutout"
+              src={resultUrl}
+              alt={t("previewPanel.alt")}
+              title={t("preview.dropHint")}
+              style={{ touchAction: "none" }}
+              onPointerDown={cutDragDown}
+              onPointerMove={cutDragMove}
+              onPointerUp={cutDragUp}
+              onPointerCancel={cutDragCancel}
+            />
           </div>
           <div
             className="preview-resize"
@@ -806,6 +1004,16 @@ export default function App() {
             onPointerCancel={previewResizeUp}
           />
         </div>
+      )}
+
+      {cutGhost && resultUrl && (
+        <img
+          className="cut-ghost"
+          src={resultUrl}
+          style={{ left: cutGhost.x, top: cutGhost.y }}
+          alt=""
+          aria-hidden
+        />
       )}
 
       {onboarding && (
@@ -887,24 +1095,6 @@ function ToolButton({ active, children, ...rest }) {
   );
 }
 
-function ColorExport({ disabled, onExport }) {
-  const [color, setColor] = useState("#ffffff");
-  return (
-    <div className="color-export">
-      <input
-        type="color"
-        value={color}
-        disabled={disabled}
-        onChange={(e) => setColor(e.target.value)}
-        aria-label={t("export.bgcolor.aria")}
-      />
-      <button className="btn btn-small" disabled={disabled} onClick={() => onExport(hexToRgba(color))}>
-        {t("export.solid")}
-      </button>
-    </div>
-  );
-}
-
 function clampNum(v, lo, hi) {
   return Math.max(lo, Math.min(hi, v));
 }
@@ -917,6 +1107,31 @@ function hexToRgba(hex) {
     parseInt(h.slice(4, 6), 16),
     255,
   ];
+}
+
+/**
+ * Pre-compone el fondo con la opacidad elegida (cover, al tamaño de la
+ * imagen de trabajo) para que el motor lo reciba listo para componer.
+ */
+async function bgWithOpacity(bgDataUrl, opacity, imageSize) {
+  if (opacity >= 100 || !imageSize) return bgDataUrl;
+  const img = await new Promise((resolve, reject) => {
+    const i = new Image();
+    i.onload = () => resolve(i);
+    i.onerror = reject;
+    i.src = bgDataUrl;
+  });
+  const c = document.createElement("canvas");
+  c.width = imageSize.width;
+  c.height = imageSize.height;
+  const ctx = c.getContext("2d");
+  ctx.globalAlpha = opacity / 100;
+  const s = Math.max(c.width / img.width, c.height / img.height);
+  const dw = img.width * s;
+  const dh = img.height * s;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh);
+  return c.toDataURL("image/png");
 }
 
 function fileToDataUrl(file) {
