@@ -5,7 +5,8 @@ import { t } from "../lib/i18n.js";
 // instalador correcto (Windows x64, macOS Apple Silicon, macOS Intel),
 // destacando el detectado para el equipo del usuario.
 
-const REPO = "gabiMaglia/PhotoCutOnline";
+// repo de las releases de escritorio; override por build con VITE_GH_REPO
+const REPO = import.meta.env.VITE_GH_REPO || "gabiMaglia/PhotoCutOnline";
 const RELEASES_URL = `https://github.com/${REPO}/releases`;
 
 function matchAssets(assets) {

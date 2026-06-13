@@ -5,6 +5,12 @@ target/
 src-tauri/target/
 src-tauri/gen/
 
+# env: valores locales fuera de git; la plantilla .env.example sí se versiona
+.env
+.env.local
+.env.*.local
+!.env.example
+
 # os / editor
 .DS_Store
 *.log
