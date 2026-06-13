@@ -1874,6 +1874,10 @@ kbd {
    evita layout shift cuando el anuncio llega tarde. */
 .ad-slot {
   margin-top: auto;
+  /* el rail es un flex column: sin esto, cuando el contenido del rail es alto
+     el slot se comprime hasta su min-height y el botón (margin-top:auto) queda
+     colgando fuera de la tarjeta. flex-shrink:0 lo mantiene a su altura real */
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 8px;
