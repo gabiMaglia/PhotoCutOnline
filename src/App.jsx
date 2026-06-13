@@ -12,6 +12,7 @@ import AboutModal from "./modals/AboutModal.jsx";
 import DownloadModal from "./modals/DownloadModal.jsx";
 import HelpModal from "./modals/HelpModal.jsx";
 import Onboarding from "./modals/Onboarding.jsx";
+import { STICKERS_ENABLED } from "./config.js";
 
 // Shell de la app: idioma, pestaña activa, notificaciones y modales. Toda la
 // funcionalidad de recorte vive en CutoutProvider; cada página tiene su hook.
@@ -61,7 +62,9 @@ function AppShell({ tab, setTab, toasts, toast }) {
 
       <IconStudioPage active={tab === "icons"} onToast={toast} onOpenDownload={openDownload} />
 
-      <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
+      {STICKERS_ENABLED && (
+        <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
+      )}
 
       {onboarding && (
         <Onboarding

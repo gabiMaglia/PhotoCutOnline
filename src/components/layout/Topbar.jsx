@@ -1,6 +1,7 @@
 import { backend } from "../../lib/backend.js";
 import { t } from "../../lib/i18n.js";
 import { DONATE_URL } from "../../services/ads.js";
+import { STICKERS_ENABLED } from "../../config.js";
 import FileButton from "../ui/FileButton.jsx";
 import IconButton from "../ui/IconButton.jsx";
 import LangSwitch from "./LangSwitch.jsx";
@@ -21,7 +22,7 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
         {[
           { id: "cut", label: t("tab.cut") },
           { id: "icons", label: "Icon Studio" },
-          { id: "stickers", label: t("tab.stickers") },
+          ...(STICKERS_ENABLED ? [{ id: "stickers", label: t("tab.stickers") }] : []),
         ].map((it) => (
           <button
             key={it.id}
