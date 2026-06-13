@@ -1,0 +1,7 @@
+# No hace falta subir nada del desktop (Tauri/Rust) ni docs/tests al deploy web
+src-tauri/
+crates/
+target/
+docs/
+test/
+*.md
