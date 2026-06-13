@@ -10,6 +10,8 @@ const SEO_ROUTES = [
   "/guias/como-quitar-el-fondo-de-una-imagen.html",
   "/guias/medidas-de-iconos-de-app-ios-android-2026.html",
   "/guias/favicons-medidas-y-html.html",
+  "/guias/fotos-de-producto-amazon-etsy-shopify.html",
+  "/guias/foto-de-perfil-redonda.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
 ];
