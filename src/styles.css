@@ -1767,6 +1767,7 @@ kbd {
     max-width: 430px;
     margin: 0 auto;
     flex-shrink: 0;
+
   }
 
   .rail-title {

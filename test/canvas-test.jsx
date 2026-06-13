@@ -2,7 +2,7 @@
 // comparador antes/después con su divisor arrastrable.
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import CanvasEditor from "../src/components/CanvasEditor.jsx";
+import CanvasEditor from "../src/features/cutout/CanvasEditor.jsx";
 import "../src/styles.css";
 
 const out = [];

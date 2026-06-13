@@ -1,6 +1,6 @@
 import licenses from "../generated/licenses.json";
 import { t } from "../lib/i18n.js";
-import { DONATE_URL } from "../lib/ads.js";
+import { DONATE_URL } from "../services/ads.js";
 
 // "Acerca de / Licencias": versión, promesa de privacidad y atribución de
 // dependencias open source (regenerar con `npm run licenses`).

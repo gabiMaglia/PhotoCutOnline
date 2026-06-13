@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { ADS, DONATE_URL, loadSlot } from "../lib/ads.js";
-import { t } from "../lib/i18n.js";
+import { ADS, DONATE_URL, loadSlot } from "../../services/ads.js";
+import { t } from "../../lib/i18n.js";
 
 // Slot publicitario al pie del rail. Con un proveedor configurado renderiza
 // su placement; sin proveedor muestra un house-ad propio (cero terceros) que

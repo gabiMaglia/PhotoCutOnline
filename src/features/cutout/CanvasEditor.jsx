@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { t } from "../lib/i18n.js";
+import { t } from "../../lib/i18n.js";
 
 // Lienzo interactivo. Modos de entrada:
 //  - "rect": arrastrar un recuadro alrededor del sujeto (marching ants)

@@ -1,6 +1,6 @@
 import { Component } from "react";
-import { reportError } from "../lib/telemetry.js";
-import { t } from "../lib/i18n.js";
+import { reportError } from "../../services/telemetry.js";
+import { t } from "../../lib/i18n.js";
 
 // Pantalla de recuperación: cualquier throw en render muestra esto en vez de
 // una pantalla blanca. "Reiniciar" recarga la app (estado limpio); el detalle

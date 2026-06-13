@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import ErrorBoundary from "./components/ErrorBoundary.jsx";
-import { initTelemetry } from "./lib/telemetry.js";
-import { initAds } from "./lib/ads.js";
+import ErrorBoundary from "./components/feedback/ErrorBoundary.jsx";
+import { initTelemetry } from "./services/telemetry.js";
+import { initAds } from "./services/ads.js";
 import "./styles.css";
 
 initTelemetry();

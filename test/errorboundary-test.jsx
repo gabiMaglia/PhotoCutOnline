@@ -2,7 +2,7 @@
 // de recuperación (no pantalla blanca) y "Reiniciar" debe volver a la app.
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import ErrorBoundary from "../src/components/ErrorBoundary.jsx";
+import ErrorBoundary from "../src/components/feedback/ErrorBoundary.jsx";
 
 const out = [];
 const log = (s) => out.push(s);
