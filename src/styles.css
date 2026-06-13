@@ -21,6 +21,11 @@
   --coral: #ff5e63;
   --coral-soft: rgba(255, 94, 99, 0.14);
   --danger: #ff5e63;
+  /* café cálido, solo para donaciones (coral está reservado a "quitar") */
+  --coffee: #e3a857;
+  --coffee-bright: #f0bd78;
+  --coffee-ink: #1f1305;
+  --coffee-soft: rgba(227, 168, 87, 0.14);
   --radius: 10px;
   --mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
@@ -1895,23 +1900,37 @@ kbd {
 }
 
 .btn-donate {
-  border-color: var(--coral);
-  color: var(--coral);
+  background: var(--coffee);
+  border-color: var(--coffee);
+  color: var(--coffee-ink);
+  font-weight: 650;
   text-align: center;
   text-decoration: none;
+  box-shadow: 0 2px 10px rgba(227, 168, 87, 0.18);
+  transition: background 0.12s, box-shadow 0.15s, transform 0.08s;
 }
 
-.btn-donate:hover {
-  background: var(--coral-soft);
-  border-color: var(--coral);
+.btn-donate:hover:not(:disabled) {
+  background: var(--coffee-bright);
+  border-color: var(--coffee-bright);
+  box-shadow: 0 4px 16px rgba(227, 168, 87, 0.3);
+}
+
+.btn-donate:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .btn-icon-donate {
-  color: var(--coral);
+  color: var(--coffee);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn-icon-donate:hover {
+  color: var(--coffee-bright);
+  border-color: color-mix(in srgb, var(--coffee) 45%, transparent);
 }
 
 .about-donate {
