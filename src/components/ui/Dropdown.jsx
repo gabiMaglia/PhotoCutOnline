@@ -35,7 +35,7 @@ export default function Dropdown({ options, value, onChange, id, ariaLabel }) {
   // mantener visible la opción activa
   useEffect(() => {
     if (!open || !menuRef.current) return;
-    menuRef.current.children[active]?.scrollIntoView({ block: "nearest" });
+    menuRef.current.children[active]?.scrollIntoView?.({ block: "nearest" });
   }, [open, active]);
 
   function pick(idx) {

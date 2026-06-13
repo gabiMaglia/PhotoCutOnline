@@ -7,7 +7,7 @@
 //
 //   VITE_SENTRY_DSN="https://<key>@<host>/<project>" npm run build
 
-const DSN = import.meta.env.VITE_SENTRY_DSN || "";
+const DSN = (import.meta.env ?? {}).VITE_SENTRY_DSN || "";
 
 function parseDsn(dsn) {
   const m = dsn.match(/^(https?):\/\/([a-f0-9]+)@([^/]+)\/(\d+)$/);
@@ -27,7 +27,7 @@ export function reportError(error, context = {}) {
     timestamp: new Date().toISOString(),
     platform: "javascript",
     level: "error",
-    release: `photocut-studio@${import.meta.env.VITE_APP_VERSION || "dev"}`,
+    release: `photocut-studio@${(import.meta.env ?? {}).VITE_APP_VERSION || "dev"}`,
     exception: {
       values: [
         {

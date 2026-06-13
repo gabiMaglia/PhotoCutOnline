@@ -11,7 +11,9 @@
 //     (requiere CMP: activar «Privacidad y mensajes» en la consola de AdSense;
 //      el propio script adsbygoogle sirve el banner de consentimiento en EEA)
 
-const ENV = import.meta.env;
+// import.meta.env siempre existe en Vite; el `?? {}` solo protege entornos de
+// test (Jest) donde no está definido, para no romper al importar el módulo.
+const ENV = import.meta.env ?? {};
 
 export const ADS = (() => {
   if (!ENV.PROD && !ENV.VITE_ADS_DEV) return { provider: "house" };
