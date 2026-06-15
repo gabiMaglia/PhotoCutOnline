@@ -4,6 +4,15 @@
 (checklist técnico de calidad/infra, casi todo ✅) y
 [MONETIZACION.md](MONETIZACION.md) (plan de ingresos por fases).*
 
+> **Estado 2026-06-15.** **Paridad de la versión desktop (Tauri):** el escritorio
+> ahora corre el **mismo motor web** (worker WASM, fallback inline) en vez del
+> backend Rust recortado — IA local, auto-recorte, varita, deshacer, feather,
+> sticker/sombra/presets y formatos quedan activos igual que en la web. Además:
+> **drag-and-drop nativo** (`dragDropEnabled:false`), **exportación con diálogo
+> nativo "Guardar como"** (plugins dialog+fs, botón "Exportar"), CSP ampliado para
+> onnxruntime-web y fix del comparador antes/después. Los comandos Rust quedan
+> inertes (cleanup futuro). Falta el v0.1.0 con instaladores (tag pusheado).
+>
 > **Estado 2026-06-13.** Sesión grande de pre-deploy y monetización:
 > - **Arquitectura modular** completa: `components/ui` (atoms), `features/*`
 >   (pages + hooks), `services/`, `utils/`, `lib/` (motor). App.jsx ahora es un

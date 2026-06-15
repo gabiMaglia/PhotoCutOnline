@@ -120,7 +120,7 @@ export default function ExportPanel({
         onClick={onDownload}
         kbd="E"
       >
-        {t("export.download")}
+        {t(backend.isDesktop ? "export.save" : "export.download")}
       </Button>
 
       {backend.features.clipboard && (

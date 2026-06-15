@@ -1,9 +1,11 @@
 // Capa de abstracción de backend.
 //
-// En escritorio (Tauri) el trabajo pesado corre en Rust vía `invoke`.
-// En navegador, el motor (CutoutSession) corre dentro de un Web Worker para
-// no congelar la UI; si el navegador no soporta OffscreenCanvas (Safari
-// < 16.4) cae a ejecutarlo inline en el hilo principal con la misma API.
+// El motor (CutoutSession) corre dentro de un Web Worker para no congelar la
+// UI; si el entorno no soporta OffscreenCanvas (Safari < 16.4, WKWebView viejo)
+// cae a ejecutarlo inline en el hilo principal con la misma API. El mismo motor
+// se usa en navegador y en escritorio (Tauri): el desktop es la app web dentro
+// de un shell nativo. Lo único propio del desktop es el guardado nativo (ver
+// utils/save.js) — por eso `isDesktop` se sigue exponiendo.
 //
 // Los previews del motor llegan como Blob y aquí se convierten a object URLs
 // (revocando el anterior para no fugar memoria). `backend.features` indica
@@ -13,14 +15,6 @@ import { CutoutSession } from "./jsEngine.js";
 
 function hasTauri() {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
-}
-
-let invoke = null;
-async function getInvoke() {
-  if (invoke) return invoke;
-  const mod = await import("@tauri-apps/api/core");
-  invoke = mod.invoke;
-  return invoke;
 }
 
 const IS_DESKTOP = hasTauri();
@@ -61,7 +55,7 @@ function callWorker(cmd, args) {
   });
 }
 
-const inlineSession = WORKER_OK || IS_DESKTOP ? null : new CutoutSession();
+const inlineSession = WORKER_OK ? null : new CutoutSession();
 
 async function callInline(cmd, args = {}) {
   const s = inlineSession;
@@ -171,39 +165,30 @@ export const backend = {
   isDesktop: IS_DESKTOP,
 
   features: {
-    auto: !IS_DESKTOP,
-    ai: !IS_DESKTOP, // u2netp local vía onnxruntime-web (worker)
-    wand: !IS_DESKTOP, // varita por color (flood-fill)
-    undo: !IS_DESKTOP,
-    feather: !IS_DESKTOP,
-    finish: !IS_DESKTOP, // sticker/sombra/presets: motor web
-    formats: !IS_DESKTOP,
+    auto: true,
+    ai: true, // u2netp local vía onnxruntime-web (worker)
+    wand: true, // varita por color (flood-fill)
+    undo: true,
+    feather: true,
+    finish: true, // sticker/sombra/presets: motor web
+    formats: true,
     clipboard: typeof navigator !== "undefined" && !!navigator.clipboard?.write,
   },
 
   async loadImage(dataUrl) {
-    if (IS_DESKTOP) {
-      const inv = await getInvoke();
-      return inv("load_image", { dataUrl });
-    }
     undoDepth = 0;
     redoDepth = 0;
     previewUrlFrom(null);
     return call("load", { dataUrl });
   },
 
-  async cutRect(rect, iters) {
-    if (IS_DESKTOP) {
-      const inv = await getInvoke();
-      return inv("cut_rect", { rect, iters });
-    }
+  async cutRect(rect) {
     const blob = await call("cutRect", { rect });
     afterOp();
     return previewUrlFrom(blob);
   },
 
   async autoCut() {
-    if (IS_DESKTOP) throw new Error("Auto no disponible en escritorio todavía");
     const blob = await call("autoCut");
     afterOp();
     return previewUrlFrom(blob);
@@ -211,12 +196,10 @@ export const backend = {
 
   /** Pre-carga el modelo IA (primera vez: ~18MB runtime+modelo, luego caché). */
   async warmupAi() {
-    if (IS_DESKTOP) return false;
     return call("warmupAi");
   },
 
   async aiCut() {
-    if (IS_DESKTOP) throw new Error("IA no disponible en escritorio todavía");
     const blob = await call("aiCut");
     afterOp();
     return previewUrlFrom(blob);
@@ -224,7 +207,6 @@ export const backend = {
 
   /** Matte IA para una imagen arbitraria (no toca la sesión del editor). */
   async removeBg(imageData) {
-    if (IS_DESKTOP) throw new Error("IA no disponible en escritorio todavía");
     return call("removeBg", {
       width: imageData.width,
       height: imageData.height,
@@ -233,13 +215,7 @@ export const backend = {
   },
 
   /** stroke: {points:[{x,y}…], radius, foreground} */
-  async refine(stroke, iters) {
-    if (IS_DESKTOP) {
-      const inv = await getInvoke();
-      // El comando Rust espera listas de píxeles [x,y]; expandimos los discos.
-      const strokes = [expandStrokeToPixels(stroke)];
-      return inv("refine", { strokes, iters });
-    }
+  async refine(stroke) {
     const blob = await call("addStroke", { stroke });
     afterOp();
     return previewUrlFrom(blob);
@@ -247,22 +223,20 @@ export const backend = {
 
   /** Varita por color: flood-fill desde un punto. seed:{x,y} en coords completas. */
   async wand(seed, tolerance, additive) {
-    if (IS_DESKTOP) throw new Error("Varita no disponible en escritorio todavía");
     const blob = await call("wand", { seed, tolerance, additive });
     afterOp();
     return previewUrlFrom(blob);
   },
 
   canUndo() {
-    return !IS_DESKTOP && undoDepth > 0;
+    return undoDepth > 0;
   },
 
   canRedo() {
-    return !IS_DESKTOP && redoDepth > 0;
+    return redoDepth > 0;
   },
 
   async undo() {
-    if (IS_DESKTOP) return null;
     const blob = await call("undo");
     undoDepth = Math.max(0, undoDepth - 1);
     redoDepth = Math.min(redoDepth + 1, 15);
@@ -270,7 +244,6 @@ export const backend = {
   },
 
   async redo() {
-    if (IS_DESKTOP) return null;
     const blob = await call("redo");
     redoDepth = Math.max(0, redoDepth - 1);
     undoDepth = Math.min(undoDepth + 1, 15);
@@ -278,63 +251,28 @@ export const backend = {
   },
 
   async setFeather(px) {
-    if (IS_DESKTOP) return null;
     const blob = await call("setFeather", { px });
     return blob ? previewUrlFrom(blob) : null;
   },
 
   async setFinish(finish) {
-    if (IS_DESKTOP) return null;
     const blob = await call("setFinish", { finish });
     return blob ? previewUrlFrom(blob) : null;
   },
 
   async exportTransparent(opts = {}) {
-    if (IS_DESKTOP) {
-      const inv = await getInvoke();
-      return inv("export_transparent", {});
-    }
     return exportUrlFrom(await call("composite", { opts: { type: "transparent", ...opts } }));
   },
 
   async exportSolid(color, opts = {}) {
-    if (IS_DESKTOP) {
-      const inv = await getInvoke();
-      return inv("export_solid", { color });
-    }
     return exportUrlFrom(
       await call("composite", { opts: { type: "solid", color, ...opts } })
     );
   },
 
   async exportImageBg(bgDataUrl, opts = {}) {
-    if (IS_DESKTOP) {
-      const inv = await getInvoke();
-      return inv("export_image_bg", { bgDataUrl });
-    }
     return exportUrlFrom(
       await call("composite", { opts: { type: "image", bgDataUrl, ...opts } })
     );
   },
 };
-
-function expandStrokeToPixels(stroke) {
-  const r = Math.max(1, Math.round((stroke.radius || 12) / 2));
-  const seen = new Set();
-  const points = [];
-  for (const p of stroke.points) {
-    for (let dy = -r; dy <= r; dy++) {
-      for (let dx = -r; dx <= r; dx++) {
-        if (dx * dx + dy * dy > r * r) continue;
-        const x = Math.round(p.x + dx);
-        const y = Math.round(p.y + dy);
-        const key = y * 100000 + x;
-        if (x >= 0 && y >= 0 && !seen.has(key)) {
-          seen.add(key);
-          points.push([x, y]);
-        }
-      }
-    }
-  }
-  return { points, foreground: stroke.foreground };
-}
