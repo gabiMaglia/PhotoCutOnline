@@ -476,7 +476,7 @@ kbd {
   background: var(--bg-deep);
   border: 1px solid var(--line);
   border-radius: 99px;
-  padding: 5px 0;
+  padding: 5px 10px;
   cursor: pointer;
   transition: all 0.12s;
 }
@@ -510,6 +510,16 @@ kbd {
 
 .color-export .btn {
   flex: 1;
+}
+
+/* Más aire alrededor del preset de tamaño y del botón de descarga, para que no
+   queden pegados a la botonera (gap base del rail-group = 8px). */
+.export-panel .field {
+  margin: 4px 0;
+}
+
+.export-panel .export-download {
+  margin-top: 4px;
 }
 
 /* ---------------------------------- workspace ---------------------------------- */

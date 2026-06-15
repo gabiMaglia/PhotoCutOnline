@@ -33,7 +33,7 @@ export default function ExportPanel({
   onGoIcons,
 }) {
   return (
-    <section className="rail-group">
+    <section className="rail-group export-panel">
       <h2 className="rail-title">{t("rail.export")}</h2>
 
       <Button active={previewOpen} disabled={!hasCut} aria-pressed={previewOpen} onClick={onTogglePreview} kbd="P">
@@ -115,6 +115,7 @@ export default function ExportPanel({
 
       <Button
         variant="primary"
+        className="export-download"
         disabled={!hasCut || busy || (exportMode === "image" && !bgImage)}
         onClick={onDownload}
         kbd="E"

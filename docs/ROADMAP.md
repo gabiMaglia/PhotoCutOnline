@@ -131,6 +131,18 @@ hooks/services/utils) · Jest+RTL (72 tests) + Playwright · deploy Vercel ·
 GA4 + consentimiento de cookies · SEO (5 guías + sitemap + canonical) ·
 vars de build documentadas (`.env.example`).
 
+## Bugs conocidos (auditoría 2026-06-13)
+
+*Tests verdes (72/72 Jest); no son crashes sino comportamiento que los tests no
+cubren. B1/B3/B4 son fixes seguros; B2 es decisión de producto.*
+
+| # | Bug | Severidad | Dónde |
+|---|---|---|---|
+| B1 | **Desync de estado al cargar imagen nueva**: el efecto resetea `resultUrl`/`hasCut`/`mode` pero **no** `feather`/`stickerOn`/`stickerWidth`/`shadowOn`/`shadowSize`. El motor sí los resetea (`featherPx=2`, `finish=null`). → checkbox/slider muestran valores viejos pero el recorte sale sin ellos hasta tocar cada control | Moderado (visible) | `useCutoutSession.js:32-39` |
+| B2 | **Preset + fondo (color/imagen) se ignora**: `compositePreset` usa solo `preset.bg` hardcodeado e ignora `type:'solid'\|'image'` y `bgDataUrl`. Elegir fondo "imagen" + preset IG → sale fondo blanco sin aviso. ¿Intencional (Amazon exige blanco) o el preset debe respetar el fondo elegido? **Decisión de producto** | Moderado (confuso) | `jsEngine.js:523-549` |
+| B3 | **`trimSource` con regex en español hardcodeado** (`/\s*\(recortado\)$/`): en EN el tag es `(trimmed)`, así que recortar dos veces acumula `logo (trimmed) (trimmed)` | Menor (cosmético) | `useIconStudio.js:132` |
+| B4 | **Timers de debounce no se limpian** al desmontar ni al cambiar de imagen: un timer pendiente puede llamar `setResultUrl` tras el reset (setState colgado) | Menor | `useCutoutSession.js:28-29` |
+
 ## KPIs para decidir
 
 | Métrica | Umbral de acción |
