@@ -494,7 +494,8 @@ export class CutoutSession {
    */
   async composite(opts) {
     if (!this.label) throw new Error("No hay recorte para exportar");
-    const art = this.renderArtFull();
+    // encuadre de exportación (escala+rotación del resultado); identidad = no-op
+    const art = applyResultTransform(this.renderArtFull(), opts.transform);
     if (opts.preset) return this.compositePreset(art, opts);
     const out = createCanvas(art.width, art.height);
     const ctx = out.getContext("2d");
@@ -1008,6 +1009,29 @@ function chamferDT(alpha, width, height) {
     }
   }
   return d; // unidades chamfer: dividir por 3 ≈ px
+}
+
+/**
+ * Encuadre del resultado para exportar: escala (centro) y rotación. Devuelve un
+ * canvas del mismo tamaño que `src` (el sobrante se recorta) o `src` tal cual si
+ * la transformación es identidad. transform: { scale:number, rotation:deg }.
+ */
+function applyResultTransform(src, transform) {
+  if (!transform) return src;
+  const scale = transform.scale ?? 1;
+  const rot = ((transform.rotation ?? 0) * Math.PI) / 180;
+  if (scale === 1 && rot === 0) return src;
+  const W = src.width;
+  const H = src.height;
+  const c = createCanvas(W, H);
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.translate(W / 2, H / 2);
+  ctx.rotate(rot);
+  ctx.scale(scale, scale);
+  ctx.drawImage(src, -W / 2, -H / 2);
+  return c;
 }
 
 /**

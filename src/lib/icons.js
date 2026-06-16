@@ -105,6 +105,7 @@ export function renderIcon(source, size, opts = {}) {
   }
 
   const scale = opts.scale ?? 1; // 1 = encaje normal; >1 agranda y recorta
+  const rotation = opts.rotation ?? 0; // grados
   const pad = size * padding;
   const avail = size - pad * 2;
   // base: cover llena el área (recorta sobrante), contain entra entera
@@ -115,13 +116,18 @@ export function renderIcon(source, size, opts = {}) {
   const s = base * scale;
   const dw = source.width * s;
   const dh = source.height * s;
-  // recortar al área interior cuando el arte excede el cuadro (cover o scale>1)
-  const needsClip = fit === "cover" || scale > 1;
+  // recortar al área interior cuando el arte excede el cuadro (cover, scale o rotación)
+  const needsClip = fit === "cover" || scale > 1 || rotation !== 0;
   ctx.save();
   if (needsClip) {
     ctx.beginPath();
     ctx.rect(pad, pad, avail, avail);
     ctx.clip();
+  }
+  if (rotation) {
+    ctx.translate(size / 2, size / 2);
+    ctx.rotate((rotation * Math.PI) / 180);
+    ctx.translate(-size / 2, -size / 2);
   }
   ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
   ctx.restore();
@@ -357,6 +363,7 @@ export async function buildIconZip(source, opts = {}) {
     bgImage: opts.bgImage ?? null,
     fit: opts.fit ?? "contain",
     scale: opts.scale ?? 1,
+    rotation: opts.rotation ?? 0,
     radius: 0,
   };
   const enc = new TextEncoder();

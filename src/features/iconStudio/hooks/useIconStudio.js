@@ -20,6 +20,11 @@ export function useIconStudio({ getCutout, onToast }) {
   const [padding, setPadding] = useState(8);
   const [fit, setFit] = useState("contain"); // contain: entera | cover: recorta sobrante
   const [scale, setScale] = useState(100); // % de agrandado (100 = sin agrandar)
+  const [rotation, setRotation] = useState(0); // grados, -180..180
+  const rotateBy = useCallback(
+    (deg) => setRotation((r) => (((r + deg + 180) % 360) + 360) % 360 - 180),
+    []
+  );
   const [bgOn, setBgOn] = useState(false);
   const [bgColor, setBgColor] = useState("#111317");
   const [bgImage, setBgImage] = useState(null); // HTMLImageElement | null
@@ -30,7 +35,7 @@ export function useIconStudio({ getCutout, onToast }) {
   const [canTrim, setCanTrim] = useState(false);
   const aiWarned = useRef(false);
 
-  const renderOpts = { padding: padding / 100, fit, scale: scale / 100, bg: bgOn ? bgColor : null, bgImage };
+  const renderOpts = { padding: padding / 100, fit, scale: scale / 100, rotation, bg: bgOn ? bgColor : null, bgImage };
 
   // ¿hay margen transparente que recortar? (habilita/deshabilita el botón)
   useEffect(() => {
@@ -197,6 +202,9 @@ export function useIconStudio({ getCutout, onToast }) {
     setFit,
     scale,
     setScale,
+    rotation,
+    setRotation,
+    rotateBy,
     bgOn,
     setBgOn,
     bgColor,

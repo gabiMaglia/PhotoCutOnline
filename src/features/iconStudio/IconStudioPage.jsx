@@ -29,7 +29,7 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
     const ctx = heroRef.current.getContext("2d");
     ctx.clearRect(0, 0, 256, 256);
     ctx.drawImage(renderIcon(s.source, 256, s.renderOpts), 0, 0);
-  }, [s.source, s.padding, s.fit, s.scale, s.bgOn, s.bgColor, s.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [s.source, s.padding, s.fit, s.scale, s.rotation, s.bgOn, s.bgColor, s.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="body" style={active ? undefined : { display: "none" }}>
@@ -81,6 +81,22 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
               value={s.scale}
               onChange={s.setScale}
             />
+            <Slider
+              id="icon-rotation"
+              label={t("icon.rotate", { n: s.rotation })}
+              min={-180}
+              max={180}
+              value={s.rotation}
+              onChange={s.setRotation}
+            />
+            <div className="format-row" role="group" aria-label={t("icon.rotateAria")}>
+              <button className="chip" onClick={() => s.rotateBy(-90)}>
+                ⟲ 90°
+              </button>
+              <button className="chip" onClick={() => s.rotateBy(90)}>
+                ⟳ 90°
+              </button>
+            </div>
             <div className="row">
               <Checkbox checked={s.bgOn} onChange={s.setBgOn}>
                 {t("icon.bg")}
@@ -188,7 +204,7 @@ function SizePreview({ source, size, opts }) {
     const ctx = ref.current.getContext("2d");
     ctx.clearRect(0, 0, size, size);
     ctx.drawImage(renderIcon(source, size, opts), 0, 0);
-  }, [source, size, opts.padding, opts.fit, opts.scale, opts.bg, opts.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, size, opts.padding, opts.fit, opts.scale, opts.rotation, opts.bg, opts.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <figure className="size-preview">
       <div className="size-box">

@@ -16,6 +16,8 @@ export default function PreviewPanel({
   bgImage,
   bgOpacity,
   resultUrl,
+  resultScale = 100,
+  resultRotation = 0,
   onClose,
   handlers,
 }) {
@@ -99,7 +101,13 @@ export default function PreviewPanel({
           src={resultUrl}
           alt={t("previewPanel.alt")}
           title={t("preview.dropHint")}
-          style={{ touchAction: "none" }}
+          style={{
+            touchAction: "none",
+            transform:
+              resultScale !== 100 || resultRotation !== 0
+                ? `rotate(${resultRotation}deg) scale(${resultScale / 100})`
+                : undefined,
+          }}
           onPointerDown={handlers.cutDown}
           onPointerMove={handlers.cutMove}
           onPointerUp={handlers.cutUp}

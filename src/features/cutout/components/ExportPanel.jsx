@@ -27,6 +27,11 @@ export default function ExportPanel({
   setBgImage,
   bgOpacity,
   setBgOpacity,
+  resultScale,
+  setResultScale,
+  resultRotation,
+  setResultRotation,
+  rotateBy,
   onChooseBgImage,
   onDownload,
   onCopy,
@@ -51,6 +56,36 @@ export default function ExportPanel({
           />
         </Field>
       )}
+
+      {/* encuadre del resultado: agranda/rota lo recortado (solo afecta al export) */}
+      <Slider
+        id="result-scale"
+        label={t("frame.scale", { n: resultScale })}
+        min={100}
+        max={300}
+        value={resultScale}
+        onChange={setResultScale}
+        disabled={!hasCut}
+        off={!hasCut}
+      />
+      <Slider
+        id="result-rotation"
+        label={t("frame.rotate", { n: resultRotation })}
+        min={-180}
+        max={180}
+        value={resultRotation}
+        onChange={setResultRotation}
+        disabled={!hasCut}
+        off={!hasCut}
+      />
+      <div className="format-row" role="group" aria-label={t("frame.rotateAria")}>
+        <button className="chip" onClick={() => rotateBy(-90)} disabled={!hasCut}>
+          ⟲ 90°
+        </button>
+        <button className="chip" onClick={() => rotateBy(90)} disabled={!hasCut}>
+          ⟳ 90°
+        </button>
+      </div>
 
       <ChipGroup
         ariaLabel={t("export.modeAria")}

@@ -17,6 +17,14 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   const [bgColor, setBgColor] = useState("#ffffff");
   const [bgImage, setBgImage] = useState(null); // dataURL del fondo "imagen"
   const [bgOpacity, setBgOpacity] = useState(100);
+  // encuadre del resultado para exportar (no toca la edición): escala + rotación
+  const [resultScale, setResultScale] = useState(100); // %
+  const [resultRotation, setResultRotation] = useState(0); // grados, -180..180
+
+  const rotateBy = useCallback(
+    (deg) => setResultRotation((r) => (((r + deg + 180) % 360) + 360) % 360 - 180),
+    []
+  );
 
   const exportAs = useCallback(
     async (kind, arg) => {
@@ -25,7 +33,17 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         const preset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
         // JPEG no tiene alfa: el modo transparente cae a PNG
         const effFormat = kind === "transparent" && format === "jpeg" ? "png" : format;
-        const opts = { format: effFormat, quality: 0.92, ...(preset ? { preset } : {}) };
+        // encuadre: solo se manda si no es identidad (evita recomponer en vano)
+        const transform =
+          resultScale !== 100 || resultRotation !== 0
+            ? { scale: resultScale / 100, rotation: resultRotation }
+            : null;
+        const opts = {
+          format: effFormat,
+          quality: 0.92,
+          ...(preset ? { preset } : {}),
+          ...(transform ? { transform } : {}),
+        };
         let url;
         if (kind === "transparent") url = await backend.exportTransparent(opts);
         else if (kind === "solid") url = await backend.exportSolid(arg, opts);
@@ -47,7 +65,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         setBusy(false);
       }
     },
-    [format, presetId, setBusy, toast]
+    [format, presetId, resultScale, resultRotation, setBusy, toast]
   );
 
   // descarga según el modo de fondo elegido (selector único)
@@ -101,6 +119,11 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     setBgImage,
     bgOpacity,
     setBgOpacity,
+    resultScale,
+    setResultScale,
+    resultRotation,
+    setResultRotation,
+    rotateBy,
     exportAs,
     handleDownload,
     copyToClipboard,
