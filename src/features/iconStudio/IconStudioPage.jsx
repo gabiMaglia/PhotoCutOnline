@@ -29,7 +29,7 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
     const ctx = heroRef.current.getContext("2d");
     ctx.clearRect(0, 0, 256, 256);
     ctx.drawImage(renderIcon(s.source, 256, s.renderOpts), 0, 0);
-  }, [s.source, s.padding, s.fit, s.bgOn, s.bgColor, s.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [s.source, s.padding, s.fit, s.scale, s.bgOn, s.bgColor, s.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="body" style={active ? undefined : { display: "none" }}>
@@ -72,6 +72,14 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
               value={s.fit}
               onChange={s.setFit}
               options={["contain", "cover"].map((f) => ({ value: f, label: t(`icon.fit.${f}`) }))}
+            />
+            <Slider
+              id="icon-scale"
+              label={t("icon.scale", { n: s.scale })}
+              min={100}
+              max={300}
+              value={s.scale}
+              onChange={s.setScale}
             />
             <div className="row">
               <Checkbox checked={s.bgOn} onChange={s.setBgOn}>
@@ -180,7 +188,7 @@ function SizePreview({ source, size, opts }) {
     const ctx = ref.current.getContext("2d");
     ctx.clearRect(0, 0, size, size);
     ctx.drawImage(renderIcon(source, size, opts), 0, 0);
-  }, [source, size, opts.padding, opts.fit, opts.bg, opts.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [source, size, opts.padding, opts.fit, opts.scale, opts.bg, opts.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <figure className="size-preview">
       <div className="size-box">

@@ -1,6 +1,16 @@
 import { useEffect, useRef } from "react";
 import { ADS, DONATE_URL, loadSlot } from "../../services/ads.js";
 import { t } from "../../lib/i18n.js";
+import { backend } from "../../lib/backend.js";
+import { openExternal } from "../../utils/openExternal.js";
+
+// En desktop el webview bloquea la navegación externa: interceptamos el clic y
+// abrimos en el navegador del sistema. En web dejamos el anchor nativo intacto.
+function donateClick(e) {
+  if (!backend.isDesktop) return;
+  e.preventDefault();
+  openExternal(DONATE_URL);
+}
 
 // Slot publicitario al pie del rail. Con un proveedor configurado renderiza
 // su placement; sin proveedor muestra un house-ad propio (cero terceros) que
@@ -25,6 +35,7 @@ export default function AdSlot({ placement, onDownload }) {
             href={DONATE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={donateClick}
           >
             {t("house.donate")}
           </a>

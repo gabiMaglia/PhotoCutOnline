@@ -1,6 +1,15 @@
 import licenses from "../generated/licenses.json";
 import { t } from "../lib/i18n.js";
 import { DONATE_URL } from "../services/ads.js";
+import { backend } from "../lib/backend.js";
+import { openExternal } from "../utils/openExternal.js";
+
+// En desktop el webview no abre links externos: delegamos al navegador del SO.
+function donateClick(e) {
+  if (!backend.isDesktop) return;
+  e.preventDefault();
+  openExternal(DONATE_URL);
+}
 
 // "Acerca de / Licencias": versión, promesa de privacidad y atribución de
 // dependencias open source (regenerar con `npm run licenses`).
@@ -28,6 +37,7 @@ export default function AboutModal({ version, onClose }) {
             href={DONATE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={donateClick}
           >
             {t("about.donate")}
           </a>

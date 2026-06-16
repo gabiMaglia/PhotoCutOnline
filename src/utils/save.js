@@ -8,26 +8,33 @@ const EXT_FILTERS = {
   webp: { name: "WebP", extensions: ["webp"] },
   jpg: { name: "JPEG", extensions: ["jpg", "jpeg"] },
   jpeg: { name: "JPEG", extensions: ["jpg", "jpeg"] },
+  zip: { name: "ZIP", extensions: ["zip"] },
+  py: { name: "Python", extensions: ["py"] },
 };
 
 /**
- * Abre el diálogo nativo de guardado y escribe el contenido de `url`
- * (object/data URL) en disco. Devuelve true si se guardó, false si el usuario
- * canceló. Lanza si la escritura falla.
+ * Abre el diálogo nativo de guardado y escribe en disco el contenido de
+ * `source`, que puede ser un Blob o un object/data URL (se descarga con fetch).
+ * Devuelve true si se guardó, false si el usuario canceló. Lanza si la
+ * escritura falla. El filtro de archivo se deriva de la extensión de
+ * `defaultName`.
  */
-export async function saveExport(url, defaultName) {
-  const ext = (defaultName.split(".").pop() || "png").toLowerCase();
-  const filter = EXT_FILTERS[ext] || EXT_FILTERS.png;
+export async function saveExport(source, defaultName) {
+  const ext = (defaultName.split(".").pop() || "").toLowerCase();
+  const filter = EXT_FILTERS[ext];
 
   const { save } = await import("@tauri-apps/plugin-dialog");
   const path = await save({
     defaultPath: defaultName,
-    filters: [filter],
+    ...(filter ? { filters: [filter] } : {}),
   });
   if (!path) return false; // cancelado
 
-  const bytes = new Uint8Array(await (await fetch(url)).arrayBuffer());
+  const buf =
+    source instanceof Blob
+      ? await source.arrayBuffer()
+      : await (await fetch(source)).arrayBuffer();
   const { writeFile } = await import("@tauri-apps/plugin-fs");
-  await writeFile(path, bytes);
+  await writeFile(path, new Uint8Array(buf));
   return true;
 }

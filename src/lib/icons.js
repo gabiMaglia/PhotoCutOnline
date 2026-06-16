@@ -104,25 +104,27 @@ export function renderIcon(source, size, opts = {}) {
     ctx.drawImage(bgImage, (size - bw) / 2, (size - bh) / 2, bw, bh);
   }
 
+  const scale = opts.scale ?? 1; // 1 = encaje normal; >1 agranda y recorta
   const pad = size * padding;
   const avail = size - pad * 2;
-  if (fit === "cover") {
-    // el arte llena el área interior y el sobrante se recorta (no se achica)
-    const s = Math.max(avail / source.width, avail / source.height);
-    const dw = source.width * s;
-    const dh = source.height * s;
-    ctx.save();
+  // base: cover llena el área (recorta sobrante), contain entra entera
+  const base =
+    fit === "cover"
+      ? Math.max(avail / source.width, avail / source.height)
+      : Math.min(avail / source.width, avail / source.height);
+  const s = base * scale;
+  const dw = source.width * s;
+  const dh = source.height * s;
+  // recortar al área interior cuando el arte excede el cuadro (cover o scale>1)
+  const needsClip = fit === "cover" || scale > 1;
+  ctx.save();
+  if (needsClip) {
     ctx.beginPath();
     ctx.rect(pad, pad, avail, avail);
     ctx.clip();
-    ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
-    ctx.restore();
-  } else {
-    const s = Math.min(avail / source.width, avail / source.height);
-    const dw = source.width * s;
-    const dh = source.height * s;
-    ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
   }
+  ctx.drawImage(source, (size - dw) / 2, (size - dh) / 2, dw, dh);
+  ctx.restore();
   return applyVariant(c, variant);
 }
 
@@ -354,6 +356,7 @@ export async function buildIconZip(source, opts = {}) {
     bg: opts.bg ?? null,
     bgImage: opts.bgImage ?? null,
     fit: opts.fit ?? "contain",
+    scale: opts.scale ?? 1,
     radius: 0,
   };
   const enc = new TextEncoder();

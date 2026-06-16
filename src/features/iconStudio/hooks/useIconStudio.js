@@ -8,6 +8,7 @@ import {
   hasTrimmableMargin,
 } from "../../../lib/icons.js";
 import { loadHtmlImage } from "../../../lib/jsEngine.js";
+import { saveExport } from "../../../utils/save.js";
 import { t } from "../../../lib/i18n.js";
 import { trackEvent } from "../../../services/analytics.js";
 
@@ -18,6 +19,7 @@ export function useIconStudio({ getCutout, onToast }) {
   const [sourceName, setSourceName] = useState(null);
   const [padding, setPadding] = useState(8);
   const [fit, setFit] = useState("contain"); // contain: entera | cover: recorta sobrante
+  const [scale, setScale] = useState(100); // % de agrandado (100 = sin agrandar)
   const [bgOn, setBgOn] = useState(false);
   const [bgColor, setBgColor] = useState("#111317");
   const [bgImage, setBgImage] = useState(null); // HTMLImageElement | null
@@ -28,7 +30,7 @@ export function useIconStudio({ getCutout, onToast }) {
   const [canTrim, setCanTrim] = useState(false);
   const aiWarned = useRef(false);
 
-  const renderOpts = { padding: padding / 100, fit, bg: bgOn ? bgColor : null, bgImage };
+  const renderOpts = { padding: padding / 100, fit, scale: scale / 100, bg: bgOn ? bgColor : null, bgImage };
 
   // ¿hay margen transparente que recortar? (habilita/deshabilita el botón)
   useEffect(() => {
@@ -148,7 +150,11 @@ export function useIconStudio({ getCutout, onToast }) {
     try {
       const blob = await buildIconZip(source, { ...renderOpts, platforms: selected, appName });
       const total = PLATFORMS.filter((p) => selected.has(p.id)).reduce((n, p) => n + p.count, 0);
-      downloadBlob(blob, "app-icons.zip");
+      if (backend.isDesktop) {
+        if (!(await saveExport(blob, "app-icons.zip"))) return; // cancelado
+      } else {
+        downloadBlob(blob, "app-icons.zip");
+      }
       trackEvent("icons_zip", { platforms: selected.size });
       onToast(t("toast.zip", { n: total, p: selected.size }), "ok");
     } catch (e) {
@@ -167,13 +173,18 @@ export function useIconStudio({ getCutout, onToast }) {
     }
   }, [onToast]);
 
-  const downloadPython = useCallback(() => {
-    const a = document.createElement("a");
-    a.href = "make_icons.py";
-    a.download = "make_icons.py";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+  const downloadPython = useCallback(async () => {
+    if (backend.isDesktop) {
+      // diálogo nativo "Guardar como" sobre el asset empaquetado
+      if (!(await saveExport("/make_icons.py", "make_icons.py"))) return;
+    } else {
+      const a = document.createElement("a");
+      a.href = "make_icons.py";
+      a.download = "make_icons.py";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
     onToast(t("toast.py"), "ok");
   }, [onToast]);
 
@@ -184,6 +195,8 @@ export function useIconStudio({ getCutout, onToast }) {
     setPadding,
     fit,
     setFit,
+    scale,
+    setScale,
     bgOn,
     setBgOn,
     bgColor,
