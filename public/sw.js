@@ -1,9 +1,18 @@
 // Service worker — la app funciona offline tras la primera visita.
-// Estrategia stale-while-revalidate para GET same-origin: responde de caché
-// al instante y actualiza en segundo plano. Los assets de Vite llevan hash,
-// así que nunca se sirve una versión mezclada.
+//
+// Dos estrategias según el tipo de recurso:
+//  - Inmutables (assets hasheados de Vite, runtime/wasm de ORT, modelo .onnx):
+//    cache-first. Su URL cambia si cambia el contenido, así que servir de caché
+//    sin revalidar es seguro y evita re-descargar megabytes (la IA pesa ~18MB)
+//    en cada carga.
+//  - Lo demás (HTML/navegación, que no lleva hash): stale-while-revalidate, para
+//    recoger nuevos deploys sin quedar pegado a una versión vieja.
 
-const CACHE = "photocut-v1";
+const CACHE = "photocut-v2";
+
+// /assets/ = salida hasheada de Vite; .wasm/.onnx/.mjs y /models/ = runtime y
+// modelo de IA (inmutables para un build dado; un cambio sube CACHE).
+const IMMUTABLE = /\/assets\/|\/models\/|\.(?:wasm|onnx|mjs)(?:$|\?)/;
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
@@ -41,10 +50,30 @@ self.addEventListener("fetch", (e) => {
 
   // ignoreVary: vite preview/CDNs mandan "Vary: Origin" y los module scripts
   // llevan header Origin — sin esto el match fallaría justamente offline
+  const matchOpts = { ignoreVary: true, ignoreSearch: request.mode === "navigate" };
+
+  // Inmutables: cache-first. Si está en caché se sirve sin tocar la red (no se
+  // re-descargan los megabytes de la IA ni el JS hasheado en cada visita).
+  if (IMMUTABLE.test(new URL(request.url).pathname)) {
+    e.respondWith(
+      caches.match(request, matchOpts).then(
+        (cached) =>
+          cached ||
+          fetch(request).then((res) => {
+            if (res.ok) {
+              const copy = res.clone();
+              caches.open(CACHE).then((c) => c.put(request, copy));
+            }
+            return res;
+          })
+      )
+    );
+    return;
+  }
+
+  // Resto: stale-while-revalidate (responde de caché y refresca en segundo plano).
   e.respondWith(
-    caches
-      .match(request, { ignoreVary: true, ignoreSearch: request.mode === "navigate" })
-      .then((cached) => {
+    caches.match(request, matchOpts).then((cached) => {
       const fresh = fetch(request)
         .then((res) => {
           if (res.ok) {

@@ -28,8 +28,12 @@ export function useCutoutSession({ imageUrl, toast }) {
   const finishTimer = useRef(null);
   const featherTimer = useRef(null);
 
-  // reinicio al cargar una imagen nueva
+  // reinicio al cargar una imagen nueva. También se cancelan los timers de
+  // debounce pendientes: si no, un setFeather/setFinish en vuelo dispararía
+  // setResultUrl sobre la sesión ya reiniciada (preview espurio / fuga).
   useEffect(() => {
+    clearTimeout(featherTimer.current);
+    clearTimeout(finishTimer.current);
     setResultUrl(null);
     setHasCut(false);
     setCanUndo(false);
@@ -37,6 +41,15 @@ export function useCutoutSession({ imageUrl, toast }) {
     setCompare(false);
     setMode("rect");
   }, [imageUrl]);
+
+  // limpieza al desmontar: ningún timer debe sobrevivir al componente
+  useEffect(
+    () => () => {
+      clearTimeout(featherTimer.current);
+      clearTimeout(finishTimer.current);
+    },
+    []
+  );
 
   const refreshUndo = useCallback(() => {
     setCanUndo(backend.canUndo());

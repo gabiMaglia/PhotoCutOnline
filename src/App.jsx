@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useLang } from "./lib/i18n.js";
 import pkg from "../package.json";
 import { useToasts } from "./hooks/useToasts.js";
 import { CutoutProvider, useCutoutContext } from "./features/cutout/CutoutContext.jsx";
 import CutoutPage from "./features/cutout/CutoutPage.jsx";
-import IconStudioPage from "./features/iconStudio/IconStudioPage.jsx";
-import StickerStudioPage from "./features/stickerStudio/StickerStudioPage.jsx";
+// Páginas secundarias: se cargan bajo demanda (la mayoría de los usuarios solo
+// usa el recorte). Su chunk no entra al bundle inicial hasta abrir la pestaña.
+const IconStudioPage = lazy(() => import("./features/iconStudio/IconStudioPage.jsx"));
+const StickerStudioPage = lazy(() => import("./features/stickerStudio/StickerStudioPage.jsx"));
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
 import ConsentBanner from "./components/feedback/ConsentBanner.jsx";
@@ -36,6 +38,16 @@ function AppShell({ tab, setTab, toasts, toast }) {
   const [dlOpen, setDlOpen] = useState(false);
   const [onboarding, setOnboarding] = useState(() => !localStorage.getItem("pc-onboarded"));
 
+  // Las páginas lazy se montan al abrirlas por primera vez y luego se mantienen
+  // montadas (su estado se conserva; alternan visibilidad con `active`). Así el
+  // chunk no se descarga hasta que el usuario realmente entra a la pestaña.
+  const [iconsSeen, setIconsSeen] = useState(false);
+  const [stickersSeen, setStickersSeen] = useState(false);
+  useEffect(() => {
+    if (tab === "icons") setIconsSeen(true);
+    if (tab === "stickers") setStickersSeen(true);
+  }, [tab]);
+
   const openDownload = () => setDlOpen(true);
   const closeModals = () => {
     setHelpOpen(false);
@@ -61,10 +73,16 @@ function AppShell({ tab, setTab, toasts, toast }) {
         onCloseModals={closeModals}
       />
 
-      <IconStudioPage active={tab === "icons"} onToast={toast} onOpenDownload={openDownload} />
+      {iconsSeen && (
+        <Suspense fallback={null}>
+          <IconStudioPage active={tab === "icons"} onToast={toast} onOpenDownload={openDownload} />
+        </Suspense>
+      )}
 
-      {STICKERS_ENABLED && (
-        <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
+      {STICKERS_ENABLED && stickersSeen && (
+        <Suspense fallback={null}>
+          <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
+        </Suspense>
       )}
 
       {onboarding && (
