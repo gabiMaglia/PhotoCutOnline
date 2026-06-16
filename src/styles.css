@@ -1972,13 +1972,22 @@ kbd {
 }
 
 /* --------------------------- preview interactiva --------------------------- */
-.preview-panel-head {
+/* todo el panel se arrastra (salvo controles, que recuperan su cursor) */
+.preview-panel {
   cursor: grab;
+}
+
+.preview-panel:active {
+  cursor: grabbing;
+}
+
+.preview-panel-head {
   user-select: none;
 }
 
-.preview-panel-head:active {
-  cursor: grabbing;
+.preview-panel-head button,
+.preview-panel-head input {
+  cursor: pointer;
 }
 
 /* fondo "otra imagen" del modo de exportación, con fader de opacidad */

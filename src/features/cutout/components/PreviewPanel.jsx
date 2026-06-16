@@ -33,19 +33,17 @@ export default function PreviewPanel({
     <div
       className="preview-panel"
       ref={panelRef}
+      onPointerDown={handlers.dragDown}
+      onPointerMove={handlers.dragMove}
+      onPointerUp={handlers.dragUp}
+      onPointerCancel={handlers.dragUp}
       style={{
         width: size.w,
         height: size.h,
         ...(pos ? { left: pos.x, top: pos.y, right: "auto" } : {}),
       }}
     >
-      <div
-        className="preview-panel-head"
-        onPointerDown={handlers.dragDown}
-        onPointerMove={handlers.dragMove}
-        onPointerUp={handlers.dragUp}
-        onPointerCancel={handlers.dragUp}
-      >
+      <div className="preview-panel-head">
         <span className="preview-panel-title">{t("previewPanel.title")}</span>
         {exportMode === "transparent" && (
           <div className="preview-bg-switch" role="radiogroup" aria-label={t("previewPanel.bgAria")}>

@@ -36,7 +36,12 @@ export default function CanvasEditor({
 
   const [fitScale, setFitScale] = useState(1);
   const [view, setView] = useState({ zoom: 1, pan: { x: 0, y: 0 } });
-  const [cursorPos, setCursorPos] = useState(null);
+  // posición del cursor para el "ghost" del pincel. Se actualiza de forma
+  // imperativa (ref + style) para NO re-renderizar en cada mousemove; el estado
+  // `hovering` solo conmuta al entrar/salir, no al moverse.
+  const cursorRef = useRef(null);
+  const ghostRef = useRef(null);
+  const [hovering, setHovering] = useState(false);
   const [comparePos, setComparePos] = useState(0.5);
   const [spaceDown, setSpaceDown] = useState(false);
 
@@ -295,8 +300,18 @@ export default function CanvasEditor({
     }
   }
 
+  function positionGhost() {
+    const g = ghostRef.current;
+    const c = cursorRef.current;
+    if (g && c) g.style.transform = `translate(${c.x}px, ${c.y}px) translate(-50%, -50%)`;
+  }
+
   function handleMove(e) {
-    if (imageSize) setCursorPos({ x: e.clientX, y: e.clientY });
+    if (imageSize) {
+      cursorRef.current = { x: e.clientX, y: e.clientY };
+      if (!hovering) setHovering(true);
+      positionGhost();
+    }
     if (pointers.current.has(e.pointerId)) {
       pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     }
@@ -386,7 +401,8 @@ export default function CanvasEditor({
   }
 
   function handleLeave() {
-    setCursorPos(null);
+    cursorRef.current = null;
+    setHovering(false);
   }
 
   // ---- divisor del comparador ----
@@ -439,7 +455,7 @@ export default function CanvasEditor({
   }
 
   const isBrush = mode === "fg" || mode === "bg";
-  const showGhost = isBrush && cursorPos && !busy && !compare && !spaceDown;
+  const showGhost = isBrush && hovering && !busy && !compare && !spaceDown;
   const cursor = spaceDown
     ? "grab"
     : compare
@@ -543,11 +559,14 @@ export default function CanvasEditor({
 
       {showGhost && (
         <div
+          ref={ghostRef}
           className={`brush-ghost ${mode === "bg" ? "brush-ghost-bg" : ""}`}
           style={{
             width: brushSize * effScale,
             height: brushSize * effScale,
-            transform: `translate(${cursorPos.x}px, ${cursorPos.y}px) translate(-50%, -50%)`,
+            transform: cursorRef.current
+              ? `translate(${cursorRef.current.x}px, ${cursorRef.current.y}px) translate(-50%, -50%)`
+              : undefined,
           }}
         />
       )}

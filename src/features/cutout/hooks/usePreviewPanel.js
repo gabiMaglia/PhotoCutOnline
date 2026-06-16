@@ -54,9 +54,11 @@ export function usePreviewPanel({ workspaceRef, loadDataUrl, toast }) {
     resizeRef.current = null;
   }, []);
 
-  // ---- mover (por la cabecera) ----
+  // ---- mover (desde cualquier parte del panel salvo controles) ----
   const dragDown = useCallback((e) => {
-    if (e.target.closest("button, input")) return; // chips y cerrar siguen vivos
+    // los controles propios siguen vivos: chips/cerrar, el recorte (se arrastra
+    // al lienzo) y el handle de redimensionar
+    if (e.target.closest("button, input, .preview-cutout, .preview-resize")) return;
     e.preventDefault();
     const rect = panelRef.current.getBoundingClientRect();
     dragRef.current = { dx: e.clientX - rect.left, dy: e.clientY - rect.top };

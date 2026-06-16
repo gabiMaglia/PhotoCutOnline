@@ -104,10 +104,19 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
             bgOpacity={exporter.bgOpacity}
             setBgOpacity={exporter.setBgOpacity}
             resultScale={exporter.resultScale}
-            setResultScale={exporter.setResultScale}
+            setResultScale={(v) => {
+              exporter.setResultScale(v);
+              preview.setOpen(true); // el encuadre se ve en la vista previa
+            }}
             resultRotation={exporter.resultRotation}
-            setResultRotation={exporter.setResultRotation}
-            rotateBy={exporter.rotateBy}
+            setResultRotation={(v) => {
+              exporter.setResultRotation(v);
+              preview.setOpen(true);
+            }}
+            rotateBy={(d) => {
+              exporter.rotateBy(d);
+              preview.setOpen(true);
+            }}
             onChooseBgImage={exporter.chooseBackgroundImage}
             onDownload={exporter.handleDownload}
             onCopy={exporter.copyToClipboard}
