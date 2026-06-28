@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { t } from "../../lib/i18n.js";
+import { backend } from "../../lib/backend.js";
 
 // Lienzo interactivo. Modos de entrada:
 //  - "rect": arrastrar un recuadro alrededor del sujeto (marching ants)
@@ -111,6 +112,14 @@ export default function CanvasEditor({
     img.src = imageUrl;
   }, [imageUrl, imageSize]);
 
+  // T-002b (B1): cada trazo traía el preview como PNG y lo decodificaba con
+  // `new Image()` en el hilo principal — bajo la presión de memoria post-IA
+  // (T-002a) ese decode jankeaba el pincel. backend.previewBitmap() expone
+  // el ImageBitmap transferible que el worker ya decodificó/generó (sin
+  // encode), así que aquí solo queda pintar — drawImage de un ImageBitmap es
+  // síncrono y no bloquea por decode. Si no hay bitmap (camino inline viejo,
+  // primer paint antes de cualquier op) se cae a createImageBitmap(resultUrl),
+  // que igual decodifica off-main-thread (nunca `new Image()`).
   useEffect(() => {
     if (!imageSize) return;
     const canvas = resultRef.current;
@@ -118,15 +127,41 @@ export default function CanvasEditor({
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!resultUrl) return;
-    const img = new Image();
-    img.onload = () => {
+
+    let cancelled = false;
+    const paint = (bitmap) => {
+      if (cancelled || !bitmap) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       // el preview llega a resolución de trabajo; se escala al lienzo completo
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     };
-    img.src = resultUrl;
+
+    // D3 (QA): `fromBackend` es propiedad de backend.js (lastPreviewBitmap),
+    // NO de este efecto — backend.js lo cierra él mismo en el próximo
+    // preview/operación (ver previewUrlFrom en backend.js). Si lo
+    // cerráramos aquí, quedaría doble-cerrado (o un ImageBitmap inválido)
+    // la próxima vez que este mismo efecto reciba el mismo resultUrl/bitmap
+    // sin haber cambiado. Solo se cierra el bitmap del fallback (creado y
+    // poseído enteramente por este efecto), nunca el de backend.
+    const fromBackend = backend.previewBitmap?.();
+    if (fromBackend) {
+      paint(fromBackend);
+    } else {
+      fetch(resultUrl)
+        .then((r) => r.blob())
+        .then((blob) => createImageBitmap(blob))
+        .then((bitmap) => {
+          paint(bitmap);
+          bitmap.close();
+        })
+        .catch(() => {});
+    }
+
+    return () => {
+      cancelled = true;
+    };
   }, [resultUrl, imageSize]);
 
   useEffect(() => () => cancelAnimationFrame(antsRaf.current), []);
