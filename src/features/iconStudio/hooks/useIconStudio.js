@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { backend } from "../../../lib/backend.js";
 import {
   PLATFORMS,
@@ -18,7 +18,7 @@ export function useIconStudio({ getCutout, onToast }) {
   const [source, setSource] = useState(null); // HTMLImageElement | canvas
   const [sourceName, setSourceName] = useState(null);
   const [padding, setPadding] = useState(8);
-  const [fit, setFit] = useState("contain"); // contain: entera | cover: recorta sobrante
+  const [fit, setFit] = useState("contain"); // contain: entera | cover: recorta sobrante | subject: ajusta al sujeto
   const [scale, setScale] = useState(100); // % de agrandado (100 = sin agrandar)
   const [rotation, setRotation] = useState(0); // grados, -180..180
   const rotateBy = useCallback(
@@ -35,7 +35,16 @@ export function useIconStudio({ getCutout, onToast }) {
   const [canTrim, setCanTrim] = useState(false);
   const aiWarned = useRef(false);
 
-  const renderOpts = { padding: padding / 100, fit, scale: scale / 100, rotation, bg: bgOn ? bgColor : null, bgImage };
+  // "subject": recorta el margen transparente UNA sola vez (memoizado por
+  // source) y encaja entero, para que el sujeto llene el cuadro sea cual sea el
+  // margen del recorte; sin re-escanear el alfa en cada tamaño de ícono.
+  const trimmedSource = useMemo(
+    () => (source ? trimToContent(source) ?? source : null),
+    [source]
+  );
+  const renderSource = fit === "subject" ? trimmedSource : source;
+  const renderFit = fit === "subject" ? "contain" : fit;
+  const renderOpts = { padding: padding / 100, fit: renderFit, scale: scale / 100, rotation, bg: bgOn ? bgColor : null, bgImage };
 
   // ¿hay margen transparente que recortar? (habilita/deshabilita el botón)
   useEffect(() => {
@@ -153,7 +162,7 @@ export function useIconStudio({ getCutout, onToast }) {
     if (!source || selected.size === 0) return;
     setBuilding(true);
     try {
-      const blob = await buildIconZip(source, { ...renderOpts, platforms: selected, appName });
+      const blob = await buildIconZip(renderSource, { ...renderOpts, platforms: selected, appName });
       const total = PLATFORMS.filter((p) => selected.has(p.id)).reduce((n, p) => n + p.count, 0);
       if (backend.isDesktop) {
         if (!(await saveExport(blob, "app-icons.zip"))) return; // cancelado
@@ -167,7 +176,7 @@ export function useIconStudio({ getCutout, onToast }) {
     } finally {
       setBuilding(false);
     }
-  }, [source, selected, renderOpts, appName, onToast]);
+  }, [renderSource, source, selected, renderOpts, appName, onToast]);
 
   const copySnippet = useCallback(async () => {
     try {
@@ -217,6 +226,7 @@ export function useIconStudio({ getCutout, onToast }) {
     building,
     removing,
     canTrim,
+    renderSource,
     renderOpts,
     loadFromFile,
     loadBgFromFile,
