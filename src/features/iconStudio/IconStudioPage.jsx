@@ -28,8 +28,8 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
     if (!s.source || !heroRef.current) return;
     const ctx = heroRef.current.getContext("2d");
     ctx.clearRect(0, 0, 256, 256);
-    ctx.drawImage(renderIcon(s.source, 256, s.renderOpts), 0, 0);
-  }, [s.source, s.padding, s.fit, s.scale, s.rotation, s.bgOn, s.bgColor, s.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
+    ctx.drawImage(renderIcon(s.renderSource, 256, s.renderOpts), 0, 0);
+  }, [s.renderSource, s.padding, s.fit, s.scale, s.rotation, s.bgOn, s.bgColor, s.bgImage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="body" style={active ? undefined : { display: "none" }}>
@@ -71,7 +71,7 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
               ariaLabel={t("icon.fitAria")}
               value={s.fit}
               onChange={s.setFit}
-              options={["contain", "cover"].map((f) => ({ value: f, label: t(`icon.fit.${f}`) }))}
+              options={["contain", "cover", "subject"].map((f) => ({ value: f, label: t(`icon.fit.${f}`) }))}
             />
             <Slider
               id="icon-scale"
@@ -186,7 +186,7 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
               </div>
               <div className="icon-row">
                 {PREVIEW_SIZES.map((size) => (
-                  <SizePreview key={size} source={s.source} size={size} opts={s.renderOpts} />
+                  <SizePreview key={size} source={s.renderSource} size={size} opts={s.renderOpts} />
                 ))}
               </div>
               <p className="icon-note">{t("icon.note")}</p>
