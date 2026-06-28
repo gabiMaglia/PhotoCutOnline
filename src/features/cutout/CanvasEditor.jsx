@@ -498,7 +498,12 @@ export default function CanvasEditor({
       : mode === "rect" || mode === "wand"
         ? "crosshair"
         : "none";
+  // Comparador: el "antes" (base) se recorta al lado izquierdo y el "después"
+  // (checker + result) al derecho. Sin recortar la base, esta —opaca en modo
+  // comparar— tapa el checker y el result transparente deja ver la base por
+  // detrás, mostrando lo mismo de ambos lados.
   const clipRight = `inset(0 0 0 ${comparePos * 100}%)`;
+  const clipLeft = `inset(0 ${100 - comparePos * 100}% 0 0)`;
 
   return (
     <div className="canvas-wrap" ref={wrapRef} onPointerLeave={handleLeave}>
@@ -522,7 +527,11 @@ export default function CanvasEditor({
           }}
         >
           <div className="checker" style={compare ? { clipPath: clipRight } : undefined} />
-          <canvas ref={baseRef} className="layer base" />
+          <canvas
+            ref={baseRef}
+            className="layer base"
+            style={compare ? { clipPath: clipLeft } : undefined}
+          />
           <canvas
             ref={resultRef}
             className="layer result"
