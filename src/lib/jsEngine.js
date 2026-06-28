@@ -21,6 +21,11 @@ const K = 5; // clusters por modelo
 const EM_ITERS = 3;
 const KMEANS_ITERS = 6;
 const SAMPLE_CAP = 24000;
+// T-002c (C1): cada snapshot de undo guarda trimap+label+softAlpha a
+// resolución de trabajo (~3 B/px). Con el cap previo (15) eso suma hasta
+// ~55MB en fotos grandes, encima de la presión post-IA (A1). 10 sigue
+// dando margen de sobra para deshacer una secuencia de trazos.
+export const UNDO_CAP = 10;
 
 const TRI_NONE = 0;
 const TRI_FG = 1;
@@ -121,7 +126,7 @@ export class CutoutSession {
   /** Guarda el estado actual antes de una operación; invalida el redo. */
   pushHistory() {
     this.undoStack.push(this.snapshot());
-    if (this.undoStack.length > 15) this.undoStack.shift();
+    if (this.undoStack.length > UNDO_CAP) this.undoStack.shift();
     this.redoStack = [];
   }
 
@@ -449,11 +454,8 @@ export class CutoutSession {
     return out;
   }
 
-  previewBlob() {
-    if (!this.label) return Promise.resolve(null);
-    // Preview a resolución de trabajo (≤ WORK_MAX px): el editor lo escala a
-    // pantalla de todos modos, y codificar PNG full-res en cada trazo cuesta
-    // ~800 ms en una foto de 12MP. Full-res solo al exportar.
+  /** Canvas del preview (resolución de trabajo) compartido por previewBlob/previewBitmap. */
+  buildPreviewCanvas() {
     const { width, height, data } = this.work;
     const alpha = this.buildAlphaWork();
     const out = new ImageData(width, height);
@@ -469,7 +471,29 @@ export class CutoutSession {
     const ctx = c.getContext("2d");
     drawFinish(ctx, alpha, width, height, this.scale, this.finish);
     ctx.drawImage(cut, 0, 0);
-    return canvasToBlob(c);
+    return c;
+  }
+
+  previewBlob() {
+    if (!this.label) return Promise.resolve(null);
+    // Preview a resolución de trabajo (≤ WORK_MAX px): el editor lo escala a
+    // pantalla de todos modos, y codificar PNG full-res en cada trazo cuesta
+    // ~800 ms en una foto de 12MP. Full-res solo al exportar.
+    return canvasToBlob(this.buildPreviewCanvas());
+  }
+
+  /**
+   * T-002b (B1): variante de previewBlob() para CanvasEditor. En vez de
+   * codificar PNG (worker) y decodificarlo con `new Image()` en el hilo
+   * principal —ambos pasos de CPU, y el decode bloquea ahí mismo donde
+   * pintan los pinceles—, crea un ImageBitmap directo desde el canvas
+   * (sin encode) y lo transfiere por postMessage (transferable, sin copia).
+   * El consumo en CanvasEditor usa createImageBitmap/bitmaprenderer, nunca
+   * `new Image()`.
+   */
+  previewBitmap() {
+    if (!this.label) return Promise.resolve(null);
+    return createImageBitmap(this.buildPreviewCanvas());
   }
 
   /** Arte final a resolución completa: sombra + sticker + recorte, fondo transparente. */

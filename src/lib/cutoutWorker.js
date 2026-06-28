@@ -2,14 +2,53 @@
 //
 // Saca la segmentación (k-means EM + componentes + feather) del hilo
 // principal: la UI nunca se congela mientras se calcula. Protocolo RPC
-// simple: {id, cmd, args} → {id, ok, result|error}. Los previews viajan
-// como Blob (clon barato), nunca como base64.
+// simple: {id, cmd, args} → {id, ok, result|error}.
+//
+// Los previews de pincel/recorte viajan como { blob, bitmap }: `blob` (PNG)
+// alimenta los <img> que sí necesitan una URL real (PreviewPanel, CutGhost);
+// `bitmap` es un ImageBitmap transferible (sin encode/decode, T-002b/B1) que
+// CanvasEditor pinta directo en su canvas vía bitmaprenderer, sin pasar por
+// `new Image()` en el hilo principal. Nunca base64.
 
 import { CutoutSession, refineMatte } from "./jsEngine.js";
 import wasmInit, { WasmCut } from "./wasm/photocut_wasm.js";
-import { aiMatte, warmupAi } from "./aiSegmenter.js";
+import { aiMatte, warmupAi, releaseAi } from "./aiSegmenter.js";
 
 const session = new CutoutSession();
+
+// T-002a (A1): el InferenceSession ONNX + runtime WASM quedan residentes en
+// el worker tras el 1er aiCut (decenas-cientos de MB) y presionan el heap
+// para TODO lo demás (incl. pinceles). Se libera tras ~30s de inactividad de
+// IA; un aiCut/removeBg posterior la vuelve a crear de forma transparente
+// (el costo de recrearla solo se paga si el usuario realmente dejó de usar
+// IA por un rato, no entre dos cortes seguidos).
+//
+// D1 (QA, CRÍTICO): el timer se arma al TERMINAR cada operación de IA, no al
+// iniciarla — si se armara al inicio, una inferencia (o el warmup) que tarda
+// más que AI_IDLE_MS dispararía releaseAi() sobre la sesión que la propia
+// operación todavía tiene capturada en su await (use-after-free del runtime
+// WASM). aiSegmenter.releaseAi() además respeta un contador de operaciones
+// en vuelo y difiere la liberación si hace falta, como defensa en
+// profundidad — pero el caller no debe depender de eso para evitar el
+// disparo en primer lugar.
+const AI_IDLE_MS = 30_000;
+let aiIdleTimer = null;
+
+function scheduleAiRelease() {
+  clearTimeout(aiIdleTimer);
+  aiIdleTimer = setTimeout(() => {
+    releaseAi();
+  }, AI_IDLE_MS);
+}
+
+/** Envuelve una operación de IA: reprograma el idle-release al TERMINAR (ok o error). */
+async function withAiIdleRelease(fn) {
+  try {
+    return await fn();
+  } finally {
+    scheduleAiRelease();
+  }
+}
 
 // Motor GrabCut real (Rust→WASM); si no carga, el motor JS sigue funcionando.
 let wasmReady = null;
@@ -28,6 +67,13 @@ function ensureWasm() {
   return wasmReady;
 }
 
+/** Empaqueta blob (URL para <img>) + bitmap (transferible, sin encode) o null. */
+async function packPreview() {
+  if (!session.hasCut) return null;
+  const [blob, bitmap] = await Promise.all([session.previewBlob(), session.previewBitmap()]);
+  return { blob, bitmap };
+}
+
 const handlers = {
   async load({ dataUrl }) {
     const engine = await ensureWasm();
@@ -40,36 +86,57 @@ const handlers = {
     return { width: c.width, height: c.height, engine };
   },
 
-  cutRect: ({ rect }) => session.cutRect(rect),
-  autoCut: () => session.autoCut(),
-
-  warmupAi: () => warmupAi(),
-
-  async aiCut() {
-    const matte = await aiMatte(session.work);
-    return session.aiCutFromMatte(matte);
+  async cutRect({ rect }) {
+    await session.cutRect(rect);
+    return packPreview();
   },
+  async autoCut() {
+    await session.autoCut();
+    return packPreview();
+  },
+
+  warmupAi: () => withAiIdleRelease(() => warmupAi()),
+
+  aiCut: () =>
+    withAiIdleRelease(async () => {
+      const matte = await aiMatte(session.work);
+      await session.aiCutFromMatte(matte);
+      return packPreview();
+    }),
 
   /** Quita el fondo de una imagen arbitraria (Icon Studio) sin tocar la
    *  sesión del editor. Devuelve el matte refinado. */
-  async removeBg({ width, height, rgba }) {
-    const img = new ImageData(new Uint8ClampedArray(rgba), width, height);
-    const matte = await aiMatte(img);
-    return refineMatte(matte, width, height);
+  removeBg: ({ width, height, rgba }) =>
+    withAiIdleRelease(async () => {
+      const img = new ImageData(new Uint8ClampedArray(rgba), width, height);
+      const matte = await aiMatte(img);
+      return refineMatte(matte, width, height);
+    }),
+  async addStroke({ stroke }) {
+    await session.addStroke(stroke);
+    return packPreview();
   },
-  addStroke: ({ stroke }) => session.addStroke(stroke),
-  wand: ({ seed, tolerance, additive }) => session.wandSelect(seed, tolerance, additive),
-  undo: () => session.undo(),
-  redo: () => session.redo(),
+  async wand({ seed, tolerance, additive }) {
+    await session.wandSelect(seed, tolerance, additive);
+    return packPreview();
+  },
+  async undo() {
+    await session.undo();
+    return packPreview();
+  },
+  async redo() {
+    await session.redo();
+    return packPreview();
+  },
 
-  setFeather({ px }) {
+  async setFeather({ px }) {
     session.setFeather(px);
-    return session.hasCut ? session.previewBlob() : null;
+    return packPreview();
   },
 
-  setFinish({ finish }) {
+  async setFinish({ finish }) {
     session.setFinish(finish);
-    return session.hasCut ? session.previewBlob() : null;
+    return packPreview();
   },
 
   composite: ({ opts }) => session.composite(opts),
@@ -81,7 +148,10 @@ self.onmessage = async (e) => {
     const handler = handlers[cmd];
     if (!handler) throw new Error(`comando desconocido: ${cmd}`);
     const result = await handler(args || {});
-    self.postMessage({ id, ok: true, result });
+    // El bitmap es transferible (sin copia); el resto del payload (blob,
+    // metadata) se clona como siempre.
+    const transfer = result?.bitmap ? [result.bitmap] : [];
+    self.postMessage({ id, ok: true, result }, transfer);
   } catch (err) {
     self.postMessage({ id, ok: false, error: String(err?.message || err) });
   }

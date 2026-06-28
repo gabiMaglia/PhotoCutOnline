@@ -7,11 +7,21 @@
 // de un shell nativo. Lo único propio del desktop es el guardado nativo (ver
 // utils/save.js) — por eso `isDesktop` se sigue exponiendo.
 //
-// Los previews del motor llegan como Blob y aquí se convierten a object URLs
-// (revocando el anterior para no fugar memoria). `backend.features` indica
-// qué hay disponible para que la UI oculte lo que no aplica.
+// Los previews del motor llegan como { blob, bitmap }: `blob` se convierte a
+// object URL aquí (revocando el anterior para no fugar memoria) para los
+// consumidores que necesitan una URL real (<img> de PreviewPanel/CutGhost);
+// `bitmap` es un ImageBitmap (T-002b) que se expone tal cual para que
+// CanvasEditor lo pinte sin decodificar PNG en el hilo principal (closeado
+// en cada reemplazo, igual criterio que la object URL). Ambos caminos
+// (worker y el fallback inline para Safari < 16.4 sin OffscreenCanvas)
+// producen el mismo { blob, bitmap } — la única diferencia es que en el
+// worker el bitmap llega TRANSFERIDO por postMessage (sin copia, ver
+// cutoutWorker.js), mientras que en el camino inline ya nace en el hilo
+// principal y no hace falta transferencia alguna.
+// `backend.features` indica qué hay disponible para que la UI oculte lo que
+// no aplica.
 
-import { CutoutSession } from "./jsEngine.js";
+import { CutoutSession, UNDO_CAP } from "./jsEngine.js";
 
 function hasTauri() {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -57,6 +67,41 @@ function callWorker(cmd, args) {
 
 const inlineSession = WORKER_OK ? null : new CutoutSession();
 
+// Mismo criterio de liberación de IA que el worker (T-002a/A1), para el
+// camino inline (Safari < 16.4 sin OffscreenCanvas): sin worker, el runtime
+// ONNX residente vive en el hilo principal, así que pesa todavía más.
+//
+// D1 (QA, CRÍTICO, paridad R-02): igual que en cutoutWorker.js, el timer se
+// arma al TERMINAR la operación de IA, no al iniciarla — armarlo al inicio
+// dispararía releaseAi() sobre una sesión todavía en uso si la inferencia
+// tarda más que AI_IDLE_MS.
+const AI_IDLE_MS = 30_000;
+let aiIdleTimer = null;
+
+function scheduleAiRelease() {
+  clearTimeout(aiIdleTimer);
+  aiIdleTimer = setTimeout(async () => {
+    const mod = await import("./aiSegmenter.js");
+    mod.releaseAi();
+  }, AI_IDLE_MS);
+}
+
+/** Envuelve una operación de IA: reprograma el idle-release al TERMINAR (ok o error). */
+async function withAiIdleRelease(fn) {
+  try {
+    return await fn();
+  } finally {
+    scheduleAiRelease();
+  }
+}
+
+/** Mismo empaquetado { blob, bitmap } que el worker, para el camino inline. */
+async function packPreviewInline(s) {
+  if (!s.hasCut) return null;
+  const [blob, bitmap] = await Promise.all([s.previewBlob(), s.previewBitmap()]);
+  return { blob, bitmap };
+}
+
 async function callInline(cmd, args = {}) {
   const s = inlineSession;
   switch (cmd) {
@@ -82,43 +127,53 @@ async function callInline(cmd, args = {}) {
       return { width: bmp.width, height: bmp.height, engine: s.engineName };
     }
     case "cutRect":
-      return s.cutRect(args.rect);
+      await s.cutRect(args.rect);
+      return packPreviewInline(s);
     case "autoCut":
-      return s.autoCut();
-    case "warmupAi": {
-      const mod = await import("./aiSegmenter.js");
-      return mod.warmupAi();
-    }
-    case "aiCut": {
-      const mod = await import("./aiSegmenter.js");
-      const matte = await mod.aiMatte(s.work);
-      return s.aiCutFromMatte(matte);
-    }
-    case "removeBg": {
-      const mod = await import("./aiSegmenter.js");
-      const eng = await import("./jsEngine.js");
-      const img = new ImageData(
-        new Uint8ClampedArray(args.rgba),
-        args.width,
-        args.height
-      );
-      const matte = await mod.aiMatte(img);
-      return eng.refineMatte(matte, args.width, args.height);
-    }
+      await s.autoCut();
+      return packPreviewInline(s);
+    case "warmupAi":
+      return withAiIdleRelease(async () => {
+        const mod = await import("./aiSegmenter.js");
+        return mod.warmupAi();
+      });
+    case "aiCut":
+      return withAiIdleRelease(async () => {
+        const mod = await import("./aiSegmenter.js");
+        const matte = await mod.aiMatte(s.work);
+        await s.aiCutFromMatte(matte);
+        return packPreviewInline(s);
+      });
+    case "removeBg":
+      return withAiIdleRelease(async () => {
+        const mod = await import("./aiSegmenter.js");
+        const eng = await import("./jsEngine.js");
+        const img = new ImageData(
+          new Uint8ClampedArray(args.rgba),
+          args.width,
+          args.height
+        );
+        const matte = await mod.aiMatte(img);
+        return eng.refineMatte(matte, args.width, args.height);
+      });
     case "addStroke":
-      return s.addStroke(args.stroke);
+      await s.addStroke(args.stroke);
+      return packPreviewInline(s);
     case "wand":
-      return s.wandSelect(args.seed, args.tolerance, args.additive);
+      await s.wandSelect(args.seed, args.tolerance, args.additive);
+      return packPreviewInline(s);
     case "undo":
-      return s.undo();
+      await s.undo();
+      return packPreviewInline(s);
     case "redo":
-      return s.redo();
+      await s.redo();
+      return packPreviewInline(s);
     case "setFeather":
       s.setFeather(args.px);
-      return s.hasCut ? s.previewBlob() : null;
+      return packPreviewInline(s);
     case "setFinish":
       s.setFinish(args.finish);
-      return s.hasCut ? s.previewBlob() : null;
+      return packPreviewInline(s);
     case "composite":
       return s.composite(args.opts);
     default:
@@ -128,17 +183,30 @@ async function callInline(cmd, args = {}) {
 
 const call = WORKER_OK ? callWorker : callInline;
 
-// ---- gestión de object URLs ----
+// ---- gestión de object URLs + bitmap del preview ----
 
 let lastPreviewUrl = null;
+let lastPreviewBitmap = null;
 
-function previewUrlFrom(blob) {
+/**
+ * pack: { blob, bitmap } | null, como lo devuelven los handlers del worker
+ * (o del camino inline). Revoca la URL y cierra el bitmap anteriores (mismo
+ * criterio, T-002b): un ImageBitmap sin close() retiene su buffer hasta el
+ * próximo GC, justo la presión de memoria que esto busca evitar. Devuelve la
+ * URL (string|null) — el bitmap se consulta aparte vía `lastPreviewBitmap()`.
+ */
+function previewUrlFrom(pack) {
   if (lastPreviewUrl) {
     URL.revokeObjectURL(lastPreviewUrl);
     lastPreviewUrl = null;
   }
-  if (!blob) return null;
-  lastPreviewUrl = URL.createObjectURL(blob);
+  if (lastPreviewBitmap) {
+    lastPreviewBitmap.close();
+    lastPreviewBitmap = null;
+  }
+  if (!pack) return null;
+  lastPreviewUrl = URL.createObjectURL(pack.blob);
+  lastPreviewBitmap = pack.bitmap ?? null;
   return lastPreviewUrl;
 }
 
@@ -149,13 +217,13 @@ function exportUrlFrom(blob) {
   return url;
 }
 
-// El historial vive en el motor (cap 15); estos contadores lo reflejan en el
-// hilo principal para que `canUndo`/`canRedo` sean síncronos para la UI.
+// El historial vive en el motor (cap UNDO_CAP); estos contadores lo reflejan
+// en el hilo principal para que `canUndo`/`canRedo` sean síncronos para la UI.
 let undoDepth = 0;
 let redoDepth = 0;
 
 function afterOp() {
-  undoDepth = Math.min(undoDepth + 1, 15);
+  undoDepth = Math.min(undoDepth + 1, UNDO_CAP);
   redoDepth = 0;
 }
 
@@ -183,15 +251,15 @@ export const backend = {
   },
 
   async cutRect(rect) {
-    const blob = await call("cutRect", { rect });
+    const pack = await call("cutRect", { rect });
     afterOp();
-    return previewUrlFrom(blob);
+    return previewUrlFrom(pack);
   },
 
   async autoCut() {
-    const blob = await call("autoCut");
+    const pack = await call("autoCut");
     afterOp();
-    return previewUrlFrom(blob);
+    return previewUrlFrom(pack);
   },
 
   /** Pre-carga el modelo IA (primera vez: ~18MB runtime+modelo, luego caché). */
@@ -200,9 +268,9 @@ export const backend = {
   },
 
   async aiCut() {
-    const blob = await call("aiCut");
+    const pack = await call("aiCut");
     afterOp();
-    return previewUrlFrom(blob);
+    return previewUrlFrom(pack);
   },
 
   /** Matte IA para una imagen arbitraria (no toca la sesión del editor). */
@@ -216,16 +284,16 @@ export const backend = {
 
   /** stroke: {points:[{x,y}…], radius, foreground} */
   async refine(stroke) {
-    const blob = await call("addStroke", { stroke });
+    const pack = await call("addStroke", { stroke });
     afterOp();
-    return previewUrlFrom(blob);
+    return previewUrlFrom(pack);
   },
 
   /** Varita por color: flood-fill desde un punto. seed:{x,y} en coords completas. */
   async wand(seed, tolerance, additive) {
-    const blob = await call("wand", { seed, tolerance, additive });
+    const pack = await call("wand", { seed, tolerance, additive });
     afterOp();
-    return previewUrlFrom(blob);
+    return previewUrlFrom(pack);
   },
 
   canUndo() {
@@ -237,27 +305,37 @@ export const backend = {
   },
 
   async undo() {
-    const blob = await call("undo");
+    const pack = await call("undo");
     undoDepth = Math.max(0, undoDepth - 1);
-    redoDepth = Math.min(redoDepth + 1, 15);
-    return previewUrlFrom(blob);
+    redoDepth = Math.min(redoDepth + 1, UNDO_CAP);
+    return previewUrlFrom(pack);
   },
 
   async redo() {
-    const blob = await call("redo");
+    const pack = await call("redo");
     redoDepth = Math.max(0, redoDepth - 1);
-    undoDepth = Math.min(undoDepth + 1, 15);
-    return previewUrlFrom(blob);
+    undoDepth = Math.min(undoDepth + 1, UNDO_CAP);
+    return previewUrlFrom(pack);
   },
 
   async setFeather(px) {
-    const blob = await call("setFeather", { px });
-    return blob ? previewUrlFrom(blob) : null;
+    const pack = await call("setFeather", { px });
+    return previewUrlFrom(pack);
   },
 
   async setFinish(finish) {
-    const blob = await call("setFinish", { finish });
-    return blob ? previewUrlFrom(blob) : null;
+    const pack = await call("setFinish", { finish });
+    return previewUrlFrom(pack);
+  },
+
+  /**
+   * Último ImageBitmap de preview (T-002b/B1), o null. CanvasEditor lo
+   * consume directo (bitmaprenderer) en vez de decodificar `resultUrl` con
+   * `new Image()`. Vive hasta el próximo preview u operación que lo cierre;
+   * no se debe retener una referencia entre renders.
+   */
+  previewBitmap() {
+    return lastPreviewBitmap;
   },
 
   async exportTransparent(opts = {}) {
