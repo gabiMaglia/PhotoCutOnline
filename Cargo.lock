@@ -2620,7 +2620,7 @@ dependencies = [
 
 [[package]]
 name = "photocut-app"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "base64 0.22.1",
  "photocut-core",
@@ -2635,7 +2635,7 @@ dependencies = [
 
 [[package]]
 name = "photocut-core"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "image",
  "nalgebra",
@@ -2644,7 +2644,7 @@ dependencies = [
 
 [[package]]
 name = "photocut-wasm"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "photocut-core",
  "wasm-bindgen",
