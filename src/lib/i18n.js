@@ -18,6 +18,8 @@ const DICT = {
     "tab.cut": "Recorte",
     openPhoto: "Abrir foto",
     "about.aria": "Acerca de y licencias",
+    "guides.label": "Guías",
+    "guides.aria": "Ver guías de PhotoCut Studio (se abre en una pestaña nueva)",
     "lang.aria": "Idioma",
 
     "rail.mark": "Marcar",
@@ -245,6 +247,8 @@ const DICT = {
     "tab.cut": "Cutout",
     openPhoto: "Open photo",
     "about.aria": "About & licenses",
+    "guides.label": "Guides",
+    "guides.aria": "View PhotoCut Studio guides (opens in a new tab)",
     "lang.aria": "Language",
 
     "rail.mark": "Mark",
@@ -472,6 +476,8 @@ const DICT = {
     "tab.cut": "Recorte",
     openPhoto: "Abrir foto",
     "about.aria": "Sobre e licenças",
+    "guides.label": "Guias",
+    "guides.aria": "Ver guias do PhotoCut Studio (abre em nova aba)",
     "lang.aria": "Idioma",
 
     "rail.mark": "Marcar",

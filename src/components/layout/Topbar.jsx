@@ -42,6 +42,16 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
         </FileButton>
         <LangSwitch />
         <div className="topbar-icons">
+          <a
+            className="btn-icon btn-icon-guides"
+            href="/guias/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t("guides.aria")}
+            title={t("guides.label")}
+          >
+            {t("guides.label")}
+          </a>
           {DONATE_URL && (
             <IconButton className="btn-icon-donate" href={DONATE_URL} label={t("donate.aria")}>
               ☕

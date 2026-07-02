@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acerca de PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Qué es PhotoCut Studio, por qué todo el procesamiento ocurre en tu navegador (sin subir fotos a ningún servidor), con qué tecnología está hecho y quién lo desarrolla."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://photocutapp.com/acerca.html" />
+    <link rel="stylesheet" href="/estaticas.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Acerca de PhotoCut Studio</h1>
+      <p class="meta">Actualizado: julio de 2026</p>
+
+      <p>
+        PhotoCut Studio es una herramienta web gratuita para quitar el fondo
+        de imágenes y generar iconos de aplicación en todas las medidas que
+        exigen iOS, Android, macOS, Windows y la web. Nació de una molestia
+        muy concreta: la mayoría de los editores de recorte «gratis» suben tu
+        foto a un servidor externo, la procesan ahí y a los pocos usos te
+        piden pagar o crear una cuenta. PhotoCut Studio hace exactamente lo
+        contrario.
+      </p>
+
+      <h2>La misión: privacidad por diseño, no por promesa</h2>
+      <p>
+        Todo el procesamiento — la segmentación por inteligencia artificial,
+        el recorte interactivo con GrabCut, los pinceles de refinado y la
+        generación de iconos — ocurre <strong>íntegramente dentro de tu
+        navegador</strong>. No existe un backend que reciba, almacene o
+        analice tus imágenes: no hay «subida» porque no hay a dónde subir. Es
+        una diferencia técnica, no solo una frase de marketing, y es
+        verificable abriendo las herramientas de desarrollador del navegador
+        mientras usás la app: no vas a ver ninguna petición de red con el
+        contenido de tu foto. Por eso es una herramienta razonable para
+        documentos de identidad, fotos de menores, productos sin lanzar o
+        material bajo NDA.
+      </p>
+
+      <h2>La tecnología</h2>
+      <p>
+        La app está construida en <strong>React</strong> sobre un editor de
+        lienzo propio. La segmentación automática usa un modelo de
+        aprendizaje profundo exportado a <strong>ONNX</strong> que corre en
+        el navegador vía <strong>WebAssembly</strong> (con aceleración por
+        WebGPU/WebGL cuando el dispositivo lo permite), descargado una sola
+        vez y cacheado para funcionar incluso sin conexión. El recorte
+        interactivo se apoya en el algoritmo clásico GrabCut, y el refinado
+        de bordes en pinceles de máscara con zoom por píxel. El resultado se
+        exporta con canal alfa real en PNG o WebP.
+      </p>
+
+      <h2>Quién lo hace</h2>
+      <p>
+        PhotoCut Studio lo desarrolla y mantiene <strong>Gabriel
+        Maglia</strong>, de forma independiente. El sitio se sostiene con
+        publicidad discreta y donaciones voluntarias — nunca con la venta de
+        datos de usuarios, porque simplemente no los recolectamos. Podés
+        escribir a
+        <a href="mailto:gab.maglia@gmail.com">gab.maglia@gmail.com</a> o
+        visitar la página de <a href="/contacto.html">contacto</a> para
+        dudas, reportes de errores o sugerencias.
+      </p>
+
+      <p>
+        Si querés profundizar, tenemos <a href="/guias/">guías prácticas</a>
+        sobre recorte de imágenes, medidas de iconos y favicons, además de la
+        <a href="/legal/privacidad.html">política de privacidad</a> y los
+        <a href="/legal/terminos.html">términos de uso</a> completos.
+      </p>
+
+      <a class="cta" href="/">Probar PhotoCut Studio gratis →</a>
+
+      <footer class="site">
+        <a href="/">← Volver a PhotoCut Studio</a> ·
+        <a href="/guias/">Guías</a> ·
+        <a href="/contacto.html">Contacto</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos</a>
+      </footer>
+    </div>
+  </body>
+</html>
