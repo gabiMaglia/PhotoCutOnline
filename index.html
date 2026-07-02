@@ -6,17 +6,36 @@
     <meta name="description" content="PhotoCut Studio — quita el fondo de tus imágenes, exporta con canal alfa y genera iconos de app en todas las medidas. 100% en tu navegador: tus fotos nunca salen de tu equipo." />
     <meta name="theme-color" content="#0b0d10" />
     <title>PhotoCut Studio — recorta, exporta, brilla</title>
+    <link rel="canonical" href="https://photocutapp.com/" />
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://photocutapp.com/" />
     <meta property="og:title" content="PhotoCut Studio — quita el fondo, 100% en tu navegador" />
     <meta property="og:description" content="Recorte interactivo, canal alfa, exportación e iconos de app en todas las medidas. Tus fotos nunca salen de tu equipo." />
-    <meta property="og:image" content="/og.png" />
+    <meta property="og:image" content="https://photocutapp.com/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PhotoCut Studio — quita el fondo, 100% en tu navegador" />
-    <meta name="twitter:image" content="/og.png" />
+    <meta name="twitter:image" content="https://photocutapp.com/og.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "PhotoCut Studio",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web",
+      "description": "PhotoCut Studio — quita el fondo de tus imágenes, exporta con canal alfa y genera iconos de app en todas las medidas. 100% en tu navegador: tus fotos nunca salen de tu equipo.",
+      "url": "https://photocutapp.com/",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
 
     <!-- PWA -->
     <link rel="manifest" href="/site.webmanifest" />
@@ -28,9 +47,98 @@
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Spline+Sans+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+
+    <!--
+      Contenido estático SEO (fuera de #root): la app monta con React y ocupa
+      siempre 100vh (ver .app en styles.css), así que este bloque vive debajo
+      del editor y se revela con scroll. No se toca styles.css; estas reglas
+      solo habilitan el scroll de página sin alterar el tamaño ni el layout
+      del editor, que sigue fijo a 100vh.
+    -->
+    <style>
+      html,
+      body {
+        height: auto !important;
+        min-height: 100% !important;
+        overflow-y: auto !important;
+      }
+
+      #seo-info {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 40px 20px 64px;
+        font-family: "Avenir Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size: 15px;
+        line-height: 1.65;
+        color: #9aa194;
+        border-top: 1px solid #23272f;
+      }
+
+      #seo-info h2 {
+        color: #edf0e8;
+        font-size: 19px;
+        margin: 0 0 12px;
+        font-family: inherit;
+      }
+
+      #seo-info p {
+        margin: 0 0 14px;
+      }
+
+      #seo-info strong {
+        color: #edf0e8;
+      }
+
+      #seo-info a {
+        color: #d6f64b;
+        text-decoration: none;
+        text-underline-offset: 3px;
+      }
+
+      #seo-info a:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Ver comentario arriba: contenido real, siempre presente en el HTML,
+         independiente de que React haya montado o no (P-3 T-007). -->
+    <footer id="seo-info">
+      <h2>PhotoCut Studio: recorte de fondo e iconos de app, 100% en tu navegador</h2>
+      <p>
+        PhotoCut Studio es una herramienta gratuita para quitar el fondo de
+        fotos y generar iconos de aplicación en todas las medidas que exigen
+        iOS, Android, macOS, Windows y la web. A diferencia de la mayoría de
+        los servicios de recorte, todo el procesamiento — la segmentación por
+        inteligencia artificial, el recorte interactivo y el refinado manual
+        con pinceles — ocurre íntegramente dentro de tu navegador, con
+        WebAssembly y un modelo ONNX que corre en tu propio equipo. Eso
+        significa que <strong>tus fotos nunca salen de tu equipo</strong>: no
+        se suben a ningún servidor, no se almacenan y no dependen de una
+        conexión estable para procesarse. El resultado se exporta con canal
+        alfa (transparencia real) en PNG o WebP, listo para stickers, fichas
+        de producto, logos o el ícono de tu próxima app en Icon Studio.
+      </p>
+      <p>
+        Escribimos guías prácticas y gratuitas sobre estos temas:
+        <a href="/guias/como-quitar-el-fondo-de-una-imagen.html">cómo quitar el fondo de una imagen</a>,
+        <a href="/guias/medidas-de-iconos-de-app-ios-android-2026.html">medidas de iconos de app en 2026</a>,
+        <a href="/guias/favicons-medidas-y-html.html">favicons: medidas y HTML</a>,
+        <a href="/guias/foto-de-perfil-redonda.html">cómo hacer una foto de perfil redonda</a>
+        y
+        <a href="/guias/fotos-de-producto-amazon-etsy-shopify.html">fotos de producto para Amazon, Etsy y Shopify</a>.
+        Podés ver el listado completo en <a href="/guias/">la sección de guías</a>.
+      </p>
+      <p>
+        Más información:
+        <a href="/acerca.html">Acerca de PhotoCut Studio</a> ·
+        <a href="/contacto.html">Contacto</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos de uso</a>.
+      </p>
+    </footer>
   </body>
 </html>
