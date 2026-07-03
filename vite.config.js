@@ -12,6 +12,12 @@ const SEO_ROUTES = [
   "/guias/favicons-medidas-y-html.html",
   "/guias/fotos-de-producto-amazon-etsy-shopify.html",
   "/guias/foto-de-perfil-redonda.html",
+  "/guias/como-quitar-fondo-gratis.html",
+  "/guias/convertir-png-a-ico.html",
+  "/guias/sticker-de-whatsapp.html",
+  "/guias/foto-carnet-fondo-blanco.html",
+  "/acerca.html",
+  "/contacto.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
 ];
