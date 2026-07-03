@@ -52,6 +52,34 @@
       ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Amazon rechaza fotos con fondo que no sea blanco puro?",
+          "acceptedAnswer": { "@type": "Answer", "text": "En la imagen principal (MAIN), sí: Amazon exige fondo blanco puro (RGB 255,255,255) y puede suprimir el listado si no lo cumple. En las imágenes secundarias del carrusel el fondo es libre y ahí sí podés mostrar el producto en contexto de uso." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo usar la misma foto recortada para varias plataformas?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí: recortás el fondo una sola vez y después exportás varias veces cambiando solo el preset de tamaño (Amazon, Etsy, Shopify, Instagram). El sujeto ya recortado se reencuadra automáticamente para cada medida." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué resolución mínima necesito para que el zoom de Amazon funcione?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Amazon activa el zoom con lupa cuando la imagen mide 1000 px o más de lado largo; para que el zoom se vea nítido conviene subir directamente a 2000×2000 px, que es además el tamaño recomendado por Amazon." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Sirve para fotos tomadas con el celular en casa?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí, siempre que el producto esté bien iluminado y en foco. El recorte automático depende del contraste entre el producto y lo que haya detrás; una mesa lisa bajo luz natural suele dar mejores resultados que un fondo desordenado." }
+        }
+      ]
+    }
+    </script>
       <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
@@ -113,6 +141,77 @@
         A diferencia de los servicios de recorte en la nube, en PhotoCut todo el
         procesamiento ocurre en tu navegador. Tus fotos de producto — muchas
         veces de artículos sin lanzar — nunca salen de tu equipo.
+      </p>
+
+      <h2>Errores que rechazan o penalizan un listado</h2>
+      <ul>
+        <li>
+          <strong>Fondo «casi» blanco.</strong> Un blanco grisáceo o con
+          tinte amarillo por la iluminación original no pasa el control de
+          Amazon. Forzá el color exacto <code>#ffffff</code> en el modo de
+          exportación, no confíes en «se ve blanco» a simple vista.
+        </li>
+        <li>
+          <strong>Sombra o reflejo del producto original colándose.</strong>
+          Si el recorte automático no detectó bien el borde, puede quedar un
+          resto oscuro pegado a la base del producto que se nota sobre blanco.
+        </li>
+        <li>
+          <strong>Marca de agua, texto o logo superpuesto</strong> en la
+          imagen principal: la mayoría de los marketplaces lo prohíbe
+          explícitamente para la foto MAIN.
+        </li>
+        <li>
+          <strong>Recorte demasiado ajustado.</strong> Sin margen de aire, el
+          producto se ve apretado contra los bordes del cuadro y las
+          miniaturas del listado lo cortan.
+        </li>
+        <li>
+          <strong>Resolución insuficiente.</strong> Subir una foto de 800×800
+          px como si fuera de 2000×2000 la deja borrosa al hacer zoom, lo que
+          reduce la confianza del comprador.
+        </li>
+      </ul>
+
+      <h2>Un flujo por lote: varios productos, mismo formato</h2>
+      <p>
+        Si vendés muchos artículos, conviene fotografiarlos todos con el mismo
+        encuadre y luz (misma distancia de cámara, mismo fondo neutro) para
+        que el recorte y el reencuadre automático den resultados consistentes
+        entre foto y foto. Repetí el mismo flujo —recorte IA, fondo blanco,
+        preset de la plataforma— para cada imagen: al mantener el mismo
+        criterio de margen y centrado, el catálogo se ve uniforme aunque lo
+        armes en varias sesiones distintas.
+      </p>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿Amazon rechaza fotos con fondo que no sea blanco puro?</h3>
+      <p>
+        En la imagen principal (MAIN), sí: Amazon exige fondo blanco puro
+        (RGB 255,255,255) y puede suprimir el listado si no lo cumple. En las
+        imágenes secundarias del carrusel el fondo es libre y ahí sí podés
+        mostrar el producto en contexto de uso.
+      </p>
+      <h3>¿Puedo usar la misma foto recortada para varias plataformas?</h3>
+      <p>
+        Sí: recortás el fondo una sola vez y después exportás varias veces
+        cambiando solo el preset de tamaño (Amazon, Etsy, Shopify, Instagram).
+        El sujeto ya recortado se reencuadra automáticamente para cada
+        medida.
+      </p>
+      <h3>¿Qué resolución mínima necesito para que el zoom de Amazon funcione?</h3>
+      <p>
+        Amazon activa el zoom con lupa cuando la imagen mide 1000&nbsp;px o
+        más de lado largo; para que el zoom se vea nítido conviene subir
+        directamente a 2000×2000&nbsp;px, que es además el tamaño recomendado
+        por Amazon.
+      </p>
+      <h3>¿Sirve para fotos tomadas con el celular en casa?</h3>
+      <p>
+        Sí, siempre que el producto esté bien iluminado y en foco. El recorte
+        automático depende del contraste entre el producto y lo que haya
+        detrás; una mesa lisa bajo luz natural suele dar mejores resultados
+        que un fondo desordenado.
       </p>
 
       <a class="cta" href="/">Preparar mis fotos de producto →</a>
