@@ -54,6 +54,34 @@
       ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Es realmente gratis quitar el fondo de una imagen en PhotoCut Studio?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. El recorte, el refinado con pinceles y la exportación en PNG/WebP no tienen coste ni límite de usos: todo corre en tu navegador, así que no hay servidor que pagar por cada imagen procesada." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Necesito instalar algo o crear una cuenta?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Es una web app: se abre en el navegador, no pide registro y no hay que instalar ningún programa ni extensión." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Por qué mi foto queda con un halo de color alrededor del sujeto?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Suele ser el fondo original 'sangrando' en el borde por el suavizado. Bajá el feather a 1–2 px, revisá con el comparador antes/después y repasá el contorno con el pincel quitar en zoom alto." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Funciona con fotos tomadas con el celular?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí, tanto el Recorte IA como el recuadro interactivo funcionan con cualquier foto JPG o PNG, incluidas las de celular. Cuanta más resolución y contraste entre sujeto y fondo, mejor sale el recorte automático." }
+        }
+      ]
+    }
+    </script>
       <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
@@ -161,6 +189,91 @@
         equipo, no hay servidor que hackear ni política de retención que leer.
         Esa es la diferencia técnica de fondo entre PhotoCut Studio y los
         servicios de recorte en la nube.
+      </p>
+
+      <h2>Errores comunes al quitar un fondo</h2>
+      <ul>
+        <li>
+          <strong>Confundir «transparente» con «blanco».</strong> Si exportás
+          en JPG (que no soporta transparencia) el hueco se rellena de blanco
+          o negro sólido. Para conservar la transparencia necesitás PNG o WebP.
+        </li>
+        <li>
+          <strong>No revisar a zoom real.</strong> A tamaño de vista previa
+          los restos de fondo y los halos no se notan; acercá al 100–200%
+          antes de dar por terminado el recorte.
+        </li>
+        <li>
+          <strong>Recortar sobre una foto ya reducida.</strong> Si la imagen
+          viene comprimida o en baja resolución, el algoritmo tiene menos
+          información de contraste para decidir el borde. Partí siempre de la
+          versión más grande disponible.
+        </li>
+        <li>
+          <strong>Abusar del pincel «quitar».</strong> Pasarlo demasiado cerca
+          del sujeto come partes que sí pertenecen a la figura (dedos, mechones
+          de pelo). Mejor varias pasadas suaves que una agresiva.
+        </li>
+        <li>
+          <strong>Ignorar la sombra original.</strong> Si el sujeto tenía una
+          sombra proyectada que querés conservar (por ejemplo, en fotos de
+          producto), hay que decidirlo antes de recortar: el recorte
+          automático la trata como fondo y la elimina.
+        </li>
+      </ul>
+
+      <h2>Casos de uso típicos</h2>
+      <p>
+        Los mismos tres pasos —IA, recuadro y pinceles— sirven para
+        prácticamente cualquier tipo de foto, pero conviene ajustar el enfoque
+        según el objetivo:
+      </p>
+      <ul>
+        <li>
+          <strong>Producto para e-commerce:</strong> priorizá bordes duros y
+          limpios; después aplicá fondo blanco sólido (ver la guía de fotos de
+          producto más abajo).
+        </li>
+        <li>
+          <strong>Retrato o foto de perfil:</strong> cuidá el pelo y las orejas
+          con el pincel; un fondo de color liso o transparente suele quedar
+          mejor que dejar el fondo original recortado a la mitad.
+        </li>
+        <li>
+          <strong>Logo o icono:</strong> si el logo ya tiene bordes definidos,
+          el recuadro interactivo suele bastar sin necesidad de IA.
+        </li>
+        <li>
+          <strong>Sticker para chat:</strong> exportá en WebP cuadrado con un
+          margen de aire alrededor del sujeto para que no quede pegado al
+          borde del sticker.
+        </li>
+      </ul>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿Es realmente gratis?</h3>
+      <p>
+        Sí. El recorte, el refinado con pinceles y la exportación en PNG/WebP
+        no tienen coste ni límite de usos: todo corre en tu navegador, así que
+        no hay servidor que pagar por cada imagen procesada.
+      </p>
+      <h3>¿Necesito instalar algo o crear una cuenta?</h3>
+      <p>
+        No. Es una web app: se abre en el navegador, no pide registro y no hay
+        que instalar ningún programa ni extensión.
+      </p>
+      <h3>¿Por qué mi foto queda con un halo de color alrededor del sujeto?</h3>
+      <p>
+        Suele ser el fondo original «sangrando» en el borde por el suavizado.
+        Bajá el feather a 1–2&nbsp;px, revisá con el comparador antes/después
+        y repasá el contorno con el pincel quitar en zoom alto.
+      </p>
+      <h3>¿Funciona con fotos tomadas con el celular?</h3>
+      <p>
+        Sí, tanto el Recorte IA como el recuadro interactivo funcionan con
+        cualquier foto JPG o PNG, incluidas las de celular. Cuanta más
+        resolución y contraste entre sujeto y fondo, mejor sale el recorte
+        automático.
       </p>
 
       <a class="cta" href="/">Probar PhotoCut Studio gratis →</a>

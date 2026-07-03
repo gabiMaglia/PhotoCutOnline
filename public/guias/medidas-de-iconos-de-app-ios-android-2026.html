@@ -38,6 +38,34 @@
       "mainEntityOfPage": "https://photocutapp.com/guias/medidas-de-iconos-de-app-ios-android-2026.html"
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Con un solo icono de 1024×1024 me alcanza para todo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí, si partís de un PNG de 1024×1024 sin comprimir y con margen de respiración, un generador puede derivar de ahí todos los tamaños de iOS, Android, macOS, Windows y Web sin pérdida de calidad visible." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué diferencia hay entre el icono adaptativo y el maskable de Android?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Son conceptos equivalentes en ecosistemas distintos: el 'adaptive icon' es el formato nativo de Android (foreground + background, recortado por el sistema en distintas formas), y el icono 'maskable' es su equivalente para PWA declarado en el manifest. Ambos exigen que el contenido importante quepa en la zona segura central." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Necesito crear las variantes dark y tinted de iOS 18 a mano?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No necesariamente a mano: podés generar una versión con fondo oscuro y una en escala de grises a partir del mismo arte de 1024×1024. Un generador de iconos puede producir las tres variantes (estándar, dark, tinted) automáticamente desde un único PNG." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué pasa si mi icono no cumple la zona segura del adaptive/maskable?",
+          "acceptedAnswer": { "@type": "Answer", "text": "El sistema igual lo recorta a la forma que corresponda (círculo, squircle, gota), así que cualquier detalle fuera de la zona segura central del 66-80% simplemente desaparece o queda cortado a la mitad." }
+        }
+      ]
+    }
+    </script>
       <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
@@ -123,6 +151,81 @@
         <li><strong>Verifica en tamaños pequeños:</strong> un icono que se ve bien a 256&nbsp;px puede ser ilegible a 16. Si a 32&nbsp;px no se reconoce, simplifica.</li>
         <li><strong>Nada de texto pequeño:</strong> desaparece en los tamaños de barra de tareas.</li>
       </ul>
+
+      <h2>Errores comunes al preparar el arte fuente</h2>
+      <ul>
+        <li>
+          <strong>Partir de un tamaño chico.</strong> Escalar un icono de
+          256&nbsp;px hacia arriba hasta 1024 lo deja borroso. Diseñá o
+          exportá siempre desde el archivo más grande disponible.
+        </li>
+        <li>
+          <strong>Dejar transparencia en el icono de iOS estándar.</strong>
+          Apple no permite alfa en la variante «any»: si tu PNG tiene
+          transparencia, el sistema la reemplaza por negro sólido, lo que
+          suele arruinar el diseño.
+        </li>
+        <li>
+          <strong>Ignorar la zona segura de adaptive/maskable.</strong> El
+          contenido fuera del círculo central (264&nbsp;px sobre 432 en
+          Android, 80% central en maskable) se recorta según la forma que
+          use cada launcher — cuadrado, círculo, squircle o gota.
+        </li>
+        <li>
+          <strong>Un solo diseño para dark y tinted.</strong> La variante
+          tinted de iOS 18 se muestra en escala de grises con el color de
+          acento del usuario: un icono con muchos colores distintos pierde
+          todo el contraste al pasar a monocromo si no se diseñó pensando en
+          ello.
+        </li>
+        <li>
+          <strong>Nombrar mal los archivos del iconset/appiconset.</strong>
+          Xcode y <code>iconutil</code> esperan nombres exactos
+          (<code>icon_16x16@2x.png</code>, etc.); un nombre distinto y el
+          build falla o usa el icono por defecto.
+        </li>
+      </ul>
+
+      <h2>¿Por dónde empezar si tengo un solo logo?</h2>
+      <p>
+        Si tu punto de partida es un logo con fondo transparente y sin
+        pensar en ninguna de estas reglas, el orden recomendado es: 1)
+        recortá el fondo y dejá solo el símbolo (no el logotipo completo con
+        texto, que se vuelve ilegible en 16&nbsp;px); 2) centralo en un
+        lienzo cuadrado de 1024×1024 con 10–15% de margen; 3) generá desde
+        ahí el set completo por plataforma. Ese primer recorte limpio es el
+        paso que más tiempo ahorra después.
+      </p>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿Con un solo icono de 1024×1024 me alcanza para todo?</h3>
+      <p>
+        Sí, si partís de un PNG de 1024×1024 sin comprimir y con margen de
+        respiración, un generador puede derivar de ahí todos los tamaños de
+        iOS, Android, macOS, Windows y Web sin pérdida de calidad visible.
+      </p>
+      <h3>¿Qué diferencia hay entre el icono adaptativo y el maskable de Android?</h3>
+      <p>
+        Son conceptos equivalentes en ecosistemas distintos: el «adaptive
+        icon» es el formato nativo de Android (foreground + background,
+        recortado por el sistema en distintas formas), y el icono «maskable»
+        es su equivalente para PWA declarado en el manifest. Ambos exigen que
+        el contenido importante quepa en la zona segura central.
+      </p>
+      <h3>¿Necesito crear las variantes dark y tinted de iOS 18 a mano?</h3>
+      <p>
+        No necesariamente a mano: podés generar una versión con fondo oscuro
+        y una en escala de grises a partir del mismo arte de 1024×1024. Un
+        generador de iconos puede producir las tres variantes (estándar,
+        dark, tinted) automáticamente desde un único PNG.
+      </p>
+      <h3>¿Qué pasa si mi icono no cumple la zona segura del adaptive/maskable?</h3>
+      <p>
+        El sistema igual lo recorta a la forma que corresponda (círculo,
+        squircle, gota), así que cualquier detalle fuera de la zona segura
+        central del 66–80% simplemente desaparece o queda cortado a la
+        mitad.
+      </p>
 
       <h2>Generarlos todos de una vez</h2>
       <p>

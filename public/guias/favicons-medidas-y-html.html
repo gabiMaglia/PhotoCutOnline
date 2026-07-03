@@ -51,6 +51,34 @@
       ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿El favicon.ico sigue siendo necesario en 2026?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. Aunque los navegadores modernos prefieren el PNG declarado en el link rel=\"icon\", muchos clientes (lectores RSS, crawlers, navegadores muy antiguos) todavía piden /favicon.ico directamente en la raíz del dominio sin leer el HTML." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo usar solo un SVG y olvidarme del resto?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No del todo. Un favicon SVG (link rel=\"icon\" type=\"image/svg+xml\") es un buen complemento porque escala perfecto y pesa poco, pero el apple-touch-icon y los iconos del manifest de PWA todavía requieren PNG: Safari y Android no aceptan SVG ahí." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo pruebo que mis favicons se ven bien en todos lados?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Abrí el sitio en una pestaña nueva (Chrome, Firefox y Safari si podés) y mirá la pestaña a tamaño real; después añadí el sitio a la pantalla de inicio en un iPhone/Android para ver el apple-touch-icon y el icono del manifest. Vaciá la caché del navegador: los favicons se cachean agresivamente." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué pasa si no subo ningún favicon?",
+          "acceptedAnswer": { "@type": "Answer", "text": "El navegador muestra un icono genérico (una hoja en blanco o el ícono por defecto) y, si el sitio se instala como PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se ve poco profesional y no identifica tu marca en pestañas ni marcadores." }
+        }
+      ]
+    }
+    </script>
       <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
@@ -70,6 +98,14 @@
         azulejos de Windows 8, Safari pinned tabs… La realidad de 2026 es
         mucho más simple: con <strong>5 archivos y 5 líneas de HTML</strong>
         cubres todos los navegadores y dispositivos actuales.
+      </p>
+
+      <p>
+        Vale la pena el esfuerzo: un favicon bien hecho es lo primero que ve
+        un usuario cuando tiene diez pestañas abiertas, y suele ser lo primero
+        que revisa una auditoría de SEO técnico o una checklist de PWA.
+        Faltante o roto, resta profesionalismo aunque el resto del sitio esté
+        impecable.
       </p>
 
       <h2>Los archivos imprescindibles</h2>
@@ -122,6 +158,72 @@
           apple-touch-icon siguen requiriendo PNG.
         </li>
       </ul>
+
+      <h2>¿Y el favicon SVG?</h2>
+      <p>
+        Desde hace unos años los navegadores basados en Chromium y Firefox
+        aceptan un favicon vectorial:
+      </p>
+      <pre>&lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;</pre>
+      <p>
+        Es la opción ideal si tu icono es simple y geométrico: un solo archivo
+        se ve nítido en cualquier tamaño y pesa una fracción de un PNG. Pero no
+        reemplaza al set completo: colocalo como una línea extra <em>antes</em>
+        del <code>favicon.ico</code>, no en su lugar, porque Safari y los
+        iconos de manifest todavía necesitan PNG.
+      </p>
+
+      <h2>Cómo comprobar que quedaron bien</h2>
+      <ol>
+        <li>
+          Abrí el sitio en una pestaña nueva y mirá el favicon a tamaño real
+          (no confíes en la vista previa del editor).
+        </li>
+        <li>
+          Probá en más de un navegador: Chrome, Firefox y Safari interpretan
+          el orden de <code>link rel="icon"</code> con matices distintos.
+        </li>
+        <li>
+          En el celular, añadí el sitio a la pantalla de inicio para ver el
+          <code>apple-touch-icon</code> (iOS) y el icono del manifest
+          (Android) tal como los va a ver un usuario real.
+        </li>
+        <li>
+          Si no ves el cambio, vaciá la caché: los navegadores cachean
+          favicons de forma muy agresiva, a veces durante días.
+        </li>
+      </ol>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿El favicon.ico sigue siendo necesario en 2026?</h3>
+      <p>
+        Sí. Aunque los navegadores modernos prefieren el PNG declarado en el
+        <code>link rel="icon"</code>, muchos clientes (lectores RSS, crawlers,
+        navegadores muy antiguos) todavía piden <code>/favicon.ico</code>
+        directamente en la raíz del dominio sin leer el HTML.
+      </p>
+      <h3>¿Puedo usar solo un SVG y olvidarme del resto?</h3>
+      <p>
+        No del todo. Un favicon SVG es un buen complemento porque escala
+        perfecto y pesa poco, pero el apple-touch-icon y los iconos del
+        manifest de PWA todavía requieren PNG: Safari y Android no aceptan
+        SVG ahí.
+      </p>
+      <h3>¿Cómo pruebo que mis favicons se ven bien en todos lados?</h3>
+      <p>
+        Abrí el sitio en una pestaña nueva (Chrome, Firefox y Safari si
+        podés) y mirá la pestaña a tamaño real; después añadí el sitio a la
+        pantalla de inicio en un iPhone/Android para ver el apple-touch-icon
+        y el icono del manifest. Vaciá la caché del navegador: los favicons
+        se cachean agresivamente.
+      </p>
+      <h3>¿Qué pasa si no subo ningún favicon?</h3>
+      <p>
+        El navegador muestra un icono genérico y, si el sitio se instala como
+        PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se
+        ve poco profesional y no identifica tu marca en pestañas ni
+        marcadores.
+      </p>
 
       <h2>Generarlos en 30 segundos</h2>
       <p>
