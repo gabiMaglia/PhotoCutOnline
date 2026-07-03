@@ -6,6 +6,7 @@ export default function FileButton({
   disabled = false,
   variant,
   size,
+  multiple = false,
   className = "",
   children,
 }) {
@@ -21,7 +22,14 @@ export default function FileButton({
   return (
     <label className={classes}>
       {children}
-      <input type="file" accept={accept} hidden disabled={disabled} onChange={onChange} />
+      <input
+        type="file"
+        accept={accept}
+        multiple={multiple}
+        hidden
+        disabled={disabled}
+        onChange={onChange}
+      />
     </label>
   );
 }
