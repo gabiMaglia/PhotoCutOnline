@@ -58,7 +58,10 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
               ☕
             </IconButton>
           )}
-          {!backend.isDesktop && (
+          {/* Botón "Descargar app" oculto por el momento (T-012: definir desktop de
+              pago antes de empujar descargas del desktop gratis v0.1.4). Restaurar
+              quitando el `false &&`. */}
+          {false && !backend.isDesktop && (
             <IconButton label={t("dl.aria")} onClick={onOpenDownload}>
               ⬇
             </IconButton>
