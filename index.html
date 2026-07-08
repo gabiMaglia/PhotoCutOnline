@@ -48,98 +48,839 @@
     />
 
     <!--
-      Contenido estático SEO (fuera de #root): la app monta con React y ocupa
-      siempre 100vh (ver .app en styles.css), así que este bloque vive debajo
-      del editor y se revela con scroll. No se toca styles.css; estas reglas
-      solo habilitan el scroll de página sin alterar el tamaño ni el layout
-      del editor, que sigue fijo a 100vh.
+      Landing estática de marketing/SEO (T-011): esta página YA NO monta
+      React (eso vive en /editor, ver editor/index.html). Es HTML+CSS
+      autocontenido, con los mismos tokens de marca (ver :root de
+      styles.css) duplicados a propósito para no depender de la app.
+      Página normal, scrolleable por default (sin overrides de overflow).
     -->
     <style>
+      /* reset: sin styles.css (la landing no monta React), el body tendría
+         margen y fondo blanco por defecto → borde blanco alrededor. */
       html,
       body {
-        height: auto !important;
-        min-height: 100% !important;
-        overflow-y: auto !important;
+        margin: 0;
+        background: #0b0d10;
       }
 
-      #seo-info {
-        max-width: 760px;
-        margin: 0 auto;
-        padding: 40px 20px 64px;
-        font-family: "Avenir Next", system-ui, -apple-system, "Segoe UI", sans-serif;
-        font-size: 15px;
+      /* ---------------------------------------------------------------- */
+      /* Landing "darkroom ácido" — misma identidad de marca que el editor  */
+      /* ---------------------------------------------------------------- */
+      #landing {
+        --bg: #0b0d10;
+        --panel: #121419;
+        --panel-2: #181b21;
+        --line: #23272f;
+        --line-bright: #2f3540;
+        --ink: #edf0e8;
+        --ink-dim: #9aa194;
+        --ink-faint: #7e8676;
+        --acid: #d6f64b;
+        --acid-soft: rgba(214, 246, 75, 0.14);
+        --acid-glow: rgba(214, 246, 75, 0.35);
+        --coral: #ff5e63;
+        --coral-soft: rgba(255, 94, 99, 0.14);
+        --sans: "Avenir Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --display: "Bricolage Grotesque", var(--sans);
+        --mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+        position: relative;
+        background: var(--bg);
+        color: var(--ink-dim);
+        font-family: var(--sans);
+        font-size: 15.5px;
         line-height: 1.65;
-        color: #9aa194;
-        border-top: 1px solid #23272f;
       }
 
-      #seo-info h2 {
-        color: #edf0e8;
-        font-size: 19px;
-        margin: 0 0 12px;
-        font-family: inherit;
+      /* grano de película sutil, igual al del editor, para que la costura
+         entre app y landing no se note al hacer scroll */
+      #landing::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.05;
+        z-index: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
       }
 
-      #seo-info p {
-        margin: 0 0 14px;
+      .lp-container {
+        position: relative;
+        z-index: 1;
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 20px;
       }
 
-      #seo-info strong {
-        color: #edf0e8;
+      #landing h1,
+      #landing h2,
+      #landing h3 {
+        font-family: var(--display);
+        color: var(--ink);
+        letter-spacing: -0.5px;
+        margin: 0;
       }
 
-      #seo-info a {
-        color: #d6f64b;
+      #landing strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      #landing a {
+        color: var(--acid);
         text-decoration: none;
         text-underline-offset: 3px;
       }
 
-      #seo-info a:hover {
+      #landing a:hover {
         text-decoration: underline;
+      }
+
+      #landing .lp-eyebrow {
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin: 0 0 12px;
+      }
+
+      /* -------------------------------- hero -------------------------------- */
+      .lp-hero {
+        position: relative;
+        z-index: 1;
+        padding: 56px 0 48px;
+        background:
+          radial-gradient(900px 480px at 85% -10%, rgba(214, 246, 75, 0.07), transparent 60%),
+          transparent;
+      }
+
+      .lp-hero-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+      }
+
+      .lp-h1 {
+        font-size: clamp(28px, 6vw, 44px);
+        font-weight: 750;
+        line-height: 1.08;
+      }
+
+      .lp-accent {
+        color: var(--acid);
+        text-shadow: 0 0 24px var(--acid-glow);
+      }
+
+      .lp-lead {
+        max-width: 560px;
+        font-size: 16px;
+        line-height: 1.65;
+        margin: 18px 0 0;
+      }
+
+      .lp-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 22px 0 0;
+      }
+
+      .lp-badge {
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.4px;
+        color: var(--ink-dim);
+        border: 1px solid var(--line-bright);
+        border-radius: 99px;
+        padding: 6px 12px;
+        white-space: nowrap;
+      }
+
+      .lp-badge-acid {
+        color: #10130a;
+        background: var(--acid);
+        border-color: var(--acid);
+      }
+
+      .lp-hero-cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 26px;
+      }
+
+      .lp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--display);
+        font-weight: 650;
+        font-size: 14px;
+        border-radius: 10px;
+        padding: 12px 18px;
+        border: 1px solid var(--line-bright);
+        color: var(--ink);
+        transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+      }
+
+      .lp-btn:hover {
+        text-decoration: none;
+        border-color: var(--acid);
+      }
+
+      /* #landing prefix: gana al `#landing a{color:acid}` (specificity de ID);
+         si no, el texto queda verde sobre verde e invisible. */
+      #landing .lp-btn-primary {
+        background: var(--acid);
+        color: #10130a;
+        border-color: var(--acid);
+      }
+
+      .lp-btn-primary:hover {
+        box-shadow: 0 0 24px var(--acid-glow);
+      }
+
+      .lp-btn-ghost {
+        background: var(--panel-2);
+      }
+
+      /* swatch decorativo: canal alfa / checker, como en el editor */
+      .lp-hero-visual {
+        display: flex;
+        justify-content: center;
+      }
+
+      .lp-swatch {
+        position: relative;
+        width: min(100%, 360px);
+        aspect-ratio: 16 / 10;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--line);
+      }
+
+      .lp-swatch-checker {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(45deg, #1d2127 25%, transparent 25%),
+          linear-gradient(-45deg, #1d2127 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #1d2127 75%),
+          linear-gradient(-45deg, transparent 75%, #1d2127 75%);
+        background-size: 22px 22px;
+        background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+        background-color: #15181d;
+      }
+
+      .lp-swatch-checker::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        left: 52%;
+        background: linear-gradient(160deg, #2a2f10, #10130a 70%);
+      }
+
+      .lp-swatch-divider {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 52%;
+        width: 0;
+        border-left: 2px solid var(--acid);
+        box-shadow: 0 0 12px var(--acid-glow);
+      }
+
+      .lp-swatch-tag {
+        position: absolute;
+        top: 12px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: rgba(7, 8, 10, 0.7);
+        border-radius: 99px;
+        padding: 4px 9px;
+      }
+
+      .lp-swatch-tag-l {
+        left: 12px;
+      }
+
+      .lp-swatch-tag-r {
+        right: 12px;
+        color: var(--acid);
+      }
+
+      /* ------------------------------ secciones ------------------------------ */
+      .lp-section {
+        position: relative;
+        z-index: 1;
+        padding: 48px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .lp-section-alt {
+        background: color-mix(in srgb, var(--panel) 45%, transparent);
+      }
+
+      .lp-h2 {
+        font-size: clamp(21px, 3.4vw, 27px);
+        font-weight: 750;
+        margin: 0 0 14px;
+      }
+
+      .lp-section-intro {
+        max-width: 620px;
+        margin: 0 0 28px;
+      }
+
+      /* casos de uso / features: grid de tarjetas numeradas */
+      .lp-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .lp-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 20px 22px;
+      }
+
+      .lp-card-n {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--acid);
+        border: 1px solid color-mix(in srgb, var(--acid) 45%, transparent);
+        border-radius: 8px;
+        margin: 0 0 12px;
+      }
+
+      .lp-card h3 {
+        font-size: 16.5px;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
+
+      .lp-card p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .lp-card a {
+        display: inline-block;
+        margin-top: 10px;
+        font-family: var(--mono);
+        font-size: 12.5px;
+      }
+
+      /* features: la tarjeta de Lote/Batch se destaca como banner (NUEVO) */
+      .lp-feature-hero {
+        position: relative;
+        margin: 0 0 14px;
+        padding: 24px 24px 26px;
+        border-color: color-mix(in srgb, var(--acid) 55%, var(--line));
+        background: linear-gradient(150deg, var(--acid-soft), var(--panel) 65%);
+      }
+
+      .lp-feature-hero h3 {
+        font-size: 19px;
+      }
+
+      .lp-feature-hero p {
+        max-width: 520px;
+      }
+
+      .lp-new-tag {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-family: var(--mono);
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        color: #10130a;
+        background: var(--acid);
+        border-radius: 99px;
+        padding: 3px 9px;
+      }
+
+      /* por qué photocut: comparación de dos columnas */
+      .lp-compare {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .lp-compare-col {
+        border-radius: 14px;
+        padding: 22px 22px 24px;
+        border: 1px solid var(--line);
+      }
+
+      .lp-compare-good {
+        background: linear-gradient(160deg, var(--acid-soft), transparent 70%);
+        border-color: color-mix(in srgb, var(--acid) 40%, var(--line));
+      }
+
+      .lp-compare-bad {
+        background: linear-gradient(160deg, var(--coral-soft), transparent 70%);
+        border-color: color-mix(in srgb, var(--coral) 35%, var(--line));
+      }
+
+      .lp-compare-col h3 {
+        font-size: 15px;
+        margin: 0 0 14px;
+      }
+
+      .lp-compare-col ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 14px;
+      }
+
+      .lp-compare-col li {
+        display: flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+
+      .lp-mark {
+        font-family: var(--mono);
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .lp-compare-good .lp-mark {
+        color: var(--acid);
+      }
+
+      .lp-compare-bad .lp-mark {
+        color: var(--coral);
+      }
+
+      /* cómo funciona: pasos numerados */
+      .lp-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .lp-step {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .lp-step-n {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--acid);
+        border: 1px solid color-mix(in srgb, var(--acid) 45%, transparent);
+        border-radius: 9px;
+      }
+
+      .lp-step strong {
+        display: block;
+        font-size: 15.5px;
+        margin-bottom: 3px;
+      }
+
+      .lp-step p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* trust */
+      .lp-trust-note {
+        max-width: 640px;
+        margin: 0 0 22px;
+      }
+
+      /* footer: guías + legales */
+      .lp-footer {
+        position: relative;
+        z-index: 1;
+        padding: 48px 0 56px;
+        border-top: 1px solid var(--line);
+      }
+
+      .lp-guides h2 {
+        font-size: 15px;
+        margin: 0 0 14px;
+      }
+
+      .lp-guides-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px 24px;
+        margin: 0 0 32px;
+        padding: 0;
+        list-style: none;
+      }
+
+      .lp-guides-grid li {
+        font-size: 13.5px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 8px;
+      }
+
+      .lp-legal {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 16px;
+        font-size: 13px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+      }
+
+      .lp-copyright {
+        margin: 18px 0 0;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-faint);
+      }
+
+      /* --------------------------------- desktop --------------------------------- */
+      @media (min-width: 760px) {
+        .lp-hero-grid {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 48px;
+        }
+
+        .lp-hero-copy {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .lp-hero-visual {
+          flex: 0 0 380px;
+        }
+
+        .lp-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        #lp-usecases .lp-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+
+        .lp-grid-4 {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .lp-compare {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .lp-steps {
+          flex-direction: row;
+        }
+
+        .lp-step {
+          flex: 1;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .lp-guides-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #landing * {
+          transition: none !important;
+          animation: none !important;
+        }
       }
     </style>
       <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body id="top">
+    <!-- Landing de marketing/SEO (T-011): página estática propia en `/`,
+         separada del editor (`/editor`, ver editor/index.html). -->
+    <div id="landing">
 
-    <!-- Ver comentario arriba: contenido real, siempre presente en el HTML,
-         independiente de que React haya montado o no (P-3 T-007). -->
-    <footer id="seo-info">
-      <h2>PhotoCut Studio: recorte de fondo e iconos de app, 100% en tu navegador</h2>
-      <p>
-        PhotoCut Studio es una herramienta gratuita para quitar el fondo de
-        fotos y generar iconos de aplicación en todas las medidas que exigen
-        iOS, Android, macOS, Windows y la web. A diferencia de la mayoría de
-        los servicios de recorte, todo el procesamiento — la segmentación por
-        inteligencia artificial, el recorte interactivo y el refinado manual
-        con pinceles — ocurre íntegramente dentro de tu navegador, con
-        WebAssembly y un modelo ONNX que corre en tu propio equipo. Eso
-        significa que <strong>tus fotos nunca salen de tu equipo</strong>: no
-        se suben a ningún servidor, no se almacenan y no dependen de una
-        conexión estable para procesarse. El resultado se exporta con canal
-        alfa (transparencia real) en PNG o WebP, listo para stickers, fichas
-        de producto, logos o el ícono de tu próxima app en Icon Studio.
-      </p>
-      <p>
-        Escribimos guías prácticas y gratuitas sobre estos temas:
-        <a href="/guias/como-quitar-el-fondo-de-una-imagen.html">cómo quitar el fondo de una imagen</a>,
-        <a href="/guias/medidas-de-iconos-de-app-ios-android-2026.html">medidas de iconos de app en 2026</a>,
-        <a href="/guias/favicons-medidas-y-html.html">favicons: medidas y HTML</a>,
-        <a href="/guias/foto-de-perfil-redonda.html">cómo hacer una foto de perfil redonda</a>
-        y
-        <a href="/guias/fotos-de-producto-amazon-etsy-shopify.html">fotos de producto para Amazon, Etsy y Shopify</a>.
-        Podés ver el listado completo en <a href="/guias/">la sección de guías</a>.
-      </p>
-      <p>
-        Más información:
-        <a href="/acerca.html">Acerca de PhotoCut Studio</a> ·
-        <a href="/contacto.html">Contacto</a> ·
-        <a href="/legal/privacidad.html">Privacidad</a> ·
-        <a href="/legal/terminos.html">Términos de uso</a>.
-      </p>
-    </footer>
+      <section class="lp-hero">
+        <div class="lp-container lp-hero-grid">
+          <div class="lp-hero-copy">
+            <p class="lp-eyebrow">◑ PhotoCut Studio</p>
+            <h1 class="lp-h1">Quitá el fondo de tus fotos.<br /><span class="lp-accent">Gratis. Sin subir nada a ningún servidor.</span></h1>
+            <p class="lp-lead">
+              Recorte automático por IA, pincel de retoque y exportación con
+              transparencia real — todo corre dentro de tu navegador.
+              <strong>Ninguna foto sale de tu equipo</strong>: no se sube, no
+              se almacena, no depende de tu conexión.
+            </p>
+            <div class="lp-badges">
+              <span class="lp-badge">Sin registro</span>
+              <span class="lp-badge">Sin límite de usos</span>
+              <span class="lp-badge">Sin marca de agua</span>
+              <span class="lp-badge lp-badge-acid">100% en tu navegador</span>
+            </div>
+            <div class="lp-hero-cta">
+              <a href="/editor/" class="lp-btn lp-btn-primary">↑ Usar el editor ahora</a>
+              <a href="#lp-how" class="lp-btn lp-btn-ghost">Ver cómo funciona</a>
+            </div>
+          </div>
+          <a href="/editor/" class="lp-hero-visual" aria-label="Abrir el editor y soltar tu foto">
+            <div class="lp-swatch">
+              <div class="lp-swatch-checker"></div>
+              <div class="lp-swatch-divider"></div>
+              <span class="lp-swatch-tag lp-swatch-tag-l">fondo original</span>
+              <span class="lp-swatch-tag lp-swatch-tag-r">canal alfa</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="lp-section" id="lp-usecases">
+        <div class="lp-container">
+          <p class="lp-eyebrow">01 · Casos de uso</p>
+          <h2 class="lp-h2">Hecho para vender, no solo para recortar</h2>
+          <p class="lp-section-intro">
+            Si vivís de tus fotos —de producto, de perfil, de marca— PhotoCut
+            te ahorra el paso más tedioso: dejar el fondo perfecto sin
+            depender de un editor de imágenes ni de subir tus archivos a un
+            tercero.
+          </p>
+          <div class="lp-grid">
+            <article class="lp-card">
+              <span class="lp-card-n">01</span>
+              <h3>Fotos de producto para e-commerce</h3>
+              <p>
+                Fondo blanco sólido y centrado, con las medidas exactas que
+                pide cada marketplace: Amazon, Etsy, Shopify.
+              </p>
+              <a href="/guias/fotos-de-producto-amazon-etsy-shopify.html">Ver medidas por marketplace →</a>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">02</span>
+              <h3>Fotos de perfil y carné</h3>
+              <p>
+                Avatar circular para redes sociales o fondo blanco sólido
+                tipo carné para CV y trámites.
+              </p>
+              <a href="/guias/foto-de-perfil-redonda.html">Cómo hacer un avatar redondo →</a>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">03</span>
+              <h3>Stickers de WhatsApp</h3>
+              <p>
+                512×512 en WebP con transparencia real: el formato exacto
+                que exige WhatsApp para aceptar el sticker.
+              </p>
+              <a href="/guias/sticker-de-whatsapp.html">Ver el formato exacto →</a>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">04</span>
+              <h3>Íconos de app y favicons</h3>
+              <p>
+                Todas las medidas de iOS, Android, macOS, Windows y la web,
+                generadas juntas desde una sola imagen en Icon Studio.
+              </p>
+              <a href="/guias/medidas-de-iconos-de-app-ios-android-2026.html">Ver todas las medidas →</a>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">05</span>
+              <h3>Contenido para redes</h3>
+              <p>
+                Recortes rápidos para posts, thumbnails y banners, listos
+                para exportar en PNG o WebP con fondo transparente.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section lp-section-alt" id="lp-features">
+        <div class="lp-container">
+          <p class="lp-eyebrow">02 · Qué incluye</p>
+          <h2 class="lp-h2">Todo lo que necesitás para exportar</h2>
+
+          <article class="lp-card lp-feature-hero">
+            <span class="lp-new-tag">Nuevo</span>
+            <span class="lp-card-n">△</span>
+            <h3>Lote / Batch</h3>
+            <p>
+              Subí muchas fotos a la vez, quitales el fondo a todas en
+              automático y descargá el resultado completo en un solo ZIP.
+              Ideal para catálogos enteros de producto.
+            </p>
+          </article>
+
+          <div class="lp-grid lp-grid-4">
+            <article class="lp-card">
+              <span class="lp-card-n">◐</span>
+              <h3>Recorte con IA</h3>
+              <p>
+                Un modelo de segmentación (ONNX) corre en tu navegador vía
+                WebAssembly y separa el sujeto del fondo en segundos.
+              </p>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">▣</span>
+              <h3>Icon Studio</h3>
+              <p>
+                Generá el set completo de íconos de app y favicons para
+                todas las plataformas desde una sola imagen.
+              </p>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">◧</span>
+              <h3>Comparador antes/después</h3>
+              <p>
+                Deslizá para revisar el recorte en detalle antes de
+                exportar, sin adivinar cómo quedó.
+              </p>
+            </article>
+            <article class="lp-card">
+              <span class="lp-card-n">⬡</span>
+              <h3>Export PNG / WebP</h3>
+              <p>
+                Transparencia real (canal alfa), sin marca de agua ni
+                compresión agresiva sobre el resultado.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section" id="lp-why">
+        <div class="lp-container">
+          <p class="lp-eyebrow">03 · Por qué PhotoCut</p>
+          <h2 class="lp-h2">La diferencia está en dónde se procesa tu foto</h2>
+          <p class="lp-section-intro">
+            La mayoría de las herramientas de «quitar fondo» funcionan igual:
+            subís tu foto a un servidor, ahí se procesa y después la
+            descargás. PhotoCut no tiene ese paso.
+          </p>
+          <div class="lp-compare">
+            <div class="lp-compare-col lp-compare-good">
+              <h3>Con PhotoCut</h3>
+              <ul>
+                <li><span class="lp-mark">✓</span> Tu foto se procesa en tu equipo, nunca se sube</li>
+                <li><span class="lp-mark">✓</span> Gratis, sin límite de usos ni de resolución</li>
+                <li><span class="lp-mark">✓</span> Sin cuenta ni email para empezar</li>
+                <li><span class="lp-mark">✓</span> Sin marca de agua en el resultado</li>
+              </ul>
+            </div>
+            <div class="lp-compare-col lp-compare-bad">
+              <h3>Con la mayoría de herramientas online</h3>
+              <ul>
+                <li><span class="lp-mark">✕</span> Tu foto viaja a un servidor ajeno para procesarse</li>
+                <li><span class="lp-mark">✕</span> Límites de uso, resolución o «créditos»</li>
+                <li><span class="lp-mark">✕</span> Registro obligatorio para descargar</li>
+                <li><span class="lp-mark">✕</span> Marca de agua salvo que pagues</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section lp-section-alt" id="lp-how">
+        <div class="lp-container">
+          <p class="lp-eyebrow">04 · Cómo funciona</p>
+          <h2 class="lp-h2">Tres pasos, sin fricción</h2>
+          <div class="lp-steps">
+            <div class="lp-step">
+              <span class="lp-step-n">1</span>
+              <div>
+                <strong>Cargá tu foto</strong>
+                <p>Arrastrala al editor o subí varias a la vez con Lote.</p>
+              </div>
+            </div>
+            <div class="lp-step">
+              <span class="lp-step-n">2</span>
+              <div>
+                <strong>Se recorta sola</strong>
+                <p>La IA quita el fondo en segundos; afinás con el pincel si hace falta.</p>
+              </div>
+            </div>
+            <div class="lp-step">
+              <span class="lp-step-n">3</span>
+              <div>
+                <strong>Exportás</strong>
+                <p>PNG o WebP con transparencia real, o tus íconos listos desde Icon Studio.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lp-section" id="lp-trust">
+        <div class="lp-container">
+          <p class="lp-eyebrow">05 · Confianza</p>
+          <h2 class="lp-h2">No nos creas de palabra</h2>
+          <p class="lp-trust-note">
+            PhotoCut no tiene un backend que reciba tus imágenes: no hay
+            servidor al que subir nada. Si querés comprobarlo, cargá una
+            foto, desconectate de internet y seguí recortando — va a
+            funcionar igual.
+          </p>
+          <div class="lp-badges">
+            <span class="lp-badge lp-badge-acid">100% en tu navegador</span>
+            <span class="lp-badge">Sin servidor de fotos</span>
+            <span class="lp-badge">Sin registro</span>
+            <span class="lp-badge">Sin marca de agua</span>
+          </div>
+        </div>
+      </section>
+
+      <footer class="lp-footer" id="seo-info">
+        <div class="lp-container lp-guides">
+          <h2>Guías prácticas y gratuitas</h2>
+          <ul class="lp-guides-grid">
+            <li><a href="/guias/como-quitar-el-fondo-de-una-imagen.html">Cómo quitar el fondo de una imagen</a></li>
+            <li><a href="/guias/como-quitar-fondo-gratis.html">Quitar el fondo gratis, sin marca de agua</a></li>
+            <li><a href="/guias/fotos-de-producto-amazon-etsy-shopify.html">Fotos de producto: Amazon, Etsy, Shopify</a></li>
+            <li><a href="/guias/foto-de-perfil-redonda.html">Foto de perfil redonda (avatar)</a></li>
+            <li><a href="/guias/foto-carnet-fondo-blanco.html">Foto carné con fondo blanco</a></li>
+            <li><a href="/guias/sticker-de-whatsapp.html">Sticker de WhatsApp (512×512)</a></li>
+            <li><a href="/guias/medidas-de-iconos-de-app-ios-android-2026.html">Medidas de iconos de app 2026</a></li>
+            <li><a href="/guias/favicons-medidas-y-html.html">Favicons: medidas y HTML</a></li>
+            <li><a href="/guias/convertir-png-a-ico.html">Convertir PNG a ICO</a></li>
+          </ul>
+          <p style="margin: -18px 0 28px; font-size: 13.5px;">
+            Podés ver el listado completo en <a href="/guias/">la sección de guías</a>.
+          </p>
+          <div class="lp-legal">
+            <a href="/acerca.html">Acerca de PhotoCut Studio</a>
+            <a href="/contacto.html">Contacto</a>
+            <a href="/legal/privacidad.html">Privacidad</a>
+            <a href="/legal/terminos.html">Términos de uso</a>
+          </div>
+          <p class="lp-copyright">PhotoCut Studio · www.photocutapp.com</p>
+        </div>
+      </footer>
+
+    </div>
   </body>
 </html>

@@ -60,6 +60,13 @@ async function main() {
   await time("feather=8 + preview", () => s.previewBlob());
   await time("export transparente full-res", () => s.composite({ type: "transparent" }));
 
+  // T-013 (perf): "Recorte automático" — GrabCut sobre la imagen de trabajo
+  // completa (≤1400px). Es el único camino que sigue llamando a segment(),
+  // y el que ahora corre downscaleado a SEG_MAX (768) internamente.
+  const sAuto = new CutoutSession();
+  sAuto.load(img);
+  await time("[js] autoCut (GrabCut)", () => sAuto.autoCut());
+
   // mismo flujo con el motor WASM (GrabCut real)
   await wasmInit();
   const sw = new CutoutSession();
@@ -71,6 +78,12 @@ async function main() {
   await time("[wasm] trazo pincel + preview", () =>
     sw.addStroke({ points: [{ x: 1200, y: 600 }, { x: 1600, y: 800 }], radius: 40, foreground: true })
   );
+
+  const swAuto = new CutoutSession();
+  swAuto.attachWasm(WasmCut);
+  swAuto.load(img);
+  await time("[wasm] autoCut (GrabCut)", () => swAuto.autoCut());
+
   log("ALL_DONE");
 }
 

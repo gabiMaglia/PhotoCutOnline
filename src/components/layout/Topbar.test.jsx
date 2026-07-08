@@ -44,17 +44,24 @@ describe("Topbar", () => {
     expect(onTab).toHaveBeenCalledWith("icons");
   });
 
-  it("abre Acerca de y Descargar desde los íconos", async () => {
-    const { onOpenAbout, onOpenDownload } = setup();
+  it("abre Acerca de desde los íconos", async () => {
+    // El botón "Descargar app" está oculto por el momento (T-012: definir
+    // desktop de pago antes de empujar descargas del desktop gratis).
+    const { onOpenAbout } = setup();
     await userEvent.click(screen.getByRole("button", { name: /about|acerca|sobre/i }));
     expect(onOpenAbout).toHaveBeenCalled();
-    await userEvent.click(screen.getByRole("button", { name: /download|descargar|baixar|app/i }));
-    expect(onOpenDownload).toHaveBeenCalled();
   });
 
   it("incluye el enlace de donación (Ko-fi)", () => {
     setup();
-    const donate = screen.getByRole("link");
+    // hay varios links (logo→/, Guías, donación); tomamos el de Ko-fi por su aria-label
+    const donate = screen.getByRole("link", { name: /ko-fi/i });
     expect(donate).toHaveAttribute("href", expect.stringContaining("ko-fi.com"));
+  });
+
+  it("el logo enlaza al inicio (landing)", () => {
+    setup();
+    const brand = screen.getByRole("link", { name: /ir al inicio/i });
+    expect(brand).toHaveAttribute("href", "/");
   });
 });

@@ -17,6 +17,12 @@
 // devuelven como Blob para viajar baratos por postMessage.
 
 const WORK_MAX = 1400;
+// T-013 (perf): el maxflow del GrabCut (WASM y fallback JS) es O(píxeles). A
+// resolución de trabajo completa (hasta 1400px) autoCut() tardaba ~4.7s en una
+// foto de 1400×1000. segment() corre sobre una versión downscaleada a SEG_MAX y
+// re-escala la máscara a resolución de trabajo. Solo afecta al "Recorte
+// automático" (los pinceles editan label/softAlpha directo, sin re-segmentar).
+const SEG_MAX = 768;
 const K = 5; // clusters por modelo
 const EM_ITERS = 3;
 const KMEANS_ITERS = 6;
@@ -158,10 +164,19 @@ export class CutoutSession {
       this.work.width,
       this.work.height
     );
-    this.trimap = new Uint8Array(this.work.width * this.work.height);
-    this.label = null;
+    // Recuadro = recorte rectangular simple: se queda SOLO lo que está dentro
+    // del recuadro (sin GrabCut). Pedido del PO: "lo que el usuario marca y nada
+    // más". El GrabCut sigue vivo para "Recorte automático" (autoCut).
+    const { width, height } = this.work;
+    const label = new Uint8Array(width * height);
+    const r = this.rect;
+    for (let y = r.y; y < r.y + r.h; y++) {
+      const row = y * width;
+      for (let x = r.x; x < r.x + r.w; x++) label[row + x] = 1;
+    }
+    this.trimap = new Uint8Array(width * height);
+    this.label = label;
     this.softAlpha = null;
-    this.segment();
     return this.previewBlob();
   }
 
@@ -300,7 +315,53 @@ export class CutoutSession {
 
   // ---- núcleo de segmentación ----
 
+  // Corre el GrabCut a resolución reducida (≤SEG_MAX) y re-escala la máscara a
+  // resolución de trabajo (T-013). Reusa el mismo motor (wasm/js) intercambiando
+  // temporalmente work/trimap/rect/label por sus versiones downscaleadas.
   segment(emIters = EM_ITERS) {
+    const { width, height } = this.work;
+    const ss = Math.min(1, SEG_MAX / Math.max(width, height));
+    if (ss >= 1) {
+      this._segmentEngine(emIters);
+      return;
+    }
+    const sw = Math.max(1, Math.round(width * ss));
+    const sh = Math.max(1, Math.round(height * ss));
+    const fWork = this.work,
+      fTri = this.trimap,
+      fRect = this.rect,
+      fLabel = this.label,
+      fWasm = this.wasmCut;
+    this.work = resizeImageData(fWork, sw, sh);
+    this.trimap = resizeMaskNearest(fTri, width, height, sw, sh);
+    this.rect = {
+      x: Math.round(fRect.x * ss),
+      y: Math.round(fRect.y * ss),
+      w: Math.max(1, Math.round(fRect.w * ss)),
+      h: Math.max(1, Math.round(fRect.h * ss)),
+    };
+    this.label = fLabel ? resizeMaskNearest(fLabel, width, height, sw, sh) : null;
+    this.wasmCut = null; // instancia WASM temporal, ligada a la imagen chica
+    try {
+      this._segmentEngine(emIters); // setea this.label a sw×sh
+      const small = this.label;
+      if (this.wasmCut?.free) this.wasmCut.free();
+      this.work = fWork;
+      this.trimap = fTri;
+      this.rect = fRect;
+      this.wasmCut = fWasm;
+      this.label = resizeMaskNearest(small, sw, sh, width, height); // upscale
+    } catch (e) {
+      this.work = fWork;
+      this.trimap = fTri;
+      this.rect = fRect;
+      this.wasmCut = fWasm;
+      this.label = fLabel;
+      throw e;
+    }
+  }
+
+  _segmentEngine(emIters = EM_ITERS) {
     if (this.WasmCut) {
       try {
         this.segmentWasm(emIters);
@@ -857,6 +918,35 @@ function canvasFromImageData(imageData) {
   const c = createCanvas(imageData.width, imageData.height);
   c.getContext("2d").putImageData(imageData, 0, 0);
   return c;
+}
+
+// T-013: reescala una ImageData a tw×th (bilineal, para el downscale de
+// segmentación).
+function resizeImageData(img, tw, th) {
+  const src = canvasFromImageData(img);
+  const c = createCanvas(tw, th);
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(src, 0, 0, tw, th);
+  return ctx.getImageData(0, 0, tw, th);
+}
+
+// T-013: reescala una máscara/trimap (valores discretos) por vecino-más-cercano,
+// preservando los valores (TRI_* o 0/1). Sirve para down y upscale.
+function resizeMaskNearest(mask, w, h, tw, th) {
+  if (w === tw && h === th) return Uint8Array.from(mask);
+  const out = new Uint8Array(tw * th);
+  for (let y = 0; y < th; y++) {
+    const sy = Math.min(h - 1, ((y + 0.5) * h / th) | 0);
+    const orow = y * tw;
+    const srow = sy * w;
+    for (let x = 0; x < tw; x++) {
+      const sx = Math.min(w - 1, ((x + 0.5) * w / tw) | 0);
+      out[orow + x] = mask[srow + sx];
+    }
+  }
+  return out;
 }
 
 /** Canvas según entorno: HTMLCanvas en ventana, OffscreenCanvas en worker. */

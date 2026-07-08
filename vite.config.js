@@ -1,7 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Páginas que deben indexarse (sitemap + canonical).
 const SEO_ROUTES = [
@@ -43,6 +46,13 @@ export default defineConfig(({ mode }) => {
       outDir: "dist",
       target: "es2021",
       sourcemap: false,
+      rollupOptions: {
+        // MPA (T-011): "/" es la landing estática, "/editor" es la app React.
+        input: {
+          main: path.resolve(__dirname, "index.html"),
+          editor: path.resolve(__dirname, "editor/index.html"),
+        },
+      },
     },
   };
 });
