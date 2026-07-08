@@ -90,6 +90,21 @@ body::after {
   gap: 8px;
 }
 
+/* logo como link al inicio (landing) en web */
+a.brand {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a.brand:hover .brand-mark {
+  filter: drop-shadow(0 0 14px var(--acid-glow));
+}
+
+a.brand:hover .brand-name {
+  color: var(--acid);
+}
+
 .brand-mark {
   color: var(--acid);
   font-size: 22px;
@@ -446,49 +461,73 @@ kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--line-bright);
+  border-radius: 99px;
   color: var(--ink-dim);
   font-size: 15px;
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
+  transition: color 0.14s, border-color 0.14s, background 0.14s, box-shadow 0.14s,
+    transform 0.14s;
 }
 
 .btn-icon:hover {
   color: var(--acid);
-  border-color: var(--acid);
+  border-color: color-mix(in srgb, var(--acid) 55%, var(--line-bright));
+  background: var(--acid-soft);
+  box-shadow: 0 0 14px var(--acid-glow);
+  transform: translateY(-1px);
 }
 
-/* chips de formato */
+.btn-icon:active {
+  transform: translateY(0);
+}
+
+/* chips de formato — control segmentado */
 .format-row {
   display: flex;
+  align-items: stretch; /* misma altura aunque un label wrapee a 2 líneas */
   gap: 6px;
 }
 
 .chip {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font-family: var(--mono);
   font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
   color: var(--ink-dim);
   background: var(--bg-deep);
   border: 1px solid var(--line);
-  border-radius: 99px;
-  padding: 5px 10px;
+  border-radius: 9px; /* era 99px: en 2 líneas quedaba como blob */
+  padding: 7px 8px;
   cursor: pointer;
-  transition: all 0.12s;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
 }
 
-.chip:hover {
+/* hover solo en los NO seleccionados: si no, el :hover pisaba el texto oscuro
+   del .chip-on con --ink claro → letras ilegibles sobre el acid. */
+.chip:hover:not(.chip-on):not(:disabled) {
   color: var(--ink);
+  background: var(--panel-2);
+  border-color: var(--line-bright);
 }
 
-.chip-on {
+.chip-on,
+.chip-on:hover {
   color: #10130a;
   background: var(--acid);
   border-color: var(--acid);
+}
+
+.chip:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .color-export {
@@ -1951,7 +1990,9 @@ kbd {
 
 .btn-icon-donate:hover {
   color: var(--coffee-bright);
-  border-color: color-mix(in srgb, var(--coffee) 45%, transparent);
+  border-color: color-mix(in srgb, var(--coffee) 55%, var(--line-bright));
+  background: var(--coffee-soft);
+  box-shadow: 0 0 14px rgba(227, 168, 87, 0.3);
 }
 
 /* link de texto "Guías" (/guias/), agrupado con los íconos de la topbar */

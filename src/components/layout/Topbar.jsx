@@ -11,12 +11,21 @@ import LangSwitch from "./LangSwitch.jsx";
 export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDownload }) {
   return (
     <header className="topbar">
-      <div className="brand">
-        <span className="brand-mark" aria-hidden>◑</span>
-        <span className="brand-name">PhotoCut</span>
-        <span className="brand-sub">Studio</span>
-        <span className="brand-env">{backend.isDesktop ? "Desktop" : "Web"}</span>
-      </div>
+      {backend.isDesktop ? (
+        <div className="brand">
+          <span className="brand-mark" aria-hidden>◑</span>
+          <span className="brand-name">PhotoCut</span>
+          <span className="brand-sub">Studio</span>
+          <span className="brand-env">Desktop</span>
+        </div>
+      ) : (
+        <a className="brand" href="/" aria-label="PhotoCut Studio — ir al inicio">
+          <span className="brand-mark" aria-hidden>◑</span>
+          <span className="brand-name">PhotoCut</span>
+          <span className="brand-sub">Studio</span>
+          <span className="brand-env">Web</span>
+        </a>
+      )}
 
       <nav className="tabs" role="tablist" aria-label="Espacios de trabajo">
         {[
