@@ -3,6 +3,9 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/editor", "destination": "/editor/index.html" }
+  ],
   "headers": [
     {
       "source": "/sw.js",

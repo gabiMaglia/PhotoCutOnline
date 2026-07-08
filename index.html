@@ -48,22 +48,19 @@
     />
 
     <!--
-      Contenido estático de marketing/SEO (fuera de #root): la app monta con
-      React y ocupa siempre 100vh (ver .app en styles.css), así que este
-      bloque vive debajo del editor y se revela con scroll. No se toca
-      styles.css: styles.css solo se aplica cuando el JS de la SPA carga
-      (import en main.jsx), y esta landing tiene que verse bien igual antes
-      de eso (y para crawlers). Por eso el CSS es autocontenido acá, con los
-      mismos tokens de marca (ver :root de styles.css) duplicados a propósito.
-      Las reglas html,body{overflow-y:auto} son las que revelan el footer con
-      scroll: no tocarlas.
+      Landing estática de marketing/SEO (T-011): esta página YA NO monta
+      React (eso vive en /editor, ver editor/index.html). Es HTML+CSS
+      autocontenido, con los mismos tokens de marca (ver :root de
+      styles.css) duplicados a propósito para no depender de la app.
+      Página normal, scrolleable por default (sin overrides de overflow).
     -->
     <style>
+      /* reset: sin styles.css (la landing no monta React), el body tendría
+         margen y fondo blanco por defecto → borde blanco alrededor. */
       html,
       body {
-        height: auto !important;
-        min-height: 100% !important;
-        overflow-y: auto !important;
+        margin: 0;
+        background: #0b0d10;
       }
 
       /* ---------------------------------------------------------------- */
@@ -93,7 +90,6 @@
         font-family: var(--sans);
         font-size: 15.5px;
         line-height: 1.65;
-        border-top: 1px solid var(--line);
       }
 
       /* grano de película sutil, igual al del editor, para que la costura
@@ -628,12 +624,8 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
   <body id="top">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-
-    <!-- Landing de marketing/SEO, siempre presente en el HTML, independiente
-         de que React haya montado o no (P-3 T-007). Vive debajo del editor
-         (100vh) y se revela con scroll (T-011). -->
+    <!-- Landing de marketing/SEO (T-011): página estática propia en `/`,
+         separada del editor (`/editor`, ver editor/index.html). -->
     <div id="landing">
 
       <section class="lp-hero">
@@ -654,18 +646,18 @@
               <span class="lp-badge lp-badge-acid">100% en tu navegador</span>
             </div>
             <div class="lp-hero-cta">
-              <a href="#top" class="lp-btn lp-btn-primary">↑ Usar el editor ahora</a>
+              <a href="/editor/" class="lp-btn lp-btn-primary">↑ Usar el editor ahora</a>
               <a href="#lp-how" class="lp-btn lp-btn-ghost">Ver cómo funciona</a>
             </div>
           </div>
-          <div class="lp-hero-visual" aria-hidden="true">
+          <a href="/editor/" class="lp-hero-visual" aria-label="Abrir el editor y soltar tu foto">
             <div class="lp-swatch">
               <div class="lp-swatch-checker"></div>
               <div class="lp-swatch-divider"></div>
               <span class="lp-swatch-tag lp-swatch-tag-l">fondo original</span>
               <span class="lp-swatch-tag lp-swatch-tag-r">canal alfa</span>
             </div>
-          </div>
+          </a>
         </div>
       </section>
 
