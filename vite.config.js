@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => {
   const site = (env.VITE_SITE_URL || "").replace(/\/$/, "");
 
   return {
-    plugins: [react(), absoluteOgTags(site), seoArtifacts(site)],
+    plugins: [react(), absoluteOgTags(site), seoArtifacts(site, env), umamiTag(env)],
     clearScreen: false,
     worker: {
       // el worker de recorte hace import() dinámico (onnxruntime-web):
@@ -57,6 +57,28 @@ export default defineConfig(({ mode }) => {
   };
 });
 
+// Analytics Umami (cookieless, sin banner de consentimiento): inyecta el script
+// en el <head> de AMBAS páginas (landing index.html + editor/index.html) cuando
+// están definidas VITE_UMAMI_SRC (URL del script.js de tu instancia) y
+// VITE_UMAMI_WEBSITE_ID (el UUID del sitio en Umami). Sin ellas, no carga nada.
+function umamiScript(env) {
+  const src = (env.VITE_UMAMI_SRC || "").trim();
+  const id = (env.VITE_UMAMI_WEBSITE_ID || "").trim();
+  return src && id ? `<script defer src="${src}" data-website-id="${id}"></script>` : "";
+}
+
+// Inyecta Umami en las páginas Vite (landing index.html + editor/index.html).
+// Las estáticas (guías/legales) las cubre seoArtifacts en closeBundle.
+function umamiTag(env) {
+  const tag = umamiScript(env);
+  return {
+    name: "umami-tag",
+    transformIndexHtml(html) {
+      return tag ? html.replace("</head>", `    ${tag}\n  </head>`) : html;
+    },
+  };
+}
+
 // Con VITE_SITE_URL definida, convierte el og:image/twitter:image a absolutos e
 // inyecta og:url + canonical (las previsualizaciones de redes y el SEO los
 // necesitan absolutos). Sin la variable, deja las rutas relativas tal cual.
@@ -79,7 +101,8 @@ function absoluteOgTags(site) {
 // robots.txt e inyecta canonical/og:url en las páginas estáticas (guías y
 // legales) — lo que Google necesita para indexarlas. Sin la variable, no hace
 // nada (las URLs deben ser absolutas).
-function seoArtifacts(site) {
+function seoArtifacts(site, env = {}) {
+  const umami = umamiScript(env);
   return {
     name: "seo-artifacts",
     apply: "build",
@@ -102,19 +125,28 @@ function seoArtifacts(site) {
         `# PhotoCut Studio\nUser-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`
       );
 
-      // canonical + og:url en cada página estática (index lo hace absoluteOgTags)
+      // canonical/og:url + Umami en cada página estática (index/editor los hacen
+      // absoluteOgTags/umamiTag). canonical y umami son independientes, con guard
+      // anti-doble por si la página ya los trae.
       for (const r of SEO_ROUTES) {
         if (r === "/") continue;
         const file = r.endsWith("/") ? path.join(dist, r, "index.html") : path.join(dist, r);
         if (!fs.existsSync(file)) continue;
         let html = fs.readFileSync(file, "utf8");
-        if (html.includes('rel="canonical"')) continue;
-        const url = `${site}${r}`;
-        html = html.replace(
-          "</head>",
-          `  <link rel="canonical" href="${url}" />\n    <meta property="og:url" content="${url}" />\n  </head>`
-        );
-        fs.writeFileSync(file, html);
+        let changed = false;
+        if (!html.includes('rel="canonical"')) {
+          const url = `${site}${r}`;
+          html = html.replace(
+            "</head>",
+            `  <link rel="canonical" href="${url}" />\n    <meta property="og:url" content="${url}" />\n  </head>`
+          );
+          changed = true;
+        }
+        if (umami && !html.includes("data-website-id")) {
+          html = html.replace("</head>", `    ${umami}\n  </head>`);
+          changed = true;
+        }
+        if (changed) fs.writeFileSync(file, html);
       }
     },
   };
