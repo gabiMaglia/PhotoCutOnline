@@ -30,11 +30,12 @@ function setup(props = {}) {
 describe("Topbar", () => {
   it("renderiza las pestañas visibles con la activa marcada", () => {
     setup({ tab: "cut" });
-    // Stickers está oculto por flag (STICKERS_ENABLED=false): quedan Recorte + Icon Studio
+    // Stickers está oculto por flag (STICKERS_ENABLED=false): quedan Recorte + Icon Studio + Lote
     const tabs = screen.getAllByRole("tab");
-    expect(tabs).toHaveLength(2);
+    expect(tabs).toHaveLength(3);
     expect(tabs[0]).toHaveAttribute("aria-selected", "true");
     expect(tabs[1]).toHaveAttribute("aria-selected", "false");
+    expect(tabs[2]).toHaveAttribute("aria-selected", "false");
   });
 
   it("cambia de pestaña al hacer click", async () => {

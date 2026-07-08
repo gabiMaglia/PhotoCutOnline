@@ -7,6 +7,7 @@ import CutoutPage from "./features/cutout/CutoutPage.jsx";
 // Páginas secundarias: se cargan bajo demanda (la mayoría de los usuarios solo
 // usa el recorte). Su chunk no entra al bundle inicial hasta abrir la pestaña.
 const IconStudioPage = lazy(() => import("./features/iconStudio/IconStudioPage.jsx"));
+const BatchPage = lazy(() => import("./features/batch/BatchPage.jsx"));
 const StickerStudioPage = lazy(() => import("./features/stickerStudio/StickerStudioPage.jsx"));
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
@@ -42,9 +43,11 @@ function AppShell({ tab, setTab, toasts, toast }) {
   // montadas (su estado se conserva; alternan visibilidad con `active`). Así el
   // chunk no se descarga hasta que el usuario realmente entra a la pestaña.
   const [iconsSeen, setIconsSeen] = useState(false);
+  const [batchSeen, setBatchSeen] = useState(false);
   const [stickersSeen, setStickersSeen] = useState(false);
   useEffect(() => {
     if (tab === "icons") setIconsSeen(true);
+    if (tab === "batch") setBatchSeen(true);
     if (tab === "stickers") setStickersSeen(true);
   }, [tab]);
 
@@ -76,6 +79,12 @@ function AppShell({ tab, setTab, toasts, toast }) {
       {iconsSeen && (
         <Suspense fallback={null}>
           <IconStudioPage active={tab === "icons"} onToast={toast} onOpenDownload={openDownload} />
+        </Suspense>
+      )}
+
+      {batchSeen && (
+        <Suspense fallback={null}>
+          <BatchPage active={tab === "batch"} onToast={toast} />
         </Suspense>
       )}
 
