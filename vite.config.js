@@ -40,6 +40,7 @@ const SEO_ROUTES = [
   "/guias/png-jpg-o-webp-cual-elegir.html",
   "/guias/sticker-de-telegram.html",
   "/guias/poner-fondo-blanco-a-una-foto.html",
+  "/guias/generar-modo-oscuro-desde-una-captura.html",
   "/acerca.html",
   "/contacto.html",
   "/legal/privacidad.html",

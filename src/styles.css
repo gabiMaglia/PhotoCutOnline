@@ -2569,3 +2569,55 @@ kbd {
   font-size: 13px;
   color: var(--acid);
 }
+
+/* ── Color Studio: comparativa antes/después (tema y recolor) ─────────────── */
+.cs-compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  width: 100%;
+  max-width: 900px;
+  align-items: flex-start;
+  justify-content: center;
+}
+.cs-pane {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+.cs-pane-tag {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+.cs-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 62vh;
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    repeating-conic-gradient(#1a1d23 0% 25%, #12151a 0% 50%) 50% / 20px 20px;
+}
+.cs-css-input {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  background: var(--bg-deep);
+  color: var(--ink);
+  border: 1px solid var(--line-bright);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.cs-css-input:focus {
+  outline: none;
+  border-color: var(--acid);
+}

@@ -110,6 +110,9 @@ export function useColorTools({ onToast } = {}) {
 
   const clearPicked = useCallback(() => setPicked([]), []);
 
+  // ImageData de la imagen cargada (para las transformaciones de Tema/Recolor).
+  const getImageData = useCallback(() => dataRef.current, []);
+
   return {
     canvasRef,
     ready,
@@ -124,5 +127,6 @@ export function useColorTools({ onToast } = {}) {
     readAt,
     pin,
     clearPicked,
+    getImageData,
   };
 }
