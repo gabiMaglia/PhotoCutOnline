@@ -14,6 +14,7 @@ const SEO_ROUTES = [
   "/herramientas/cambiar-fondo.html",
   "/herramientas/paleta-de-colores.html",
   "/herramientas/metadatos-exif.html",
+  "/herramientas/agregar-texto-a-foto.html",
   "/herramientas/fondo-blanco.html",
   "/herramientas/fondo-negro.html",
   "/herramientas/fondo-azul.html",
