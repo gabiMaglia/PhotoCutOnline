@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { t } from "../../lib/i18n.js";
-import { contrastText, paletteToText, hexToRgb, contrastRatio, wcagLevels } from "../../lib/palette.js";
+import { contrastText, paletteToText, hexToRgb, contrastRatio, wcagLevels, extractPalette } from "../../lib/palette.js";
 import { themeFlip, extractColorsFromText, recolorToPalette } from "../../lib/recolor.js";
+import { buildScheme, schemeToCss, schemeToTailwind } from "../../lib/scheme.js";
 import Button from "../../components/ui/Button.jsx";
 import FileButton from "../../components/ui/FileButton.jsx";
 import Slider from "../../components/ui/Slider.jsx";
@@ -15,6 +16,26 @@ function copyText(text, onToast, msg) {
   navigator.clipboard?.writeText(text).then(
     () => onToast?.(msg),
     () => onToast?.("No se pudo copiar")
+  );
+}
+
+// Fila compacta de muestras (paleta bajo cada preview). Clic = copiar HEX.
+function MiniPalette({ colors, onToast }) {
+  if (!colors || colors.length === 0) return null;
+  return (
+    <div className="cs-minipal">
+      {colors.map((c) => (
+        <button
+          key={c.hex}
+          className="cs-minipal-chip"
+          style={{ background: c.hex, color: contrastText(c.r, c.g, c.b) }}
+          title={c.hex}
+          onClick={() => copyText(c.hex, onToast, `${c.hex} copiado`)}
+        >
+          {c.hex}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -44,11 +65,16 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const [cssText, setCssText] = useState("");
   const [applied, setApplied] = useState(false);
   const refColors = useMemo(() => extractColorsFromText(cssText), [cssText]);
+  const [beforePal, setBeforePal] = useState([]);
+  const [afterPal, setAfterPal] = useState([]);
+  const [aspect, setAspect] = useState(1.4); // ancho/alto de la imagen
+  const scheme = useMemo(() => (afterPal.length ? buildScheme(afterPal) : null), [afterPal]);
 
   const paintPair = (resultBytes) => {
     const src = c.getImageData();
     if (!src) return;
     const { width, height } = src;
+    setAspect(width / height);
     for (const [ref, bytes] of [[beforeRef, src.data], [afterRef, resultBytes]]) {
       const cv = ref.current;
       if (!cv) continue;
@@ -59,6 +85,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
       id.data.set(bytes);
       ctx.putImageData(id, 0, 0);
     }
+    setBeforePal(extractPalette(src, 6));
+    setAfterPal(extractPalette({ data: resultBytes, width, height }, 6));
   };
 
   // Regenera el tema al entrar al modo, cambiar objetivo o cargar imagen.
@@ -81,6 +109,9 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
       const id = ctx.createImageData(src.width, src.height);
       id.data.set(src.data);
       ctx.putImageData(id, 0, 0);
+      setAspect(src.width / src.height);
+      setBeforePal(extractPalette(src, 6));
+      setAfterPal([]);
     }
     setApplied(false);
   }, [mode, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -260,15 +291,53 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
           </div>
 
           {c.ready && (mode === "theme" || mode === "recolor") && (
-            <div className="cs-compare" style={{ display: mode === "palette" ? "none" : undefined }}>
-              <div className="cs-pane">
-                <span className="cs-pane-tag">{t("cs.before")}</span>
-                <canvas ref={beforeRef} className="cs-canvas" />
+            <div className="cs-result">
+              {/* Layout adaptativo: imágenes anchas (horizontales) se apilan en
+                  columna; las altas (verticales) van lado a lado (aprovecha mejor
+                  el espacio). */}
+              <div className={`cs-compare ${aspect >= 1 ? "cs-stacked" : "cs-row"}`}>
+                <div className="cs-pane">
+                  <span className="cs-pane-tag">{t("cs.before")}</span>
+                  <canvas ref={beforeRef} className="cs-canvas" />
+                  <MiniPalette colors={beforePal} onToast={onToast} />
+                </div>
+                <div className="cs-pane">
+                  <span className="cs-pane-tag">{t("cs.after")}</span>
+                  <canvas ref={afterRef} className="cs-canvas" />
+                  <MiniPalette colors={afterPal} onToast={onToast} />
+                </div>
               </div>
-              <div className="cs-pane">
-                <span className="cs-pane-tag">{t("cs.after")}</span>
-                <canvas ref={afterRef} className="cs-canvas" />
-              </div>
+
+              {scheme && (
+                <section className="cs-scheme">
+                  <div className="cs-scheme-head">
+                    <h3>{t("cs.scheme.title")}</h3>
+                    <div className="cs-scheme-actions">
+                      <Button size="small" onClick={() => copyText(schemeToCss(scheme), onToast, t("cs.scheme.copiedCss"))}>{t("cs.scheme.css")}</Button>
+                      <Button size="small" onClick={() => copyText(schemeToTailwind(scheme), onToast, t("cs.scheme.copiedTw"))}>{t("cs.scheme.tailwind")}</Button>
+                    </div>
+                  </div>
+                  <p className="cs-scheme-note">{t("cs.scheme.help")}</p>
+                  <div className="cs-scheme-scales">
+                    {["primary", "secondary", "accent", "neutral", "success", "warning", "error", "info"].map((role) => (
+                      <div className="cs-scale-row" key={role}>
+                        <span className="cs-scale-name">{role}</span>
+                        <div className="cs-scale-stops">
+                          {["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"].map((s) => (
+                            <button
+                              key={s}
+                              className="cs-scale-stop"
+                              style={{ background: scheme[role][s] }}
+                              title={`${role}-${s} ${scheme[role][s]}`}
+                              onClick={() => copyText(scheme[role][s], onToast, `${scheme[role][s]} copiado`)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
             </div>
           )}
         </main>

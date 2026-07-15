@@ -2621,3 +2621,92 @@ kbd {
   outline: none;
   border-color: var(--acid);
 }
+
+/* ── Color Studio: resultado (compare adaptativo + esquema) ──────────────── */
+.cs-result {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+  max-width: 940px;
+}
+.cs-compare {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+.cs-compare.cs-stacked { flex-direction: column; align-items: stretch; }
+.cs-compare.cs-row { flex-direction: row; flex-wrap: wrap; align-items: flex-start; }
+.cs-compare.cs-row .cs-pane { flex: 1 1 260px; min-width: 0; }
+.cs-compare.cs-stacked .cs-canvas { max-height: 46vh; margin: 0 auto; }
+
+.cs-minipal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.cs-minipal-chip {
+  flex: 1 1 auto;
+  min-width: 54px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 3px 5px;
+}
+
+.cs-scheme {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 16px 18px;
+}
+.cs-scheme-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.cs-scheme-head h3 {
+  margin: 0;
+  font-size: 14px;
+  color: var(--acid);
+  font-family: var(--display);
+}
+.cs-scheme-actions { display: flex; gap: 8px; }
+.cs-scheme-note {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+}
+.cs-scheme-scales { display: flex; flex-direction: column; gap: 7px; }
+.cs-scale-row { display: flex; align-items: center; gap: 10px; }
+.cs-scale-name {
+  flex: 0 0 74px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-dim);
+  text-transform: capitalize;
+}
+.cs-scale-stops { display: flex; flex: 1; gap: 2px; }
+.cs-scale-stop {
+  flex: 1;
+  height: 26px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.cs-scale-stops .cs-scale-stop:first-child { border-radius: 5px 0 0 5px; }
+.cs-scale-stops .cs-scale-stop:last-child { border-radius: 0 5px 5px 0; }
+.cs-scale-stop:hover { outline: 2px solid var(--acid); outline-offset: -2px; }
