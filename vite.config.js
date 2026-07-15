@@ -9,6 +9,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Páginas que deben indexarse (sitemap + canonical).
 const SEO_ROUTES = [
   "/",
+  "/herramientas/",
+  "/herramientas/paleta-de-colores.html",
   "/guias/",
   "/guias/como-quitar-el-fondo-de-una-imagen.html",
   "/guias/medidas-de-iconos-de-app-ios-android-2026.html",
