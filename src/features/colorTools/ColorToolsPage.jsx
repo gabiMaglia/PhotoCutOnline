@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { t } from "../../lib/i18n.js";
-import { contrastText, paletteToText } from "../../lib/palette.js";
+import { contrastText, paletteToText, hexToRgb, contrastRatio, wcagLevels } from "../../lib/palette.js";
 import Button from "../../components/ui/Button.jsx";
 import FileButton from "../../components/ui/FileButton.jsx";
 import Slider from "../../components/ui/Slider.jsx";
@@ -23,6 +23,17 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const currentImage = loader?.imageUrl;
   const c = useColorTools({ onToast });
   const [hover, setHover] = useState(null); // { hex, x, y } sobre el canvas
+
+  // Verificador de contraste WCAG (independiente de la imagen).
+  const [fg, setFg] = useState("#1f2937");
+  const [bg, setBg] = useState("#d6f64b");
+  const ratio = contrastRatio(hexToRgb(fg) || { r: 0, g: 0, b: 0 }, hexToRgb(bg) || { r: 255, g: 255, b: 255 });
+  const lv = wcagLevels(ratio);
+  const badge = (ok, label) => (
+    <span className={`wcag-badge ${ok ? "wcag-pass" : "wcag-fail"}`}>
+      {ok ? "✓" : "✕"} {label}
+    </span>
+  );
 
   const onMove = (e) => {
     const col = c.readAt(e.clientX, e.clientY);
@@ -115,6 +126,30 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                 <Button onClick={c.clearPicked}>{t("color.clearPicked")}</Button>
               </>
             )}
+          </section>
+
+          <section className="rail-group">
+            <h2 className="rail-title">{t("color.contrast")}</h2>
+            <div className="contrast-inputs">
+              <label className="contrast-field">
+                <input type="color" value={fg} onChange={(e) => setFg(e.target.value)} aria-label={t("color.contrastFg")} />
+                <span>{t("color.contrastFg")}</span>
+              </label>
+              <label className="contrast-field">
+                <input type="color" value={bg} onChange={(e) => setBg(e.target.value)} aria-label={t("color.contrastBg")} />
+                <span>{t("color.contrastBg")}</span>
+              </label>
+            </div>
+            <div className="contrast-sample" style={{ background: bg, color: fg }}>
+              <span className="contrast-ratio">{ratio.toFixed(2)}:1</span>
+              <span>{t("color.contrastSample")}</span>
+            </div>
+            <div className="wcag-grid">
+              {badge(lv.aaNormal, `AA · ${t("color.textNormal")}`)}
+              {badge(lv.aaLarge, `AA · ${t("color.textLarge")}`)}
+              {badge(lv.aaaNormal, `AAA · ${t("color.textNormal")}`)}
+              {badge(lv.aaaLarge, `AAA · ${t("color.textLarge")}`)}
+            </div>
           </section>
 
           {active && <AdSlot placement="colors-rail" onDownload={onOpenDownload} />}

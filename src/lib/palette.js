@@ -46,6 +46,24 @@ export function contrastText(r, g, b) {
   return luminance(r, g, b) > 0.36 ? "#10130a" : "#f5f7fa";
 }
 
+// Ratio de contraste WCAG entre dos colores {r,g,b} (de 1:1 a 21:1).
+export function contrastRatio(a, b) {
+  const l1 = luminance(a.r, a.g, a.b);
+  const l2 = luminance(b.r, b.g, b.b);
+  const hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+// Cumplimiento WCAG 2.1 de un ratio para texto normal y grande (AA/AAA).
+export function wcagLevels(ratio) {
+  return {
+    aaNormal: ratio >= 4.5,
+    aaLarge: ratio >= 3,
+    aaaNormal: ratio >= 7,
+    aaaLarge: ratio >= 4.5,
+  };
+}
+
 // ── median-cut ───────────────────────────────────────────────────────────────
 
 function channelRanges(box) {

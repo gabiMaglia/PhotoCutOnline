@@ -1,4 +1,4 @@
-import { rgbToHex, hexToRgb, rgbToHsl, contrastText, extractPalette, paletteToText } from "./palette.js";
+import { rgbToHex, hexToRgb, rgbToHsl, contrastText, contrastRatio, wcagLevels, extractPalette, paletteToText } from "./palette.js";
 
 describe("palette helpers", () => {
   it("convierte rgb↔hex ida y vuelta", () => {
@@ -64,6 +64,26 @@ describe("extractPalette", () => {
     const pal = extractPalette(img, 4);
     // el negro transparente no debe aportar color
     expect(pal.every((c) => !(c.r === 0 && c.g === 0 && c.b === 0))).toBe(true);
+  });
+});
+
+describe("contrastRatio / wcagLevels", () => {
+  const black = { r: 0, g: 0, b: 0 };
+  const white = { r: 255, g: 255, b: 255 };
+  it("blanco sobre negro da el máximo 21:1", () => {
+    expect(contrastRatio(black, white)).toBeCloseTo(21, 0);
+  });
+  it("un color contra sí mismo da 1:1", () => {
+    expect(contrastRatio(white, white)).toBeCloseTo(1, 5);
+  });
+  it("es simétrico", () => {
+    expect(contrastRatio(black, white)).toBeCloseTo(contrastRatio(white, black), 5);
+  });
+  it("clasifica niveles WCAG por umbral", () => {
+    expect(wcagLevels(21)).toEqual({ aaNormal: true, aaLarge: true, aaaNormal: true, aaaLarge: true });
+    expect(wcagLevels(4.5)).toEqual({ aaNormal: true, aaLarge: true, aaaNormal: false, aaaLarge: true });
+    expect(wcagLevels(3)).toEqual({ aaNormal: false, aaLarge: true, aaaNormal: false, aaaLarge: false });
+    expect(wcagLevels(1)).toEqual({ aaNormal: false, aaLarge: false, aaaNormal: false, aaaLarge: false });
   });
 });
 
