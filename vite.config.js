@@ -56,17 +56,26 @@ const SEO_ROUTES = [
   "/en/tools/blue-background.html",
   "/en/tools/red-background.html",
   "/en/tools/green-background.html",
+  // F3 i18n — português (pt-br), bajo /pt/.
+  "/pt/",
+  "/pt/ferramentas/",
+  "/pt/ferramentas/remover-fundo.html",
+  "/pt/ferramentas/trocar-fundo.html",
+  "/pt/ferramentas/paleta-de-cores.html",
+  "/pt/ferramentas/metadados-exif.html",
 ];
 
-// Pares de traducción (ES canónica ↔ EN). El build inyecta los <link
-// rel="alternate" hreflang> recíprocos en ambas páginas y el x-default → ES.
-const I18N_PAIRS = [
-  { es: "/", en: "/en/" },
-  { es: "/herramientas/", en: "/en/tools/" },
-  { es: "/herramientas/quitar-fondo.html", en: "/en/tools/remove-background.html" },
-  { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html" },
-  { es: "/herramientas/paleta-de-colores.html", en: "/en/tools/color-palette-from-image.html" },
-  { es: "/herramientas/metadatos-exif.html", en: "/en/tools/view-exif-metadata.html" },
+// Grupos de traducción: cada grupo mapea idioma→ruta (solo los idiomas que
+// existen para esa página). El build inyecta en cada página del grupo los
+// <link rel="alternate" hreflang> de TODOS los idiomas presentes + x-default→ES.
+// Escala a pt/it agregando la clave al grupo.
+const I18N_GROUPS = [
+  { es: "/", en: "/en/", pt: "/pt/" },
+  { es: "/herramientas/", en: "/en/tools/", pt: "/pt/ferramentas/" },
+  { es: "/herramientas/quitar-fondo.html", en: "/en/tools/remove-background.html", pt: "/pt/ferramentas/remover-fundo.html" },
+  { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html", pt: "/pt/ferramentas/trocar-fundo.html" },
+  { es: "/herramientas/paleta-de-colores.html", en: "/en/tools/color-palette-from-image.html", pt: "/pt/ferramentas/paleta-de-cores.html" },
+  { es: "/herramientas/metadatos-exif.html", en: "/en/tools/view-exif-metadata.html", pt: "/pt/ferramentas/metadados-exif.html" },
   { es: "/herramientas/fondo-blanco.html", en: "/en/tools/white-background.html" },
   { es: "/herramientas/fondo-negro.html", en: "/en/tools/black-background.html" },
   { es: "/herramientas/fondo-azul.html", en: "/en/tools/blue-background.html" },
@@ -198,22 +207,21 @@ function seoArtifacts(site, env = {}) {
         if (changed) fs.writeFileSync(file, html);
       }
 
-      // hreflang recíproco entre cada par ES↔EN (x-default → ES). Inyecta en
-      // ambos archivos del par; guard anti-doble por si ya lo trae.
+      // hreflang recíproco entre todos los idiomas de cada grupo (x-default →
+      // ES). Inyecta en cada archivo del grupo; guard anti-doble.
       const fileFor = (route) =>
         route.endsWith("/") ? path.join(dist, route, "index.html") : path.join(dist, route);
-      for (const pair of I18N_PAIRS) {
-        const esUrl = `${site}${pair.es}`;
-        const enUrl = `${site}${pair.en}`;
-        const links =
-          `<link rel="alternate" hreflang="es" href="${esUrl}" />\n` +
-          `    <link rel="alternate" hreflang="en" href="${enUrl}" />\n` +
-          `    <link rel="alternate" hreflang="x-default" href="${esUrl}" />`;
-        for (const route of [pair.es, pair.en]) {
-          const file = fileFor(route);
+      for (const group of I18N_GROUPS) {
+        const langs = Object.keys(group);
+        const links = langs
+          .map((l) => `<link rel="alternate" hreflang="${l}" href="${site}${group[l]}" />`)
+          .concat(`<link rel="alternate" hreflang="x-default" href="${site}${group.es}" />`)
+          .join("\n    ");
+        for (const l of langs) {
+          const file = fileFor(group[l]);
           if (!fs.existsSync(file)) continue;
           let html = fs.readFileSync(file, "utf8");
-          if (html.includes('hreflang="en"')) continue;
+          if (html.includes('rel="alternate" hreflang')) continue;
           html = html.replace("</head>", `    ${links}\n  </head>`);
           fs.writeFileSync(file, html);
         }
