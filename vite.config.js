@@ -50,6 +50,11 @@ const SEO_ROUTES = [
   "/en/tools/change-background.html",
   "/en/tools/color-palette-from-image.html",
   "/en/tools/view-exif-metadata.html",
+  "/en/tools/white-background.html",
+  "/en/tools/black-background.html",
+  "/en/tools/blue-background.html",
+  "/en/tools/red-background.html",
+  "/en/tools/green-background.html",
 ];
 
 // Pares de traducción (ES canónica ↔ EN). El build inyecta los <link
@@ -60,6 +65,11 @@ const I18N_PAIRS = [
   { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html" },
   { es: "/herramientas/paleta-de-colores.html", en: "/en/tools/color-palette-from-image.html" },
   { es: "/herramientas/metadatos-exif.html", en: "/en/tools/view-exif-metadata.html" },
+  { es: "/herramientas/fondo-blanco.html", en: "/en/tools/white-background.html" },
+  { es: "/herramientas/fondo-negro.html", en: "/en/tools/black-background.html" },
+  { es: "/herramientas/fondo-azul.html", en: "/en/tools/blue-background.html" },
+  { es: "/herramientas/fondo-rojo.html", en: "/en/tools/red-background.html" },
+  { es: "/herramientas/fondo-verde.html", en: "/en/tools/green-background.html" },
 ];
 
 // Tauri expects a fixed port and serves from ../dist
