@@ -24,6 +24,7 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const dragging = useRef(false);
+  const fontSeq = useRef(0);
   const [ready, setReady] = useState(false);
   const [sourceName, setSourceName] = useState("");
 
@@ -37,6 +38,7 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
   const [align, setAlign] = useState("center");
   const [effect, setEffect] = useState("shadow"); // none | outline | shadow
   const [format, setFormat] = useState("png");
+  const [customFont, setCustomFont] = useState(null); // {family, label} de una fuente subida
 
   const draw = useCallback(() => {
     const cv = canvasRef.current;
@@ -49,7 +51,8 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
     if (!text) return;
 
     const px = size;
-    ctx.font = `${italic ? "italic " : ""}${bold ? "700" : "400"} ${px}px ${FONTS[font]}`;
+    const fam = font === "custom" && customFont ? `'${customFont.family}', sans-serif` : FONTS[font];
+    ctx.font = `${italic ? "italic " : ""}${bold ? "700" : "400"} ${px}px ${fam}`;
     ctx.textAlign = align;
     ctx.textBaseline = "middle";
     const x = pos.x * W;
@@ -79,7 +82,7 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
       ctx.fillText(line, x, y);
     });
     ctx.shadowColor = "transparent";
-  }, [text, pos, size, color, font, bold, italic, align, effect]);
+  }, [text, pos, size, color, font, bold, italic, align, effect, customFont]);
 
   useEffect(() => {
     if (ready) draw();
@@ -108,6 +111,23 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
     const url = URL.createObjectURL(file);
     loadImage(url, file.name);
   };
+
+  // Sube una fuente propia (.ttf/.otf/.woff/.woff2) vía FontFace API, con familia
+  // única por carga para no colisionar con una anterior.
+  const loadFont = useCallback(async (file) => {
+    if (!file || typeof FontFace === "undefined") return;
+    try {
+      const buf = await file.arrayBuffer();
+      const family = `pcUserFont${++fontSeq.current}`;
+      const face = new FontFace(family, buf);
+      await face.load();
+      document.fonts.add(face);
+      setCustomFont({ family, label: file.name.replace(/\.[^.]+$/, "") });
+      setFont("custom");
+    } catch {
+      onToast?.("No se pudo cargar la fuente (probá .ttf, .otf, .woff o .woff2)");
+    }
+  }, [onToast]);
 
   const posFromEvent = (e) => {
     const cv = canvasRef.current;
@@ -149,7 +169,19 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
           <section className="rail-group">
             <h2 className="rail-title">{t("txt.title")}</h2>
             <textarea className="cs-css-input" rows={2} value={text} onChange={(e) => setText(e.target.value)} placeholder={t("txt.placeholder")} disabled={!ready} />
-            <ChipGroup ariaLabel={t("txt.font")} value={font} onChange={setFont} options={["sans", "serif", "mono", "impact"].map((f) => ({ value: f, label: t(`txt.font.${f}`) }))} />
+            <ChipGroup
+              ariaLabel={t("txt.font")}
+              value={font}
+              onChange={setFont}
+              options={[
+                ...["sans", "serif", "mono", "impact"].map((f) => ({ value: f, label: t(`txt.font.${f}`) })),
+                ...(customFont ? [{ value: "custom", label: t("txt.font.custom") }] : []),
+              ]}
+            />
+            <FileButton size="small" accept=".ttf,.otf,.woff,.woff2,font/*" onChange={(e) => e.target.files?.[0] && loadFont(e.target.files[0])}>
+              {t("txt.uploadFont")}
+            </FileButton>
+            {customFont && <div className="source-tag">{customFont.label}</div>}
             <Slider id="txt-size" label={t("txt.size", { n: size })} min={16} max={280} value={size} onChange={setSize} disabled={!ready} off={!ready} />
             <div className="contrast-inputs">
               <label className="contrast-field"><input type="color" value={color} onChange={(e) => setColor(e.target.value)} aria-label={t("txt.color")} /><span>{t("txt.color")}</span></label>
