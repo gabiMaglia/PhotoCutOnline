@@ -2710,3 +2710,29 @@ kbd {
 .cs-scale-stops .cs-scale-stop:first-child { border-radius: 5px 0 0 5px; }
 .cs-scale-stops .cs-scale-stop:last-child { border-radius: 0 5px 5px 0; }
 .cs-scale-stop:hover { outline: 2px solid var(--acid); outline-offset: -2px; }
+
+/* ── Color Studio: histograma ────────────────────────────────────────────── */
+.cs-hist-wrap {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cs-hist-canvas {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+}
+.cs-hist-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-dim);
+}
+.cs-hist-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.cs-hist-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }

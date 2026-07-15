@@ -3,6 +3,7 @@ import { t } from "../../lib/i18n.js";
 import { contrastText, paletteToText, hexToRgb, contrastRatio, wcagLevels, extractPalette } from "../../lib/palette.js";
 import { themeFlip, extractColorsFromText, recolorToPalette } from "../../lib/recolor.js";
 import { buildScheme, schemeToCss, schemeToTailwind } from "../../lib/scheme.js";
+import { computeHistogram, simulateCVD, CVD_TYPES } from "../../lib/analysis.js";
 import Button from "../../components/ui/Button.jsx";
 import FileButton from "../../components/ui/FileButton.jsx";
 import Slider from "../../components/ui/Slider.jsx";
@@ -70,6 +71,12 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const [aspect, setAspect] = useState(1.4); // ancho/alto de la imagen
   const scheme = useMemo(() => (afterPal.length ? buildScheme(afterPal) : null), [afterPal]);
 
+  // Histograma y daltonismo (CVD).
+  const histRef = useRef(null);
+  const cvdBeforeRef = useRef(null);
+  const cvdAfterRef = useRef(null);
+  const [cvdType, setCvdType] = useState("deuteranopia");
+
   const paintPair = (resultBytes) => {
     const src = c.getImageData();
     if (!src) return;
@@ -123,8 +130,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
     setApplied(true);
   };
 
-  const downloadAfter = (suffix) => {
-    const cv = afterRef.current;
+  const downloadCanvas = (ref, suffix) => {
+    const cv = ref.current;
     if (!cv) return;
     cv.toBlob((blob) => {
       if (!blob) return;
@@ -135,6 +142,52 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
       URL.revokeObjectURL(a.href);
     }, "image/png");
   };
+  const downloadAfter = (suffix) => downloadCanvas(afterRef, suffix);
+
+  // Histograma (RGB, aditivo) del canal de la imagen cargada.
+  useEffect(() => {
+    if (mode !== "histogram" || !c.ready) return;
+    const src = c.getImageData();
+    const cv = histRef.current;
+    if (!src || !cv) return;
+    const W = 512, H = 200;
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext("2d");
+    ctx.clearRect(0, 0, W, H);
+    const hist = computeHistogram(src);
+    const chans = [["r", "#ff5e63"], ["g", "#63d68a"], ["b", "#5a9bff"]];
+    ctx.globalCompositeOperation = "lighter";
+    for (const [k, color] of chans) {
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      for (let x = 0; x < 256; x++) ctx.lineTo((x / 255) * W, H - (hist[k][x] / hist.max) * H);
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
+  }, [mode, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Simulación de daltonismo (antes/después).
+  useEffect(() => {
+    if (mode !== "cvd" || !c.ready) return;
+    const src = c.getImageData();
+    if (!src) return;
+    const { width, height } = src;
+    setAspect(width / height);
+    for (const [ref, bytes] of [[cvdBeforeRef, src.data], [cvdAfterRef, simulateCVD(src, cvdType)]]) {
+      const cv = ref.current;
+      if (!cv) continue;
+      cv.width = width; cv.height = height;
+      const ctx = cv.getContext("2d");
+      const id = ctx.createImageData(width, height);
+      id.data.set(bytes);
+      ctx.putImageData(id, 0, 0);
+    }
+  }, [mode, cvdType, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onMove = (e) => {
     const col = c.readAt(e.clientX, e.clientY);
@@ -170,6 +223,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                 { value: "palette", label: t("cs.mode.palette") },
                 { value: "theme", label: t("cs.mode.theme") },
                 { value: "recolor", label: t("cs.mode.recolor") },
+                { value: "histogram", label: t("cs.mode.histogram") },
+                { value: "cvd", label: t("cs.mode.cvd") },
               ]}
             />
           </section>
@@ -259,6 +314,27 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
             </section>
           )}
 
+          {mode === "histogram" && (
+            <section className="rail-group">
+              <h2 className="rail-title">{t("cs.mode.histogram")}</h2>
+              <div className="rail-help"><p>{t("cs.hist.help")}</p></div>
+            </section>
+          )}
+
+          {mode === "cvd" && (
+            <section className="rail-group">
+              <h2 className="rail-title">{t("cs.cvd.title")}</h2>
+              <ChipGroup
+                ariaLabel={t("cs.cvd.title")}
+                value={cvdType}
+                onChange={setCvdType}
+                options={CVD_TYPES.map((v) => ({ value: v, label: t(`cs.cvd.${v}`) }))}
+              />
+              <Button variant="primary" disabled={!c.ready} onClick={() => downloadCanvas(cvdAfterRef, "-" + cvdType)}>{t("cs.download")}</Button>
+              <div className="rail-help"><p>{t("cs.cvd.help")}</p></div>
+            </section>
+          )}
+
           {active && <AdSlot placement="colors-rail" onDownload={onOpenDownload} />}
         </aside>
 
@@ -338,6 +414,30 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                   </div>
                 </section>
               )}
+            </div>
+          )}
+
+          {c.ready && mode === "histogram" && (
+            <div className="cs-hist-wrap">
+              <canvas ref={histRef} className="cs-hist-canvas" />
+              <div className="cs-hist-legend">
+                <span><i style={{ background: "#ff5e63" }} />R</span>
+                <span><i style={{ background: "#63d68a" }} />G</span>
+                <span><i style={{ background: "#5a9bff" }} />B</span>
+              </div>
+            </div>
+          )}
+
+          {c.ready && mode === "cvd" && (
+            <div className={`cs-compare ${aspect >= 1 ? "cs-stacked" : "cs-row"}`}>
+              <div className="cs-pane">
+                <span className="cs-pane-tag">{t("cs.before")}</span>
+                <canvas ref={cvdBeforeRef} className="cs-canvas" />
+              </div>
+              <div className="cs-pane">
+                <span className="cs-pane-tag">{t(`cs.cvd.${cvdType}`)}</span>
+                <canvas ref={cvdAfterRef} className="cs-canvas" />
+              </div>
             </div>
           )}
         </main>
