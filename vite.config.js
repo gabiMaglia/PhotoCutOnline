@@ -45,6 +45,7 @@ const SEO_ROUTES = [
   "/legal/privacidad.html",
   "/legal/terminos.html",
   // F3 i18n — versiones en inglés (bajo /en/). El slug puede diferir del ES.
+  "/en/",
   "/en/tools/",
   "/en/tools/remove-background.html",
   "/en/tools/change-background.html",
@@ -60,6 +61,7 @@ const SEO_ROUTES = [
 // Pares de traducción (ES canónica ↔ EN). El build inyecta los <link
 // rel="alternate" hreflang> recíprocos en ambas páginas y el x-default → ES.
 const I18N_PAIRS = [
+  { es: "/", en: "/en/" },
   { es: "/herramientas/", en: "/en/tools/" },
   { es: "/herramientas/quitar-fondo.html", en: "/en/tools/remove-background.html" },
   { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html" },
