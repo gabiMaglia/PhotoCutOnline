@@ -69,7 +69,9 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const [beforePal, setBeforePal] = useState([]);
   const [afterPal, setAfterPal] = useState([]);
   const [aspect, setAspect] = useState(1.4); // ancho/alto de la imagen
-  const scheme = useMemo(() => (afterPal.length ? buildScheme(afterPal) : null), [afterPal]);
+  const [schemeSrc, setSchemeSrc] = useState("after"); // desde qué preview sale el esquema
+  const schemePal = schemeSrc === "before" ? beforePal : afterPal;
+  const scheme = useMemo(() => (schemePal.length ? buildScheme(schemePal) : null), [schemePal]);
 
   // Histograma y daltonismo (CVD).
   const histRef = useRef(null);
@@ -392,6 +394,18 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                       <Button size="small" onClick={() => copyText(schemeToCss(scheme), onToast, t("cs.scheme.copiedCss"))}>{t("cs.scheme.css")}</Button>
                       <Button size="small" onClick={() => copyText(schemeToTailwind(scheme), onToast, t("cs.scheme.copiedTw"))}>{t("cs.scheme.tailwind")}</Button>
                     </div>
+                  </div>
+                  <div className="cs-scheme-src">
+                    <span className="cs-scheme-src-label">{t("cs.scheme.from")}</span>
+                    <ChipGroup
+                      ariaLabel={t("cs.scheme.from")}
+                      value={schemeSrc}
+                      onChange={setSchemeSrc}
+                      options={[
+                        { value: "before", label: t("cs.before"), disabled: !beforePal.length },
+                        { value: "after", label: t("cs.after"), disabled: !afterPal.length },
+                      ]}
+                    />
                   </div>
                   <p className="cs-scheme-note">{t("cs.scheme.help")}</p>
                   <div className="cs-scheme-scales">

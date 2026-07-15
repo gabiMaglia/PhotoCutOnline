@@ -2762,3 +2762,16 @@ kbd {
   font-size: 12.5px;
   color: var(--ink-dim);
 }
+
+/* origen del esquema (Antes/Después) */
+.cs-scheme-src {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 10px;
+  flex-wrap: wrap;
+}
+.cs-scheme-src-label {
+  font-size: 12.5px;
+  color: var(--ink-dim);
+}
