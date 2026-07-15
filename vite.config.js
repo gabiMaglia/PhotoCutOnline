@@ -44,6 +44,22 @@ const SEO_ROUTES = [
   "/contacto.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
+  // F3 i18n — versiones en inglés (bajo /en/). El slug puede diferir del ES.
+  "/en/tools/",
+  "/en/tools/remove-background.html",
+  "/en/tools/change-background.html",
+  "/en/tools/color-palette-from-image.html",
+  "/en/tools/view-exif-metadata.html",
+];
+
+// Pares de traducción (ES canónica ↔ EN). El build inyecta los <link
+// rel="alternate" hreflang> recíprocos en ambas páginas y el x-default → ES.
+const I18N_PAIRS = [
+  { es: "/herramientas/", en: "/en/tools/" },
+  { es: "/herramientas/quitar-fondo.html", en: "/en/tools/remove-background.html" },
+  { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html" },
+  { es: "/herramientas/paleta-de-colores.html", en: "/en/tools/color-palette-from-image.html" },
+  { es: "/herramientas/metadatos-exif.html", en: "/en/tools/view-exif-metadata.html" },
 ];
 
 // Tauri expects a fixed port and serves from ../dist
@@ -168,6 +184,27 @@ function seoArtifacts(site, env = {}) {
           changed = true;
         }
         if (changed) fs.writeFileSync(file, html);
+      }
+
+      // hreflang recíproco entre cada par ES↔EN (x-default → ES). Inyecta en
+      // ambos archivos del par; guard anti-doble por si ya lo trae.
+      const fileFor = (route) =>
+        route.endsWith("/") ? path.join(dist, route, "index.html") : path.join(dist, route);
+      for (const pair of I18N_PAIRS) {
+        const esUrl = `${site}${pair.es}`;
+        const enUrl = `${site}${pair.en}`;
+        const links =
+          `<link rel="alternate" hreflang="es" href="${esUrl}" />\n` +
+          `    <link rel="alternate" hreflang="en" href="${enUrl}" />\n` +
+          `    <link rel="alternate" hreflang="x-default" href="${esUrl}" />`;
+        for (const route of [pair.es, pair.en]) {
+          const file = fileFor(route);
+          if (!fs.existsSync(file)) continue;
+          let html = fs.readFileSync(file, "utf8");
+          if (html.includes('hreflang="en"')) continue;
+          html = html.replace("</head>", `    ${links}\n  </head>`);
+          fs.writeFileSync(file, html);
+        }
       }
     },
   };
