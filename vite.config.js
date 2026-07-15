@@ -10,6 +10,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SEO_ROUTES = [
   "/",
   "/herramientas/",
+  "/herramientas/quitar-fondo.html",
+  "/herramientas/cambiar-fondo.html",
   "/herramientas/paleta-de-colores.html",
   "/herramientas/fondo-blanco.html",
   "/herramientas/fondo-negro.html",
