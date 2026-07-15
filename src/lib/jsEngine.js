@@ -579,6 +579,7 @@ export class CutoutSession {
    */
   async composite(opts) {
     if (!this.label) throw new Error("No hay recorte para exportar");
+    if (opts.type === "blur") return this.compositeBlur(opts);
     // encuadre de exportación (escala+rotación del resultado); identidad = no-op
     const art = applyResultTransform(this.renderArtFull(), opts.transform);
     if (opts.preset) return this.compositePreset(art, opts);
@@ -595,6 +596,29 @@ export class CutoutSession {
     }
     ctx.drawImage(art, 0, 0);
 
+    const format = opts.format || "png";
+    const mime =
+      format === "webp" ? "image/webp" : format === "jpeg" ? "image/jpeg" : "image/png";
+    return canvasToBlob(out, mime, opts.quality ?? 0.92);
+  }
+
+  /**
+   * Fondo desenfocado (portrait): la foto original borrosa detrás del sujeto
+   * nítido. Reusa la segmentación (el sujeto sale del recorte con su alfa) y el
+   * fondo es la imagen completa con blur. opts.blur = radio en px.
+   */
+  compositeBlur(opts) {
+    const art = this.renderArtFull(); // sujeto (con sombra/contorno) sobre transparente
+    const W = art.width, H = art.height;
+    const out = createCanvas(W, H);
+    const ctx = out.getContext("2d");
+    const r = Math.max(1, Math.round(opts.blur ?? 12));
+    // overscan (-r … +2r) para que el desvanecido del blur en los bordes caiga
+    // fuera del lienzo y no deje una orla clara.
+    ctx.filter = `blur(${r}px)`;
+    ctx.drawImage(this.fullCanvas, -r, -r, W + 2 * r, H + 2 * r);
+    ctx.filter = "none";
+    ctx.drawImage(art, 0, 0);
     const format = opts.format || "png";
     const mime =
       format === "webp" ? "image/webp" : format === "jpeg" ? "image/jpeg" : "image/png";

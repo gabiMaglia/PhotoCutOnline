@@ -32,6 +32,9 @@ export default function ExportPanel({
   resultRotation,
   setResultRotation,
   rotateBy,
+  blurAmount,
+  setBlurAmount,
+  onDownloadBlur,
   onChooseBgImage,
   onDownload,
   onCopy,
@@ -162,6 +165,26 @@ export default function ExportPanel({
         <Button disabled={!hasCut || busy} onClick={onCopy}>
           {t("export.clipboard")}
         </Button>
+      )}
+
+      {/* Fondo desenfocado (portrait): reusa la segmentación, deja el sujeto
+          nítido y desenfoca la foto original detrás. Solo motor web. */}
+      {backend.features.finish && onDownloadBlur && (
+        <>
+          <Slider
+            id="blur-amount"
+            label={t("export.blurAmount", { n: blurAmount })}
+            min={4}
+            max={48}
+            value={blurAmount}
+            onChange={setBlurAmount}
+            disabled={!hasCut}
+            off={!hasCut}
+          />
+          <Button disabled={!hasCut || busy} onClick={onDownloadBlur}>
+            {t("export.blurDownload")}
+          </Button>
+        </>
       )}
 
       <Button disabled={!hasCut || busy} onClick={onGoIcons}>

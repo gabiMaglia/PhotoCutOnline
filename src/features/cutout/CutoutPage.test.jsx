@@ -47,7 +47,8 @@ describe("CutoutPage (integración)", () => {
 
   it("deshabilita la descarga mientras no hay recorte", () => {
     renderPage();
-    const download = screen.getByText(/Descargar|Download|Baixar/).closest("button");
+    // el botón principal de exportación (no el de "fondo desenfocado")
+    const download = document.querySelector("button.export-download");
     expect(download).toBeDisabled();
   });
 

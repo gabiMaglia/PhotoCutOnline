@@ -117,6 +117,9 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
               exporter.rotateBy(d);
               preview.setOpen(true);
             }}
+            blurAmount={exporter.blurAmount}
+            setBlurAmount={exporter.setBlurAmount}
+            onDownloadBlur={exporter.downloadBlur}
             onChooseBgImage={exporter.chooseBackgroundImage}
             onDownload={exporter.handleDownload}
             onCopy={exporter.copyToClipboard}

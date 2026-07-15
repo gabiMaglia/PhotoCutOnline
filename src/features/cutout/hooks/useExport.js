@@ -20,6 +20,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   // encuadre del resultado para exportar (no toca la edición): escala + rotación
   const [resultScale, setResultScale] = useState(100); // %
   const [resultRotation, setResultRotation] = useState(0); // grados, -180..180
+  const [blurAmount, setBlurAmount] = useState(16); // radio del fondo desenfocado
 
   const rotateBy = useCallback(
     (deg) => setResultRotation((r) => (((r + deg + 180) % 360) + 360) % 360 - 180),
@@ -48,6 +49,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         if (kind === "transparent") url = await backend.exportTransparent(opts);
         else if (kind === "solid") url = await backend.exportSolid(arg, opts);
         else if (kind === "image") url = await backend.exportImageBg(arg, opts);
+        else if (kind === "blur") url = await backend.exportBlurBg(arg, opts);
         const ext = effFormat === "jpeg" ? "jpg" : effFormat;
         const name = `photocut-${kind}.${ext}`;
         if (backend.isDesktop) {
@@ -77,6 +79,8 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     }
     return exportAs("transparent");
   }, [exportMode, bgColor, bgImage, bgOpacity, imageSize, exportAs]);
+
+  const downloadBlur = useCallback(() => exportAs("blur", blurAmount), [exportAs, blurAmount]);
 
   const copyToClipboard = useCallback(async () => {
     setBusy(true);
@@ -124,6 +128,9 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     resultRotation,
     setResultRotation,
     rotateBy,
+    blurAmount,
+    setBlurAmount,
+    downloadBlur,
     exportAs,
     handleDownload,
     copyToClipboard,

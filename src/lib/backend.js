@@ -353,4 +353,10 @@ export const backend = {
       await call("composite", { opts: { type: "image", bgDataUrl, ...opts } })
     );
   },
+
+  async exportBlurBg(blur, opts = {}) {
+    return exportUrlFrom(
+      await call("composite", { opts: { type: "blur", blur, ...opts } })
+    );
+  },
 };
