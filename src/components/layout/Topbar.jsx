@@ -33,6 +33,7 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
           { id: "icons", label: "Icon Studio" },
           { id: "batch", label: t("tab.batch") },
           { id: "colors", label: t("tab.colors") },
+          { id: "meta", label: t("tab.meta") },
           ...(STICKERS_ENABLED ? [{ id: "stickers", label: t("tab.stickers") }] : []),
         ].map((it) => (
           <button

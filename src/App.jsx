@@ -10,6 +10,7 @@ const IconStudioPage = lazy(() => import("./features/iconStudio/IconStudioPage.j
 const BatchPage = lazy(() => import("./features/batch/BatchPage.jsx"));
 const StickerStudioPage = lazy(() => import("./features/stickerStudio/StickerStudioPage.jsx"));
 const ColorToolsPage = lazy(() => import("./features/colorTools/ColorToolsPage.jsx"));
+const MetadataPage = lazy(() => import("./features/metadata/MetadataPage.jsx"));
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
 import ConsentBanner from "./components/feedback/ConsentBanner.jsx";
@@ -26,7 +27,7 @@ import { STICKERS_ENABLED } from "./config.js";
 function initialTab() {
   try {
     const p = new URLSearchParams(window.location.search).get("tab");
-    return ["cut", "icons", "batch", "colors"].includes(p) ? p : "cut";
+    return ["cut", "icons", "batch", "colors", "meta"].includes(p) ? p : "cut";
   } catch {
     return "cut";
   }
@@ -58,11 +59,13 @@ function AppShell({ tab, setTab, toasts, toast }) {
   const [batchSeen, setBatchSeen] = useState(false);
   const [stickersSeen, setStickersSeen] = useState(false);
   const [colorsSeen, setColorsSeen] = useState(tab === "colors");
+  const [metaSeen, setMetaSeen] = useState(tab === "meta");
   useEffect(() => {
     if (tab === "icons") setIconsSeen(true);
     if (tab === "batch") setBatchSeen(true);
     if (tab === "stickers") setStickersSeen(true);
     if (tab === "colors") setColorsSeen(true);
+    if (tab === "meta") setMetaSeen(true);
   }, [tab]);
 
   const openDownload = () => setDlOpen(true);
@@ -111,6 +114,12 @@ function AppShell({ tab, setTab, toasts, toast }) {
       {colorsSeen && (
         <Suspense fallback={null}>
           <ColorToolsPage active={tab === "colors"} onToast={toast} onOpenDownload={openDownload} />
+        </Suspense>
+      )}
+
+      {metaSeen && (
+        <Suspense fallback={null}>
+          <MetadataPage active={tab === "meta"} onToast={toast} onOpenDownload={openDownload} />
         </Suspense>
       )}
 

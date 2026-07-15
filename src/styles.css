@@ -2506,3 +2506,66 @@ kbd {
   background: var(--coral-soft);
   border-color: color-mix(in srgb, var(--coral) 35%, transparent);
 }
+
+/* ── Visor de metadatos / EXIF ───────────────────────────────────────────── */
+.meta-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 640px;
+}
+.meta-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.meta-card h2 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--acid);
+  font-family: var(--display);
+}
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13.5px;
+}
+.meta-row:first-of-type {
+  border-top: none;
+}
+.meta-key {
+  color: var(--ink-dim);
+  flex-shrink: 0;
+}
+.meta-val {
+  color: var(--ink);
+  font-family: var(--mono);
+  text-align: right;
+  word-break: break-word;
+}
+.meta-empty-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-dim);
+}
+.meta-gps {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.meta-gps-warn {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  color: var(--coffee-bright);
+}
+.meta-map-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--acid);
+}
