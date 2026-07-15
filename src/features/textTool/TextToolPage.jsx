@@ -35,7 +35,6 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
   const [font, setFont] = useState("sans");
   const [bold, setBold] = useState(true);
   const [italic, setItalic] = useState(false);
-  const [align, setAlign] = useState("center");
   const [effect, setEffect] = useState("shadow"); // none | outline | shadow
   const [format, setFormat] = useState("png");
   const [customFont, setCustomFont] = useState(null); // {family, label} de una fuente subida
@@ -53,7 +52,9 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
     const px = size;
     const fam = font === "custom" && customFont ? `'${customFont.family}', sans-serif` : FONTS[font];
     ctx.font = `${italic ? "italic " : ""}${bold ? "700" : "400"} ${px}px ${fam}`;
-    ctx.textAlign = align;
+    // El texto se posiciona arrastrando un punto: se ancla centrado en él (no hay
+    // marco de referencia para justificar a izquierda/derecha).
+    ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const x = pos.x * W;
     const lines = text.split("\n");
@@ -82,7 +83,7 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
       ctx.fillText(line, x, y);
     });
     ctx.shadowColor = "transparent";
-  }, [text, pos, size, color, font, bold, italic, align, effect, customFont]);
+  }, [text, pos, size, color, font, bold, italic, effect, customFont]);
 
   useEffect(() => {
     if (ready) draw();
@@ -188,7 +189,6 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
               <Checkbox checked={bold} onChange={setBold}>{t("txt.bold")}</Checkbox>
               <Checkbox checked={italic} onChange={setItalic}>{t("txt.italic")}</Checkbox>
             </div>
-            <ChipGroup ariaLabel={t("txt.align")} value={align} onChange={setAlign} options={[{ value: "left", label: "⇤" }, { value: "center", label: "⇔" }, { value: "right", label: "⇥" }]} />
             <ChipGroup ariaLabel={t("txt.effect")} value={effect} onChange={setEffect} options={[{ value: "none", label: t("txt.effect.none") }, { value: "shadow", label: t("txt.effect.shadow") }, { value: "outline", label: t("txt.effect.outline") }]} />
           </section>
 
