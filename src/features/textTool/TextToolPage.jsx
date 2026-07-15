@@ -177,19 +177,19 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
               <p>{t("txt.emptyBody")}</p>
             </div>
           )}
-          {ready && (
-            <div className="txt-workspace">
-              <canvas
-                ref={canvasRef}
-                className="txt-canvas"
-                onPointerDown={onDown}
-                onPointerMove={onMove}
-                onPointerUp={onUp}
-                onPointerLeave={onUp}
-              />
-              <p className="txt-hint">{t("txt.dragHint")}</p>
-            </div>
-          )}
+          {/* El canvas se mantiene SIEMPRE montado (oculto hasta que hay imagen):
+              loadImage necesita canvasRef.current para dibujar y marcar ready. */}
+          <div className="txt-workspace" style={ready ? undefined : { display: "none" }}>
+            <canvas
+              ref={canvasRef}
+              className="txt-canvas"
+              onPointerDown={onDown}
+              onPointerMove={onMove}
+              onPointerUp={onUp}
+              onPointerLeave={onUp}
+            />
+            <p className="txt-hint">{t("txt.dragHint")}</p>
+          </div>
         </main>
       </div>
     </div>
