@@ -9,6 +9,7 @@ import CutoutPage from "./features/cutout/CutoutPage.jsx";
 const IconStudioPage = lazy(() => import("./features/iconStudio/IconStudioPage.jsx"));
 const BatchPage = lazy(() => import("./features/batch/BatchPage.jsx"));
 const StickerStudioPage = lazy(() => import("./features/stickerStudio/StickerStudioPage.jsx"));
+const ColorToolsPage = lazy(() => import("./features/colorTools/ColorToolsPage.jsx"));
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
 import ConsentBanner from "./components/feedback/ConsentBanner.jsx";
@@ -20,9 +21,20 @@ import { STICKERS_ENABLED } from "./config.js";
 
 // Shell de la app: idioma, pestaña activa, notificaciones y modales. Toda la
 // funcionalidad de recorte vive en CutoutProvider; cada página tiene su hook.
+// Pestaña inicial desde la URL (?tab=colors) para poder enlazar directo a una
+// herramienta desde las landings; si no es válida, cae en "cut".
+function initialTab() {
+  try {
+    const p = new URLSearchParams(window.location.search).get("tab");
+    return ["cut", "icons", "batch", "colors"].includes(p) ? p : "cut";
+  } catch {
+    return "cut";
+  }
+}
+
 export default function App() {
   useLang(); // re-render al cambiar idioma
-  const [tab, setTab] = useState("cut"); // cut | icons
+  const [tab, setTab] = useState(initialTab); // cut | icons | batch | colors
   const { toasts, toast } = useToasts();
 
   return (
@@ -45,10 +57,12 @@ function AppShell({ tab, setTab, toasts, toast }) {
   const [iconsSeen, setIconsSeen] = useState(false);
   const [batchSeen, setBatchSeen] = useState(false);
   const [stickersSeen, setStickersSeen] = useState(false);
+  const [colorsSeen, setColorsSeen] = useState(tab === "colors");
   useEffect(() => {
     if (tab === "icons") setIconsSeen(true);
     if (tab === "batch") setBatchSeen(true);
     if (tab === "stickers") setStickersSeen(true);
+    if (tab === "colors") setColorsSeen(true);
   }, [tab]);
 
   const openDownload = () => setDlOpen(true);
@@ -91,6 +105,12 @@ function AppShell({ tab, setTab, toasts, toast }) {
       {STICKERS_ENABLED && stickersSeen && (
         <Suspense fallback={null}>
           <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
+        </Suspense>
+      )}
+
+      {colorsSeen && (
+        <Suspense fallback={null}>
+          <ColorToolsPage active={tab === "colors"} onToast={toast} onOpenDownload={openDownload} />
         </Suspense>
       )}
 
