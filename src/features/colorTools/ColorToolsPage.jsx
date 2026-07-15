@@ -129,44 +129,41 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
             </div>
           )}
 
-          {c.ready && (
-            <div className="color-workspace">
-              <div className="color-canvas-wrap">
-                <canvas
-                  ref={c.canvasRef}
-                  className="color-canvas"
-                  onMouseMove={onMove}
-                  onMouseLeave={() => setHover(null)}
-                  onClick={onPick}
-                />
-                {hover && (
-                  <div
-                    className="color-loupe"
-                    style={{ left: hover.x, top: hover.y }}
-                    aria-hidden
-                  >
-                    <span className="color-loupe-chip" style={{ background: hover.hex }} />
-                    <span className="color-loupe-hex">{hover.hex}</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="color-swatches" role="list" aria-label={t("color.palette")}>
-                {c.palette.map((sw) => (
-                  <button
-                    key={sw.hex}
-                    role="listitem"
-                    className="color-swatch"
-                    style={{ background: sw.hex, color: contrastText(sw.r, sw.g, sw.b) }}
-                    onClick={() => copyText(sw.hex, onToast, `${sw.hex} copiado`)}
-                    title={t("color.copyOne")}
-                  >
-                    {sw.hex}
-                  </button>
-                ))}
-              </div>
+          {/* El canvas se mantiene SIEMPRE montado (solo oculto hasta que hay
+              imagen): drawImage necesita canvasRef.current disponible para poder
+              dibujar y recién ahí marcar ready. */}
+          <div className="color-workspace" style={c.ready ? undefined : { display: "none" }}>
+            <div className="color-canvas-wrap">
+              <canvas
+                ref={c.canvasRef}
+                className="color-canvas"
+                onMouseMove={onMove}
+                onMouseLeave={() => setHover(null)}
+                onClick={onPick}
+              />
+              {hover && (
+                <div className="color-loupe" style={{ left: hover.x, top: hover.y }} aria-hidden>
+                  <span className="color-loupe-chip" style={{ background: hover.hex }} />
+                  <span className="color-loupe-hex">{hover.hex}</span>
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="color-swatches" role="list" aria-label={t("color.palette")}>
+              {c.palette.map((sw) => (
+                <button
+                  key={sw.hex}
+                  role="listitem"
+                  className="color-swatch"
+                  style={{ background: sw.hex, color: contrastText(sw.r, sw.g, sw.b) }}
+                  onClick={() => copyText(sw.hex, onToast, `${sw.hex} copiado`)}
+                  title={t("color.copyOne")}
+                >
+                  {sw.hex}
+                </button>
+              ))}
+            </div>
+          </div>
         </main>
       </div>
     </div>
