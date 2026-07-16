@@ -89,6 +89,54 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
                 />
               )}
 
+              <div className="conv-dims">
+                <label className="conv-dim">
+                  <span>{t("conv.width")}</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={r.width ?? ""}
+                    onChange={(e) => r.changeWidth(Number(e.target.value) || null)}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className={`conv-lock ${r.lock ? "is-on" : ""}`}
+                  onClick={() => r.setLock(!r.lock)}
+                  aria-pressed={r.lock}
+                  title={t("conv.lock")}
+                >
+                  {r.lock ? "🔒" : "🔓"}
+                </button>
+                <label className="conv-dim">
+                  <span>{t("conv.height")}</span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={r.height ?? ""}
+                    onChange={(e) => r.changeHeight(Number(e.target.value) || null)}
+                  />
+                </label>
+              </div>
+              <div className="conv-pcts">
+                {[25, 50, 75].map((p) => (
+                  <button key={p} type="button" className="conv-pct" onClick={() => r.setPercent(p)}>
+                    {p}%
+                  </button>
+                ))}
+                <button type="button" className="conv-pct" onClick={r.resetSize}>
+                  {t("conv.original")}
+                </button>
+              </div>
+
+              {/* Interpolar no agrega detalle: agrandar sólo agranda los píxeles.
+                  Decirlo, en vez de dejar creer que hay un upscaler. */}
+              {r.upscaling && (
+                <div className="rail-help conv-warn">
+                  <p>{t("conv.upscaling")}</p>
+                </div>
+              )}
+
               <div className="conv-size">
                 <span className="conv-size-from">{fmtBytes(info.bytes)}</span>
                 <span className="conv-size-arrow" aria-hidden>→</span>

@@ -1,4 +1,4 @@
-import { basicInfo, orientationLabel, parseExif, reencodeToBlob, stripToBlob, OUTPUT_FORMATS } from "./metadata.js";
+import { basicInfo, orientationLabel, parseExif, reencodeToBlob, stripToBlob, fitSize, OUTPUT_FORMATS } from "./metadata.js";
 
 describe("basicInfo", () => {
   it("formatea peso en KB o MB según el tamaño", () => {
@@ -129,5 +129,60 @@ describe("reencodeToBlob / OUTPUT_FORMATS", () => {
     expect(OUTPUT_FORMATS.png).toMatchObject({ lossy: false, alpha: true });
     expect(OUTPUT_FORMATS.jpeg).toMatchObject({ lossy: true, alpha: false });
     expect(OUTPUT_FORMATS.webp).toMatchObject({ lossy: true, alpha: true });
+  });
+});
+
+// ── T-015: redimensionar ─────────────────────────────────────────────────────
+describe("fitSize (candado de proporción)", () => {
+  it("con candado: dar el ancho deriva el alto y viceversa", () => {
+    expect(fitSize(1000, 500, { width: 400, lock: true })).toEqual({ width: 400, height: 200 });
+    expect(fitSize(1000, 500, { height: 200, lock: true })).toEqual({ width: 400, height: 200 });
+  });
+
+  it("con candado y ambos lados: manda el ancho (no deforma)", () => {
+    expect(fitSize(1000, 500, { width: 400, height: 999, lock: true })).toEqual({ width: 400, height: 200 });
+  });
+
+  it("sin candado: respeta ambos lados (deformar es válido si se pide)", () => {
+    expect(fitSize(1000, 500, { width: 400, height: 999, lock: false })).toEqual({ width: 400, height: 999 });
+  });
+
+  it("nunca devuelve 0 ni fracciones (un canvas de 0 no existe)", () => {
+    const r = fitSize(1000, 500, { width: 1, lock: true });
+    expect(r.height).toBeGreaterThanOrEqual(1);
+    expect(Number.isInteger(r.width) && Number.isInteger(r.height)).toBe(true);
+  });
+
+  it("proporciones no enteras: redondea sin romper", () => {
+    expect(fitSize(1920, 1080, { width: 800, lock: true })).toEqual({ width: 800, height: 450 });
+    expect(fitSize(333, 100, { width: 100, lock: true }).height).toBe(30);
+  });
+});
+
+describe("reencodeToBlob: redimensionado", () => {
+  let canvasSpy;
+  const img = { naturalWidth: 1000, naturalHeight: 500 };
+  const mk = () => {
+    const c = { width: 0, height: 0, toBlob: (cb) => cb(new Blob([])), getContext: () => ({ fillRect() {}, drawImage() {}, set fillStyle(v) {}, set imageSmoothingEnabled(v) {}, set imageSmoothingQuality(v) {} }) };
+    canvasSpy = c;
+    return c;
+  };
+  beforeEach(() => jest.spyOn(document, "createElement").mockImplementation((t) => (t === "canvas" ? mk() : {})));
+  afterEach(() => jest.restoreAllMocks());
+
+  it("sin width/height usa el tamaño original", async () => {
+    await reencodeToBlob(img, { format: "png" });
+    expect([canvasSpy.width, canvasSpy.height]).toEqual([1000, 500]);
+  });
+
+  it("aplica el tamaño pedido", async () => {
+    await reencodeToBlob(img, { format: "png", width: 400, height: 200 });
+    expect([canvasSpy.width, canvasSpy.height]).toEqual([400, 200]);
+  });
+
+  it("nunca crea un canvas de 0 (rompería toBlob)", async () => {
+    await reencodeToBlob(img, { format: "png", width: 0.2, height: 0.2 });
+    expect(canvasSpy.width).toBeGreaterThanOrEqual(1);
+    expect(canvasSpy.height).toBeGreaterThanOrEqual(1);
   });
 });

@@ -181,30 +181,57 @@ export function hasTransparency(img) {
  * descartan los metadatos (EXIF/GPS) — es intencional, es lo que hace
  * "descargar sin metadatos".
  *
- * opts: { format:'png'|'jpeg'|'webp', quality:0..1, background:'#rrggbb' }
+ * opts: { format:'png'|'jpeg'|'webp', quality:0..1, background:'#rrggbb',
+ *         width, height }
  *
  * `background` NO es cosmético: JPG no tiene canal alfa y, sin rellenar, el
  * canvas compone lo transparente sobre NEGRO. Un logo PNG transparente
  * convertido a JPG salía con fondo negro. Se rellena de blanco por defecto,
  * que es lo que espera cualquiera. En formatos con alfa (png/webp) no se
  * rellena nada: se conserva la transparencia.
+ *
+ * width/height (T-015): si se omiten, se usa el tamaño original. Redimensionar
+ * y convertir en la misma pasada evita re-codificar dos veces (perder calidad
+ * dos veces en los formatos con pérdida).
  */
 export function reencodeToBlob(img, opts = {}) {
-  const { format = "jpeg", quality = 0.92, background = "#ffffff" } = opts;
+  const { format = "jpeg", quality = 0.92, background = "#ffffff", width, height } = opts;
   const fmt = OUTPUT_FORMATS[format] || OUTPUT_FORMATS.jpeg;
+  const srcW = img.naturalWidth || img.width;
+  const srcH = img.naturalHeight || img.height;
   const canvas = document.createElement("canvas");
-  canvas.width = img.naturalWidth || img.width;
-  canvas.height = img.naturalHeight || img.height;
+  canvas.width = Math.max(1, Math.round(width || srcW));
+  canvas.height = Math.max(1, Math.round(height || srcH));
   const ctx = canvas.getContext("2d");
   if (!fmt.alpha) {
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
-  ctx.drawImage(img, 0, 0);
+  // suavizado alto: al reducir mucho sin él aparece aliasing
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   return new Promise((resolve) =>
     // en PNG el 3er argumento se ignora; se pasa igual sin efecto
     canvas.toBlob(resolve, fmt.mime, fmt.lossy ? quality : undefined)
   );
+}
+
+/**
+ * Calcula el tamaño de salida manteniendo la proporción del original.
+ * `lock` decide qué lado manda; devuelve enteros ≥1 (un canvas de 0 no existe).
+ */
+export function fitSize(srcW, srcH, { width, height, lock = true }) {
+  if (!srcW || !srcH) return { width: srcW || 1, height: srcH || 1 };
+  const ratio = srcW / srcH;
+  let w = width;
+  let h = height;
+  if (lock) {
+    if (width && !height) h = Math.round(width / ratio);
+    else if (height && !width) w = Math.round(height * ratio);
+    else if (width && height) h = Math.round(width / ratio); // manda el ancho
+  }
+  return { width: Math.max(1, Math.round(w || srcW)), height: Math.max(1, Math.round(h || srcH)) };
 }
 
 /** Copia sin metadatos, en el formato original si se puede. */
