@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cómo elegir una paleta de colores (para una web, marca o diseño) — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Cómo armar una paleta de colores que funcione: extraerla de una imagen, teoría de color básica, cuántos colores usar y cómo pasarla a variables CSS o Tailwind. Guía práctica y gratuita."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/guias/como-elegir-una-paleta-de-colores.html" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/guias/como-elegir-una-paleta-de-colores.html" />
+    <meta property="og:title" content="Cómo elegir una paleta de colores (para una web, marca o diseño) — PhotoCut Studio" />
+    <meta property="og:description" content="Cómo armar una paleta de colores que funcione: extraerla de una imagen, teoría básica, cuántos colores usar y cómo pasarla a CSS o Tailwind." />
+    <meta property="og:image" content="https://www.photocutapp.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cómo elegir una paleta de colores (para una web, marca o diseño) — PhotoCut Studio" />
+    <meta name="twitter:description" content="Cómo armar una paleta de colores que funcione, extraerla de una imagen y pasarla a CSS o Tailwind." />
+    <meta name="twitter:image" content="https://www.photocutapp.com/og.png" />
+
+    <link rel="stylesheet" href="/estaticas.css" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Cómo elegir una paleta de colores (para una web, marca o diseño)",
+      "description": "Cómo armar una paleta de colores que funcione: extraerla de una imagen, teoría de color básica, cuántos colores usar y cómo pasarla a variables CSS o Tailwind.",
+      "inLanguage": "es",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/guias/como-elegir-una-paleta-de-colores.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Cómo elegir una paleta de colores",
+      "step": [
+        { "@type": "HowToStep", "position": 1, "name": "Partir de una referencia", "text": "Elegí una foto, ilustración o marca cuya combinación de colores te guste como punto de partida." },
+        { "@type": "HowToStep", "position": 2, "name": "Extraer los colores dominantes", "text": "Usá un extractor de paleta para obtener los colores principales de esa imagen con su código HEX." },
+        { "@type": "HowToStep", "position": 3, "name": "Definir los roles", "text": "Asigná un color primario, uno o dos secundarios, un neutro para fondos y textos, y colores de estado (éxito, error)." },
+        { "@type": "HowToStep", "position": 4, "name": "Generar las variantes", "text": "Creá una escala de cada color (claro a oscuro) para tener versiones para fondos, bordes, hover y texto." },
+        { "@type": "HowToStep", "position": 5, "name": "Exportar a tu proyecto", "text": "Pasá la paleta a variables CSS o a la config de Tailwind para usarla de forma consistente." }
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Cuántos colores debería tener una paleta?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Como regla práctica: un color primario, uno o dos secundarios/acento, un neutro (grises para fondos y texto) y unos colores de estado (éxito, advertencia, error). Menos es más: demasiados colores hacen que un diseño se vea inconsistente. Con 3 a 5 colores base y sus variantes alcanza para casi todo." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo saco una paleta de una imagen?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Con un extractor de paleta: subís la imagen y la herramienta detecta los colores dominantes y te da su código HEX. Es la forma más rápida de derivar una paleta a partir de una foto, una obra o una marca que te inspira." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Qué es una escala de color (50 a 900)?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Es una serie de variantes de un mismo color, del más claro (50) al más oscuro (900), conservando el tono. Sirve para tener versiones para fondos suaves, bordes, estados hover y texto, todo derivado de un único color base. Es el estándar en sistemas de diseño como Material o Tailwind." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿La paleta funciona para personas con daltonismo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Conviene revisarlo: si tu diseño transmite información solo con el color (por ejemplo rojo/verde), parte de tus usuarios no la va a distinguir. Simulá cómo se ve con daltonismo y asegurate de que también haya contraste suficiente entre texto y fondo." }
+        }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Cómo elegir una paleta de colores (para una web, marca o diseño)</h1>
+      <p class="meta">Actualizado: julio de 2026 · Lectura: 7 minutos</p>
+
+      <p>
+        Elegir colores «a ojo» es la forma más rápida de que un diseño se vea
+        amateur. Una buena paleta no es una lista de colores lindos: es un
+        <strong>sistema</strong> —unos pocos colores con roles claros y sus
+        variantes— que hace que todo lo que armes se vea coherente. Esta guía te
+        muestra cómo definir una paleta que funcione, cómo derivarla de una
+        imagen que te guste y cómo dejarla lista para tu proyecto.
+      </p>
+
+      <h2>El error más común: demasiados colores sin rol</h2>
+      <p>
+        Mucha gente junta 8 o 10 colores que le gustan y los usa sin criterio.
+        El resultado es ruido. Una paleta profesional se organiza por
+        <strong>roles</strong>, no por gustos:
+      </p>
+      <ul>
+        <li><strong>Primario:</strong> el color de tu marca, el que más se repite (botones, enlaces, acentos).</li>
+        <li><strong>Secundario / acento:</strong> uno o dos colores de apoyo para destacar cosas puntuales.</li>
+        <li><strong>Neutro:</strong> una escala de grises para fondos, bordes y texto. Es el que más se usa, aunque no lo parezca.</li>
+        <li><strong>Estado:</strong> éxito (verde), advertencia (ámbar), error (rojo), info (azul). Convenciones que el usuario ya entiende.</li>
+      </ul>
+
+      <h2>De dónde sacar los colores</h2>
+      <p>
+        No hace falta inventar de cero. Las mejores paletas suelen derivar de una
+        <strong>referencia</strong>: una foto, una obra de arte, un producto, un
+        paisaje. Si ya tenés una imagen cuya combinación te encanta, extraé sus
+        colores dominantes con un <a href="/herramientas/paleta-de-colores.html">extractor de paleta</a>:
+        subís la imagen y obtenés los HEX exactos. A partir de ahí, asignás roles.
+      </p>
+
+      <h2>Paso a paso</h2>
+      <ol>
+        <li>Elegí una <strong>referencia</strong> cuya combinación de colores te guste.</li>
+        <li>Extraé sus <strong>colores dominantes</strong> con su HEX.</li>
+        <li>Asigná <strong>roles</strong>: primario, secundario, neutro y estados.</li>
+        <li>Generá una <strong>escala</strong> de cada color (claro a oscuro).</li>
+        <li>Exportá a <strong>variables CSS</strong> o <strong>Tailwind</strong> para usarla de forma consistente.</li>
+      </ol>
+
+      <h2>Las escalas 50–900: el truco de los sistemas de diseño</h2>
+      <p>
+        Un color no alcanza con una sola versión. Necesitás el primario claro
+        para un fondo suave, medio para un botón, oscuro para el texto sobre
+        claro. Por eso los sistemas de diseño (Material, Tailwind) usan
+        <strong>escalas</strong>: del <code>50</code> (casi blanco) al
+        <code>900</code> (casi negro), conservando el tono. Con una escala por
+        rol tenés todas las variantes que vas a necesitar sin improvisar. La
+        herramienta de Color Studio puede generar estas escalas —y los tokens
+        semánticos— y copiarlas como CSS o Tailwind listas para pegar.
+      </p>
+
+      <h2>Reglas rápidas de armonía</h2>
+      <ul>
+        <li><strong>60-30-10:</strong> ~60% de un color dominante (casi siempre el neutro), 30% del secundario y 10% del acento. Evita que todo compita.</li>
+        <li><strong>Contraste para el texto:</strong> el texto tiene que leerse. Apuntá a un contraste alto entre texto y fondo (revisalo con un verificador de contraste).</li>
+        <li><strong>Un solo acento fuerte:</strong> si todo grita, nada resalta. Reservá el color más saturado para lo importante.</li>
+      </ul>
+
+      <h2>No te olvides de la accesibilidad</h2>
+      <p>
+        Una paleta linda que no se entiende no sirve. Dos chequeos rápidos:
+        <strong>contraste</strong> suficiente entre texto y fondo, y que la
+        información no dependa <strong>solo del color</strong> (cerca del 8% de
+        los hombres tiene daltonismo). Podés
+        <a href="/herramientas/simulador-daltonismo.html">simular cómo se ve tu diseño con daltonismo</a>
+        para asegurarte.
+      </p>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿Cuántos colores debería tener una paleta?</h3>
+      <p>Un primario, uno o dos secundarios/acento, un neutro (grises) y colores de estado. Con 3 a 5 colores base y sus variantes alcanza para casi todo.</p>
+      <h3>¿Cómo saco una paleta de una imagen?</h3>
+      <p>Con un extractor de paleta: subís la imagen y obtenés los colores dominantes con su HEX.</p>
+      <h3>¿Qué es una escala de color (50 a 900)?</h3>
+      <p>Variantes de un mismo color, del más claro (50) al más oscuro (900), conservando el tono. El estándar en sistemas de diseño.</p>
+      <h3>¿La paleta funciona para personas con daltonismo?</h3>
+      <p>Conviene revisarlo: si la información depende solo del color, parte de tus usuarios no la distingue. Simulá el daltonismo y cuidá el contraste.</p>
+
+      <a class="cta" href="/herramientas/paleta-de-colores.html">Extraer una paleta de una imagen →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Guías y herramientas relacionadas</h2>
+        <a class="card" href="/herramientas/paleta-de-colores.html">
+          <h2>Extraer la paleta de colores y ver el HEX</h2>
+          <p>Sacá los colores dominantes de una imagen, generá escalas 50–900 y copiá CSS o Tailwind.</p>
+        </a>
+        <a class="card" href="/guias/generar-modo-oscuro-desde-una-captura.html">
+          <h2>Generar el modo oscuro de una captura</h2>
+          <p>Convertí una captura a dark mode o recoloreá con un esquema de referencia.</p>
+        </a>
+        <a class="card" href="/herramientas/simulador-daltonismo.html">
+          <h2>Simulador de daltonismo</h2>
+          <p>Revisá si tu diseño se entiende sin depender del color.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/guias/">← Más guías</a> ·
+        <a href="/herramientas/">Herramientas</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos</a>
+      </footer>
+    </div>
+  </body>
+</html>

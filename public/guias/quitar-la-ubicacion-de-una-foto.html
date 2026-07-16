@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cómo quitar la ubicación (GPS) y los metadatos de una foto — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Tus fotos guardan la ubicación GPS y otros datos ocultos. Aprendé qué es el EXIF, por qué importa tu privacidad y cómo quitar la ubicación y los metadatos antes de compartir. Gratis y sin subir la foto."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/guias/quitar-la-ubicacion-de-una-foto.html" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/guias/quitar-la-ubicacion-de-una-foto.html" />
+    <meta property="og:title" content="Cómo quitar la ubicación (GPS) y los metadatos de una foto — PhotoCut Studio" />
+    <meta property="og:description" content="Tus fotos guardan la ubicación GPS y datos ocultos. Cómo quitar la ubicación y los metadatos antes de compartir. Gratis y sin subir la foto." />
+    <meta property="og:image" content="https://www.photocutapp.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cómo quitar la ubicación (GPS) y los metadatos de una foto — PhotoCut Studio" />
+    <meta name="twitter:description" content="Cómo quitar la ubicación GPS y los metadatos de una foto antes de compartir. Gratis y sin subir la foto." />
+    <meta name="twitter:image" content="https://www.photocutapp.com/og.png" />
+
+    <link rel="stylesheet" href="/estaticas.css" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Cómo quitar la ubicación (GPS) y los metadatos de una foto",
+      "description": "Qué es el EXIF, por qué importa tu privacidad y cómo quitar la ubicación y los metadatos de una foto antes de compartirla.",
+      "inLanguage": "es",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/guias/quitar-la-ubicacion-de-una-foto.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Cómo quitar la ubicación y los metadatos de una foto",
+      "step": [
+        { "@type": "HowToStep", "position": 1, "name": "Abrir la foto", "text": "Abrí la foto en el visor de metadatos de PhotoCut Studio." },
+        { "@type": "HowToStep", "position": 2, "name": "Revisar qué lleva", "text": "Mirá si incluye ubicación GPS, modelo de cámara y fecha; te lo muestra y te avisa si hay coordenadas." },
+        { "@type": "HowToStep", "position": 3, "name": "Descargar sin metadatos", "text": "Tocá 'Descargar sin metadatos' para obtener una copia limpia, sin EXIF ni ubicación." },
+        { "@type": "HowToStep", "position": 4, "name": "Compartir la copia", "text": "Compartí esa copia, no la original, para no exponer tus datos." }
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Todas las fotos guardan la ubicación?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Muchas sí. Los celulares suelen guardar las coordenadas GPS en cada foto por defecto, salvo que hayas desactivado el geoetiquetado en la cámara. También guardan modelo del dispositivo, fecha y ajustes. Podés ver exactamente qué lleva una foto abriéndola en un visor de metadatos." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Las redes sociales borran la ubicación?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Las grandes redes suelen quitar los metadatos al publicar, pero no siempre y no todas. Y si mandás la foto original por email, mensajería sin compresión o la subís a un sitio cualquiera, la ubicación viaja con ella. Lo más seguro es quitar los metadatos vos antes de compartir." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo quito la ubicación sin perder calidad?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Al regenerar la imagen se descartan los metadatos manteniendo la calidad visual (podés exportar en alta). La foto se ve igual; solo pierde los datos ocultos como GPS, modelo y fecha." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Es seguro hacerlo online?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Depende de la herramienta. Sería contradictorio subir tu foto a un servidor ajeno para proteger tu privacidad. En PhotoCut todo ocurre en tu navegador: la foto no se sube a ningún lado, que es justo lo que querés al manejar tu ubicación." }
+        }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Cómo quitar la ubicación (GPS) y los metadatos de una foto</h1>
+      <p class="meta">Actualizado: julio de 2026 · Lectura: 5 minutos</p>
+
+      <p>
+        Cada foto que sacás con el celular guarda, dentro del archivo, datos que
+        no ves: el modelo del dispositivo, la fecha y —lo más sensible— la
+        <strong>ubicación GPS</strong> exacta donde la tomaste. Son los
+        metadatos EXIF, y viajan con la foto cuando la compartís. Esta guía
+        explica por qué importa y cómo quitar la ubicación antes de publicar o
+        mandar una imagen, sin subirla a ningún lado.
+      </p>
+
+      <a class="cta" href="/editor/?tab=meta">Ver y quitar los metadatos →</a>
+
+      <h2>Por qué importa (más de lo que parece)</h2>
+      <p>
+        Una foto aparentemente inocente —tu mascota, algo que vendés, tu
+        auto— puede llevar adentro <strong>la dirección de tu casa</strong> si
+        la sacaste ahí. Si la publicás en un clasificado, se la mandás a un
+        desconocido o la subís a un sitio que no borra los metadatos, estás
+        compartiendo tu ubicación sin darte cuenta. Para quien vende online,
+        acepta encargos o simplemente cuida su privacidad, esto es un riesgo
+        real y fácil de evitar.
+      </p>
+
+      <h2>Qué datos guarda una foto</h2>
+      <ul>
+        <li><strong>Ubicación GPS:</strong> latitud y longitud de dónde se tomó (el dato más sensible).</li>
+        <li><strong>Dispositivo:</strong> marca y modelo de la cámara o el celular.</li>
+        <li><strong>Fecha y hora:</strong> el momento exacto de la captura.</li>
+        <li><strong>Ajustes:</strong> parámetros de la toma y, a veces, el software con que se editó.</li>
+      </ul>
+
+      <h2>Paso a paso para quitarla</h2>
+      <ol>
+        <li>Abrí la foto en el <a href="/editor/?tab=meta">visor de metadatos</a>.</li>
+        <li>Revisá qué lleva: te avisa si incluye <strong>ubicación GPS</strong>.</li>
+        <li>Tocá <strong>«Descargar sin metadatos»</strong> para obtener una copia limpia.</li>
+        <li>Compartí <strong>esa copia</strong>, no la original.</li>
+      </ol>
+
+      <h2>¿No las borran las redes solas?</h2>
+      <p>
+        A veces sí, a veces no. Las grandes redes suelen quitar los metadatos al
+        publicar, pero no todas ni siempre — y si mandás la <strong>foto
+        original</strong> por email, por mensajería sin compresión o la subís a
+        un sitio cualquiera, la ubicación viaja con ella. Depender de que «la red
+        lo borre» no es una estrategia; quitarlo vos antes de compartir sí.
+      </p>
+
+      <h2>No perdés calidad</h2>
+      <p>
+        Quitar los metadatos no degrada la imagen: se regenera la foto sin los
+        datos ocultos, manteniendo la calidad visual. La foto se ve igual; solo
+        deja de llevar tu ubicación, el modelo del dispositivo y la fecha.
+      </p>
+
+      <h2>Hacelo sin subir tu foto</h2>
+      <p>
+        Sería absurdo subir tu foto al servidor de otra persona para
+        <em>proteger</em> tu privacidad. En PhotoCut todo ocurre en tu
+        navegador: la lectura de los metadatos y la copia limpia se hacen
+        localmente, y la imagen no se sube a ningún lado.
+      </p>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿Todas las fotos guardan la ubicación?</h3>
+      <p>Muchas sí: los celulares suelen guardar el GPS por defecto. Podés ver qué lleva una foto abriéndola en un visor de metadatos.</p>
+      <h3>¿Las redes sociales borran la ubicación?</h3>
+      <p>A veces, pero no todas ni siempre. Si mandás la original por otros canales, la ubicación viaja con ella. Mejor quitarla vos antes.</p>
+      <h3>¿Cómo quito la ubicación sin perder calidad?</h3>
+      <p>Al regenerar la imagen se descartan los metadatos manteniendo la calidad. La foto se ve igual; solo pierde los datos ocultos.</p>
+      <h3>¿Es seguro hacerlo online?</h3>
+      <p>En PhotoCut sí: todo ocurre en tu navegador, la foto no se sube a ningún lado.</p>
+
+      <a class="cta" href="/editor/?tab=meta">Quitar la ubicación de mi foto →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Guías y herramientas relacionadas</h2>
+        <a class="card" href="/herramientas/metadatos-exif.html">
+          <h2>Ver y quitar los metadatos EXIF de una foto</h2>
+          <p>Mirá qué datos lleva tu foto (cámara, fecha, GPS) y descargá una copia sin metadatos.</p>
+        </a>
+        <a class="card" href="/guias/como-quitar-fondo-gratis.html">
+          <h2>Quitar el fondo gratis, sin marca de agua y sin registro</h2>
+          <p>Otra tarea que hacés sin que tus fotos salgan de tu equipo.</p>
+        </a>
+        <a class="card" href="/guias/quitar-el-fondo-de-una-foto-en-el-celular.html">
+          <h2>Quitar el fondo desde el celular</h2>
+          <p>Sin instalar apps y sin subir la foto a ningún servidor.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/guias/">← Más guías</a> ·
+        <a href="/herramientas/">Herramientas</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a> ·
+        <a href="/legal/terminos.html">Términos</a>
+      </footer>
+    </div>
+  </body>
+</html>
