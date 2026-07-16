@@ -1,5 +1,7 @@
 # PhotoCut Studio
 
+[![CI](https://github.com/gabiMaglia/PhotoCutOnline/actions/workflows/ci.yml/badge.svg)](https://github.com/gabiMaglia/PhotoCutOnline/actions/workflows/ci.yml)
+
 Interactive background-removal tool. One React codebase ships as:
 
 - a **desktop app** (Tauri + Rust) — full-quality GrabCut engine running natively, offline; and
