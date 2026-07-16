@@ -179,6 +179,37 @@ colisión de marca (PhotoCut Studio vs PhotoCut).
 nombrar a nadie — "tu foto no se sube a ningún servidor", "sin registro",
 "sin marca de agua". Ya es lo que hacen las landings de herramientas.
 
+
+## Sprint 5 — F6: utilidades de archivo (GROW-17/18) — PLAN
+
+> **Decisión de ubicación (PO, 2026-07-16): NO se crea una 7ª pestaña.** Se
+> extiende la pestaña **Datos** (`tab=meta`), que ya re-encodea con el mismo
+> motor (`stripToBlob` = `canvas.toBlob(mime, quality)`). Motivos: el navbar
+> venía desbordado (arreglado en 956b557) y una 7ª pestaña lo empeora; y
+> "inspeccionar el archivo" + "transformar el archivo" son la misma tarea
+> mental. Las landings de SEO entran por `?tab=meta`.
+>
+> **Renombre pendiente:** "Datos" ya no describe lo que hace. Propuesta:
+> **"Archivo"** (cubre info + EXIF + convertir + redimensionar sin prometer de
+> más). Alternativa: "Optimizar" (dice el beneficio, pero deja afuera el visor
+> EXIF). **Decide el PO.**
+
+| ID | Ext | Tarea | Asignado | Estado | Niv | Criterios de aceptación | Rama |
+|----|-----|-------|----------|--------|-----|--------------------------|------|
+| T-014 | GROW-17 | **Comprimir / convertir** (PNG↔JPG↔WebP + calidad) en la pestaña Datos | — | To Do | S | (1) Sección nueva en el rail de `MetadataPage.jsx`: selector de formato (PNG/JPG/WebP) + slider de calidad; (2) **el slider NO se muestra con PNG**: `canvas.toBlob` ignora `quality` en PNG — un control que no hace nada es mentirle al usuario; (3) muestra **peso original → peso estimado + % de ahorro**, recalculado al cambiar formato/calidad, con debounce y sin bloquear la UI (re-encodear es sincrónico y en fotos grandes jankea); (4) **GOTCHA: PNG/WebP transparente → JPG.** JPG no tiene canal alfa y el canvas rellena el fondo de NEGRO por defecto. Detectar transparencia y (a) avisar y (b) rellenar en blanco, no en negro; (5) descarga con nombre y extensión correctos (`foto.png` → `foto.jpg`); (6) reusa `stripToBlob`/`canvasToBlob` — NO escribir un re-encoder nuevo; (7) efecto colateral honesto: al re-encodear se pierden los metadatos, decirlo en la UI (es una feature, no un accidente); (8) i18n es/en/pt; (9) jest + `npm run test:web` verdes | — |
+| T-015 | GROW-18 | **Redimensionar** (px / % / presets) en la pestaña Datos | — | To Do | S | (1) Ancho/alto en px + porcentaje, con **candado de proporción** activado por defecto; (2) presets reusando `compositePreset` (redes/marketplace ya definidos); (3) no permitir agrandar más de 1× sin avisar (interpolar no agrega detalle: prometerlo sería vender un upscaler que no tenemos → ver GROW-20 descartadas); (4) combina con T-014: redimensionar + convertir en una sola descarga; (5) muestra dimensiones y peso resultantes antes de descargar; (6) i18n es/en/pt; (7) jest + test:web verdes | — |
+| T-016 | GROW-17/18 | **Landings SEO** de comprimir/convertir/redimensionar (ES+EN) | — | To Do | A | (1) `/herramientas/comprimir-imagen.html` + `/herramientas/redimensionar-imagen.html` + sus pares EN; (2) sumar a `SEO_ROUTES` **y** a `I18N_GROUPS` (el hreflang lo inyecta el build solo); (3) enlazar desde ambos hubs — **0 huérfanas**; (4) CTA con deep-link `?tab=meta`; (5) JSON-LD válido; (6) **NO nombrar competidores** (política del PO, ver § POLÍTICA DE CONTENIDO) | — |
+
+**Riesgo transversal (T-014/T-015):** re-encodear en el hilo principal jankea
+con fotos grandes. El proyecto ya tiene worker (`cutoutWorker.js`) y la lección
+del Sprint 1 fue justamente memoria/OOM con fotos grandes. Si el estimado en
+vivo se siente pesado, mover el re-encode al worker antes que bajar la calidad
+del preview.
+
+**Verificar antes de prometer (GROW-19):** el peso real de un modelo de
+detección de caras (BlazeFace y similares rondan cientos de KB, vs 4,4 MB de
+u2netp) — NO comprometer la feature hasta medirlo, igual que se hizo con D-04.
+
 ## Veredictos QA
 | Tarea | Veredicto | Defectos (si rechazo) | Fecha |
 |-------|-----------|------------------------|-------|
