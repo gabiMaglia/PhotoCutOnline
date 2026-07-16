@@ -152,8 +152,46 @@ nombrar a nadie — "tu foto no se sube a ningún servidor", "sin registro",
 |----|-------------|--------|-----------|
 | D-01 | jsEngine.js (motor web) es intencionalmente simple; paridad real con desktop requiere compilar photocut-core a WASM | README §Upgrading | Media |
 | D-03 | Sidebar/rail se corta en desktop (viewport ancho o app Tauri, a confirmar) — no se ve bien. Reportado por PO 2026-07. Tratar en fase UI/landing (T-011) | PO test | Media |
-| D-04 | Recorte IA "alucina" en imágenes SIN sujeto saliente claro (capturas de pantalla/escritorio Windows) — limitación del modelo u2net (salient object detection), no bug del lote. Fix real = otro modelo. Documentar/avisar en UI a futuro | PO test batch | Baja |
-| D-02 | Canvases reusados en aiMatte (aiSegmenter.js ~128-131, fix T-002c/A3) NO son seguros ante dos aiMatte verdaderamente concurrentes en el camino inline (interleaving sobre el mismo buffer). Hoy NO es defecto vivo (la UI serializa: espera la promesa anterior). Crear ticket si se habilita disparo concurrente. Detectado por nerv-qa+nerv-verifier en T-002 | QA T-002 (intento 2) | Baja |
+| D-04 | Recorte IA "alucina" en imágenes SIN sujeto saliente claro (capturas de pantalla/escritorio Windows) — limitación del modelo u2net (salient object detection), no bug del lote. **Fix real = otro modelo — CONFIRMADO EMPÍRICAMENTE 2026-07-16, ver nota abajo. NO reintentar detectarlo por confianza.** | PO test batch | Baja |
+| ~~D-02~~ | ~~Canvases reusados en aiMatte NO son seguros ante dos aiMatte concurrentes~~ | QA T-002 | ✅ **CERRADA (b36c595)**: la cola vive ahora en `aiMatte()`, el módulo es seguro por sí mismo sin perder el reuso de canvases (T-002c/A3). `inFlight` cubre la espera en cola → releaseAi() no libera con trabajo encolado. 3 tests, verificados por mutación. |
+| D-05 | **`npm run test:web` está en rojo (2 suites), preexistente** — detectado 2026-07-16 al correr el harness: (a) `descarga: botón ⬇ presente en web` es un test OBSOLETO — el botón se ocultó a propósito en T-012 (`false &&` en Topbar.jsx), hay que actualizar el test; (b) `cutRect: precisión 84.7% > 93%` — GrabCut por debajo del umbral, posible regresión real (¿relacionada con el incidente del `git reset` sobre jsEngine.js?). Nadie lo vio porque `npm test` corre jest, no este harness | Auditoría D-04 | **Media** |
+
+### Nota D-04 — hipótesis de "confianza" REFUTADA con datos (2026-07-16)
+
+**No reintentar esto.** Se probó detectar la alucinación sin cambiar de modelo y
+la medición lo descartó.
+
+**Hipótesis:** en `aiSegmenter.aiMatteInner` el post-procesado hace min-max
+(`(out-mi)/(ma-mi)*255`), que estira SIEMPRE la salida a 0..255. Se suponía que
+sin sujeto saliente u2netp devolvería valores casi uniformes (rango `ma-mi`
+chico) y que el min-max amplificaría ese ruido hasta una máscara nítida y
+falsa — o sea que el rango crudo servía como medida de confianza gratis, ya
+calculada y descartada. Con eso se podía avisar en la UI.
+
+**Medición** (u2netp real en Chrome vía el harness de `test/run-tests.mjs`,
+tres imágenes sintéticas de 320×320):
+
+| caso | confidence (rango crudo) | cobertura del matte |
+|------|--------------------------|---------------------|
+| sujeto saliente claro | **1.0000** | 17.7% |
+| captura de escritorio (el caso de D-04) | **1.0000** | 48.5% |
+| ruido plano sin estructura | 0.0089 | 2.4% |
+
+**Conclusión: la señal no separa nada.** La captura de escritorio da confianza
+**idéntica** a la foto con sujeto real (separación 0.0000). u2netp no está
+"inseguro" cuando alucina: produce una saliencia perfectamente bimodal (~0 vs
+~1) — simplemente elige mal *qué* es saliente. El rango sólo cae con ruido
+plano, que no es el caso reportado. La cobertura (48.5% vs 17.7%) tampoco
+sirve: un retrato de primer plano cubre igual o más, legítimamente.
+
+**Por qué importa:** de haber shipeado el umbral sin medir, habría quedado un
+aviso que nunca dispara en el caso real y que sí molestaría en fotos válidas,
+más un cambio de contrato en aiMatte/worker/backend para nada.
+
+**El fix real sigue siendo cambiar de modelo** (uno con noción de "no hay
+objeto saliente", o calibrado en confianza — p.ej. IS-Net/BiRefNet). Eso es un
+proyecto, no deuda menor: revisar tamaño del modelo (hoy u2netp pesa 4,4 MB y
+se descarga en el navegador) y licencia antes de considerarlo.
 
 ## Histórico (sprints cerrados: 3 líneas c/u, máx. 5 sprints; el resto a ~/.nerv/archive/)
 - (ninguno aún)
