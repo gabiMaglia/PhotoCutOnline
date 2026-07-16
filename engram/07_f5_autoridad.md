@@ -24,9 +24,11 @@ que funciona a largo plazo.
 
 Sin esto, lo demás no rinde. Todo lo hace el PO (requiere sus cuentas).
 
-1. **Search Console — crear la propiedad `www`.**
-   Hoy la propiedad verificada no cubre el prefijo www, que es donde vive el
-   sitio. Crear **propiedad de prefijo de URL** = `https://www.photocutapp.com/`.
+1. ~~Search Console — crear la propiedad `www`.~~ **YA EXISTE** (confirmado por
+   el PO, 2026-07-16: al intentar agregarla, Search Console redirige a la que ya
+   tiene). El backlog la arrastraba como pendiente por error. Verificada por
+   archivo HTML (`public/google9ef2ab02fb19e6af.html`, responde 200 en www) →
+   propiedad de tipo prefijo de URL. **No hay nada que crear ni borrar.**
 2. **Enviar el sitemap:** `https://www.photocutapp.com/sitemap.xml` (63 URLs).
 3. **Pedir indexación a mano** de las páginas que más importan, con
    *Inspección de URL → Solicitar indexación*. Empezar por estas 6:
@@ -77,8 +79,10 @@ Mantenerlas actualizadas y con fecha visible vale más que diez guías nuevas.
 
 ## Estado
 
-- [ ] Propiedad `www` en Search Console — **PO**
+- [x] Propiedad `www` en Search Console — **ya existía** (2026-07-16)
 - [ ] Sitemap enviado — **PO**
+- [ ] Leer *Páginas → Indexadas / No indexadas* + motivos → define si el cuello
+      es rastreo o autoridad — **PO informa, decide el próximo paso**
 - [ ] Indexación solicitada (6 URLs) — **PO**
 - [ ] Bing Webmaster — **PO**
 - [ ] Umami: `VITE_UMAMI_SRC` + `VITE_UMAMI_WEBSITE_ID` en Vercel + redeploy —
