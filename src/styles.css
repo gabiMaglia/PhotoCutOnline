@@ -512,12 +512,20 @@ kbd {
 /* chips de formato — control segmentado */
 .format-row {
   display: flex;
+  flex-wrap: wrap; /* grupos largos (5 modos de Color Studio) bajan de fila */
   align-items: stretch; /* misma altura aunque un label wrapee a 2 líneas */
   gap: 6px;
 }
 
 .chip {
-  flex: 1;
+  /* `flex: 1` (basis 0) repartía el ancho en partes iguales y encogía los chips
+     por debajo de su texto: en el rail de 264px los 5 modos quedaban en ~42px y
+     un label de una sola palabra ("Daltonismo") no tiene dónde partirse → se
+     desbordaba y se perdía. Con basis auto + min-width:max-content el chip nunca
+     baja de su texto y, si no entra, la fila wrapea. Sigue creciendo para
+     repartir el sobrante, así que los grupos cortos se ven igual que antes. */
+  flex: 1 1 auto;
+  min-width: max-content;
   display: inline-flex;
   align-items: center;
   justify-content: center;
