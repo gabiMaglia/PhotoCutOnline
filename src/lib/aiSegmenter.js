@@ -130,22 +130,44 @@ let cSmall = null; // INPUT_SIZE×INPUT_SIZE: imagen de entrada a 320×320
 let cMaskSmall = null; // INPUT_SIZE×INPUT_SIZE: matte crudo antes de reescalar
 let cMaskFull = null; // full-res: matte reescalado a la resolución de trabajo
 
+// D-02 (QA T-002): esos canvases compartidos sólo son seguros si no hay dos
+// aiMatte solapadas. Dos llamadas concurrentes se pisarían el mismo buffer
+// entre sus awaits (session.run) y devolverían mattes corruptos. Hasta ahora
+// no era un defecto vivo porque la UI serializa — pero eso es una garantía
+// del CALLER, no del módulo: alcanzaba con que alguien disparara dos cortes a
+// la vez para corromper el resultado, en silencio.
+//
+// Se serializa acá dentro: el módulo pasa a ser seguro por sí mismo y se
+// conserva el reuso de canvases (el objetivo de T-002c/A3 era justamente
+// evitar el GC churn de 4-5 canvases full-res por llamada). La alternativa
+// —canvases por llamada— revertiría esa optimización.
+let chain = Promise.resolve();
+
 /**
  * imageData: ImageData (resolución de trabajo).
  * Devuelve Uint8ClampedArray (matte 0..255) de width×height.
+ *
+ * Las llamadas concurrentes se encolan (D-02): la segunda espera a que la
+ * primera termine en vez de compartirle los canvases del módulo.
  */
-export async function aiMatte(imageData) {
+export function aiMatte(imageData) {
   // D1 (QA): cuenta como operación en vuelo desde ANTES de tener la sesión
   // (getSession() puede ser el propio InferenceSession.create() tardando) y
   // hasta después de session.run() — todo el rango en el que releaseAi()
-  // liberaría una sesión que esta función todavía usa.
+  // liberaría una sesión que esta función todavía usa. Incluye la espera en
+  // cola: releaseAi() no debe liberar con trabajo encolado.
   inFlight++;
-  try {
-    return await aiMatteInner(imageData);
-  } finally {
+  const run = chain.then(() => aiMatteInner(imageData));
+  // la cadena no debe cortarse si una llamada falla: el rechazo lo recibe
+  // quien llamó (vía `run`), acá sólo se mantiene el turno para la siguiente.
+  chain = run.then(
+    () => {},
+    () => {}
+  );
+  return run.finally(() => {
     inFlight--;
     settleRelease();
-  }
+  });
 }
 
 async function aiMatteInner(imageData) {

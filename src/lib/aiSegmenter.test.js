@@ -193,4 +193,99 @@ describe("aiSegmenter", () => {
     // resultados (results nunca se llegó a construir)
     expect(ortMock.disposed.length).toBeGreaterThanOrEqual(1);
   });
+
+  // D-02: aiSegmenter reusa canvases a nivel módulo (T-002c/A3) para evitar el
+  // GC churn. Eso sólo es seguro si nunca hay dos aiMatte solapadas: si se
+  // pisan entre sus awaits, el matte sale corrupto en silencio. Antes eso lo
+  // garantizaba la UI (serializa); ahora lo garantiza el módulo.
+  //
+  // Prueba de mutación: quitando la cadena de serialización en aiMatte(), las
+  // dos llamadas entran a session.run() a la vez → maxConcurrent 2 y este test
+  // falla.
+  function instrumentRunConcurrency() {
+    const state = { active: 0, max: 0 };
+    const origRun = ortMock.session.run;
+    ortMock.session.run = jest.fn((...args) => {
+      state.active++;
+      state.max = Math.max(state.max, state.active);
+      return origRun(...args).finally(() => {
+        state.active--;
+      });
+    });
+    return state;
+  }
+
+  test("D-02: dos aiMatte concurrentes se serializan (nunca dos session.run a la vez)", async () => {
+    const { aiMatte } = require("./aiSegmenter.js");
+    const conc = instrumentRunConcurrency();
+
+    const p1 = aiMatte(imageData(4, 4));
+    const p2 = aiMatte(imageData(4, 4));
+
+    await flushMicrotasks();
+    ortMock.resolveCreate();
+    await flushMicrotasks();
+
+    // la primera ya está infiriendo; la segunda debe seguir encolada, sin
+    // haber tocado todavía los canvases compartidos
+    expect(ortMock.session.run).toHaveBeenCalledTimes(1);
+
+    ortMock.resolveRun();
+    await p1;
+    await flushMicrotasks();
+
+    // recién ahora arranca la segunda
+    expect(ortMock.session.run).toHaveBeenCalledTimes(2);
+    ortMock.resolveRun();
+    await p2;
+
+    expect(conc.max).toBe(1);
+  });
+
+  test("D-02: una aiMatte que falla no traba la cola de las siguientes", async () => {
+    const { aiMatte } = require("./aiSegmenter.js");
+
+    const p1 = aiMatte(imageData(4, 4));
+    const p2 = aiMatte(imageData(4, 4));
+    // p1 rechaza; sin capturarlo acá, el rechazo se evalúa en el expect de abajo
+    p1.catch(() => {});
+
+    await flushMicrotasks();
+    ortMock.resolveCreate();
+    await flushMicrotasks();
+
+    ortMock.rejectRun(new Error("inferencia falló"));
+    await expect(p1).rejects.toThrow("inferencia falló");
+    await flushMicrotasks();
+
+    // la cadena no debe quedar rota: la segunda toma su turno igual
+    expect(ortMock.session.run).toHaveBeenCalledTimes(2);
+    ortMock.resolveRun();
+    await expect(p2).resolves.toBeInstanceOf(Uint8ClampedArray);
+  });
+
+  test("D-02: releaseAi() no libera con trabajo encolado", async () => {
+    const { aiMatte, releaseAi } = require("./aiSegmenter.js");
+
+    const p1 = aiMatte(imageData(4, 4));
+    const p2 = aiMatte(imageData(4, 4));
+
+    await flushMicrotasks();
+    ortMock.resolveCreate();
+    await flushMicrotasks();
+
+    // p2 está encolada (todavía no corrió): liberar acá dejaría a p2 sin sesión
+    await releaseAi();
+    expect(ortMock.session.release).not.toHaveBeenCalled();
+
+    ortMock.resolveRun();
+    await p1;
+    await flushMicrotasks();
+    ortMock.resolveRun();
+    await p2;
+    await flushMicrotasks();
+
+    // con la cola vacía, el release diferido se concreta
+    expect(ortMock.session.release).toHaveBeenCalledTimes(1);
+  });
 });
