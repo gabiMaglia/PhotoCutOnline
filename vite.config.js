@@ -22,9 +22,6 @@ const SEO_ROUTES = [
   "/herramientas/fondo-azul.html",
   "/herramientas/fondo-rojo.html",
   "/herramientas/fondo-verde.html",
-  // F4 — páginas "alternativa a" (intención de compra ajena).
-  "/herramientas/alternativa-a-remove-bg.html",
-  "/herramientas/alternativa-a-photoroom.html",
   "/guias/",
   "/guias/como-quitar-el-fondo-de-una-imagen.html",
   "/guias/medidas-de-iconos-de-app-ios-android-2026.html",
@@ -69,8 +66,6 @@ const SEO_ROUTES = [
   "/en/tools/blue-background.html",
   "/en/tools/red-background.html",
   "/en/tools/green-background.html",
-  "/en/tools/remove-bg-alternative.html",
-  "/en/tools/photoroom-alternative.html",
   // F3 i18n — português (pt-br), bajo /pt/.
   "/pt/",
   "/pt/ferramentas/",
@@ -98,8 +93,6 @@ const I18N_GROUPS = [
   { es: "/herramientas/fondo-azul.html", en: "/en/tools/blue-background.html" },
   { es: "/herramientas/fondo-rojo.html", en: "/en/tools/red-background.html" },
   { es: "/herramientas/fondo-verde.html", en: "/en/tools/green-background.html" },
-  { es: "/herramientas/alternativa-a-remove-bg.html", en: "/en/tools/remove-bg-alternative.html" },
-  { es: "/herramientas/alternativa-a-photoroom.html", en: "/en/tools/photoroom-alternative.html" },
 ];
 
 // Tauri expects a fixed port and serves from ../dist

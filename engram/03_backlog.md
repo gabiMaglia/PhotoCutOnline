@@ -109,35 +109,37 @@
 | GROW-5 | F2 Features | **Desenfocar el fondo** (ya segmentamos: blurear en vez de borrar) — blur-photo-background | Media | reutiliza segmentación |
 | GROW-6 | F2 Features | **Añadir sombra al recorte** (realismo) — agregar-sombra | Baja | feature chica, alto "wow" |
 | GROW-7 | F3 i18n | Traducir a **inglés, portugués (pt-br) e italiano** (español = base) con hreflang. Multiplicador de tráfico | Alta | 🟡 EN tanda 1 (d562f7c): 5 páginas core /en/tools/ + infra hreflang recíproco (I18N_PAIRS en vite.config, inyección en build). Falta: EN de guías + landing home; luego pt-br e it replicando I18N_PAIRS. Estrategia: por tandas, contenido nativo (no traducción literal), NO volcar 87 páginas de golpe (calidad/AdSense) |
-| GROW-8 | F4 Alternativas | Páginas "alternativa gratis a remove.bg / Photoroom / photocut.ai" con tabla gratis/sin-registro/privado (intención de compra ajena) | Media | ✅ **PARCIAL (e29a876)**: remove.bg + Photoroom, ES+EN (4 págs), hreflang, enlazadas desde ambos hubs. Sitemap 63→67. **photocut.ai OMITIDA a propósito → decisión del PO, ver nota abajo.** |
+| GROW-8 | ~~F4 Alternativas~~ | ~~Páginas "alternativa gratis a remove.bg / Photoroom / photocut.ai"~~ | — | ❌ **DESCARTADA POR EL PO (2026-07-15).** Se implementó (e29a876) y se revirtió entera. **Política permanente: no se nombran competidores ni se hacen comparativas.** Ver nota abajo. F4 queda cerrada sin entregables. |
 | GROW-9 | F5 Autoridad | Backlinks: Product Hunt, directorios de herramientas, r/webdev; forzar indexación en Search Console (causa real de "cero visitas") | Alta | sin backlinks el contenido no despega |
 | GROW-10 | Transversal | Badge "Gratis · Sin registro · No subimos tus fotos" en cada landing + privacidad como argumento/contenido | Media | refuerza la cuña en todas las páginas |
 
 > Orden recomendado: F0 → F1 (GROW-1/2/3) → F2 → F3 (en/pt/it) → F4/F5 en paralelo.
 
-### Nota GROW-8 — por qué NO se hizo "alternativa a photocut.ai" (2026-07-15)
+### ⛔ POLÍTICA DE CONTENIDO — decisión del PO (2026-07-15)
 
-Al verificar los hechos antes de escribir la comparativa aparecieron dos
-problemas que hacen que esa página, tal como está especificada, no se pueda
-publicar sin decidirlo el PO:
+> **Nunca se publica una página "alternativa a X" ni una comparativa contra
+> otra herramienta. No se nombran competidores en el sitio. No proponer esta
+> táctica de nuevo.**
 
-1. **El supuesto del backlog es falso.** Asumimos que photocut.ai está
-   "registration-gated", y su propio marketing dice lo contrario: sus free
-   tools se anuncian como *"fast, free, accurate and no signup required"*.
-   Una tabla que diga "ellos piden registro / nosotros no" sería un dato
-   **falso sobre una empresa real** — riesgo legal y penalización de Google
-   por comparativa inexacta. Contra photocut.ai nuestra cuña "sin registro"
-   **no diferencia**; la única que se sostiene es el procesamiento local
-   (ellos suben la imagen: *"upload the image… to PhotoCut's tool"*).
-2. **Colisión de marca.** Nos llamamos *PhotoCut Studio* y ellos *PhotoCut*.
-   Una página nuestra titulada "alternativa a PhotoCut" confunde al usuario
-   (parece que competimos con nosotros mismos) y puede leerse como un intento
-   de capitalizar su nombre. Es una decisión de marca/legal, no de SEO.
+Origen: GROW-8 se implementó (4 páginas ES+EN vs remove.bg y Photoroom,
+e29a876) y el PO la descartó de raíz. Revertido entero en 5a5f8f2: páginas
+borradas, enlaces de los hubs quitados, rutas fuera de SEO_ROUTES/I18N_GROUPS.
+Sitemap vuelve a 63. Verificado: 0 menciones a competidores en dist/, 0 links
+rotos, 0 huérfanas.
 
-**Recomendación:** no publicarla. Si el PO igual la quiere, el ángulo honesto
-y defendible es *"PhotoCut Studio vs PhotoCut AI: en qué se diferencian"*
-apoyado **solo** en local-vs-nube, dejando explícito que son productos de
-empresas distintas. **Decisión pendiente del PO.**
+**Razones del PO (válidas y por encima del SEO):** le hace publicidad gratis a
+la competencia, mete sus marcas en nuestro sitio, expone a reclamos por datos
+que además envejecen solos, y nos posiciona como "el reemplazo barato de" en
+vez de como producto propio.
+
+**Señal de alarma que confirmó la decisión:** antes de publicar, la táctica ya
+había obligado a frenar dos páginas — una por dato falso (el backlog asumía que
+photocut.ai exigía registro; ellos anuncian "no signup required") y otra por
+colisión de marca (PhotoCut Studio vs PhotoCut).
+
+**Qué hacer en su lugar:** comunicar nuestra ventaja en positivo y sin
+nombrar a nadie — "tu foto no se sube a ningún servidor", "sin registro",
+"sin marca de agua". Ya es lo que hacen las landings de herramientas.
 
 ## Veredictos QA
 | Tarea | Veredicto | Defectos (si rechazo) | Fecha |
