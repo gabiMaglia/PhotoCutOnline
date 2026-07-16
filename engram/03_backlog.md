@@ -115,6 +115,44 @@
 
 > Orden recomendado: F0 → F1 (GROW-1/2/3) → F2 → F3 (en/pt/it) → F4/F5 en paralelo.
 
+## F6 — Features nuevas (investigación de mercado 2026-07-16)
+
+**Hallazgo estratégico:** la tesis client-side está VALIDADA por el mercado
+(Squoosh de Google Chrome Labs corre MozJPEG/WebP/AVIF en WASM sin subir nada;
+hay suites con 35 herramientas 100% en el navegador). Pero eso corta para los
+dos lados: **"privado + gratis" ya no diferencia solo**. Lo que sí nos
+diferencia es que tenemos **la parte difícil** (segmentación IA en el
+navegador) y ellos no; lo que falta son **las utilidades aburridas de alto
+volumen** que traen tráfico.
+
+**Clave: el motor de comprimir/convertir/redimensionar YA EXISTE**, enterrado
+dentro de otras features — falta exponerlo:
+- `canvasToBlob(canvas, mime, quality)` (jsEngine.js:987) → comprimir/convertir
+- `stripToBlob(img, mime, quality)` (metadata.js:144) → literalmente ya es un conversor
+- `compositePreset({w,h,padding,bg,circle})` (jsEngine.js:634) → redimensionar
+- `compositeBlur` (jsEngine.js) → desenfoque
+
+| ID | Tarea | Demanda | Costo | Notas |
+|----|-------|---------|-------|-------|
+| GROW-17 | **Comprimir / convertir** (PNG↔JPG↔WebP + calidad) | Muy alta | **Casi cero** | El motor ya está. Squoosh valida el modelo. Landing nueva = keywords que hoy no tocamos → ataca también el problema de tráfico. **Primera.** |
+| GROW-18 | **Redimensionar** (px/%/presets) | Muy alta | **Casi cero** | `compositePreset` ya lo hace. |
+| GROW-19 | **Difuminar caras / censurar** | Alta | Media | **La de mejor encaje de marca.** El blur ya existe; falta detección de caras (modelos tipo BlazeFace pesan cientos de KB vs 4,4 MB de u2netp — VERIFICAR antes de comprometer). Pitch verdadero y demoledor: nadie sube la foto de los chicos del colegio a un servidor ajeno para taparles la cara. Presión GDPR + demanda real de redacción. Acá la privacidad no es un plus, es el requisito. |
+| GROW-20 | **HEIC → JPG** | Muy alta | Alta | EL dolor iPhone→Windows, volumen enorme. Los navegadores NO decodifican HEIC (salvo Safari) → necesita libheif en WASM (~MBs). Única con dependencia pesada: vale la pena, pero no primero. |
+
+**DESCARTADAS (rompen la tesis del producto):**
+- **Fondos generativos con IA**: necesita GPU en servidor. Mata el "no subimos tu foto".
+- **Upscaler con IA**: modelo pesado y resultado mediocre client-side. No compite.
+
+**Orden recomendado:** GROW-17 + GROW-18 (casi gratis, superficie SEO
+inmediata) → GROW-19 (marca) → GROW-20 (cuando se quiera invertir en peso).
+
+**PENDIENTE DE DECISIÓN (PO):** dónde vive comprimir/convertir. El editor ya
+tiene 6 pestañas y el navbar venía desbordado (arreglado en 956b557); sumar una
+7ª empeora eso. Alternativa: extender la pestaña **Datos**, que YA re-encodea
+(su "descargar sin metadatos" usa `stripToBlob`, o sea el mismo motor) y
+renombrarla a algo más amplio. Las landings de SEO pueden deep-linkear con
+`?tab=`.
+
 ### ⛔ POLÍTICA DE CONTENIDO — decisión del PO (2026-07-15)
 
 > **Nunca se publica una página "alternativa a X" ni una comparativa contra
