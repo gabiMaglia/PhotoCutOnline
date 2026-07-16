@@ -44,8 +44,8 @@ function syntheticImage(w, h) {
   return ctx.getImageData(0, 0, w, h);
 }
 
-function subjectAccuracy(session, w, h) {
-  // ground truth: sujeto = [60,180)x[40,130)
+// Compara el label contra una verdad de referencia dada como predicado.
+function accuracyAgainst(session, w, h, truthAt) {
   const label = session.label;
   const sw = session.work.width;
   const sx = session.scale;
@@ -53,7 +53,7 @@ function subjectAccuracy(session, w, h) {
   let total = 0;
   for (let y = 0; y < h; y += 2) {
     for (let x = 0; x < w; x += 2) {
-      const truth = x >= 60 && x < 180 && y >= 40 && y < 130 ? 1 : 0;
+      const truth = truthAt(x, y) ? 1 : 0;
       const wx = Math.min(sw - 1, Math.round(x * sx));
       const wy = Math.round(y * sx);
       const got = label[wy * sw + wx];
@@ -64,6 +64,20 @@ function subjectAccuracy(session, w, h) {
   return ok / total;
 }
 
+// Verdad para el SUJETO real de la imagen sintética: [60,180)x[40,130).
+// Sirve para autoCut, que sí segmenta (GrabCut).
+const subjectAccuracy = (s, w, h) =>
+  accuracyAgainst(s, w, h, (x, y) => x >= 60 && x < 180 && y >= 40 && y < 130);
+
+// Verdad para "Recuadro": el propio rectángulo marcado. cutRect NO segmenta —
+// es un recorte rectangular por decisión de producto ("lo que el usuario marca
+// y nada más", jsEngine.js). Medirlo contra el sujeto era medir el margen que
+// el test deja entre el recuadro y el sujeto: daba 84.7%, que es EXACTAMENTE
+// el valor teórico de un recorte rectangular puro con ese margen — no una
+// regresión. El umbral de 93% venía de cuando cutRect hacía GrabCut.
+const rectAccuracy = (s, w, h, r) =>
+  accuracyAgainst(s, w, h, (x, y) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
+
 async function main() {
   const W = 240;
   const H = 180;
@@ -73,11 +87,12 @@ async function main() {
   s.load(img);
   assert(s.work.width === W, "carga: resolución de trabajo");
 
-  // 1. cutRect alrededor del sujeto (con margen)
-  let blob = await s.cutRect({ x: 45, y: 28, w: 150, h: 115 });
+  // 1. cutRect = Recuadro: recorte rectangular exacto (no segmenta)
+  const RECT = { x: 45, y: 28, w: 150, h: 115 };
+  let blob = await s.cutRect(RECT);
   assert(blob instanceof Blob && blob.type === "image/png", "cutRect: preview Blob PNG");
-  const accRect = subjectAccuracy(s, W, H);
-  assert(accRect > 0.93, `cutRect: precisión ${(accRect * 100).toFixed(1)}% > 93%`);
+  const accRect = rectAccuracy(s, W, H, RECT);
+  assert(accRect > 0.99, `cutRect: se queda con el recuadro marcado y nada más (${(accRect * 100).toFixed(1)}%)`);
 
   // 2. stroke quitar en una esquina del fondo dentro del rect
   blob = await s.addStroke({ points: [{ x: 50, y: 33 }, { x: 56, y: 36 }], radius: 4, foreground: false });
@@ -168,16 +183,26 @@ async function main() {
     "preset amazon: 2000² con fondo blanco"
   );
 
-  // 9. motor WASM (GrabCut real): misma API, precisión igual o mejor
+  // 9. motor WASM (GrabCut real): misma API, precisión igual o mejor.
+  // OJO: cutRect NO ejercita el wasm — es un llenado rectangular en JS y el
+  // wasm sólo expone segment(trimap, iters). El GrabCut real entra por autoCut,
+  // así que la precisión del motor se mide ahí.
   await wasmInit();
   const s3 = new CutoutSession();
   s3.attachWasm(WasmCut);
   assert(s3.engineName === "wasm", "wasm: motor conectado");
   s3.load(syntheticImage(W, H));
-  blob = await s3.cutRect({ x: 45, y: 28, w: 150, h: 115 });
+  blob = await s3.cutRect(RECT);
   assert(blob instanceof Blob, "wasm: cutRect produce preview");
-  const accWasm = subjectAccuracy(s3, W, H);
-  assert(accWasm > 0.93, `wasm: precisión ${(accWasm * 100).toFixed(1)}% > 93%`);
+  assert(rectAccuracy(s3, W, H, RECT) > 0.99, "wasm: cutRect también recorta el recuadro exacto");
+
+  const s5 = new CutoutSession();
+  s5.attachWasm(WasmCut);
+  s5.load(syntheticImage(W, H));
+  blob = await s5.autoCut();
+  assert(blob instanceof Blob, "wasm: autoCut produce preview");
+  const accWasm = subjectAccuracy(s5, W, H);
+  assert(accWasm > 0.9, `wasm: autoCut segmenta el sujeto (${(accWasm * 100).toFixed(1)}% > 90%)`);
   blob = await s3.addStroke({ points: [{ x: 50, y: 33 }], radius: 4, foreground: false });
   assert(blob instanceof Blob, "wasm: stroke refina");
   blob = await s3.undo();

@@ -82,20 +82,19 @@ async function main() {
     "layout: ayuda de atajos oculta en móvil"
   );
 
-  // modal Descargar app
+  // Modal "Descargar app": HOY NO debe existir el botón ⬇. Se ocultó a
+  // propósito en T-012 (definir el desktop de pago antes de empujar descargas
+  // del desktop gratis v0.1.4) con un `false &&` en Topbar.jsx, y el modal
+  // quedó inalcanzable: onOpenDownload se pasa como prop pero nadie lo invoca.
+  //
+  // Este test afirmaba lo contrario ("botón ⬇ presente en web") y venía
+  // fallando desde entonces sin que nadie lo notara, porque `npm test` corre
+  // jest y este harness sólo corre con `npm run test:web`.
+  //
+  // Al restaurar el botón (quitando el `false &&`), volver a testear el flujo:
+  // clic → modal abre → enlace a releases → Esc cierra.
   const dlBtn = document.querySelector('[aria-label*="escritorio"]');
-  assert(!!dlBtn, "descarga: botón ⬇ presente en web");
-  dlBtn.click();
-  await tick();
-  const dlModal = document.querySelector(".modal-download");
-  assert(!!dlModal, "descarga: modal abre");
-  assert(
-    dlModal.querySelector('a[href*="github.com"][href*="releases"]'),
-    "descarga: enlace a releases siempre visible"
-  );
-  window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-  await tick();
-  assert(!document.querySelector(".modal-download"), "descarga: Esc cierra");
+  assert(!dlBtn, "descarga: el botón ⬇ sigue oculto (T-012), como se decidió");
 
   // modal Acerca de / Licencias
   document.querySelector('[aria-label*="licencias"], [aria-label*="licenças"], [aria-label*="licenses"]').click();
