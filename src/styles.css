@@ -1472,8 +1472,17 @@ kbd {
   flex: 1;
   min-width: 0;
   display: flex;
+  /* `safe` no es decorativo: con el centrado normal, si el contenido es MÁS
+     ALTO que el contenedor el desborde se reparte arriba Y abajo — pero un
+     contenedor de scroll sólo alcanza el de abajo, así que la parte de arriba
+     queda INACCESIBLE (reportado en Color Studio > Tema: el preview "antes"
+     cortado, sin scroll posible). `safe` cae a start cuando no entra, y centra
+     normalmente cuando sí. Las dos líneas: los navegadores que no entienden
+     `safe center` descartan la 2ª y se quedan con el centrado de la 1ª. */
   align-items: center;
+  align-items: safe center;
   justify-content: center;
+  justify-content: safe center;
   padding: 24px;
   overflow: auto;
 }
@@ -2655,16 +2664,10 @@ kbd {
   color: var(--acid);
 }
 
-/* ── Color Studio: comparativa antes/después (tema y recolor) ─────────────── */
-.cs-compare {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  width: 100%;
-  max-width: 900px;
-  align-items: flex-start;
-  justify-content: center;
-}
+/* ── Color Studio: comparativa antes/después (modo Tema) ──────────────────── */
+/* La regla real de .cs-compare vive más abajo, junto a .cs-stacked/.cs-row
+   (layout adaptativo); acá sólo quedan los hijos. Antes .cs-compare estaba
+   declarada dos veces y la de abajo pisaba a ésta en silencio. */
 .cs-pane {
   flex: 1 1 300px;
   min-width: 0;
@@ -2858,5 +2861,26 @@ kbd {
 }
 .cs-scheme-src-label {
   font-size: 12.5px;
+  color: var(--ink-dim);
+}
+
+/* Los semánticos son convenciones fijas y no salen de la imagen: se separan en
+   su propio grupo. El encabezado lo dice una vez, sin meter nada dentro de
+   .cs-scale-name (columna de ancho fijo: un badge ahí desalinea las filas). */
+.cs-scale-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.cs-scale-group + .cs-scale-group {
+  margin-top: 12px;
+}
+.cs-scale-group-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink-dim);
 }

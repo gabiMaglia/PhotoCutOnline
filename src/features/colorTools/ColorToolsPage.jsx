@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { t } from "../../lib/i18n.js";
 import { contrastText, paletteToText, hexToRgb, contrastRatio, wcagLevels, extractPalette } from "../../lib/palette.js";
-import { themeFlip, extractColorsFromText, recolorToPalette } from "../../lib/recolor.js";
+import { themeFlip } from "../../lib/recolor.js";
 import { buildScheme, schemeToCss, schemeToTailwind } from "../../lib/scheme.js";
 import { computeHistogram, simulateCVD, CVD_TYPES } from "../../lib/analysis.js";
 import Button from "../../components/ui/Button.jsx";
@@ -19,6 +19,14 @@ function copyText(text, onToast, msg) {
     () => onToast?.("No se pudo copiar")
   );
 }
+
+// El esquema mezcla dos cosas distintas y hay que mostrarlo como tal: los
+// derivados salen de la paleta de TU imagen, los semánticos son convenciones
+// fijas (verde=éxito, rojo=error…) que no cambian con la foto.
+const SCHEME_GROUPS = [
+  { key: "derived", roles: ["primary", "secondary", "accent", "neutral"] },
+  { key: "semantic", roles: ["success", "warning", "error", "info"] },
+];
 
 // Fila compacta de muestras (paleta bajo cada preview). Clic = copiar HEX.
 function MiniPalette({ colors, onToast }) {
@@ -41,13 +49,13 @@ function MiniPalette({ colors, onToast }) {
 }
 
 // Color Studio: análisis de color (paleta + cuentagotas + contraste WCAG) y
-// transformaciones (tema claro/oscuro y recolor con un esquema de referencia).
+// transformaciones (tema claro/oscuro).
 // Todo 100% local.
 export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const { loader } = useCutoutContext();
   const currentImage = loader?.imageUrl;
   const c = useColorTools({ onToast });
-  const [mode, setMode] = useState("palette"); // palette | theme | recolor
+  const [mode, setMode] = useState("palette"); // palette | theme | histogram | cvd
   const [hover, setHover] = useState(null);
 
   // Verificador de contraste WCAG (independiente de la imagen).
@@ -59,13 +67,10 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
     <span className={`wcag-badge ${ok ? "wcag-pass" : "wcag-fail"}`}>{ok ? "✓" : "✕"} {label}</span>
   );
 
-  // Tema y recolor comparten dos canvas antes/después.
+  // Tema usa dos canvas antes/después.
   const beforeRef = useRef(null);
   const afterRef = useRef(null);
   const [themeTarget, setThemeTarget] = useState("dark"); // dark | light | flip
-  const [cssText, setCssText] = useState("");
-  const [applied, setApplied] = useState(false);
-  const refColors = useMemo(() => extractColorsFromText(cssText), [cssText]);
   const [beforePal, setBeforePal] = useState([]);
   const [afterPal, setAfterPal] = useState([]);
   const [aspect, setAspect] = useState(1.4); // ancho/alto de la imagen
@@ -104,33 +109,6 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
     const src = c.getImageData();
     if (src) paintPair(themeFlip(src, themeTarget));
   }, [mode, themeTarget, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Al entrar a Recolorear, mostrar la original en el panel "antes" (el "después"
-  // queda vacío hasta aplicar un esquema).
-  useEffect(() => {
-    if (mode !== "recolor" || !c.ready) return;
-    const src = c.getImageData();
-    const cv = beforeRef.current;
-    if (src && cv) {
-      cv.width = src.width;
-      cv.height = src.height;
-      const ctx = cv.getContext("2d");
-      const id = ctx.createImageData(src.width, src.height);
-      id.data.set(src.data);
-      ctx.putImageData(id, 0, 0);
-      setAspect(src.width / src.height);
-      setBeforePal(extractPalette(src, 6));
-      setAfterPal([]);
-    }
-    setApplied(false);
-  }, [mode, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const applyRecolor = () => {
-    const src = c.getImageData();
-    if (!src || refColors.length === 0) return;
-    paintPair(recolorToPalette(src, refColors));
-    setApplied(true);
-  };
 
   const downloadCanvas = (ref, suffix) => {
     const cv = ref.current;
@@ -224,7 +202,6 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
               options={[
                 { value: "palette", label: t("cs.mode.palette") },
                 { value: "theme", label: t("cs.mode.theme") },
-                { value: "recolor", label: t("cs.mode.recolor") },
                 { value: "histogram", label: t("cs.mode.histogram") },
                 { value: "cvd", label: t("cs.mode.cvd") },
               ]}
@@ -291,31 +268,6 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
             </section>
           )}
 
-          {mode === "recolor" && (
-            <section className="rail-group">
-              <h2 className="rail-title">{t("cs.recolor.title")}</h2>
-              <textarea
-                className="cs-css-input"
-                placeholder={t("cs.recolor.placeholder")}
-                value={cssText}
-                onChange={(e) => setCssText(e.target.value)}
-                rows={5}
-              />
-              {refColors.length > 0 ? (
-                <div className="color-pins">
-                  {refColors.slice(0, 16).map((p) => (
-                    <span key={p.hex} className="color-pin" style={{ background: p.hex, color: contrastText(p.r, p.g, p.b) }}>{p.hex}</span>
-                  ))}
-                </div>
-              ) : (
-                <div className="rail-help"><p>{t("cs.recolor.noColors")}</p></div>
-              )}
-              <Button variant="primary" disabled={!c.ready || refColors.length === 0} onClick={applyRecolor}>{t("cs.recolor.apply")}</Button>
-              <Button disabled={!applied} onClick={() => downloadAfter("-recolor")}>{t("cs.download")}</Button>
-              <div className="rail-help"><p>{t("cs.recolor.help")}</p></div>
-            </section>
-          )}
-
           {mode === "histogram" && (
             <section className="rail-group">
               <h2 className="rail-title">{t("cs.mode.histogram")}</h2>
@@ -368,7 +320,7 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
             </div>
           </div>
 
-          {c.ready && (mode === "theme" || mode === "recolor") && (
+          {c.ready && mode === "theme" && (
             <div className="cs-result">
               {/* Layout adaptativo: imágenes anchas (horizontales) se apilan en
                   columna; las altas (verticales) van lado a lado (aprovecha mejor
@@ -408,21 +360,32 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                     />
                   </div>
                   <p className="cs-scheme-note">{t("cs.scheme.help")}</p>
+                  {/* Dos grupos en vez de una marca por fila: los semánticos NO
+                      salen de la imagen (son convenciones: verde=éxito, rojo=
+                      error…) y hay que decirlo, pero un badge dentro de
+                      .cs-scale-name —columna de ancho fijo— desalineaba las
+                      filas. El encabezado de grupo lo dice una vez y no toca el
+                      layout. */}
                   <div className="cs-scheme-scales">
-                    {["primary", "secondary", "accent", "neutral", "success", "warning", "error", "info"].map((role) => (
-                      <div className="cs-scale-row" key={role}>
-                        <span className="cs-scale-name">{role}</span>
-                        <div className="cs-scale-stops">
-                          {["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"].map((s) => (
-                            <button
-                              key={s}
-                              className="cs-scale-stop"
-                              style={{ background: scheme[role][s] }}
-                              title={`${role}-${s} ${scheme[role][s]}`}
-                              onClick={() => copyText(scheme[role][s], onToast, `${scheme[role][s]} copiado`)}
-                            />
-                          ))}
-                        </div>
+                    {SCHEME_GROUPS.map(({ key, roles }) => (
+                      <div className="cs-scale-group" key={key}>
+                        <h4 className="cs-scale-group-title">{t(`cs.scheme.${key}`)}</h4>
+                        {roles.map((role) => (
+                          <div className="cs-scale-row" key={role}>
+                            <span className="cs-scale-name">{role}</span>
+                            <div className="cs-scale-stops">
+                              {["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"].map((s) => (
+                                <button
+                                  key={s}
+                                  className="cs-scale-stop"
+                                  style={{ background: scheme[role][s] }}
+                                  title={`${role}-${s} ${scheme[role][s]}`}
+                                  onClick={() => copyText(scheme[role][s], onToast, `${scheme[role][s]} copiado`)}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>

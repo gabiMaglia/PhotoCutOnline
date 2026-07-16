@@ -1,4 +1,5 @@
 import { imageAverage, generateScale, buildScheme, schemeToCss, schemeToTailwind } from "./scheme.js";
+import { rgbToHsl, hslToRgb } from "./palette.js";
 
 function img(pixels) {
   const data = new Uint8ClampedArray(pixels.length * 4);
@@ -67,5 +68,55 @@ describe("schemeToCss / schemeToTailwind", () => {
     expect(tw).toContain("colors: {");
     expect(tw).toContain("primary: {");
     expect(tw).toMatch(/500: '#[0-9a-f]{6}',/);
+  });
+});
+
+// Regresión del bug reportado por el PO: al alternar Antes/Después en el modo
+// Tema, el esquema no cambiaba. Causa: generateScale tomaba sólo `h` y `s` y
+// descartaba `l`, con luminosidades fijas de STOPS — y themeFlip invierte
+// EXACTAMENTE la luminosidad. Resultado: escalas idénticas y un selector
+// placebo. El sesgo por luminosidad es lo que hace que el switch signifique
+// algo; si alguien lo quita, estos tests fallan.
+describe("generateScale: sesgo por luminosidad (antes/después debe cambiar)", () => {
+  const flip = (c) => {
+    const { h, s, l } = rgbToHsl(c.r, c.g, c.b);
+    return hslToRgb(h, s, 100 - l);
+  };
+  const lightnessOf = (hex) => {
+    const n = parseInt(hex.slice(1), 16);
+    return rgbToHsl((n >> 16) & 255, (n >> 8) & 255, n & 255).l;
+  };
+
+  it("un color claro y su versión oscura generan escalas distintas", () => {
+    const claro = { r: 240, g: 240, b: 235 };
+    expect(generateScale(claro)).not.toEqual(generateScale(flip(claro)));
+  });
+
+  it("la versión oscura da una escala más oscura en el mismo escalón", () => {
+    const claro = { r: 230, g: 180, b: 90 };
+    const L500claro = lightnessOf(generateScale(claro)[500]);
+    const L500oscuro = lightnessOf(generateScale(flip(claro))[500]);
+    expect(L500oscuro).toBeLessThan(L500claro);
+  });
+
+  it("la escala sigue siendo monótona claro→oscuro (50 → 900)", () => {
+    for (const base of [{ r: 20, g: 24, b: 40 }, { r: 245, g: 240, b: 230 }, { r: 200, g: 80, b: 60 }]) {
+      const sc = generateScale(base);
+      const ls = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"].map((s) => lightnessOf(sc[s]));
+      for (let i = 1; i < ls.length; i++) expect(ls[i]).toBeLessThanOrEqual(ls[i - 1] + 1);
+    }
+  });
+
+  it("buildScheme: los roles derivados cambian entre una imagen y su inversa", () => {
+    const pal = [
+      { r: 30, g: 40, b: 60 }, { r: 240, g: 240, b: 235 }, { r: 200, g: 80, b: 60 },
+      { r: 90, g: 160, b: 110 }, { r: 120, g: 120, b: 125 }, { r: 250, g: 200, b: 90 },
+    ];
+    const a = buildScheme(pal);
+    const b = buildScheme(pal.map(flip));
+    expect(a.primary).not.toEqual(b.primary);
+    expect(a.secondary).not.toEqual(b.secondary);
+    // los semánticos SÍ son fijos por diseño (convenciones), no dependen de la imagen
+    expect(a.success).toEqual(b.success);
   });
 });

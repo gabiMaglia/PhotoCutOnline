@@ -26,13 +26,29 @@ export function imageAverage(imageData) {
   return { r, g, b, hex: rgbToHex(r, g, b) };
 }
 
+// Cuánto corre la escala hacia la luminosidad del color base (0 = nada, 1 =
+// del todo). 0.5 desplaza como máximo ±0.25 de luminosidad: suficiente para que
+// una versión clara y una oscura den escalas visiblemente distintas, sin romper
+// el barrido claro→oscuro que hace que la escala sea usable como token 50–900.
+const L_BIAS = 0.5;
+
 // Escala 50–900 a partir de un color base {r,g,b}, conservando el tono.
+//
+// El sesgo por luminosidad NO es cosmético: antes esta función tomaba sólo `h` y
+// `s` y descartaba `l`, con las luminosidades fijas de STOPS. Como el modo Tema
+// invierte EXACTAMENTE la luminosidad (conserva tono y saturación), la versión
+// clara y la oscura de una misma imagen producían escalas IDÉNTICAS y el
+// antes/después no reflejaba nada. Ahora la escala se corre hacia la luminosidad
+// real del color base, así que una imagen oscura da una escala más oscura.
 export function generateScale(rgb) {
-  const { h, s } = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  const { h, s, l } = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  const bias = (l / 100 - 0.5) * L_BIAS;
   const out = {};
   for (const [stop, L] of Object.entries(STOPS)) {
-    const sat = L > 0.9 ? Math.round(s * 0.8) : s;
-    const c = hslToRgb(h, sat, Math.round(L * 100));
+    // se acota para no aplastar los extremos contra el blanco/negro puro
+    const Lb = Math.min(0.98, Math.max(0.04, L + bias));
+    const sat = Lb > 0.9 ? Math.round(s * 0.8) : s;
+    const c = hslToRgb(h, sat, Math.round(Lb * 100));
     out[stop] = rgbToHex(c.r, c.g, c.b);
   }
   return out;
