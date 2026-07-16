@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { backend } from "../../lib/backend.js";
 import { t } from "../../lib/i18n.js";
 import { DONATE_URL } from "../../services/ads.js";
@@ -9,6 +10,16 @@ import LangSwitch from "./LangSwitch.jsx";
 // Barra superior: marca, pestañas (Recorte / Icon Studio), abrir foto, idioma y
 // el grupo de íconos (donación, descarga de la app, acerca de).
 export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDownload }) {
+  const activeRef = useRef(null);
+
+  // La tira de pestañas scrollea horizontalmente cuando no entra (pantallas
+  // medianas/chicas): al cambiar de pestaña, traerla a la vista. `inline:
+  // "nearest"` sólo mueve la tira si hace falta y `block: "nearest"` evita que
+  // la página salte. scrollIntoView no existe en jsdom → guard para los tests.
+  useEffect(() => {
+    activeRef.current?.scrollIntoView?.({ inline: "nearest", block: "nearest" });
+  }, [tab]);
+
   return (
     <header className="topbar">
       {backend.isDesktop ? (
@@ -39,6 +50,7 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
         ].map((it) => (
           <button
             key={it.id}
+            ref={tab === it.id ? activeRef : null}
             role="tab"
             aria-selected={tab === it.id}
             className={`tab ${tab === it.id ? "tab-active" : ""}`}
