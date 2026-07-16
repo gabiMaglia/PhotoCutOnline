@@ -2,8 +2,14 @@ import { t } from "../../lib/i18n.js";
 import { orientationLabel, stripToBlob } from "../../lib/metadata.js";
 import Button from "../../components/ui/Button.jsx";
 import FileButton from "../../components/ui/FileButton.jsx";
+import Slider from "../../components/ui/Slider.jsx";
+import ChipGroup from "../../components/ui/ChipGroup.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
 import { useMetadata } from "./hooks/useMetadata.js";
+import { useReencode } from "./hooks/useReencode.js";
+
+const fmtBytes = (b) =>
+  b == null ? "—" : b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`;
 
 function Row({ label, value }) {
   if (value == null || value === "") return null;
@@ -15,10 +21,14 @@ function Row({ label, value }) {
   );
 }
 
-// Visor de metadatos: muestra datos del archivo y EXIF (cámara, fecha, GPS…) y
-// permite descargar una copia sin metadatos. Análisis 100% local.
+// Pestaña "Archivo": todo lo que es el archivo en sí, no la imagen que muestra.
+// Inspección (datos del archivo + EXIF: cámara, fecha, GPS…) y transformación
+// (convertir/comprimir, copia sin metadatos). Por eso convivir acá y no en una
+// 7ª pestaña: es la misma tarea mental y comparten el mismo motor de
+// re-codificado (reencodeToBlob). Todo 100% local.
 export default function MetadataPage({ active, onToast, onOpenDownload }) {
   const m = useMetadata({ onToast });
+  const r = useReencode({ imgRef: m.imgRef, info: m.info });
 
   const strip = async () => {
     const img = m.imgRef.current;
@@ -52,6 +62,64 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
             </FileButton>
             {info?.name && <div className="source-tag">{info.name}</div>}
           </section>
+
+          {info && (
+            <section className="rail-group">
+              <h2 className="rail-title">{t("conv.title")}</h2>
+              <ChipGroup
+                ariaLabel={t("conv.format")}
+                value={r.format}
+                onChange={r.setFormat}
+                options={[
+                  { value: "png", label: "PNG" },
+                  { value: "jpeg", label: "JPG" },
+                  { value: "webp", label: "WebP" },
+                ]}
+              />
+              {/* PNG es sin pérdida: canvas.toBlob IGNORA el parámetro quality.
+                  Mostrar el slider ahí sería un control que no hace nada. */}
+              {r.showQuality && (
+                <Slider
+                  id="conv-quality"
+                  label={t("conv.quality", { q: r.quality })}
+                  min={10}
+                  max={100}
+                  value={r.quality}
+                  onChange={r.setQuality}
+                />
+              )}
+
+              <div className="conv-size">
+                <span className="conv-size-from">{fmtBytes(info.bytes)}</span>
+                <span className="conv-size-arrow" aria-hidden>→</span>
+                <span className={`conv-size-to ${r.estimating ? "is-busy" : ""}`}>
+                  {r.estimating ? "…" : fmtBytes(r.estimate)}
+                </span>
+                {!r.estimating && r.estimate != null && info.bytes > 0 && (
+                  <span className={`conv-delta ${r.estimate <= info.bytes ? "is-good" : "is-bad"}`}>
+                    {r.estimate <= info.bytes
+                      ? `−${Math.round((1 - r.estimate / info.bytes) * 100)}%`
+                      : `+${Math.round((r.estimate / info.bytes - 1) * 100)}%`}
+                  </span>
+                )}
+              </div>
+
+              {/* JPG no tiene canal alfa: sin avisar, quien convierte un logo
+                  transparente se lleva una sorpresa (fondo relleno). */}
+              {r.losesAlpha && (
+                <div className="rail-help conv-warn">
+                  <p>{t("conv.losesAlpha")}</p>
+                </div>
+              )}
+
+              <Button variant="primary" onClick={r.download} disabled={m.busy}>
+                {t("conv.download")}
+              </Button>
+              <div className="rail-help">
+                <p>{t("conv.help")}</p>
+              </div>
+            </section>
+          )}
 
           {info && (
             <section className="rail-group">

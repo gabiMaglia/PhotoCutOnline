@@ -140,11 +140,75 @@ export function parseExif(buffer) {
   }
 }
 
-// Re-codifica la imagen en un canvas (descarta EXIF/GPS) y devuelve un Blob.
-export function stripToBlob(img, mime = "image/jpeg", quality = 0.92) {
+// Formatos de salida soportados. `lossy` decide si el parámetro `quality` de
+// canvas.toBlob hace algo: en PNG se IGNORA (es sin pérdida), así que exponer
+// un control de calidad con PNG sería mentir. `alpha` decide si el formato
+// conserva la transparencia.
+export const OUTPUT_FORMATS = {
+  png: { mime: "image/png", ext: "png", lossy: false, alpha: true },
+  jpeg: { mime: "image/jpeg", ext: "jpg", lossy: true, alpha: false },
+  webp: { mime: "image/webp", ext: "webp", lossy: true, alpha: true },
+};
+
+/**
+ * ¿La imagen tiene algún píxel no opaco? Decide si convertir a un formato sin
+ * alfa (JPG) destruye información y hay que avisar. Submuestrea: con encontrar
+ * un solo píxel translúcido alcanza, y recorrer 12MP por cada cambio del
+ * selector no vale la pena.
+ */
+export function hasTransparency(img) {
+  const w = img.naturalWidth || img.width;
+  const h = img.naturalHeight || img.height;
+  if (!w || !h) return false;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  let data;
+  try {
+    data = ctx.getImageData(0, 0, w, h).data;
+  } catch {
+    return false; // canvas "sucio" (imagen de otro origen): no podemos saber
+  }
+  const step = Math.max(4, Math.floor((w * h) / 20000) * 4);
+  for (let i = 3; i < data.length; i += step) if (data[i] < 255) return true;
+  return false;
+}
+
+/**
+ * Re-codifica la imagen en un canvas y devuelve un Blob. Al re-codificar se
+ * descartan los metadatos (EXIF/GPS) — es intencional, es lo que hace
+ * "descargar sin metadatos".
+ *
+ * opts: { format:'png'|'jpeg'|'webp', quality:0..1, background:'#rrggbb' }
+ *
+ * `background` NO es cosmético: JPG no tiene canal alfa y, sin rellenar, el
+ * canvas compone lo transparente sobre NEGRO. Un logo PNG transparente
+ * convertido a JPG salía con fondo negro. Se rellena de blanco por defecto,
+ * que es lo que espera cualquiera. En formatos con alfa (png/webp) no se
+ * rellena nada: se conserva la transparencia.
+ */
+export function reencodeToBlob(img, opts = {}) {
+  const { format = "jpeg", quality = 0.92, background = "#ffffff" } = opts;
+  const fmt = OUTPUT_FORMATS[format] || OUTPUT_FORMATS.jpeg;
   const canvas = document.createElement("canvas");
   canvas.width = img.naturalWidth || img.width;
   canvas.height = img.naturalHeight || img.height;
-  canvas.getContext("2d").drawImage(img, 0, 0);
-  return new Promise((resolve) => canvas.toBlob(resolve, mime, quality));
+  const ctx = canvas.getContext("2d");
+  if (!fmt.alpha) {
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  ctx.drawImage(img, 0, 0);
+  return new Promise((resolve) =>
+    // en PNG el 3er argumento se ignora; se pasa igual sin efecto
+    canvas.toBlob(resolve, fmt.mime, fmt.lossy ? quality : undefined)
+  );
+}
+
+/** Copia sin metadatos, en el formato original si se puede. */
+export function stripToBlob(img, mime = "image/jpeg", quality = 0.92) {
+  const format = Object.keys(OUTPUT_FORMATS).find((k) => OUTPUT_FORMATS[k].mime === mime) || "jpeg";
+  return reencodeToBlob(img, { format, quality });
 }

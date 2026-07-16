@@ -1,4 +1,4 @@
-import { basicInfo, orientationLabel, parseExif } from "./metadata.js";
+import { basicInfo, orientationLabel, parseExif, reencodeToBlob, stripToBlob, OUTPUT_FORMATS } from "./metadata.js";
 
 describe("basicInfo", () => {
   it("formatea peso en KB o MB según el tamaño", () => {
@@ -45,5 +45,89 @@ describe("parseExif (defensivo)", () => {
   it("no rompe con bytes basura tras el SOI", () => {
     const buf = new Uint8Array([0xff, 0xd8, 0x12, 0x34, 0x56, 0x78]).buffer;
     expect(parseExif(buf)).toBeNull();
+  });
+});
+
+// ── T-014: re-encode (comprimir/convertir) ────────────────────────────────────
+// jsdom no trae un canvas 2d real (no hay paquete `canvas` en el proyecto), así
+// que se stubea lo mínimo y se verifica la LÓGICA: qué mime/quality se le pide
+// al canvas y si se rellena el fondo antes de dibujar. El resultado visual real
+// lo cubre el harness de Chrome.
+describe("reencodeToBlob / OUTPUT_FORMATS", () => {
+  let calls;
+  const img = { naturalWidth: 40, naturalHeight: 30 };
+
+  beforeEach(() => {
+    calls = { toBlob: [], ops: [], fillStyle: null };
+    jest.spyOn(document, "createElement").mockImplementation((tag) => {
+      if (tag !== "canvas") return {};
+      return {
+        width: 0,
+        height: 0,
+        getContext: () => ({
+          set fillStyle(v) {
+            calls.fillStyle = v;
+          },
+          get fillStyle() {
+            return calls.fillStyle;
+          },
+          fillRect: (...a) => calls.ops.push(["fillRect", ...a]),
+          drawImage: (...a) => calls.ops.push(["drawImage", a.length]),
+          getImageData: () => ({ data: new Uint8ClampedArray(40 * 30 * 4).fill(255) }),
+        }),
+        toBlob: (cb, mime, q) => {
+          calls.toBlob.push({ mime, q });
+          cb(new Blob([], { type: mime }));
+        },
+      };
+    });
+  });
+  afterEach(() => jest.restoreAllMocks());
+
+  it("png: sin pérdida → NO se le pasa quality al canvas", async () => {
+    await reencodeToBlob(img, { format: "png", quality: 0.5 });
+    expect(calls.toBlob[0]).toEqual({ mime: "image/png", q: undefined });
+  });
+
+  it("jpeg/webp: con pérdida → se le pasa quality", async () => {
+    await reencodeToBlob(img, { format: "jpeg", quality: 0.6 });
+    expect(calls.toBlob[0]).toEqual({ mime: "image/jpeg", q: 0.6 });
+    await reencodeToBlob(img, { format: "webp", quality: 0.4 });
+    expect(calls.toBlob[1]).toEqual({ mime: "image/webp", q: 0.4 });
+  });
+
+  // El gotcha: JPG no tiene alfa y el canvas compone lo transparente sobre
+  // NEGRO. Sin este relleno, un logo transparente → JPG sale con fondo negro.
+  it("jpeg: rellena el fondo ANTES de dibujar (si no, lo transparente sale negro)", async () => {
+    await reencodeToBlob(img, { format: "jpeg" });
+    const fill = calls.ops.findIndex((o) => o[0] === "fillRect");
+    const draw = calls.ops.findIndex((o) => o[0] === "drawImage");
+    expect(fill).toBeGreaterThanOrEqual(0);
+    expect(fill).toBeLessThan(draw); // el relleno va primero o no sirve de nada
+    expect(calls.fillStyle).toBe("#ffffff"); // blanco, no negro
+  });
+
+  it("jpeg: respeta un background explícito", async () => {
+    await reencodeToBlob(img, { format: "jpeg", background: "#ff0000" });
+    expect(calls.fillStyle).toBe("#ff0000");
+  });
+
+  it("png/webp: NO rellenan (conservan la transparencia)", async () => {
+    await reencodeToBlob(img, { format: "png" });
+    expect(calls.ops.some((o) => o[0] === "fillRect")).toBe(false);
+    await reencodeToBlob(img, { format: "webp" });
+    expect(calls.ops.some((o) => o[0] === "fillRect")).toBe(false);
+  });
+
+  it("stripToBlob sigue funcionando y delega en reencodeToBlob", async () => {
+    const blob = await stripToBlob(img, "image/jpeg", 0.8);
+    expect(blob.type).toBe("image/jpeg");
+    expect(calls.toBlob[0]).toEqual({ mime: "image/jpeg", q: 0.8 });
+  });
+
+  it("OUTPUT_FORMATS declara bien pérdida y alfa por formato", () => {
+    expect(OUTPUT_FORMATS.png).toMatchObject({ lossy: false, alpha: true });
+    expect(OUTPUT_FORMATS.jpeg).toMatchObject({ lossy: true, alpha: false });
+    expect(OUTPUT_FORMATS.webp).toMatchObject({ lossy: true, alpha: true });
   });
 });
