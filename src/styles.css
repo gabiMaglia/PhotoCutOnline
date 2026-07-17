@@ -3115,3 +3115,33 @@ kbd {
   margin-bottom: 8px;
 }
 .cs-scheme-paste summary:hover { color: var(--ink); }
+
+/* Lupa de calidad sobre los thumbnails (pestaña Archivo) */
+.meta-thumb-zoom { cursor: zoom-in; }
+.meta-loupe {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none; /* no interceptar el mouse del thumbnail */
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--acid);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
+  background: var(--bg-deep);
+}
+.meta-loupe canvas {
+  display: block;
+  image-rendering: pixelated; /* refuerza el nearest del drawImage */
+}
+.meta-loupe-tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 2px 0;
+  color: #10130a;
+  background: color-mix(in srgb, var(--acid) 90%, transparent);
+}

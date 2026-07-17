@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { t } from "../../lib/i18n.js";
 import { orientationLabel, stripToBlob } from "../../lib/metadata.js";
 import Button from "../../components/ui/Button.jsx";
@@ -41,6 +41,45 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
       m.loadFromDataUrl(sharedImageUrl, t("img.currentName"));
     }
   }, [active, sharedImageUrl, m.loadFromDataUrl]);
+
+  // Lupa: al pasar el mouse por un thumbnail, magnifica esa zona a resolución
+  // completa para ver el detalle de la calidad. El thumbnail original muestrea
+  // la imagen original; el resultado, el blob convertido decodificado — así se
+  // ve la pérdida real (artefactos JPEG, etc.).
+  const convImgRef = useRef(null);
+  useEffect(() => {
+    if (!r.convertedUrl) { convImgRef.current = null; return; }
+    const img = new Image();
+    img.onload = () => { convImgRef.current = img; };
+    img.src = r.convertedUrl;
+  }, [r.convertedUrl]);
+
+  const [loupe, setLoupe] = useState(null); // { which, u, v, x, y }
+  const loupeCanvasRef = useRef(null);
+  const onThumbMove = (which) => (e) => {
+    const img = which === "conv" ? convImgRef.current : m.imgRef.current;
+    if (!img) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const scale = Math.max(rect.width / iw, rect.height / ih); // object-fit: cover
+    const offX = (iw * scale - rect.width) / 2, offY = (ih * scale - rect.height) / 2;
+    const u = Math.min(1, Math.max(0, (e.clientX - rect.left + offX) / scale / iw));
+    const v = Math.min(1, Math.max(0, (e.clientY - rect.top + offY) / scale / ih));
+    setLoupe({ which, u, v, x: e.clientX, y: e.clientY });
+  };
+  useEffect(() => {
+    const cv = loupeCanvasRef.current;
+    if (!cv || !loupe) return;
+    const img = loupe.which === "conv" ? convImgRef.current : m.imgRef.current;
+    if (!img) return;
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const crop = Math.max(18, Math.round(Math.min(iw, ih) * 0.13)); // px de origen mostrados
+    const cx = loupe.u * iw, cy = loupe.v * ih;
+    const ctx = cv.getContext("2d");
+    ctx.imageSmoothingEnabled = false; // nearest: se ven los píxeles/artefactos
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    ctx.drawImage(img, cx - crop / 2, cy - crop / 2, crop, crop, 0, 0, cv.width, cv.height);
+  }, [loupe]);
 
   const strip = async () => {
     const img = m.imgRef.current;
@@ -210,15 +249,38 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
                   bloque extra colapsa/expande con transición (single↔double). */}
               {m.previewUrl && (
                 <div className="meta-thumb-hero">
-                  <div className="meta-thumb" title={info.name}>
+                  <div
+                    className="meta-thumb meta-thumb-zoom"
+                    title={t("conv.loupeHint")}
+                    onMouseMove={onThumbMove("orig")}
+                    onMouseLeave={() => setLoupe(null)}
+                  >
                     <img src={m.previewUrl} alt={t("meta.thumbAlt")} />
                   </div>
                   <div className={`meta-thumb-extra ${r.changed && r.convertedUrl ? "is-on" : ""}`}>
                     <span className="meta-thumb-arrow" aria-hidden>→</span>
-                    <div className="meta-thumb meta-thumb-after" title={t("conv.previewAfter")}>
+                    <div
+                      className="meta-thumb meta-thumb-after meta-thumb-zoom"
+                      title={t("conv.loupeHint")}
+                      onMouseMove={onThumbMove("conv")}
+                      onMouseLeave={() => setLoupe(null)}
+                    >
                       {r.convertedUrl && <img src={r.convertedUrl} alt={t("conv.previewAfter")} />}
                     </div>
                   </div>
+                </div>
+              )}
+
+              {loupe && (
+                <div
+                  className="meta-loupe"
+                  style={{ left: loupe.x + 20, top: loupe.y - 80 }}
+                  aria-hidden
+                >
+                  <canvas ref={loupeCanvasRef} width={150} height={150} />
+                  <span className="meta-loupe-tag">
+                    {loupe.which === "conv" ? t("conv.previewAfter") : t("conv.original")}
+                  </span>
                 </div>
               )}
 
