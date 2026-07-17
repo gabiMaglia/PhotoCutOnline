@@ -13,43 +13,40 @@
 
 import { luminance, rgbToHex, hexToRgb } from "./palette.js";
 
-function rgb2hsl(r, g, b) {
-  r /= 255; g /= 255; b /= 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
-    else if (max === g) h = (b - r) / d + 2;
-    else h = (r - g) / d + 4;
-    h /= 6;
-  }
-  return [h, s, l];
+// Inversión de luminosidad en OKLab (Björn Ottosson) en vez de HSL. La "L" de
+// HSL no es perceptualmente uniforme —un amarillo y un azul con la misma L se
+// ven con brillos muy distintos—, así que invertir L en HSL desbalancea los
+// tonos. OKLab tiene una L que sí mide brillo percibido de forma consistente
+// entre tonos, que es justo lo que hace falta para pasar una captura a modo
+// oscuro sin virar los colores. (Investigación 2026-07-17: es el enfoque
+// recomendado para dark-mode de UI/capturas, por encima de HSL y del truco
+// CSS invert+hue-rotate, que oscurece de más.)
+
+const srgb2lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const lin2srgb = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055);
+
+// sRGB 0..255 → OKLab {L,a,b} (L en 0..1)
+function rgbToOklab(r, g, b) {
+  const lr = srgb2lin(r / 255), lg = srgb2lin(g / 255), lb = srgb2lin(b / 255);
+  const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
+  const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
+  const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
 }
 
-function hue2rgb(p, q, t) {
-  if (t < 0) t += 1;
-  if (t > 1) t -= 1;
-  if (t < 1 / 6) return p + (q - p) * 6 * t;
-  if (t < 1 / 2) return q;
-  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-  return p;
-}
-
-function hsl2rgb(h, s, l) {
-  let r, g, b;
-  if (s === 0) {
-    r = g = b = l;
-  } else {
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1 / 3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1 / 3);
-  }
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+// OKLab {L,a,b} → sRGB [r,g,b] 0..255 (clamp implícito por Uint8ClampedArray)
+function oklabToRgb(L, a, b) {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+  const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+  const r = lin2srgb(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+  const g = lin2srgb(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+  const bl = lin2srgb(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s);
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(bl * 255)];
 }
 
 // Luminosidad media de la imagen (0..1), submuestreada.
@@ -73,8 +70,9 @@ export function shouldFlip(imageData, target) {
   return target === "dark" ? isLight : !isLight;
 }
 
-// Genera el tema opuesto invirtiendo la luminosidad (L→1−L) y conservando tono
-// y saturación. target: "dark" | "light" | "flip".
+// Genera el tema opuesto invirtiendo la luminosidad perceptual (L de OKLab
+// → 1−L) y conservando el color (a,b, o sea tono y croma). target: "dark" |
+// "light" | "flip".
 export function themeFlip(imageData, target = "dark") {
   const { data } = imageData;
   const out = new Uint8ClampedArray(data.length);
@@ -83,9 +81,9 @@ export function themeFlip(imageData, target = "dark") {
     if (!flip) {
       out[i] = data[i]; out[i + 1] = data[i + 1]; out[i + 2] = data[i + 2];
     } else {
-      const [h, s, l] = rgb2hsl(data[i], data[i + 1], data[i + 2]);
-      const [r, g, b] = hsl2rgb(h, s, 1 - l);
-      out[i] = r; out[i + 1] = g; out[i + 2] = b;
+      const [L, a, b] = rgbToOklab(data[i], data[i + 1], data[i + 2]);
+      const [r, g, bl] = oklabToRgb(1 - L, a, b);
+      out[i] = r; out[i + 1] = g; out[i + 2] = bl;
     }
     out[i + 3] = data[i + 3];
   }

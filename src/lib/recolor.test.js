@@ -1,4 +1,4 @@
-import { avgLuminance, shouldFlip, themeFlip, extractColorsFromText, recolorToPalette } from "./recolor.js";
+import { avgLuminance, shouldFlip, themeFlip } from "./recolor.js";
 
 // ImageData sintético a partir de una lista de [r,g,b,(a)].
 function img(pixels) {
