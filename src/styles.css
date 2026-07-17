@@ -3083,3 +3083,35 @@ kbd {
   color: var(--ink);
   border-color: var(--line-bright);
 }
+
+/* Paleta editable: color picker por rol + pegar código */
+.cs-scale-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.cs-scale-pick {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--line-bright);
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.cs-scale-pick::-webkit-color-swatch-wrapper { padding: 0; }
+.cs-scale-pick::-webkit-color-swatch { border: none; border-radius: 4px; }
+.cs-scheme-paste {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+.cs-scheme-paste summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+  margin-bottom: 8px;
+}
+.cs-scheme-paste summary:hover { color: var(--ink); }

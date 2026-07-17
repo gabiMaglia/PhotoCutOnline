@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { t } from "../../lib/i18n.js";
 import { contrastText, paletteToText, hexToRgb, contrastRatio, wcagLevels, extractPalette } from "../../lib/palette.js";
 import { themeFlip } from "../../lib/recolor.js";
-import { buildScheme, schemeToCss, schemeToTailwind } from "../../lib/scheme.js";
+import { buildScheme, generateScale, schemeToCss, schemeToTailwind } from "../../lib/scheme.js";
 import { computeHistogram, simulateCVD, CVD_TYPES } from "../../lib/analysis.js";
 import Button from "../../components/ui/Button.jsx";
 import Slider from "../../components/ui/Slider.jsx";
@@ -27,6 +27,19 @@ const SCHEME_GROUPS = [
   { key: "derived", roles: ["primary", "secondary", "accent", "neutral"] },
   { key: "semantic", roles: ["success", "warning", "error", "info"] },
 ];
+const SCHEME_ROLES = ["primary", "secondary", "accent", "neutral", "success", "warning", "error", "info"];
+
+// Parsea colores por rol de un texto pegado (CSS con --primary / --color-primary
+// / --color-primary-500, o config de Tailwind con primary: '#…'). Toma el primer
+// hex que aparece tras el nombre de cada rol. Devuelve { role: "#hex" }.
+function parseSemanticColors(text) {
+  const out = {};
+  for (const role of SCHEME_ROLES) {
+    const m = text.match(new RegExp(`${role}[^:#]*:\\s*['"]?(#[0-9a-fA-F]{3,8})`, "i"));
+    if (m) out[role] = m[1];
+  }
+  return out;
+}
 
 // Paleta compacta bajo cada preview, con su rótulo. Clic en una muestra = copiar HEX.
 function MiniPalette({ colors, onToast, label }) {
@@ -89,7 +102,33 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const [aspect, setAspect] = useState(1.4); // ancho/alto de la imagen
   const [schemeSrc, setSchemeSrc] = useState("after"); // desde qué preview sale el esquema
   const schemePal = schemeSrc === "before" ? beforePal : afterPal;
-  const scheme = useMemo(() => (schemePal.length ? buildScheme(schemePal) : null), [schemePal]);
+  const baseScheme = useMemo(() => (schemePal.length ? buildScheme(schemePal) : null), [schemePal]);
+  // Paleta editable: overrides por rol (hex elegido a mano o pegado). Se
+  // regenera la escala 50–900 de ese rol desde el color elegido. Se resetean al
+  // cambiar la paleta fuente (nueva imagen = nuevo esquema).
+  const [overrides, setOverrides] = useState({});
+  const [schemePaste, setSchemePaste] = useState("");
+  useEffect(() => setOverrides({}), [schemePal]);
+  const scheme = useMemo(() => {
+    if (!baseScheme) return null;
+    if (!Object.keys(overrides).length) return baseScheme;
+    const out = { ...baseScheme };
+    for (const [role, hex] of Object.entries(overrides)) {
+      const rgb = hexToRgb(hex);
+      if (rgb) out[role] = generateScale(rgb);
+    }
+    return out;
+  }, [baseScheme, overrides]);
+  const setRole = (role, hex) => setOverrides((o) => ({ ...o, [role]: hex }));
+  const applyPastedScheme = () => {
+    const parsed = parseSemanticColors(schemePaste);
+    if (Object.keys(parsed).length) {
+      setOverrides((o) => ({ ...o, ...parsed }));
+      onToast?.(t("cs.scheme.pasteApplied", { n: Object.keys(parsed).length }));
+    } else {
+      onToast?.(t("cs.scheme.pasteNone"));
+    }
+  };
 
   // Histograma y daltonismo (CVD).
   const histRef = useRef(null);
@@ -370,6 +409,9 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                   <div className="cs-scheme-head">
                     <h3>{t("cs.scheme.title")}</h3>
                     <div className="cs-scheme-actions">
+                      {Object.keys(overrides).length > 0 && (
+                        <Button size="small" onClick={() => setOverrides({})}>{t("cs.scheme.reset")}</Button>
+                      )}
                       <Button size="small" onClick={() => copyText(schemeToCss(scheme), onToast, t("cs.scheme.copiedCss"))}>{t("cs.scheme.css")}</Button>
                       <Button size="small" onClick={() => copyText(schemeToTailwind(scheme), onToast, t("cs.scheme.copiedTw"))}>{t("cs.scheme.tailwind")}</Button>
                     </div>
@@ -399,7 +441,15 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                         <h4 className="cs-scale-group-title">{t(`cs.scheme.${key}`)}</h4>
                         {roles.map((role) => (
                           <div className="cs-scale-row" key={role}>
-                            <span className="cs-scale-name">{role}</span>
+                            <label className="cs-scale-name cs-scale-edit" title={t("cs.scheme.editRole")}>
+                              <input
+                                type="color"
+                                className="cs-scale-pick"
+                                value={scheme[role]["500"]}
+                                onChange={(e) => setRole(role, e.target.value)}
+                              />
+                              {role}
+                            </label>
                             <div className="cs-scale-stops">
                               {["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"].map((s) => (
                                 <button
@@ -416,6 +466,23 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                       </div>
                     ))}
                   </div>
+
+                  {/* Pegar un esquema en código: toma el primer hex tras cada
+                      nombre de rol (CSS --primary, --color-primary-500, o
+                      Tailwind primary:'#…') y lo aplica como override. */}
+                  <details className="cs-scheme-paste">
+                    <summary>{t("cs.scheme.pasteTitle")}</summary>
+                    <textarea
+                      className="cs-css-input"
+                      rows={4}
+                      value={schemePaste}
+                      onChange={(e) => setSchemePaste(e.target.value)}
+                      placeholder={t("cs.scheme.pastePlaceholder")}
+                    />
+                    <Button size="small" variant="primary" disabled={!schemePaste.trim()} onClick={applyPastedScheme}>
+                      {t("cs.scheme.pasteApply")}
+                    </Button>
+                  </details>
                 </section>
               )}
             </div>
