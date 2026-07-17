@@ -210,6 +210,51 @@ del preview.
 detección de caras (BlazeFace y similares rondan cientos de KB, vs 4,4 MB de
 u2netp) — NO comprometer la feature hasta medirlo, igual que se hizo con D-04.
 
+
+### Spike GROW-19 — difuminar caras: peso MEDIDO, viable (2026-07-17)
+
+**Se resolvió la incógnita que frenaba la feature** (peso del modelo), midiendo
+en vez de suponer — como con D-04.
+
+**Detección de caras client-side, candidatos ONNX** (reusan el runtime que YA
+tenemos cargado para u2netp → cero peso de runtime nuevo):
+
+| Modelo | Peso REAL (medido) | Licencia | Fuente |
+|--------|--------------------|----------|--------|
+| **YuNet** | **227 KB** | **MIT** | OpenCV (oficial, HuggingFace) |
+| yolov8n-face | 11,6 MB | — | deepghs — DESCARTADO, más pesado que u2netp entero |
+| Ultra-Light-1MB / BlazeFace | ~1 MB | MIT | alternativas si YuNet no rindiera |
+
+Referencia: u2netp, que ya shippeamos, pesa **4,36 MB**. **YuNet es 1/20 de
+eso.** El peso deja de ser un argumento en contra: 227 KB es despreciable.
+
+**Recomendación: YuNet.** MIT, minúsculo, de OpenCV (mantenido, confiable),
+milisegundos por imagen, reusa onnxruntime-web. Da bbox + 5 landmarks + score.
+
+**Lo que SÍ queda por hacer (no es gratis, pero es acotado):**
+- Pre/post-proceso de YuNet: resize+normalize de entrada, y NMS
+  (non-max suppression) sobre las cajas de salida. Bien documentado, pero hay
+  que escribirlo y **verificar la forma real del output con el modelo cargado**
+  (no se puede a ciegas).
+- El blur en sí YA EXISTE (compositeBlur / canvas). Aplicarlo sólo dentro de
+  cada caja detectada es la parte fácil.
+- Lazy-load + cache por service worker, igual que u2netp (bajar el modelo sólo
+  al usar la feature, no en cada carga).
+- **Trampa tipo D-04:** si no detecta caras, NO hacer como que funcionó —
+  decirlo. YuNet da un score por caja: usarlo como umbral.
+
+**DECISIÓN DE PRODUCTO PENDIENTE (PO): ¿blur o pixelado?** La investigación de
+mercado señaló que para GDPR el blur reversible puede no alcanzar — el pixelado
+fuerte o la caja sólida son irreversibles y más defendibles legalmente.
+Sugerencia: ofrecer ambos, default al pixelado fuerte. Es tu decisión de marca,
+no técnica.
+
+**Por qué NO se implementó en esta corrida autónoma:** agregar un modelo de ML
+nuevo al producto + pipeline de detección que sólo se puede verificar bien con
+caras reales en el navegador, más la decisión blur/pixelado, es demasiado para
+shippear sin que el PO lo vea. El spike (medir + recomendar) es el paso
+responsable; la implementación queda como ticket listo para arrancar.
+
 ## Veredictos QA
 | Tarea | Veredicto | Defectos (si rechazo) | Fecha |
 |-------|-----------|------------------------|-------|
