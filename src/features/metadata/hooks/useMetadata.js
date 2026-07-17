@@ -14,6 +14,16 @@ export function useMetadata({ onToast } = {}) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const previewUrlRef = useRef(null);
 
+  // Sólo se revocan object URLs (blob:); los data URLs no lo necesitan y
+  // además la imagen compartida entre pestañas es un data URL que no debemos
+  // invalidar.
+  const setPreview = useCallback((next) => {
+    const prev = previewUrlRef.current;
+    if (prev && prev !== next && prev.startsWith("blob:")) URL.revokeObjectURL(prev);
+    previewUrlRef.current = next;
+    setPreviewUrl(next);
+  }, []);
+
   const load = useCallback(
     async (file) => {
       if (!file) return;
@@ -31,20 +41,48 @@ export function useMetadata({ onToast } = {}) {
         imgRef.current = img;
         setInfo(basicInfo(file, img));
         setExif(parseExif(buf));
-        // éxito: esta URL queda viva para el thumbnail; se revoca la previa
-        if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-        previewUrlRef.current = url;
-        setPreviewUrl(url);
-        url = null; // ya no la revocamos en el catch
+        setPreview(url); // queda viva para el thumbnail (revoca la blob previa)
+        url = null;
       } catch {
-        if (url) URL.revokeObjectURL(url); // falló la carga: soltar esta URL
+        if (url) URL.revokeObjectURL(url);
         onToast?.("No se pudo leer la imagen");
       } finally {
         setBusy(false);
       }
     },
-    [onToast]
+    [onToast, setPreview]
   );
 
-  return { info, exif, busy, load, imgRef, previewUrl };
+  // Carga desde un data URL — la imagen compartida por otras pestañas. Preserva
+  // los bytes originales, así que el EXIF sigue disponible. No hay nombre de
+  // archivo real: se sintetiza uno a partir del tipo MIME.
+  const loadFromDataUrl = useCallback(
+    async (dataUrl, name) => {
+      if (!dataUrl) return;
+      setBusy(true);
+      try {
+        const blob = await (await fetch(dataUrl)).blob();
+        const buf = await blob.arrayBuffer();
+        const img = new Image();
+        await new Promise((res, rej) => {
+          img.onload = res;
+          img.onerror = rej;
+          img.src = dataUrl;
+        });
+        imgRef.current = img;
+        const ext = (blob.type.split("/")[1] || "img").replace("jpeg", "jpg");
+        const pseudoFile = { name: name || `imagen.${ext}`, type: blob.type, size: blob.size, lastModified: 0 };
+        setInfo(basicInfo(pseudoFile, img));
+        setExif(parseExif(buf));
+        setPreview(dataUrl); // data URL: no se revoca
+      } catch {
+        onToast?.("No se pudo leer la imagen");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [onToast, setPreview]
+  );
+
+  return { info, exif, busy, load, loadFromDataUrl, imgRef, previewUrl };
 }

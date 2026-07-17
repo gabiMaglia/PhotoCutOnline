@@ -2616,22 +2616,16 @@ kbd {
   padding: 16px 18px;
 }
 
-/* Tarjeta de archivo con foto tipo DNI arriba a la derecha. Los datos van en su
-   propia columna (min-width:0 para que un nombre largo wrapee y no empuje el
-   thumbnail). align-items:flex-start alinea la foto con el título. */
-.meta-card-file {
+/* Thumbnail tipo foto de DNI, centrado por encima del recuadro de datos. */
+.meta-thumb-hero {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-.meta-file-body {
-  flex: 1 1 auto;
-  min-width: 0;
+  justify-content: center;
+  margin-bottom: 2px;
 }
 .meta-thumb {
   flex: 0 0 auto;
-  width: 92px;
-  height: 116px; /* retrato ~4:5, proporción de foto carné */
+  width: 104px;
+  height: 132px; /* retrato ~4:5, proporción de foto carné */
   border-radius: 10px;
   overflow: hidden;
   position: relative;

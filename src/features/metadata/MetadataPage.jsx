@@ -5,6 +5,7 @@ import FileButton from "../../components/ui/FileButton.jsx";
 import Slider from "../../components/ui/Slider.jsx";
 import ChipGroup from "../../components/ui/ChipGroup.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
+import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import { useMetadata } from "./hooks/useMetadata.js";
 import { useReencode } from "./hooks/useReencode.js";
 
@@ -27,6 +28,7 @@ function Row({ label, value }) {
 // 7ª pestaña: es la misma tarea mental y comparten el mismo motor de
 // re-codificado (reencodeToBlob). Todo 100% local.
 export default function MetadataPage({ active, onToast, onOpenDownload }) {
+  const { sharedImageUrl, shareFile } = useCutoutContext();
   const m = useMetadata({ onToast });
   const r = useReencode({ imgRef: m.imgRef, info: m.info });
 
@@ -56,10 +58,21 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
             <FileButton
               variant="primary"
               accept="image/*"
-              onChange={(e) => e.target.files?.[0] && m.load(e.target.files[0])}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) {
+                  m.load(f);
+                  shareFile(f); // queda disponible para las otras pestañas
+                }
+              }}
             >
               {t("meta.openImage")}
             </FileButton>
+            {sharedImageUrl && (
+              <Button onClick={() => m.loadFromDataUrl(sharedImageUrl, t("img.currentName"))}>
+                {t("color.useCurrent")}
+              </Button>
+            )}
             {info?.name && <div className="source-tag">{info.name}</div>}
           </section>
 
@@ -195,29 +208,30 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
 
           {info && (
             <div className="meta-workspace">
-              <section className="meta-card meta-card-file">
-                <div className="meta-file-body">
-                  <h2>{t("meta.file")}</h2>
-                  <Row label={t("meta.name")} value={info.name} />
-                  <Row label={t("meta.type")} value={info.type} />
-                  <Row label={t("meta.size")} value={info.size} />
-                  <Row
-                    label={t("meta.dimensions")}
-                    value={info.width ? `${info.width} × ${info.height} px` : undefined}
-                  />
-                  <Row
-                    label={t("meta.modified")}
-                    value={info.modified ? info.modified.toLocaleString() : undefined}
-                  />
-                </div>
-                {/* Thumbnail tipo foto de DNI, arriba a la derecha. object-fit
-                    cover lo encuadra como una foto carné aunque la imagen tenga
-                    cualquier proporción. */}
-                {m.previewUrl && (
+              {/* Thumbnail centrado por encima del recuadro de datos. object-fit
+                  cover lo encuadra como foto carné aunque la imagen tenga
+                  cualquier proporción. */}
+              {m.previewUrl && (
+                <div className="meta-thumb-hero">
                   <div className="meta-thumb" title={info.name}>
                     <img src={m.previewUrl} alt={t("meta.thumbAlt")} />
                   </div>
-                )}
+                </div>
+              )}
+
+              <section className="meta-card">
+                <h2>{t("meta.file")}</h2>
+                <Row label={t("meta.name")} value={info.name} />
+                <Row label={t("meta.type")} value={info.type} />
+                <Row label={t("meta.size")} value={info.size} />
+                <Row
+                  label={t("meta.dimensions")}
+                  value={info.width ? `${info.width} × ${info.height} px` : undefined}
+                />
+                <Row
+                  label={t("meta.modified")}
+                  value={info.modified ? info.modified.toLocaleString() : undefined}
+                />
               </section>
 
               <section className="meta-card">

@@ -52,8 +52,8 @@ function MiniPalette({ colors, onToast }) {
 // transformaciones (tema claro/oscuro).
 // Todo 100% local.
 export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
-  const { loader } = useCutoutContext();
-  const currentImage = loader?.imageUrl;
+  const { sharedImageUrl, shareFile } = useCutoutContext();
+  const currentImage = sharedImageUrl;
   const c = useColorTools({ onToast });
   const [mode, setMode] = useState("palette"); // palette | theme | histogram | cvd
   const [hover, setHover] = useState(null);
@@ -188,10 +188,10 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
         <aside className="rail">
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>
-            <Button variant="primary" disabled={!currentImage} onClick={() => c.loadFromUrl(currentImage, t("color.currentName"))}>
+            <Button variant="primary" disabled={!currentImage} onClick={() => c.loadFromUrl(currentImage, t("img.currentName"))}>
               {t("color.useCurrent")}
             </Button>
-            <FileButton accept="image/*" onChange={(e) => e.target.files?.[0] && c.loadFromFile(e.target.files[0])}>
+            <FileButton accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { c.loadFromFile(f); shareFile(f); } }}>
               {t("color.openImage")}
             </FileButton>
             {c.sourceName && <div className="source-tag">{c.sourceName}</div>}

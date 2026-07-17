@@ -19,8 +19,8 @@ const FONTS = {
 // Añadir texto a una foto: preview en vivo, arrastrar para posicionar, estilos y
 // exportación. Todo 100% local; la imagen no se sube.
 export default function TextToolPage({ active, onToast, onOpenDownload }) {
-  const { loader } = useCutoutContext();
-  const currentImage = loader?.imageUrl;
+  const { sharedImageUrl, shareFile } = useCutoutContext();
+  const currentImage = sharedImageUrl;
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const dragging = useRef(false);
@@ -162,8 +162,8 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
         <aside className="rail">
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>
-            <Button variant="primary" disabled={!currentImage} onClick={() => loadImage(currentImage, t("color.currentName"))}>{t("color.useCurrent")}</Button>
-            <FileButton accept="image/*" onChange={(e) => e.target.files?.[0] && loadFile(e.target.files[0])}>{t("color.openImage")}</FileButton>
+            <Button variant="primary" disabled={!currentImage} onClick={() => loadImage(currentImage, t("img.currentName"))}>{t("color.useCurrent")}</Button>
+            <FileButton accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { loadFile(f); shareFile(f); } }}>{t("color.openImage")}</FileButton>
             {sourceName && <div className="source-tag">{sourceName}</div>}
           </section>
 
