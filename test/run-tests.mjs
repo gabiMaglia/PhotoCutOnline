@@ -15,6 +15,7 @@ const TESTS = [
   "ai-test",
   "canvas-test",
   "engine-test",
+  "reencode-test",
   "errorboundary-test",
   "icons-test",
   "i18n-test",
