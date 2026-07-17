@@ -204,13 +204,20 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
 
           {info && (
             <div className="meta-workspace">
-              {/* Thumbnail centrado por encima del recuadro de datos. object-fit
-                  cover lo encuadra como foto carné aunque la imagen tenga
-                  cualquier proporción. */}
+              {/* Thumbnail centrado por encima del recuadro de datos. Cuando la
+                  conversión cambia formato o tamaño, aparece un segundo
+                  thumbnail (el resultado) con una flecha — ambos centrados. El
+                  bloque extra colapsa/expande con transición (single↔double). */}
               {m.previewUrl && (
                 <div className="meta-thumb-hero">
                   <div className="meta-thumb" title={info.name}>
                     <img src={m.previewUrl} alt={t("meta.thumbAlt")} />
+                  </div>
+                  <div className={`meta-thumb-extra ${r.changed && r.convertedUrl ? "is-on" : ""}`}>
+                    <span className="meta-thumb-arrow" aria-hidden>→</span>
+                    <div className="meta-thumb meta-thumb-after" title={t("conv.previewAfter")}>
+                      {r.convertedUrl && <img src={r.convertedUrl} alt={t("conv.previewAfter")} />}
+                    </div>
                   </div>
                 </div>
               )}

@@ -12,6 +12,8 @@ export function useReencode({ imgRef, info }) {
   const [quality, setQuality] = useState(80); // 0–100 en la UI, 0–1 en el canvas
   const [estimate, setEstimate] = useState(null); // bytes del resultado
   const [estimating, setEstimating] = useState(false);
+  const [convertedUrl, setConvertedUrl] = useState(null); // preview del resultado
+  const previewUrlRef = useRef(null);
   const [transparent, setTransparent] = useState(false);
   const [lock, setLock] = useState(true); // candado de proporción
   const [width, setWidth] = useState(null);
@@ -80,10 +82,21 @@ export function useReencode({ imgRef, info }) {
       });
       if (id !== runId.current) return; // llegó tarde: hay otro cambio en curso
       setEstimate(blob ? blob.size : null);
+      // preview del resultado convertido (reusa el MISMO blob del estimado): se
+      // revoca el object URL anterior para no acumular en memoria.
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      const purl = blob ? URL.createObjectURL(blob) : null;
+      previewUrlRef.current = purl;
+      setConvertedUrl(purl);
       setEstimating(false);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [format, quality, width, height, info, imgRef]);
+
+  // liberar el último preview al desmontar
+  useEffect(() => () => {
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+  }, []);
 
   const download = useCallback(async () => {
     const img = imgRef.current;
@@ -104,6 +117,8 @@ export function useReencode({ imgRef, info }) {
   }, [imgRef, info, format, quality, width, height]);
 
   const fmt = OUTPUT_FORMATS[format];
+  const origFormat = Object.keys(OUTPUT_FORMATS).find((k) => OUTPUT_FORMATS[k].mime === info?.type);
+  const resized = !!(srcW && width && width !== srcW);
   return {
     format,
     setFormat,
@@ -111,6 +126,10 @@ export function useReencode({ imgRef, info }) {
     setQuality,
     estimate,
     estimating,
+    convertedUrl,
+    // ¿el resultado difiere del original? (otro formato o distinto tamaño) →
+    // dispara el preview comparativo antes/después.
+    changed: (origFormat ? format !== origFormat : true) || resized,
     width,
     height,
     changeWidth,
@@ -119,7 +138,7 @@ export function useReencode({ imgRef, info }) {
     resetSize,
     lock,
     setLock,
-    resized: !!(srcW && width && width !== srcW),
+    resized,
     // Interpolar no inventa detalle: agrandar sólo agranda los píxeles. Se avisa
     // en vez de dejar creer que hay un upscaler (que NO tenemos: ver GROW-20).
     upscaling: !!(srcW && width && width > srcW),

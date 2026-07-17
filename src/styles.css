@@ -2616,11 +2616,48 @@ kbd {
   padding: 16px 18px;
 }
 
-/* Thumbnail tipo foto de DNI, centrado por encima del recuadro de datos. */
+/* Thumbnail tipo foto de DNI, centrado por encima del recuadro de datos. Con la
+   comparación de conversión activa, se muestra un segundo thumbnail a la
+   derecha con una flecha; el conjunto queda centrado. */
 .meta-thumb-hero {
   display: flex;
+  align-items: center;
   justify-content: center;
   margin-bottom: 2px;
+}
+/* Bloque "flecha + resultado": colapsado por defecto (ancho 0), se expande al
+   cambiar formato/tamaño. Animar max-width + opacidad da la transición
+   single↔double sin saltos, y justify-content:center recentra el conjunto. */
+.meta-thumb-extra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(-6px);
+  transition: max-width 0.35s ease, opacity 0.3s ease, transform 0.35s ease,
+    margin-left 0.35s ease;
+}
+.meta-thumb-extra.is-on {
+  max-width: 180px;
+  opacity: 1;
+  transform: none;
+  margin-left: 12px;
+}
+.meta-thumb-arrow {
+  font-size: 20px;
+  color: var(--ink-dim);
+  flex: 0 0 auto;
+}
+.meta-thumb-after {
+  outline: 1px solid color-mix(in srgb, var(--acid) 45%, transparent);
+  outline-offset: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .meta-thumb-extra {
+    transition: none;
+  }
 }
 .meta-thumb {
   flex: 0 0 auto;
