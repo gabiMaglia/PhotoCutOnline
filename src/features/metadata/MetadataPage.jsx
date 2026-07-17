@@ -195,19 +195,29 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
 
           {info && (
             <div className="meta-workspace">
-              <section className="meta-card">
-                <h2>{t("meta.file")}</h2>
-                <Row label={t("meta.name")} value={info.name} />
-                <Row label={t("meta.type")} value={info.type} />
-                <Row label={t("meta.size")} value={info.size} />
-                <Row
-                  label={t("meta.dimensions")}
-                  value={info.width ? `${info.width} × ${info.height} px` : undefined}
-                />
-                <Row
-                  label={t("meta.modified")}
-                  value={info.modified ? info.modified.toLocaleString() : undefined}
-                />
+              <section className="meta-card meta-card-file">
+                <div className="meta-file-body">
+                  <h2>{t("meta.file")}</h2>
+                  <Row label={t("meta.name")} value={info.name} />
+                  <Row label={t("meta.type")} value={info.type} />
+                  <Row label={t("meta.size")} value={info.size} />
+                  <Row
+                    label={t("meta.dimensions")}
+                    value={info.width ? `${info.width} × ${info.height} px` : undefined}
+                  />
+                  <Row
+                    label={t("meta.modified")}
+                    value={info.modified ? info.modified.toLocaleString() : undefined}
+                  />
+                </div>
+                {/* Thumbnail tipo foto de DNI, arriba a la derecha. object-fit
+                    cover lo encuadra como una foto carné aunque la imagen tenga
+                    cualquier proporción. */}
+                {m.previewUrl && (
+                  <div className="meta-thumb" title={info.name}>
+                    <img src={m.previewUrl} alt={t("meta.thumbAlt")} />
+                  </div>
+                )}
               </section>
 
               <section className="meta-card">
