@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How It Works: AI in Your Browser, No Uploads — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="PhotoCut Studio removes backgrounds with AI that runs 100% in your browser (WebAssembly + ONNX): your photos are never uploaded to a server. Here's how it works and why it's private by design."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/how-it-works.html" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/en/how-it-works.html" />
+    <meta property="og:title" content="How It Works: AI in Your Browser, No Uploads — PhotoCut Studio" />
+    <meta property="og:description" content="Remove backgrounds with AI that runs in your browser (WASM + ONNX): your photos are never uploaded. Private by design." />
+    <meta property="og:image" content="https://www.photocutapp.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="How It Works: AI in Your Browser — PhotoCut Studio" />
+    <meta name="twitter:description" content="Cutout AI that runs in your browser: your photos are never uploaded." />
+    <meta name="twitter:image" content="https://www.photocutapp.com/og.png" />
+
+    <link rel="stylesheet" href="/estaticas.css" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How It Works: AI in Your Browser, No Uploads",
+      "description": "PhotoCut Studio's client-side architecture: AI cutout (u2netp + onnxruntime-web) and a Rust/WebAssembly GrabCut engine, all running in the browser.",
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/en/how-it-works.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Are my photos really never uploaded to a server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The AI model and the cutout engine download once and run inside your browser. The image is processed on your own device and never sent to a server. You can verify it: open your browser's developer tools, watch the Network tab while you cut out an image, and you'll see no file upload. It even works offline once the page has loaded." }
+        },
+        {
+          "@type": "Question",
+          "name": "How can an AI run in the browser?",
+          "acceptedAnswer": { "@type": "Answer", "text": "With WebAssembly, which runs code at near-native speed inside the page, and ONNX Runtime, which executes the neural-network model. The model (u2netp, a salient-object detector) is about 4.4 MB and downloads the first time you use the cutout; after that it's cached. Fine segmentation also uses a GrabCut engine written in Rust and compiled to WebAssembly." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do it this way instead of on a server?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For privacy and cost. With no server doing the processing, your photo never leaves your device — ideal for documents, client material or personal photos. And since we pay no per-image GPU, the tool can be free, with no credits or watermark. The trade-off is the model must be lightweight to run on your device, which is why we add brushes to refine by hand what the AI doesn't nail." }
+        }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/en/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>How it works</h1>
+      <p class="meta">AI in your browser · Your photos are never uploaded · Private by design</p>
+
+      <p>
+        Almost every online cutout tool does the same thing: you upload the
+        photo, it's processed on <strong>their server</strong>, and the result
+        comes back. PhotoCut Studio works the other way around —
+        <strong>all processing happens in your browser</strong>, and the image
+        never leaves your device. Here's how, plainly.
+      </p>
+
+      <h2>The cutout, in two layers</h2>
+      <ul>
+        <li>
+          <strong>Cutout AI:</strong> a salient-object detection model
+          (<em>u2netp</em>, ~4.4 MB) runs with <strong>ONNX Runtime</strong>
+          compiled to WebAssembly. It detects the subject and separates the
+          background in about a second. It downloads the first time you use it
+          and stays cached.
+        </li>
+        <li>
+          <strong>Fine segmentation:</strong> for hard edges there's a
+          <strong>GrabCut engine written in Rust</strong>, also compiled to
+          WebAssembly, plus keep/erase brushes so you can refine hair and detail
+          by hand.
+        </li>
+      </ul>
+
+      <h2>Why "in the browser" changes everything</h2>
+      <p>
+        <strong>WebAssembly</strong> runs code at near-native speed inside the
+        web page. That makes it possible to run a neural-network model and a
+        segmentation algorithm on your own processor, without sending anything to
+        the cloud. The direct consequence: <strong>your photo is never
+        uploaded</strong>. No copy on a server, no retention policy to read. It's
+        an architectural difference, not a promise.
+      </p>
+
+      <h2>Check it yourself</h2>
+      <p>
+        Don't take our word for it. Open your browser's
+        <strong>developer tools</strong>, go to the <strong>Network</strong> tab
+        and cut out an image: you won't see your file being uploaded. As an extra
+        test, <strong>disconnect the internet</strong> after the page loads — the
+        cutout still works.
+      </p>
+
+      <h2>The trade-off, honestly</h2>
+      <p>
+        Running the model on your device has a cost: it must be
+        <strong>lightweight</strong>, smaller than the huge models that run on
+        GPU servers. For clear subjects the result is virtually identical; in very
+        hard cases (very fine hair, busy backgrounds) a cloud model may win.
+        That's why the flow pairs the AI with brushes: the machine handles 90% and
+        you refine the rest.
+      </p>
+      <p>
+        In exchange, there's no server to pay for — which is why the tool can be
+        <strong>free, with no account, no credits and no watermark</strong>.
+      </p>
+
+      <h2>FAQ</h2>
+      <h3>Are my photos really never uploaded?</h3>
+      <p>Yes. The model runs in your browser; verify it in the Network tab and by confirming it works offline.</p>
+      <h3>How can an AI run in the browser?</h3>
+      <p>With WebAssembly (near-native-speed code) and ONNX Runtime (which executes the model). The model downloads once and stays cached.</p>
+      <h3>Why this way and not on a server?</h3>
+      <p>For privacy (your photo never leaves your device) and cost (no per-image GPU, so the tool can be free).</p>
+
+      <a class="cta" href="/editor/">Try the cutout →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Next</h2>
+        <a class="card" href="/en/tools/remove-background.html">
+          <h2>Remove the background from an image</h2>
+          <p>The tool in detail: AI cutout, brushes and export options.</p>
+        </a>
+        <a class="card" href="/en/tools/view-exif-metadata.html">
+          <h2>Remove a photo's location</h2>
+          <p>Another private task: strip GPS and metadata without uploading the image.</p>
+        </a>
+        <a class="card" href="/en/tools/">
+          <h2>All tools</h2>
+          <p>Cutout, change background, compress, resize, color and more.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/en/">← Back to PhotoCut Studio</a> ·
+        <a href="/como-funciona.html">Español</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/legal/privacidad.html">Privacy</a>
+      </footer>
+    </div>
+  </body>
+</html>

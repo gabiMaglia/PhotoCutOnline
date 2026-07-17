@@ -1,0 +1,29 @@
+# PhotoCut Studio
+
+> Free, no-registration image tools that run 100% in your browser. Background removal with on-device AI (WebAssembly + ONNX), plus convert, compress, resize, color tools, EXIF/metadata removal and icon generation. Your photos are never uploaded to any server — all processing happens locally on the user's device.
+
+PhotoCut Studio is a client-side web app. Unlike most online image tools, it does not send images to a server: the AI cutout model (u2netp via onnxruntime-web) and a Rust/WebAssembly GrabCut engine run in the browser. This makes it private by design — useful for client work, documents, or personal photos — and free with no account, no watermark and no usage limits. Available in Spanish, English and Portuguese.
+
+## Tools
+- [Remove background](https://www.photocutapp.com/en/tools/remove-background.html): automatic AI cutout plus keep/erase brushes; export transparent, solid color or a new background.
+- [Change background](https://www.photocutapp.com/en/tools/change-background.html): replace the background with a color or another image.
+- [Compress and convert images](https://www.photocutapp.com/en/tools/compress-image.html): PNG, JPG and WebP with a quality control, showing the output size before download.
+- [Resize an image](https://www.photocutapp.com/en/tools/resize-image.html): change size in pixels or by percentage, keeping aspect ratio.
+- [Color palette and HEX from an image](https://www.photocutapp.com/en/tools/color-palette-from-image.html): extract dominant colors, read HEX, check WCAG contrast, generate CSS/Tailwind scales.
+- [View and remove EXIF metadata](https://www.photocutapp.com/en/tools/view-exif-metadata.html): see camera, date and GPS data a photo carries and download a copy with metadata stripped.
+- [Blur the background (portrait effect)](https://www.photocutapp.com/en/tools/blur-background.html): keep the subject sharp and blur the background.
+- [Color blindness simulator](https://www.photocutapp.com/en/tools/color-blindness-simulator.html): preview a design as someone with color blindness sees it.
+- [All tools](https://www.photocutapp.com/en/tools/)
+
+## Guides
+- [Guides index](https://www.photocutapp.com/guias/): practical, original how-to articles on cutting out photos, changing backgrounds, product photos, stickers, transparent signatures and logos, social media sizes and more.
+- [Remove the location (GPS) and metadata from a photo](https://www.photocutapp.com/guias/quitar-la-ubicacion-de-una-foto.html)
+- [Color accessibility: contrast and color blindness](https://www.photocutapp.com/guias/accesibilidad-de-color-contraste-y-daltonismo.html)
+- [How to choose a color palette](https://www.photocutapp.com/guias/como-elegir-una-paleta-de-colores.html)
+- [PNG, JPG or WebP: which to choose](https://www.photocutapp.com/guias/png-jpg-o-webp-cual-elegir.html)
+- [App icon sizes 2026 (iOS, Android, macOS, Windows, Web)](https://www.photocutapp.com/guias/medidas-de-iconos-de-app-ios-android-2026.html)
+
+## About
+- [How it works (client-side AI, privacy by design)](https://www.photocutapp.com/como-funciona.html)
+- [About](https://www.photocutapp.com/acerca.html)
+- [Privacy](https://www.photocutapp.com/legal/privacidad.html)

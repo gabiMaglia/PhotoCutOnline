@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cómo funciona: IA en tu navegador, sin subir tus fotos — PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="PhotoCut Studio quita el fondo con IA que corre 100% en tu navegador (WebAssembly + ONNX): tus fotos nunca se suben a un servidor. Explicamos cómo funciona y por qué es privado por diseño."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/como-funciona.html" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/como-funciona.html" />
+    <meta property="og:title" content="Cómo funciona: IA en tu navegador, sin subir tus fotos — PhotoCut Studio" />
+    <meta property="og:description" content="Quita el fondo con IA que corre en tu navegador (WASM + ONNX): tus fotos nunca se suben. Privado por diseño." />
+    <meta property="og:image" content="https://www.photocutapp.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cómo funciona: IA en tu navegador — PhotoCut Studio" />
+    <meta name="twitter:description" content="IA de recorte que corre en tu navegador: tus fotos no se suben." />
+    <meta name="twitter:image" content="https://www.photocutapp.com/og.png" />
+
+    <link rel="stylesheet" href="/estaticas.css" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Cómo funciona: IA en tu navegador, sin subir tus fotos",
+      "description": "Explicación de la arquitectura client-side de PhotoCut Studio: recorte con IA (u2netp + onnxruntime-web) y un motor GrabCut en Rust/WebAssembly, todo corriendo en el navegador.",
+      "inLanguage": "es",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/como-funciona.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿De verdad mis fotos no se suben a ningún servidor?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. El modelo de IA y el motor de recorte se descargan una vez y corren dentro de tu navegador. La imagen se procesa en tu propio dispositivo y no se envía a ningún servidor. Podés comprobarlo: abrí las herramientas de desarrollo del navegador, mirá la pestaña Red mientras recortás, y vas a ver que no se sube ningún archivo. Incluso funciona sin conexión una vez cargada la página." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo puede una IA correr en el navegador?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Con WebAssembly, que ejecuta código a velocidad casi nativa dentro de la página, y ONNX Runtime, que corre el modelo de red neuronal. El modelo (u2netp, de detección de objeto saliente) pesa unos 4,4 MB y se descarga la primera vez que usás el recorte; después queda cacheado. La segmentación fina usa además un motor GrabCut escrito en Rust y compilado a WebAssembly." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Por qué hacerlo así en vez de en un servidor?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Por privacidad y por costo. Sin servidor que procese, tu foto no sale de tu equipo — ideal para documentos, material de clientes o fotos personales. Y como no pagamos GPU por imagen, la herramienta puede ser gratis, sin créditos ni marca de agua. La contra es que el modelo tiene que ser liviano para correr en tu dispositivo; por eso sumamos pinceles para afinar a mano lo que la IA no resuelve." }
+        }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Cómo funciona</h1>
+      <p class="meta">IA en tu navegador · Tus fotos no se suben · Privado por diseño</p>
+
+      <p>
+        Casi todas las herramientas online de recorte hacen lo mismo: te piden
+        subir la foto, la procesan en <strong>su servidor</strong> y te devuelven
+        el resultado. PhotoCut Studio funciona al revés — <strong>todo el
+        procesamiento ocurre en tu navegador</strong>, y la imagen nunca sale de
+        tu dispositivo. Esta página explica cómo, sin vueltas.
+      </p>
+
+      <h2>El recorte, en dos capas</h2>
+      <ul>
+        <li>
+          <strong>IA de recorte:</strong> un modelo de detección de objeto
+          saliente (<em>u2netp</em>, ~4,4 MB) corre con
+          <strong>ONNX Runtime</strong> compilado a WebAssembly. Detecta el
+          sujeto y separa el fondo en aproximadamente un segundo. Se descarga la
+          primera vez que lo usás y queda cacheado.
+        </li>
+        <li>
+          <strong>Segmentación fina:</strong> para los bordes difíciles hay un
+          motor <strong>GrabCut escrito en Rust</strong> y compilado también a
+          WebAssembly, más pinceles de mantener y borrar para que ajustes a mano
+          el pelo y los detalles.
+        </li>
+      </ul>
+
+      <h2>Por qué “en el navegador” cambia todo</h2>
+      <p>
+        <strong>WebAssembly</strong> permite ejecutar código a velocidad casi
+        nativa dentro de la página web. Eso hace posible correr un modelo de red
+        neuronal y un algoritmo de segmentación en tu propio procesador, sin
+        mandar nada a la nube. La consecuencia directa: <strong>tu foto no se
+        sube</strong>. No hay copia en un servidor, no hay retención que revisar
+        en una política de privacidad. Es una diferencia de arquitectura, no una
+        promesa.
+      </p>
+
+      <h2>Comprobalo vos mismo</h2>
+      <p>
+        No hace falta que nos creas. Abrí las <strong>herramientas de
+        desarrollo</strong> de tu navegador, andá a la pestaña <strong>Red</strong>
+        y recortá una imagen: no vas a ver ninguna subida de tu archivo. Como
+        prueba extra, <strong>desconectá internet</strong> después de cargar la
+        página — el recorte sigue funcionando.
+      </p>
+
+      <h2>El intercambio, dicho con honestidad</h2>
+      <p>
+        Que el modelo corra en tu equipo tiene un costo: debe ser
+        <strong>liviano</strong>, más chico que los modelos gigantes que corren
+        en servidores con GPU. Para siluetas claras el resultado es
+        prácticamente igual; en casos muy difíciles (pelo muy fino, fondos
+        caóticos) un modelo de nube puede ganar. Por eso el flujo combina la IA
+        con pinceles: la máquina resuelve el 90% y vos afinás el resto.
+      </p>
+      <p>
+        A cambio, no hay servidor que pagar — y por eso la herramienta puede ser
+        <strong>gratis, sin cuenta, sin créditos y sin marca de agua</strong>.
+      </p>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿De verdad mis fotos no se suben?</h3>
+      <p>Sí. El modelo corre en tu navegador; podés verificarlo en la pestaña Red y comprobando que funciona sin conexión.</p>
+      <h3>¿Cómo puede una IA correr en el navegador?</h3>
+      <p>Con WebAssembly (código a velocidad casi nativa) y ONNX Runtime (que ejecuta el modelo). El modelo se descarga una vez y queda cacheado.</p>
+      <h3>¿Por qué así y no en un servidor?</h3>
+      <p>Por privacidad (tu foto no sale de tu equipo) y por costo (sin GPU por imagen, la herramienta puede ser gratis).</p>
+
+      <a class="cta" href="/editor/">Probar el recorte →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Seguí con</h2>
+        <a class="card" href="/herramientas/quitar-fondo.html">
+          <h2>Quitar el fondo de una imagen</h2>
+          <p>La herramienta en detalle: recorte IA, pinceles y opciones de exportación.</p>
+        </a>
+        <a class="card" href="/guias/quitar-la-ubicacion-de-una-foto.html">
+          <h2>Quitar la ubicación de una foto</h2>
+          <p>Otra tarea privada: quitar el GPS y los metadatos sin subir la imagen.</p>
+        </a>
+        <a class="card" href="/herramientas/">
+          <h2>Todas las herramientas</h2>
+          <p>Recorte, cambio de fondo, comprimir, redimensionar, color y más.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/">← Volver a PhotoCut Studio</a> ·
+        <a href="/en/how-it-works.html">English</a> ·
+        <a href="/herramientas/">Herramientas</a> ·
+        <a href="/legal/privacidad.html">Privacidad</a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -50,12 +50,14 @@ const SEO_ROUTES = [
   "/guias/poner-marca-de-agua-a-una-foto.html",
   "/guias/quitar-la-ubicacion-de-una-foto.html",
   "/guias/accesibilidad-de-color-contraste-y-daltonismo.html",
+  "/como-funciona.html",
   "/acerca.html",
   "/contacto.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
   // F3 i18n — versiones en inglés (bajo /en/). El slug puede diferir del ES.
   "/en/",
+  "/en/how-it-works.html",
   "/en/tools/",
   "/en/tools/remove-background.html",
   "/en/tools/change-background.html",
@@ -85,6 +87,7 @@ const SEO_ROUTES = [
 // Escala a pt/it agregando la clave al grupo.
 const I18N_GROUPS = [
   { es: "/", en: "/en/", pt: "/pt/" },
+  { es: "/como-funciona.html", en: "/en/how-it-works.html" },
   { es: "/herramientas/", en: "/en/tools/", pt: "/pt/ferramentas/" },
   { es: "/herramientas/quitar-fondo.html", en: "/en/tools/remove-background.html", pt: "/pt/ferramentas/remover-fundo.html" },
   { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html", pt: "/pt/ferramentas/trocar-fundo.html" },
