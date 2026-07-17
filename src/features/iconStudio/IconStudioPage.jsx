@@ -156,14 +156,8 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
             >
               {s.building ? t("icon.building") : t("icon.zipBtn")}
             </Button>
-            <Button onClick={s.downloadPython}>{t("icon.pyBtn")}</Button>
+           
             <Button onClick={s.copySnippet}>{t("icon.snippetBtn")}</Button>
-            <div className="rail-help">
-              <p>
-                {t("icon.py1")} <code>make_icons.py</code> {t("icon.py2")}{" "}
-                <code>python make_icons.py logo.png</code>. {t("icon.py3")}
-              </p>
-            </div>
           </section>
 
           {/* solo en la pestaña activa: las redes exigen 1 anuncio por página */}

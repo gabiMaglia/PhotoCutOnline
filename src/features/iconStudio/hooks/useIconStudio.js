@@ -187,21 +187,6 @@ export function useIconStudio({ getCutout, onToast }) {
     }
   }, [onToast]);
 
-  const downloadPython = useCallback(async () => {
-    if (backend.isDesktop) {
-      // diálogo nativo "Guardar como" sobre el asset empaquetado
-      if (!(await saveExport("/make_icons.py", "make_icons.py"))) return;
-    } else {
-      const a = document.createElement("a");
-      a.href = "make_icons.py";
-      a.download = "make_icons.py";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-    onToast(t("toast.py"), "ok");
-  }, [onToast]);
-
   return {
     source,
     sourceName,
@@ -236,7 +221,7 @@ export function useIconStudio({ getCutout, onToast }) {
     togglePlatform,
     downloadZip,
     copySnippet,
-    downloadPython,
+  
   };
 }
 
