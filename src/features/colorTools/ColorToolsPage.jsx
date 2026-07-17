@@ -5,7 +5,6 @@ import { themeFlip } from "../../lib/recolor.js";
 import { buildScheme, schemeToCss, schemeToTailwind } from "../../lib/scheme.js";
 import { computeHistogram, simulateCVD, CVD_TYPES } from "../../lib/analysis.js";
 import Button from "../../components/ui/Button.jsx";
-import FileButton from "../../components/ui/FileButton.jsx";
 import Slider from "../../components/ui/Slider.jsx";
 import ChipGroup from "../../components/ui/ChipGroup.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
@@ -55,9 +54,17 @@ function MiniPalette({ colors, onToast, label }) {
 // transformaciones (tema claro/oscuro).
 // Todo 100% local.
 export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
-  const { sharedImageUrl, shareFile } = useCutoutContext();
-  const currentImage = sharedImageUrl;
+  const { sharedImageUrl } = useCutoutContext();
+  // Auto-carga la imagen compartida (la del navbar «Abrir foto») al entrar a la
+  // pestaña o al cambiar de imagen. Sin botón de carga propio: una sola fuente.
+  const loadedUrlRef = useRef(null);
   const c = useColorTools({ onToast });
+  useEffect(() => {
+    if (active && sharedImageUrl && sharedImageUrl !== loadedUrlRef.current) {
+      loadedUrlRef.current = sharedImageUrl;
+      c.loadFromUrl(sharedImageUrl, t("img.currentName"));
+    }
+  }, [active, sharedImageUrl, c.loadFromUrl]);
   const [mode, setMode] = useState("palette"); // palette | theme | histogram | cvd
   const [hover, setHover] = useState(null);
 
@@ -197,13 +204,11 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
         <aside className="rail">
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>
-            <Button variant="primary" disabled={!currentImage} onClick={() => c.loadFromUrl(currentImage, t("img.currentName"))}>
-              {t("color.useCurrent")}
-            </Button>
-            <FileButton accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { c.loadFromFile(f); shareFile(f); } }}>
-              {t("color.openImage")}
-            </FileButton>
-            {c.sourceName && <div className="source-tag">{c.sourceName}</div>}
+            {c.sourceName ? (
+              <div className="source-tag">{c.sourceName}</div>
+            ) : (
+              <div className="rail-help"><p>{t("img.openHint")}</p></div>
+            )}
             <ChipGroup
               ariaLabel={t("cs.mode")}
               value={mode}

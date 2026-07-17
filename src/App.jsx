@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useLang } from "./lib/i18n.js";
 import pkg from "../package.json";
 import { useToasts } from "./hooks/useToasts.js";
@@ -34,13 +34,28 @@ function initialTab() {
   }
 }
 
+// Pestañas que muestran una imagen cruda: el navbar «Abrir foto» carga en la
+// pantalla activa (la imagen compartida fluye a todas). Las demás (recorte por
+// lote, iconos desde recorte) no muestran una imagen cruda, así que cargar
+// estando ahí salta a Recorte para que se vea algo.
+const IMAGE_TABS = ["cut", "colors", "meta", "text"];
+
 export default function App() {
   useLang(); // re-render al cambiar idioma
   const [tab, setTab] = useState(initialTab); // cut | icons | batch | colors
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
   const { toasts, toast } = useToasts();
 
   return (
-    <CutoutProvider toast={toast} onImageLoad={() => setTab("cut")}>
+    <CutoutProvider
+      toast={toast}
+      onImageLoad={() => {
+        // no forzar «Recorte»: quedarse en la pantalla activa si puede mostrar
+        // la imagen (el navbar «Abrir foto» debe funcionar en cada pantalla).
+        if (!IMAGE_TABS.includes(tabRef.current)) setTab("cut");
+      }}
+    >
       <AppShell tab={tab} setTab={setTab} toasts={toasts} toast={toast} />
     </CutoutProvider>
   );

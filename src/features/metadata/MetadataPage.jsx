@@ -1,7 +1,7 @@
+import { useEffect, useRef } from "react";
 import { t } from "../../lib/i18n.js";
 import { orientationLabel, stripToBlob } from "../../lib/metadata.js";
 import Button from "../../components/ui/Button.jsx";
-import FileButton from "../../components/ui/FileButton.jsx";
 import Slider from "../../components/ui/Slider.jsx";
 import ChipGroup from "../../components/ui/ChipGroup.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
@@ -28,9 +28,19 @@ function Row({ label, value }) {
 // 7ª pestaña: es la misma tarea mental y comparten el mismo motor de
 // re-codificado (reencodeToBlob). Todo 100% local.
 export default function MetadataPage({ active, onToast, onOpenDownload }) {
-  const { sharedImageUrl, shareFile } = useCutoutContext();
+  const { sharedImageUrl } = useCutoutContext();
   const m = useMetadata({ onToast });
   const r = useReencode({ imgRef: m.imgRef, info: m.info });
+
+  // Auto-carga la imagen compartida (la del navbar «Abrir foto») al entrar a la
+  // pestaña o al cambiar de imagen. Sin botón de carga propio: una sola fuente.
+  const loadedUrlRef = useRef(null);
+  useEffect(() => {
+    if (active && sharedImageUrl && sharedImageUrl !== loadedUrlRef.current) {
+      loadedUrlRef.current = sharedImageUrl;
+      m.loadFromDataUrl(sharedImageUrl, t("img.currentName"));
+    }
+  }, [active, sharedImageUrl, m.loadFromDataUrl]);
 
   const strip = async () => {
     const img = m.imgRef.current;
@@ -55,25 +65,11 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
         <aside className="rail">
           <section className="rail-group">
             <h2 className="rail-title">{t("meta.source")}</h2>
-            <FileButton
-              variant="primary"
-              accept="image/*"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) {
-                  m.load(f);
-                  shareFile(f); // queda disponible para las otras pestañas
-                }
-              }}
-            >
-              {t("meta.openImage")}
-            </FileButton>
-            {sharedImageUrl && (
-              <Button onClick={() => m.loadFromDataUrl(sharedImageUrl, t("img.currentName"))}>
-                {t("color.useCurrent")}
-              </Button>
+            {info?.name ? (
+              <div className="source-tag">{info.name}</div>
+            ) : (
+              <div className="rail-help"><p>{t("img.openHint")}</p></div>
             )}
-            {info?.name && <div className="source-tag">{info.name}</div>}
           </section>
 
           {info && (

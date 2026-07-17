@@ -19,12 +19,12 @@ const FONTS = {
 // Añadir texto a una foto: preview en vivo, arrastrar para posicionar, estilos y
 // exportación. Todo 100% local; la imagen no se sube.
 export default function TextToolPage({ active, onToast, onOpenDownload }) {
-  const { sharedImageUrl, shareFile } = useCutoutContext();
-  const currentImage = sharedImageUrl;
+  const { sharedImageUrl } = useCutoutContext();
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const dragging = useRef(false);
   const fontSeq = useRef(0);
+  const loadedUrlRef = useRef(null); // auto-carga la imagen compartida (navbar)
   const [ready, setReady] = useState(false);
   const [sourceName, setSourceName] = useState("");
 
@@ -107,11 +107,14 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
     img.src = src;
   }, [onToast]);
 
-  const loadFile = (file) => {
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    loadImage(url, file.name);
-  };
+  // Auto-carga la imagen compartida (la del navbar «Abrir foto») al entrar a la
+  // pestaña o al cambiar de imagen. Sin botón de carga propio.
+  useEffect(() => {
+    if (active && sharedImageUrl && sharedImageUrl !== loadedUrlRef.current) {
+      loadedUrlRef.current = sharedImageUrl;
+      loadImage(sharedImageUrl, t("img.currentName"));
+    }
+  }, [active, sharedImageUrl, loadImage]);
 
   // Sube una fuente propia (.ttf/.otf/.woff/.woff2) vía FontFace API, con familia
   // única por carga para no colisionar con una anterior.
@@ -162,9 +165,11 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
         <aside className="rail">
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>
-            <Button variant="primary" disabled={!currentImage} onClick={() => loadImage(currentImage, t("img.currentName"))}>{t("color.useCurrent")}</Button>
-            <FileButton accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) { loadFile(f); shareFile(f); } }}>{t("color.openImage")}</FileButton>
-            {sourceName && <div className="source-tag">{sourceName}</div>}
+            {sourceName ? (
+              <div className="source-tag">{sourceName}</div>
+            ) : (
+              <div className="rail-help"><p>{t("img.openHint")}</p></div>
+            )}
           </section>
 
           <section className="rail-group">
