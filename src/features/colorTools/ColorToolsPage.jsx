@@ -28,22 +28,25 @@ const SCHEME_GROUPS = [
   { key: "semantic", roles: ["success", "warning", "error", "info"] },
 ];
 
-// Fila compacta de muestras (paleta bajo cada preview). Clic = copiar HEX.
-function MiniPalette({ colors, onToast }) {
+// Paleta compacta bajo cada preview, con su rótulo. Clic en una muestra = copiar HEX.
+function MiniPalette({ colors, onToast, label }) {
   if (!colors || colors.length === 0) return null;
   return (
-    <div className="cs-minipal">
-      {colors.map((c) => (
-        <button
-          key={c.hex}
-          className="cs-minipal-chip"
-          style={{ background: c.hex, color: contrastText(c.r, c.g, c.b) }}
-          title={c.hex}
-          onClick={() => copyText(c.hex, onToast, `${c.hex} copiado`)}
-        >
-          {c.hex}
-        </button>
-      ))}
+    <div className="cs-minipal-wrap">
+      <span className="cs-minipal-label">{label ?? t("cs.paletteLabel")}</span>
+      <div className="cs-minipal">
+        {colors.map((c) => (
+          <button
+            key={c.hex}
+            className="cs-minipal-chip"
+            style={{ background: c.hex, color: contrastText(c.r, c.g, c.b) }}
+            title={c.hex}
+            onClick={() => copyText(c.hex, onToast, `${c.hex} copiado`)}
+          >
+            {c.hex}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -83,6 +86,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const cvdBeforeRef = useRef(null);
   const cvdAfterRef = useRef(null);
   const [cvdType, setCvdType] = useState("deuteranopia");
+  const [cvdBeforePal, setCvdBeforePal] = useState([]);
+  const [cvdAfterPal, setCvdAfterPal] = useState([]);
 
   const paintPair = (resultBytes) => {
     const src = c.getImageData();
@@ -158,7 +163,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
     if (!src) return;
     const { width, height } = src;
     setAspect(width / height);
-    for (const [ref, bytes] of [[cvdBeforeRef, src.data], [cvdAfterRef, simulateCVD(src, cvdType)]]) {
+    const cvdBytes = simulateCVD(src, cvdType);
+    for (const [ref, bytes] of [[cvdBeforeRef, src.data], [cvdAfterRef, cvdBytes]]) {
       const cv = ref.current;
       if (!cv) continue;
       cv.width = width; cv.height = height;
@@ -167,6 +173,9 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
       id.data.set(bytes);
       ctx.putImageData(id, 0, 0);
     }
+    // paletas antes/después: ver cómo colapsan los colores bajo el daltonismo
+    setCvdBeforePal(extractPalette(src, 6));
+    setCvdAfterPal(extractPalette({ data: cvdBytes, width, height }, 6));
   }, [mode, cvdType, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onMove = (e) => {
@@ -410,10 +419,12 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
               <div className="cs-pane">
                 <span className="cs-pane-tag">{t("cs.before")}</span>
                 <canvas ref={cvdBeforeRef} className="cs-canvas" />
+                <MiniPalette colors={cvdBeforePal} onToast={onToast} />
               </div>
               <div className="cs-pane">
                 <span className="cs-pane-tag">{t(`cs.cvd.${cvdType}`)}</span>
                 <canvas ref={cvdAfterRef} className="cs-canvas" />
+                <MiniPalette colors={cvdAfterPal} onToast={onToast} />
               </div>
             </div>
           )}
