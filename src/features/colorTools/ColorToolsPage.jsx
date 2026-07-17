@@ -7,6 +7,7 @@ import { computeHistogram, simulateCVD, CVD_TYPES } from "../../lib/analysis.js"
 import Button from "../../components/ui/Button.jsx";
 import Slider from "../../components/ui/Slider.jsx";
 import ChipGroup from "../../components/ui/ChipGroup.jsx";
+import Checkbox from "../../components/ui/Checkbox.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
 import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import { useColorTools } from "./hooks/useColorTools.js";
@@ -81,6 +82,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   const beforeRef = useRef(null);
   const afterRef = useRef(null);
   const [themeTarget, setThemeTarget] = useState("dark"); // dark | light | flip
+  const [themeIntensity, setThemeIntensity] = useState(100); // 0..100
+  const [keepAccents, setKeepAccents] = useState(false); // invertir sólo neutros
   const [beforePal, setBeforePal] = useState([]);
   const [afterPal, setAfterPal] = useState([]);
   const [aspect, setAspect] = useState(1.4); // ancho/alto de la imagen
@@ -119,8 +122,8 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
   useEffect(() => {
     if (mode !== "theme" || !c.ready) return;
     const src = c.getImageData();
-    if (src) paintPair(themeFlip(src, themeTarget));
-  }, [mode, themeTarget, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (src) paintPair(themeFlip(src, themeTarget, { intensity: themeIntensity / 100, keepAccents }));
+  }, [mode, themeTarget, themeIntensity, keepAccents, c.ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const downloadCanvas = (ref, suffix) => {
     const cv = ref.current;
@@ -277,6 +280,16 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
                   { value: "flip", label: t("cs.theme.flip") },
                 ]}
               />
+              <Slider
+                id="cs-theme-intensity"
+                label={t("cs.theme.intensity", { n: themeIntensity })}
+                min={0}
+                max={100}
+                value={themeIntensity}
+                onChange={setThemeIntensity}
+                disabled={!c.ready}
+              />
+              <Checkbox checked={keepAccents} onChange={setKeepAccents} disabled={!c.ready}>{t("cs.theme.keepAccents")}</Checkbox>
               <Button variant="primary" disabled={!c.ready} onClick={() => downloadAfter("-" + themeTarget)}>{t("cs.download")}</Button>
               <div className="rail-help"><p>{t("cs.theme.help")}</p></div>
             </section>

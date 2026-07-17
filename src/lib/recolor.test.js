@@ -51,3 +51,35 @@ describe("themeFlip", () => {
     expect(out[3]).toBe(128);
   });
 });
+
+describe("themeFlip: intensidad y mantener-acentos (A + B)", () => {
+  const lum = (out) => 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2];
+
+  it("intensity 0 no cambia nada aunque toque invertir", () => {
+    const out = themeFlip(img([[240, 240, 240]]), "dark", { intensity: 0 });
+    expect([out[0], out[1], out[2]]).toEqual([240, 240, 240]);
+  });
+
+  it("intensity 0.5 queda a mitad de camino (más claro que la inversión total)", () => {
+    const half = themeFlip(img([[245, 245, 245]]), "dark", { intensity: 0.5 });
+    const full = themeFlip(img([[245, 245, 245]]), "dark", { intensity: 1 });
+    expect(lum(half)).toBeGreaterThan(lum(full)); // no llegó hasta el negro
+    expect(lum(half)).toBeLessThan(245); // pero sí oscureció algo
+  });
+
+  it("keepAccents: un neutro claro se invierte (oscurece)", () => {
+    const out = themeFlip(img([[238, 238, 240]]), "dark", { keepAccents: true });
+    expect(lum(out)).toBeLessThan(120); // gris claro → oscuro
+  });
+
+  it("keepAccents: un acento saturado casi no cambia su brillo", () => {
+    const base = [220, 40, 40]; // rojo saturado
+    const kept = themeFlip(img([base]), "flip", { keepAccents: true });
+    const flipped = themeFlip(img([base]), "flip", { keepAccents: false });
+    const lBase = 0.2126 * base[0] + 0.7152 * base[1] + 0.0722 * base[2];
+    // con keepAccents el brillo se mantiene cerca del original…
+    expect(Math.abs(lum(kept) - lBase)).toBeLessThan(40);
+    // …mientras que sin keepAccents cambia bastante
+    expect(Math.abs(lum(flipped) - lBase)).toBeGreaterThan(Math.abs(lum(kept) - lBase));
+  });
+});

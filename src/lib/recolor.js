@@ -70,19 +70,42 @@ export function shouldFlip(imageData, target) {
   return target === "dark" ? isLight : !isLight;
 }
 
+// Croma OKLab a partir del cual un color se considera "acento" (de marca) y no
+// un neutro de fondo/texto. Entre C_LOW y C_HIGH la inversión se atenúa.
+const C_LOW = 0.02;
+const C_HIGH = 0.12;
+
 // Genera el tema opuesto invirtiendo la luminosidad perceptual (L de OKLab
-// → 1−L) y conservando el color (a,b, o sea tono y croma). target: "dark" |
-// "light" | "flip".
-export function themeFlip(imageData, target = "dark") {
+// → 1−L) y conservando el color (a,b, o sea tono y croma).
+//
+// target: "dark" | "light" | "flip".
+// opts:
+//   intensity (0..1): cuánto se aplica la inversión. 1 = completa; <1 mezcla
+//     con el original (útil cuando el resultado se ve demasiado fuerte).
+//   keepAccents (bool): invierte sólo los NEUTROS (fondos/texto casi grises) y
+//     deja los colores saturados con su brillo. Es lo que hacen los buenos
+//     conversores de dark mode: mantiene los colores de marca en su lugar y da
+//     un resultado mucho más prolijo en capturas de UI.
+export function themeFlip(imageData, target = "dark", opts = {}) {
+  const { intensity = 1, keepAccents = false } = opts;
   const { data } = imageData;
   const out = new Uint8ClampedArray(data.length);
   const flip = shouldFlip(imageData, target);
   for (let i = 0; i < data.length; i += 4) {
-    if (!flip) {
+    if (!flip || intensity <= 0) {
       out[i] = data[i]; out[i + 1] = data[i + 1]; out[i + 2] = data[i + 2];
     } else {
       const [L, a, b] = rgbToOklab(data[i], data[i + 1], data[i + 2]);
-      const [r, g, bl] = oklabToRgb(1 - L, a, b);
+      // peso de neutralidad: 1 para grises (invierte del todo), 0 para acentos
+      // saturados (los deja). Sin keepAccents, siempre 1.
+      let w = 1;
+      if (keepAccents) {
+        const c = Math.hypot(a, b);
+        w = c <= C_LOW ? 1 : c >= C_HIGH ? 0 : (C_HIGH - c) / (C_HIGH - C_LOW);
+      }
+      // L final = mezcla entre L y (1−L) según intensidad × neutralidad
+      const Lf = L + (1 - 2 * L) * intensity * w;
+      const [r, g, bl] = oklabToRgb(Lf, a, b);
       out[i] = r; out[i + 1] = g; out[i + 2] = bl;
     }
     out[i + 3] = data[i + 3];
