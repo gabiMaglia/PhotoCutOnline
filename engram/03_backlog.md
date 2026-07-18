@@ -143,6 +143,33 @@ dentro de otras features — falta exponerlo:
 - **Fondos generativos con IA**: necesita GPU en servidor. Mata el "no subimos tu foto".
 - **Upscaler con IA**: modelo pesado y resultado mediocre client-side. No compite.
 
+### Hub "Editar" — decisión del PO (2026-07-18)
+
+La pestaña **Texto** pasa a llamarse **"Editar"** (id interno `text` intacto →
+no rompe los deep-links `?tab=text` ni las landings). Es el HUB de todo lo que
+se aplica/agrega ENCIMA de la foto. Reordenado en el navbar para seguir el
+flujo natural: **Recorte · Editar · Lote · Icon Studio · Color · Archivo**
+(editás justo después de recortar). Commit del rename+reorden: (ver git).
+
+**El PO pidió que esta sección trabaje directamente con Recorte** — o sea que
+pueda tomar el resultado del recorte (sujeto recortado) como base para editar,
+no sólo la imagen plana. A cablear al construir las features (hoy Editar
+auto-carga la imagen compartida; falta la opción de partir del recorte).
+
+Features trackeadas para el hub Editar (todas 100% client-side):
+| ID | Feature | Estado | Nota |
+|----|---------|--------|------|
+| — | **Texto sobre la foto** | ✅ hecho | ya vive acá (fuente propia incl.) |
+| GROW-19 | **Censurar caras** (blur/pixelado) | **próxima** | YuNet 227KB MIT (spike hecho). Va en Editar. Verificar detección con fotos reales (PO). |
+| GROW-16 | **Stickers** | trackeado | catálogo para pegar sobre la foto. ¿gratis+premium? assets/licencias a definir. |
+| GROW-21 | **Marca de agua repetida** (mosaico/diagonal) | trackeado | alta demanda; distinta del texto suelto. Texto/logo tileado con opacidad/ángulo. |
+| GROW-22 | **Difuminar/tapar zona a mano** (pincel de censura) | trackeado | censura de CUALQUIER región (patentes, datos en capturas), no sólo caras. Pareja de GROW-19. |
+| GROW-23 | **Filtros simples** (B&N, sepia, contraste) | trackeado | baratísimo client-side, mucha búsqueda. |
+| GROW-24 | **Formas/flechas para anotar** | trackeado | recuadros y flechas sobre screenshots. |
+
+**Orden sugerido del hub:** GROW-19 (caras) → GROW-16 (stickers) → GROW-21
+(marca de agua) → GROW-22 (censura a mano) → 23/24 bonus.
+
 **Orden recomendado:** GROW-17 + GROW-18 (casi gratis, superficie SEO
 inmediata) → GROW-19 (marca) → GROW-20 (cuando se quiera invertir en peso).
 

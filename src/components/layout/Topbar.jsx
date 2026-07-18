@@ -40,11 +40,14 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
 
       <nav className="tabs" role="tablist" aria-label="Espacios de trabajo">
         {[
+          // Orden = flujo natural: recortás → editás encima → lote → iconos → color → archivo.
+          // "Editar" (id interno "text" para no romper los deep-links ?tab=text) es el
+          // hub de edición sobre la foto: texto, censurar caras, stickers, etc.
           { id: "cut", label: t("tab.cut") },
-          { id: "icons", label: "Icon Studio" },
-          { id: "batch", label: t("tab.batch") },
-          { id: "colors", label: t("tab.colors") },
           { id: "text", label: t("tab.text") },
+          { id: "batch", label: t("tab.batch") },
+          { id: "icons", label: "Icon Studio" },
+          { id: "colors", label: t("tab.colors") },
           { id: "meta", label: t("tab.meta") },
           ...(STICKERS_ENABLED ? [{ id: "stickers", label: t("tab.stickers") }] : []),
         ].map((it) => (
