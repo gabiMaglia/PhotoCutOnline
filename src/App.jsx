@@ -11,7 +11,7 @@ const BatchPage = lazy(() => import("./features/batch/BatchPage.jsx"));
 const StickerStudioPage = lazy(() => import("./features/stickerStudio/StickerStudioPage.jsx"));
 const ColorToolsPage = lazy(() => import("./features/colorTools/ColorToolsPage.jsx"));
 const MetadataPage = lazy(() => import("./features/metadata/MetadataPage.jsx"));
-const TextToolPage = lazy(() => import("./features/textTool/TextToolPage.jsx"));
+const EditPage = lazy(() => import("./features/textTool/EditPage.jsx"));
 import Topbar from "./components/layout/Topbar.jsx";
 import Toasts from "./components/feedback/Toasts.jsx";
 import ConsentBanner from "./components/feedback/ConsentBanner.jsx";
@@ -143,7 +143,7 @@ function AppShell({ tab, setTab, toasts, toast }) {
 
       {textSeen && (
         <Suspense fallback={null}>
-          <TextToolPage active={tab === "text"} onToast={toast} onOpenDownload={openDownload} />
+          <EditPage active={tab === "text"} onToast={toast} onOpenDownload={openDownload} />
         </Suspense>
       )}
 

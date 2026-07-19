@@ -10,7 +10,10 @@ import ortMjsUrl from "./ort-runtime/ort-wasm-simd-threaded.mjs?url";
 
 const MODEL_URL = "/models/yunet_2023mar.onnx";
 const STRIDES = [8, 16, 32];
-const TARGET_LONG = 640; // lado largo al que se reescala la entrada (mult. de 32)
+// El ONNX 2023mar tiene la entrada FIJA en 640×640 (no dinámica): la imagen se
+// reescala manteniendo proporción para entrar en 640 y se padea (letterbox) a
+// 640×640. Las cajas se mapean de vuelta dividiendo por la escala.
+const INPUT_SIZE = 640;
 
 let sessionPromise = null;
 
@@ -91,6 +94,63 @@ export function decodeYunet(outputs, padW, padH, scoreThresh = 0.6) {
 }
 
 /**
+ * Dibuja `source` en un canvas nuevo y censura (blur o pixelado) las cajas
+ * dadas, recortadas a una elipse (queda más natural sobre una cara que un
+ * rectángulo). Devuelve el canvas resultante. 100% en el navegador.
+ *
+ * boxes: [{x,y,w,h}] en px de la imagen. opts: { mode:'blur'|'pixelate',
+ * strength:0..100, pad:0..1 (margen extra alrededor de la caja) }.
+ */
+export function censorBoxes(source, boxes, opts = {}) {
+  const { mode = "blur", strength = 60, pad = 0.14 } = opts;
+  const W = source.naturalWidth || source.width;
+  const H = source.naturalHeight || source.height;
+  const out = document.createElement("canvas");
+  out.width = W;
+  out.height = H;
+  const ctx = out.getContext("2d");
+  ctx.drawImage(source, 0, 0);
+
+  for (const b of boxes) {
+    const bx = Math.max(0, b.x - b.w * pad);
+    const by = Math.max(0, b.y - b.h * pad);
+    const bw = Math.min(W - bx, b.w * (1 + 2 * pad));
+    const bh = Math.min(H - by, b.h * (1 + 2 * pad));
+    if (bw <= 1 || bh <= 1) continue;
+
+    const tmp = document.createElement("canvas");
+    tmp.width = Math.round(bw);
+    tmp.height = Math.round(bh);
+    const tctx = tmp.getContext("2d");
+    if (mode === "pixelate") {
+      // más strength → bloques más grandes (12 a 4 celdas de ancho)
+      const across = Math.max(3, Math.round(12 - (strength / 100) * 8));
+      const sw = across, sh = Math.max(1, Math.round(across * bh / bw));
+      const px = document.createElement("canvas");
+      px.width = sw; px.height = sh;
+      px.getContext("2d").drawImage(source, bx, by, bw, bh, 0, 0, sw, sh);
+      tctx.imageSmoothingEnabled = false;
+      tctx.drawImage(px, 0, 0, sw, sh, 0, 0, tmp.width, tmp.height);
+    } else {
+      // blur proporcional al tamaño de la cara
+      const radius = Math.max(2, Math.round(Math.min(bw, bh) * (strength / 100) * 0.28));
+      tctx.filter = `blur(${radius}px)`;
+      tctx.drawImage(source, bx, by, bw, bh, 0, 0, tmp.width, tmp.height);
+      tctx.filter = "none";
+    }
+
+    // pegar el resultado recortado a una elipse inscrita en la caja
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(bx + bw / 2, by + bh / 2, bw / 2, bh / 2, 0, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(tmp, bx, by);
+    ctx.restore();
+  }
+  return out;
+}
+
+/**
  * Detecta caras en una imagen dibujable (HTMLImageElement / canvas).
  * Devuelve [{x,y,w,h,score}] en píxeles de la imagen ORIGINAL.
  * opts: { scoreThresh=0.6, iouThresh=0.3 }
@@ -101,17 +161,18 @@ export async function detectFaces(source, opts = {}) {
   const oh = source.naturalHeight || source.height;
   if (!ow || !oh) return [];
 
-  // reescalar manteniendo proporción (lado largo → TARGET_LONG) y padear a
-  // múltiplos de 32 (los 3 strides necesitan dims divisibles por 32).
-  const scale = TARGET_LONG / Math.max(ow, oh);
+  // reescalar manteniendo proporción para entrar en 640, letterbox a 640×640
+  // (entrada fija del modelo). Offset 0: se dibuja en la esquina superior izq.
+  const scale = INPUT_SIZE / Math.max(ow, oh);
   const newW = Math.round(ow * scale), newH = Math.round(oh * scale);
-  const padW = Math.ceil(newW / 32) * 32, padH = Math.ceil(newH / 32) * 32;
+  const padW = INPUT_SIZE, padH = INPUT_SIZE;
 
   const canvas = document.createElement("canvas");
   canvas.width = padW;
   canvas.height = padH;
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingQuality = "high";
+  ctx.clearRect(0, 0, padW, padH);
   ctx.drawImage(source, 0, 0, newW, newH); // resto en negro (padding)
   const px = ctx.getImageData(0, 0, padW, padH).data;
 

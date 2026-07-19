@@ -3145,3 +3145,15 @@ kbd {
   color: #10130a;
   background: color-mix(in srgb, var(--acid) 90%, transparent);
 }
+
+/* Censurar caras: lienzo (clic para incluir/excluir una cara) */
+.faces-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 66vh;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  touch-action: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}

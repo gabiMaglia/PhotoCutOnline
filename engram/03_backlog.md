@@ -160,7 +160,7 @@ Features trackeadas para el hub Editar (todas 100% client-side):
 | ID | Feature | Estado | Nota |
 |----|---------|--------|------|
 | — | **Texto sobre la foto** | ✅ hecho | ya vive acá (fuente propia incl.) |
-| GROW-19 | **Censurar caras** (blur/pixelado) | **próxima** | YuNet 227KB MIT (spike hecho). Va en Editar. Verificar detección con fotos reales (PO). |
+| GROW-19 | **Censurar caras** (blur/pixelado) | ✅ **HECHO** | YuNet 227KB en `faceDetect.js` (detect+decode+NMS, 6 tests). Censura con clip elíptico. UI en el hub Editar (sub-switcher Texto\|Caras), toggle por cara, blur/pixelado+intensidad. Detección VERIFICADA en Chrome (retrato real, score 0.946). PENDIENTE PO: probar con variedad de fotos reales (grupos, caras chicas, ángulos). |
 | GROW-16 | **Stickers** | trackeado | catálogo para pegar sobre la foto. ¿gratis+premium? assets/licencias a definir. |
 | GROW-21 | **Marca de agua repetida** (mosaico/diagonal) | trackeado | alta demanda; distinta del texto suelto. Texto/logo tileado con opacidad/ángulo. |
 | GROW-22 | **Difuminar/tapar zona a mano** (pincel de censura) | trackeado | censura de CUALQUIER región (patentes, datos en capturas), no sólo caras. Pareja de GROW-19. |

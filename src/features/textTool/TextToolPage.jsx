@@ -7,6 +7,7 @@ import ChipGroup from "../../components/ui/ChipGroup.jsx";
 import Checkbox from "../../components/ui/Checkbox.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
 import { useCutoutContext } from "../cutout/CutoutContext.jsx";
+import EditTabs from "./EditTabs.jsx";
 
 const MAX_DIM = 1600;
 const FONTS = {
@@ -17,8 +18,9 @@ const FONTS = {
 };
 
 // Añadir texto a una foto: preview en vivo, arrastrar para posicionar, estilos y
-// exportación. Todo 100% local; la imagen no se sube.
-export default function TextToolPage({ active, onToast, onOpenDownload }) {
+// exportación. Todo 100% local; la imagen no se sube. Es una sub-herramienta del
+// hub "Editar" (por eso recibe subTool/onSubTool para el sub-switcher).
+export default function TextToolPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
   const { sharedImageUrl } = useCutoutContext();
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
@@ -163,6 +165,8 @@ export default function TextToolPage({ active, onToast, onOpenDownload }) {
     <div className="body" style={active ? undefined : { display: "none" }}>
       <div className="icon-studio">
         <aside className="rail">
+          <EditTabs value={subTool} onChange={onSubTool} />
+
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>
             {sourceName ? (
