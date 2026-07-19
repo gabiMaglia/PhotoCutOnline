@@ -8,8 +8,18 @@ import TextToolPage from "./TextToolPage.jsx";
 // ocultan con `active`.
 const FaceCensorPage = lazy(() => import("../faceCensor/FaceCensorPage.jsx"));
 
+// Sub-tool inicial desde la URL (?sub=faces) para que las landings puedan
+// enlazar directo a "Censurar caras": /editor/?tab=text&sub=faces
+function initialSub() {
+  try {
+    return new URLSearchParams(window.location.search).get("sub") === "faces" ? "faces" : "text";
+  } catch {
+    return "text";
+  }
+}
+
 export default function EditPage({ active, onToast, onOpenDownload }) {
-  const [sub, setSub] = useState("text");
+  const [sub, setSub] = useState(initialSub);
   const [facesSeen, setFacesSeen] = useState(false);
   // el chunk de caras se carga recién al abrir por primera vez esa sub-tool
   useEffect(() => {
