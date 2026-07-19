@@ -164,7 +164,7 @@ Features trackeadas para el hub Editar (todas 100% client-side):
 | GROW-16 | **Stickers** | trackeado | catálogo para pegar sobre la foto. ¿gratis+premium? assets/licencias a definir. |
 | GROW-21 | **Marca de agua repetida** (mosaico/diagonal) | trackeado | alta demanda; distinta del texto suelto. Texto/logo tileado con opacidad/ángulo. |
 | GROW-22 | **Difuminar/tapar zona a mano** | ✅ **HECHO** | Plegado en el tool de censurar caras: arrastrar sobre la foto agrega una región (rectángulo completo, sin margen) que se tapa con blur/pixelado. Convive con las caras auto-detectadas. Verificado en Chrome. |
-| GROW-23 | **Filtros simples** (B&N, sepia, ajustes) | ✅ **HECHO** | Sub-tool "Filtros" del hub Editar. Presets (Original/B&N/Sepia/Vívido/Suave) + sliders brillo/contraste/saturación vía ctx.filter. Verificado en Chrome. **Pendiente: landing SEO de filtros.** |
+| GROW-23 | **Filtros simples** (B&N, sepia, ajustes) | ✅ **HECHO** | Sub-tool "Filtros" del hub Editar. Presets (Original/B&N/Sepia/Vívido/Suave) + sliders brillo/contraste/saturación vía ctx.filter. Verificado en Chrome. Landing SEO hecha (filtros-de-imagen/photo-filters). |
 | GROW-24 | **Formas/flechas para anotar** | trackeado | recuadros y flechas sobre screenshots. |
 
 **Orden sugerido del hub:** GROW-19 (caras) → GROW-16 (stickers) → GROW-21
