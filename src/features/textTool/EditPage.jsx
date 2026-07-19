@@ -7,12 +7,14 @@ import TextToolPage from "./TextToolPage.jsx";
 // sub-switcher <EditTabs>; acá se lifta el estado del sub-tool y se muestran/
 // ocultan con `active`.
 const FaceCensorPage = lazy(() => import("../faceCensor/FaceCensorPage.jsx"));
+const FiltersPage = lazy(() => import("../filters/FiltersPage.jsx"));
 
-// Sub-tool inicial desde la URL (?sub=faces) para que las landings puedan
-// enlazar directo a "Censurar caras": /editor/?tab=text&sub=faces
+// Sub-tool inicial desde la URL (?sub=faces|filters) para que las landings
+// puedan enlazar directo a una sub-herramienta: /editor/?tab=text&sub=faces
 function initialSub() {
   try {
-    return new URLSearchParams(window.location.search).get("sub") === "faces" ? "faces" : "text";
+    const s = new URLSearchParams(window.location.search).get("sub");
+    return ["faces", "filters"].includes(s) ? s : "text";
   } catch {
     return "text";
   }
@@ -21,9 +23,11 @@ function initialSub() {
 export default function EditPage({ active, onToast, onOpenDownload }) {
   const [sub, setSub] = useState(initialSub);
   const [facesSeen, setFacesSeen] = useState(false);
-  // el chunk de caras se carga recién al abrir por primera vez esa sub-tool
+  const [filtersSeen, setFiltersSeen] = useState(false);
+  // cada sub-tool carga su chunk recién al abrirla por primera vez
   useEffect(() => {
     if (active && sub === "faces") setFacesSeen(true);
+    if (active && sub === "filters") setFiltersSeen(true);
   }, [active, sub]);
 
   return (
@@ -39,6 +43,17 @@ export default function EditPage({ active, onToast, onOpenDownload }) {
         <Suspense fallback={null}>
           <FaceCensorPage
             active={active && sub === "faces"}
+            subTool={sub}
+            onSubTool={setSub}
+            onToast={onToast}
+            onOpenDownload={onOpenDownload}
+          />
+        </Suspense>
+      )}
+      {filtersSeen && (
+        <Suspense fallback={null}>
+          <FiltersPage
+            active={active && sub === "filters"}
             subTool={sub}
             onSubTool={setSub}
             onToast={onToast}
