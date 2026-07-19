@@ -112,10 +112,15 @@ export function censorBoxes(source, boxes, opts = {}) {
   ctx.drawImage(source, 0, 0);
 
   for (const b of boxes) {
-    const bx = Math.max(0, b.x - b.w * pad);
-    const by = Math.max(0, b.y - b.h * pad);
-    const bw = Math.min(W - bx, b.w * (1 + 2 * pad));
-    const bh = Math.min(H - by, b.h * (1 + 2 * pad));
+    // Regiones a mano (redacción de datos): sin margen extra y con recorte
+    // RECTANGULAR, para tapar todo lo dibujado (una elipse dejaría las esquinas
+    // de una patente/texto a la vista). Caras: margen + elipse (más natural).
+    const p = b.manual ? 0 : pad;
+    const rectShape = !!b.manual;
+    const bx = Math.max(0, b.x - b.w * p);
+    const by = Math.max(0, b.y - b.h * p);
+    const bw = Math.min(W - bx, b.w * (1 + 2 * p));
+    const bh = Math.min(H - by, b.h * (1 + 2 * p));
     if (bw <= 1 || bh <= 1) continue;
 
     const tmp = document.createElement("canvas");
@@ -139,10 +144,11 @@ export function censorBoxes(source, boxes, opts = {}) {
       tctx.filter = "none";
     }
 
-    // pegar el resultado recortado a una elipse inscrita en la caja
+    // pegar el resultado recortado: rectángulo (a mano) o elipse (caras)
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(bx + bw / 2, by + bh / 2, bw / 2, bh / 2, 0, 0, Math.PI * 2);
+    if (rectShape) ctx.rect(bx, by, bw, bh);
+    else ctx.ellipse(bx + bw / 2, by + bh / 2, bw / 2, bh / 2, 0, 0, Math.PI * 2);
     ctx.clip();
     ctx.drawImage(tmp, bx, by);
     ctx.restore();

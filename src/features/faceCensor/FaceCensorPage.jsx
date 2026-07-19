@@ -23,6 +23,9 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
   const [mode, setMode] = useState("blur"); // blur | pixelate
   const [strength, setStrength] = useState(65);
   const [detected, setDetected] = useState(false);
+  // censura a mano (GROW-22): arrastrar para tapar cualquier región
+  const dragRef = useRef(null); // {x0,y0} en coords de imagen
+  const [dragBox, setDragBox] = useState(null); // preview mientras se arrastra
 
   // auto-carga la imagen compartida (navbar «Abrir foto»)
   useEffect(() => {
@@ -61,8 +64,15 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
       ctx.setLineDash(b.on ? [] : [line * 3, line * 2]);
       ctx.strokeRect(b.x, b.y, b.w, b.h);
     }
+    // preview de la región que se está arrastrando a mano
+    if (dragBox) {
+      ctx.lineWidth = line;
+      ctx.strokeStyle = "#d6f64b";
+      ctx.setLineDash([line * 2, line * 2]);
+      ctx.strokeRect(dragBox.x, dragBox.y, dragBox.w, dragBox.h);
+    }
     ctx.setLineDash([]);
-  }, [boxes, mode, strength]);
+  }, [boxes, mode, strength, dragBox]);
 
   useEffect(() => { redraw(); }, [redraw]);
 
@@ -84,16 +94,44 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
   }, [busy, onToast]);
   const loadedWarm = useRef(false);
 
-  // clic sobre una cara → activa/desactiva su censura
-  const onCanvasClick = (e) => {
+  // coords de imagen desde un evento de puntero
+  const toImg = (e) => {
     const cv = canvasRef.current;
-    if (!cv || !boxes.length) return;
     const rect = cv.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width * cv.width;
-    const y = (e.clientY - rect.top) / rect.height * cv.height;
-    setBoxes((prev) => prev.map((b) =>
-      x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h ? { ...b, on: !b.on } : b
-    ));
+    return {
+      x: (e.clientX - rect.left) / rect.width * cv.width,
+      y: (e.clientY - rect.top) / rect.height * cv.height,
+    };
+  };
+  // arrastrar = agregar región a mano; clic (sin arrastre) = activar/desactivar
+  // la caja bajo el cursor.
+  const onDown = (e) => {
+    if (!ready) return;
+    dragRef.current = toImg(e);
+  };
+  const onMove = (e) => {
+    if (!dragRef.current) return;
+    const p = toImg(e), s = dragRef.current;
+    setDragBox({ x: Math.min(p.x, s.x), y: Math.min(p.y, s.y), w: Math.abs(p.x - s.x), h: Math.abs(p.y - s.y) });
+  };
+  const onUp = (e) => {
+    const s = dragRef.current;
+    dragRef.current = null;
+    if (!s) return;
+    const p = toImg(e);
+    const w = Math.abs(p.x - s.x), h = Math.abs(p.y - s.y);
+    const cv = canvasRef.current;
+    const minDrag = Math.min(cv.width, cv.height) * 0.02;
+    setDragBox(null);
+    if (w > minDrag && h > minDrag) {
+      // región nueva a mano
+      setBoxes((prev) => [...prev, { x: Math.min(p.x, s.x), y: Math.min(p.y, s.y), w, h, score: 1, on: true, manual: true }]);
+    } else {
+      // clic: toggle de la caja bajo el cursor
+      setBoxes((prev) => prev.map((b) =>
+        p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h ? { ...b, on: !b.on } : b
+      ));
+    }
   };
 
   const download = () => {
@@ -133,7 +171,7 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
             <Button variant="primary" disabled={!ready || busy} onClick={detect}>
               {busy ? t("faces.detecting") : t("faces.detect")}
             </Button>
-            {detected && (
+            {ready && (detected || boxes.length > 0) && (
               <>
                 <ChipGroup
                   ariaLabel={t("faces.mode")}
@@ -145,11 +183,13 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
                   ]}
                 />
                 <Slider id="faces-strength" label={t("faces.strength", { n: strength })} min={10} max={100} value={strength} onChange={setStrength} />
-                <div className="rail-help"><p>{boxes.length ? t("faces.tapHint", { on: onCount, total: boxes.length }) : t("faces.none")}</p></div>
+                <div className="rail-help">
+                  <p>{boxes.length ? t("faces.tapHint", { on: onCount, total: boxes.length }) : t("faces.dragHint")}</p>
+                </div>
                 <Button disabled={!onCount} onClick={download}>{t("faces.download")}</Button>
               </>
             )}
-            <div className="rail-help"><p>{t("faces.help")}</p></div>
+            <div className="rail-help"><p>{ready ? t("faces.manualHint") : t("faces.help")}</p></div>
           </section>
 
           {active && <AdSlot placement="faces-rail" onDownload={onOpenDownload} />}
@@ -167,8 +207,11 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
             <canvas
               ref={canvasRef}
               className="faces-canvas"
-              onClick={onCanvasClick}
-              style={{ cursor: boxes.length ? "pointer" : "default" }}
+              onMouseDown={onDown}
+              onMouseMove={onMove}
+              onMouseUp={onUp}
+              onMouseLeave={() => { dragRef.current = null; setDragBox(null); }}
+              style={{ cursor: "crosshair" }}
             />
           )}
         </main>
