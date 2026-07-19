@@ -28,5 +28,7 @@ module.exports = {
   moduleNameMapper: {
     // los assets no-JS no aportan a los tests de UI
     "\\.(css|png|svg|onnx|wasm)$": "<rootDir>/test/jest/fileMock.cjs",
+    // imports de Vite con sufijo ?url (p.ej. el runtime ONNX): stub en tests
+    "\\?url$": "<rootDir>/test/jest/fileMock.cjs",
   },
 };
