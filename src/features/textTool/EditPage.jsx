@@ -8,13 +8,14 @@ import TextToolPage from "./TextToolPage.jsx";
 // ocultan con `active`.
 const FaceCensorPage = lazy(() => import("../faceCensor/FaceCensorPage.jsx"));
 const FiltersPage = lazy(() => import("../filters/FiltersPage.jsx"));
+const WatermarkPage = lazy(() => import("../watermark/WatermarkPage.jsx"));
 
 // Sub-tool inicial desde la URL (?sub=faces|filters) para que las landings
 // puedan enlazar directo a una sub-herramienta: /editor/?tab=text&sub=faces
 function initialSub() {
   try {
     const s = new URLSearchParams(window.location.search).get("sub");
-    return ["faces", "filters"].includes(s) ? s : "text";
+    return ["faces", "filters", "watermark"].includes(s) ? s : "text";
   } catch {
     return "text";
   }
@@ -24,10 +25,12 @@ export default function EditPage({ active, onToast, onOpenDownload }) {
   const [sub, setSub] = useState(initialSub);
   const [facesSeen, setFacesSeen] = useState(false);
   const [filtersSeen, setFiltersSeen] = useState(false);
+  const [wmSeen, setWmSeen] = useState(false);
   // cada sub-tool carga su chunk recién al abrirla por primera vez
   useEffect(() => {
     if (active && sub === "faces") setFacesSeen(true);
     if (active && sub === "filters") setFiltersSeen(true);
+    if (active && sub === "watermark") setWmSeen(true);
   }, [active, sub]);
 
   return (
@@ -54,6 +57,17 @@ export default function EditPage({ active, onToast, onOpenDownload }) {
         <Suspense fallback={null}>
           <FiltersPage
             active={active && sub === "filters"}
+            subTool={sub}
+            onSubTool={setSub}
+            onToast={onToast}
+            onOpenDownload={onOpenDownload}
+          />
+        </Suspense>
+      )}
+      {wmSeen && (
+        <Suspense fallback={null}>
+          <WatermarkPage
+            active={active && sub === "watermark"}
             subTool={sub}
             onSubTool={setSub}
             onToast={onToast}

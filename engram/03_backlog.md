@@ -162,7 +162,7 @@ Features trackeadas para el hub Editar (todas 100% client-side):
 | — | **Texto sobre la foto** | ✅ hecho | ya vive acá (fuente propia incl.) |
 | GROW-19 | **Censurar caras** (blur/pixelado) | ✅ **HECHO** | YuNet 227KB en `faceDetect.js` (detect+decode+NMS, 6 tests). Censura con clip elíptico. UI en el hub Editar (sub-switcher Texto\|Caras), toggle por cara, blur/pixelado+intensidad. Detección VERIFICADA en Chrome (retrato real, score 0.946). PENDIENTE PO: probar con variedad de fotos reales (grupos, caras chicas, ángulos). |
 | GROW-16 | **Stickers** | trackeado | catálogo para pegar sobre la foto. ¿gratis+premium? assets/licencias a definir. |
-| GROW-21 | **Marca de agua repetida** (mosaico/diagonal) | trackeado | alta demanda; distinta del texto suelto. Texto/logo tileado con opacidad/ángulo. |
+| GROW-21 | **Marca de agua repetida** | ✅ **HECHO** | 4º sub-tool "Marca de agua" del hub Editar: texto tileado en diagonal con opacidad/tamaño/ángulo/separación/color, filas alternadas. Verificado en Chrome. Guía existente enlazada al tool. (Logo tileado = follow-up.) |
 | GROW-22 | **Difuminar/tapar zona a mano** | ✅ **HECHO** | Plegado en el tool de censurar caras: arrastrar sobre la foto agrega una región (rectángulo completo, sin margen) que se tapa con blur/pixelado. Convive con las caras auto-detectadas. Verificado en Chrome. |
 | GROW-23 | **Filtros simples** (B&N, sepia, ajustes) | ✅ **HECHO** | Sub-tool "Filtros" del hub Editar. Presets (Original/B&N/Sepia/Vívido/Suave) + sliders brillo/contraste/saturación vía ctx.filter. Verificado en Chrome. Landing SEO hecha (filtros-de-imagen/photo-filters). |
 | GROW-24 | **Formas/flechas para anotar** | trackeado | recuadros y flechas sobre screenshots. |

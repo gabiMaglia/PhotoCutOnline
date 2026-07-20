@@ -15,6 +15,7 @@ export default function EditTabs({ value, onChange }) {
           { value: "text", label: t("edit.text") },
           { value: "faces", label: t("edit.faces") },
           { value: "filters", label: t("edit.filters") },
+          { value: "watermark", label: t("edit.watermark") },
         ]}
       />
     </section>
