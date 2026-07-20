@@ -8,6 +8,7 @@ import Checkbox from "../../components/ui/Checkbox.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
 import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import EditTabs from "./EditTabs.jsx";
+import EditSource from "./EditSource.jsx";
 
 const MAX_DIM = 1600;
 const FONTS = {
@@ -21,13 +22,14 @@ const FONTS = {
 // exportación. Todo 100% local; la imagen no se sube. Es una sub-herramienta del
 // hub "Editar" (por eso recibe subTool/onSubTool para el sub-switcher).
 export default function TextToolPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
-  const { sharedImageUrl } = useCutoutContext();
+  const { editSourceUrl, editSourceMode, setEditSourceMode, session } = useCutoutContext();
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const dragging = useRef(false);
   const fontSeq = useRef(0);
   const loadedUrlRef = useRef(null); // auto-carga la imagen compartida (navbar)
   const [ready, setReady] = useState(false);
+  const [imgTick, setImgTick] = useState(0); // fuerza redraw al cambiar de fuente
   const [sourceName, setSourceName] = useState("");
 
   const [text, setText] = useState("Tu texto aquí");
@@ -89,7 +91,7 @@ export default function TextToolPage({ active, subTool, onSubTool, onToast, onOp
 
   useEffect(() => {
     if (ready) draw();
-  }, [ready, draw]);
+  }, [ready, draw, imgTick]);
 
   const loadImage = useCallback((src, name) => {
     if (!src) return;
@@ -104,6 +106,7 @@ export default function TextToolPage({ active, subTool, onSubTool, onToast, onOp
       imgRef.current = img;
       setSourceName(name || "");
       setReady(true);
+      setImgTick((n) => n + 1); // fuerza el redraw al cambiar de fuente (original↔recorte)
     };
     img.onerror = () => onToast?.("No se pudo cargar la imagen");
     img.src = src;
@@ -112,11 +115,11 @@ export default function TextToolPage({ active, subTool, onSubTool, onToast, onOp
   // Auto-carga la imagen compartida (la del navbar «Abrir foto») al entrar a la
   // pestaña o al cambiar de imagen. Sin botón de carga propio.
   useEffect(() => {
-    if (active && sharedImageUrl && sharedImageUrl !== loadedUrlRef.current) {
-      loadedUrlRef.current = sharedImageUrl;
-      loadImage(sharedImageUrl, t("img.currentName"));
+    if (active && editSourceUrl && editSourceUrl !== loadedUrlRef.current) {
+      loadedUrlRef.current = editSourceUrl;
+      loadImage(editSourceUrl, t("img.currentName"));
     }
-  }, [active, sharedImageUrl, loadImage]);
+  }, [active, editSourceUrl, loadImage]);
 
   // Sube una fuente propia (.ttf/.otf/.woff/.woff2) vía FontFace API, con familia
   // única por carga para no colisionar con una anterior.
@@ -166,6 +169,7 @@ export default function TextToolPage({ active, subTool, onSubTool, onToast, onOp
       <div className="icon-studio">
         <aside className="rail">
           <EditTabs value={subTool} onChange={onSubTool} />
+          <EditSource mode={editSourceMode} onChange={setEditSourceMode} hasCut={session?.hasCut} />
 
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>

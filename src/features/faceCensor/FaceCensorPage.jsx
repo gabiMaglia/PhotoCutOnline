@@ -7,11 +7,12 @@ import AdSlot from "../promo/AdSlot.jsx";
 import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import { detectFaces, censorBoxes, warmupFaces } from "../../lib/faceDetect.js";
 import EditTabs from "../textTool/EditTabs.jsx";
+import EditSource from "../textTool/EditSource.jsx";
 
 // Censurar caras: detección 100% local (YuNet) + blur/pixelado sobre cada cara,
 // recortado a una elipse. La foto no se sube. Vive en el hub "Editar".
 export default function FaceCensorPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
-  const { sharedImageUrl } = useCutoutContext();
+  const { editSourceUrl, editSourceMode, setEditSourceMode, session } = useCutoutContext();
   const imgRef = useRef(null);
   const canvasRef = useRef(null);
   const loadedUrlRef = useRef(null);
@@ -27,10 +28,10 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
   const dragRef = useRef(null); // {x0,y0} en coords de imagen
   const [dragBox, setDragBox] = useState(null); // preview mientras se arrastra
 
-  // auto-carga la imagen compartida (navbar «Abrir foto»)
+  // auto-carga la fuente de edición (original o recorte) al entrar o cambiar
   useEffect(() => {
-    if (!(active && sharedImageUrl && sharedImageUrl !== loadedUrlRef.current)) return;
-    loadedUrlRef.current = sharedImageUrl;
+    if (!(active && editSourceUrl && editSourceUrl !== loadedUrlRef.current)) return;
+    loadedUrlRef.current = editSourceUrl;
     const img = new Image();
     img.onload = () => {
       imgRef.current = img;
@@ -40,8 +41,8 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
       setReady(true);
     };
     img.onerror = () => onToast?.("No se pudo cargar la imagen");
-    img.src = sharedImageUrl;
-  }, [active, sharedImageUrl, onToast]);
+    img.src = editSourceUrl;
+  }, [active, editSourceUrl, onToast]);
 
   // (re)dibuja el preview: imagen censurada (sólo las caras activas) + contornos
   const redraw = useCallback(() => {
@@ -156,6 +157,7 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
       <div className="icon-studio">
         <aside className="rail">
           <EditTabs value={subTool} onChange={onSubTool} />
+          <EditSource mode={editSourceMode} onChange={setEditSourceMode} hasCut={session?.hasCut} />
 
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>

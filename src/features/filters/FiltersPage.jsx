@@ -6,6 +6,7 @@ import ChipGroup from "../../components/ui/ChipGroup.jsx";
 import AdSlot from "../promo/AdSlot.jsx";
 import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import EditTabs from "../textTool/EditTabs.jsx";
+import EditSource from "../textTool/EditSource.jsx";
 
 // Filtros y ajustes de una foto (GROW-23), sub-herramienta del hub "Editar".
 // Todo con ctx.filter (grayscale/sepia/brightness/contrast/saturate): 100% en
@@ -19,11 +20,12 @@ const PRESETS = {
 };
 
 export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
-  const { sharedImageUrl } = useCutoutContext();
+  const { editSourceUrl, editSourceMode, setEditSourceMode, session } = useCutoutContext();
   const imgRef = useRef(null);
   const canvasRef = useRef(null);
   const loadedUrlRef = useRef(null);
   const [ready, setReady] = useState(false);
+  const [imgTick, setImgTick] = useState(0); // fuerza el redraw al cambiar de fuente
   const [sourceName, setSourceName] = useState("");
   const [preset, setPreset] = useState("none");
   const [brightness, setBrightness] = useState(100);
@@ -31,13 +33,13 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
   const [saturation, setSaturation] = useState(100);
 
   useEffect(() => {
-    if (!(active && sharedImageUrl && sharedImageUrl !== loadedUrlRef.current)) return;
-    loadedUrlRef.current = sharedImageUrl;
+    if (!(active && editSourceUrl && editSourceUrl !== loadedUrlRef.current)) return;
+    loadedUrlRef.current = editSourceUrl;
     const img = new Image();
-    img.onload = () => { imgRef.current = img; setSourceName(t("img.currentName")); setReady(true); };
+    img.onload = () => { imgRef.current = img; setSourceName(t("img.currentName")); setReady(true); setImgTick((n) => n + 1); };
     img.onerror = () => onToast?.("No se pudo cargar la imagen");
-    img.src = sharedImageUrl;
-  }, [active, sharedImageUrl, onToast]);
+    img.src = editSourceUrl;
+  }, [active, editSourceUrl, onToast]);
 
   const filterString = useCallback(
     () => `${PRESETS[preset]} brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`.trim(),
@@ -55,7 +57,7 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
     ctx.filter = "none";
   }, [filterString]);
 
-  useEffect(() => { if (ready) redraw(); }, [ready, redraw]);
+  useEffect(() => { if (ready) redraw(); }, [ready, redraw, imgTick]);
 
   const reset = () => { setPreset("none"); setBrightness(100); setContrast(100); setSaturation(100); };
 
@@ -77,6 +79,7 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
       <div className="icon-studio">
         <aside className="rail">
           <EditTabs value={subTool} onChange={onSubTool} />
+          <EditSource mode={editSourceMode} onChange={setEditSourceMode} hasCut={session?.hasCut} />
 
           <section className="rail-group">
             <h2 className="rail-title">{t("color.source")}</h2>

@@ -46,5 +46,34 @@ export function useCutout({ toast, onImageLoad }) {
   }, []);
 
   const getCutout = useCallback(() => backend.exportTransparent({ format: "png" }), []);
-  return { workspaceRef, loader, session, preview, exporter, getCutout, sharedImageUrl, shareFile };
+
+  // Fuente para el hub "Editar": la imagen ORIGINAL (compartida) o el SUJETO
+  // RECORTADO (PNG transparente del recorte). El PO pidió poder partir de
+  // cualquiera de las dos. Si no hay recorte, siempre es la original.
+  const [editSourceMode, setEditSourceMode] = useState("original"); // original | cutout
+  const [cutoutUrl, setCutoutUrl] = useState(null);
+  useEffect(() => {
+    if (editSourceMode !== "cutout" || !session.hasCut) {
+      setCutoutUrl(null);
+      return;
+    }
+    let alive = true;
+    // getCutout() devuelve un object URL (blob:) del PNG transparente, no un
+    // Blob — se usa directo como src de imagen.
+    getCutout()
+      .then((url) => {
+        if (alive && url) setCutoutUrl(url);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [editSourceMode, session.hasCut, getCutout]);
+  const editSourceUrl = editSourceMode === "cutout" && cutoutUrl ? cutoutUrl : sharedImageUrl;
+
+  return {
+    workspaceRef, loader, session, preview, exporter, getCutout,
+    sharedImageUrl, shareFile,
+    editSourceUrl, editSourceMode, setEditSourceMode,
+  };
 }
