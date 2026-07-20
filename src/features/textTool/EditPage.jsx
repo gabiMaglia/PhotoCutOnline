@@ -9,13 +9,14 @@ import TextToolPage from "./TextToolPage.jsx";
 const FaceCensorPage = lazy(() => import("../faceCensor/FaceCensorPage.jsx"));
 const FiltersPage = lazy(() => import("../filters/FiltersPage.jsx"));
 const WatermarkPage = lazy(() => import("../watermark/WatermarkPage.jsx"));
+const AnnotatePage = lazy(() => import("../annotate/AnnotatePage.jsx"));
 
 // Sub-tool inicial desde la URL (?sub=faces|filters) para que las landings
 // puedan enlazar directo a una sub-herramienta: /editor/?tab=text&sub=faces
 function initialSub() {
   try {
     const s = new URLSearchParams(window.location.search).get("sub");
-    return ["faces", "filters", "watermark"].includes(s) ? s : "text";
+    return ["faces", "filters", "watermark", "annotate"].includes(s) ? s : "text";
   } catch {
     return "text";
   }
@@ -26,11 +27,13 @@ export default function EditPage({ active, onToast, onOpenDownload }) {
   const [facesSeen, setFacesSeen] = useState(false);
   const [filtersSeen, setFiltersSeen] = useState(false);
   const [wmSeen, setWmSeen] = useState(false);
+  const [anSeen, setAnSeen] = useState(false);
   // cada sub-tool carga su chunk recién al abrirla por primera vez
   useEffect(() => {
     if (active && sub === "faces") setFacesSeen(true);
     if (active && sub === "filters") setFiltersSeen(true);
     if (active && sub === "watermark") setWmSeen(true);
+    if (active && sub === "annotate") setAnSeen(true);
   }, [active, sub]);
 
   return (
@@ -68,6 +71,17 @@ export default function EditPage({ active, onToast, onOpenDownload }) {
         <Suspense fallback={null}>
           <WatermarkPage
             active={active && sub === "watermark"}
+            subTool={sub}
+            onSubTool={setSub}
+            onToast={onToast}
+            onOpenDownload={onOpenDownload}
+          />
+        </Suspense>
+      )}
+      {anSeen && (
+        <Suspense fallback={null}>
+          <AnnotatePage
+            active={active && sub === "annotate"}
             subTool={sub}
             onSubTool={setSub}
             onToast={onToast}

@@ -165,7 +165,7 @@ Features trackeadas para el hub Editar (todas 100% client-side):
 | GROW-21 | **Marca de agua repetida** | ✅ **HECHO** | 4º sub-tool "Marca de agua" del hub Editar: texto tileado en diagonal con opacidad/tamaño/ángulo/separación/color, filas alternadas. Verificado en Chrome. Guía existente enlazada al tool. (Logo tileado = follow-up.) |
 | GROW-22 | **Difuminar/tapar zona a mano** | ✅ **HECHO** | Plegado en el tool de censurar caras: arrastrar sobre la foto agrega una región (rectángulo completo, sin margen) que se tapa con blur/pixelado. Convive con las caras auto-detectadas. Verificado en Chrome. |
 | GROW-23 | **Filtros simples** (B&N, sepia, ajustes) | ✅ **HECHO** | Sub-tool "Filtros" del hub Editar. Presets (Original/B&N/Sepia/Vívido/Suave) + sliders brillo/contraste/saturación vía ctx.filter. Verificado en Chrome. Landing SEO hecha (filtros-de-imagen/photo-filters). |
-| GROW-24 | **Formas/flechas para anotar** | trackeado | recuadros y flechas sobre screenshots. |
+| GROW-24 | **Formas/flechas para anotar** | ✅ **HECHO** | 5º sub-tool "Anotar" del hub Editar: flecha/recuadro/elipse/línea con grosor y color, deshacer/limpiar. Arrastrar para dibujar. Verificado en Chrome. |
 
 **Orden sugerido del hub:** GROW-19 (caras) → GROW-16 (stickers) → GROW-21
 (marca de agua) → GROW-22 (censura a mano) → 23/24 bonus.

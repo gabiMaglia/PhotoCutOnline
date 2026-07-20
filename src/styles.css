@@ -3157,3 +3157,6 @@ kbd {
   touch-action: none;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
+
+.an-actions { display: flex; gap: 6px; }
+.an-actions > * { flex: 1; }
