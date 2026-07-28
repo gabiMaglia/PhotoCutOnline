@@ -1,14 +1,12 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="editor-doc">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0b0d10" />
-    <title>PhotoCut Studio — Editor</title>
-
-    <!-- Herramienta, no página de SEO: no debe competir con la landing ("/")
-         por el mismo contenido/keywords (T-011). -->
-    <meta name="robots" content="noindex" />
+    <title>Editor de fotos gratis en el navegador — quitar fondo, recortar y más — PhotoCut Studio</title>
+    <meta name="description" content="Editor de fotos gratis que corre 100% en tu navegador: quitar y cambiar el fondo con IA, recortar, censurar caras, filtros, marca de agua, iconos y conversión de formato. Sin registro y sin subir tus fotos a ningún servidor." />
+    <link rel="canonical" href="https://www.photocutapp.com/editor/" />
 
     <!-- PWA -->
     <link rel="manifest" href="/site.webmanifest" />
@@ -22,8 +20,8 @@
     />
 
     <!-- Datos estructurados: describen la herramienta para buscadores y para la
-         revisión de AdSense (qué es, que es gratis y qué hace). No compite por
-         indexación porque la página es noindex; es señal de legitimidad. -->
+         revisión de AdSense (qué es, que es gratis y qué hace). La página es
+         indexable y trae contenido real debajo de la app. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -84,11 +82,177 @@
     }
     </script>
 
+    <!-- La app ocupa la primera pantalla; debajo va contenido indexable. Estos
+         overrides están scopeados a esta página (html.editor-doc) para no tocar
+         el layout de la app. -->
+    <style>
+      html.editor-doc,
+      html.editor-doc body {
+        height: auto;
+        overflow: visible;
+      }
+      html.editor-doc #root {
+        height: auto;
+        min-height: 100vh;
+      }
+      .editor-doc .ed-doc {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 64px 22px 32px;
+        font-family: var(--display, system-ui, -apple-system, "Segoe UI", sans-serif);
+        color: var(--ink-dim, #9aa194);
+        line-height: 1.65;
+      }
+      .editor-doc .ed-doc h1 {
+        font-size: 30px;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        color: var(--ink, #edf0e8);
+        margin: 0 0 12px;
+      }
+      .editor-doc .ed-doc h2 {
+        font-size: 21px;
+        color: var(--ink, #edf0e8);
+        margin: 34px 0 10px;
+      }
+      .editor-doc .ed-doc h3 {
+        font-size: 16px;
+        color: var(--ink, #edf0e8);
+        margin: 22px 0 6px;
+      }
+      .editor-doc .ed-doc strong {
+        color: var(--ink, #edf0e8);
+      }
+      .editor-doc .ed-doc a {
+        color: var(--acid, #d6f64b);
+        text-underline-offset: 3px;
+      }
+      .editor-doc .ed-doc ul.feat {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 20px;
+      }
+      .editor-doc .ed-doc ul.feat li {
+        padding-left: 20px;
+        position: relative;
+      }
+      .editor-doc .ed-doc ul.feat li::before {
+        content: "◑";
+        position: absolute;
+        left: 0;
+        color: var(--acid, #d6f64b);
+      }
+      .editor-doc .ed-doc .ed-cta {
+        display: inline-block;
+        margin: 8px 0 4px;
+        background: var(--acid, #d6f64b);
+        color: #10130a;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+      }
+      .editor-doc .ed-foot {
+        max-width: 880px;
+        margin: 24px auto 0;
+        padding: 20px 22px 56px;
+        border-top: 1px solid var(--line, #23272f);
+        font-size: 13.5px;
+        color: var(--ink-dim, #9aa194);
+      }
+      .editor-doc .ed-foot a {
+        color: var(--ink-dim, #9aa194);
+        text-underline-offset: 3px;
+      }
+      @media (max-width: 560px) {
+        .editor-doc .ed-doc ul.feat {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Contenido indexable debajo de la herramienta. La app llena la primera
+         pantalla; esto aparece al desplazarse y le da a la página texto real
+         (para usuarios y buscadores) sin estorbar el uso del editor. -->
+    <section class="ed-doc">
+      <h1>Editor de fotos gratis en tu navegador</h1>
+      <p>
+        PhotoCut Studio es un editor de imágenes que funciona por completo
+        <strong>dentro de tu navegador</strong>: no instala nada, no pide cuenta y
+        <strong>tus fotos nunca se suben a un servidor</strong>. El recorte con
+        inteligencia artificial y el resto de las herramientas corren de forma
+        local gracias a WebAssembly y a un modelo de IA que se descarga una sola
+        vez. Arrastrá una foto o tocá <strong>«Abrir foto»</strong> arriba para
+        empezar.
+      </p>
+
+      <h2>Qué podés hacer</h2>
+      <ul class="feat">
+        <li>Quitar el fondo con IA en un clic</li>
+        <li>Cambiar el fondo por un color o una imagen</li>
+        <li>Recortar y refinar bordes con pinceles</li>
+        <li>Censurar o difuminar caras y datos</li>
+        <li>Aplicar filtros y ajustes</li>
+        <li>Poner una marca de agua</li>
+        <li>Anotar con flechas y formas</li>
+        <li>Crear iconos de app y favicons</li>
+        <li>Extraer la paleta de color de una imagen</li>
+        <li>Convertir, comprimir y redimensionar</li>
+      </ul>
+
+      <h2>Cómo quitar el fondo de una foto, en resumen</h2>
+      <ol>
+        <li>Cargá tu foto con <strong>«Abrir foto»</strong> (o arrastrándola al lienzo).</li>
+        <li>Pulsá <strong>Recorte IA</strong>: el modelo detecta el sujeto y elimina el fondo.</li>
+        <li>Si hace falta, retocá el borde con los pinceles <strong>mantener</strong> y <strong>quitar</strong>.</li>
+        <li>Elegí fondo <strong>transparente</strong> y exportá en <strong>PNG</strong> (o WebP/JPG), sin marca de agua.</li>
+      </ol>
+      <p>
+        ¿Querés el paso a paso con capturas? Mirá la guía
+        <a href="/guias/como-quitar-fondo-gratis.html">Quitar el fondo de una foto gratis</a>
+        o todas las <a href="/guias/">guías</a>.
+      </p>
+
+      <h2>Tus fotos no salen de tu navegador</h2>
+      <p>
+        A diferencia de la mayoría de los editores online, PhotoCut no envía tus
+        imágenes a la nube para procesarlas. Todo —el recorte por IA, los
+        filtros, la conversión— ocurre en tu propio equipo. Por eso no hay
+        límite de usos, no hay marca de agua y no queda una copia de tu foto en
+        ningún servidor.
+      </p>
+
+      <h2>Preguntas frecuentes</h2>
+      <h3>¿Se suben mis fotos a un servidor?</h3>
+      <p>No. Todo el procesamiento ocurre dentro de tu navegador; las imágenes nunca salen de tu equipo.</p>
+      <h3>¿Es gratis?</h3>
+      <p>Sí, es gratis, sin límite de usos y sin marca de agua en las exportaciones.</p>
+      <h3>¿Necesito instalar algo o crear una cuenta?</h3>
+      <p>No. Se usa directamente en el navegador, sin instalar programas ni registrarse.</p>
+      <h3>¿En qué formatos puedo exportar?</h3>
+      <p>PNG (con transparencia), WebP y JPG. También podés redimensionar, comprimir y convertir entre formatos.</p>
+
+      <a class="ed-cta" href="/guias/">Ver las guías paso a paso →</a>
+    </section>
+
+    <footer class="ed-foot">
+      <a href="/">PhotoCut Studio</a> ·
+      <a href="/guias/">Guías</a> ·
+      <a href="/acerca.html">Acerca</a> ·
+      <a href="/contacto.html">Contacto</a> ·
+      <a href="/legal/privacidad.html">Privacidad</a> ·
+      <a href="/legal/terminos.html">Términos</a>
+    </footer>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
