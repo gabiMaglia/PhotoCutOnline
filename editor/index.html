@@ -21,6 +21,69 @@
       rel="stylesheet"
     />
 
+    <!-- Datos estructurados: describen la herramienta para buscadores y para la
+         revisión de AdSense (qué es, que es gratis y qué hace). No compite por
+         indexación porque la página es noindex; es señal de legitimidad. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "PhotoCut Studio",
+      "url": "https://www.photocutapp.com/editor/",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web (cualquier navegador moderno con WebAssembly)",
+      "description": "Editor de fotos gratis que funciona 100% en tu navegador: quitar y cambiar el fondo con IA, recortar, censurar caras, aplicar filtros y marca de agua, crear iconos de app, extraer la paleta de color y convertir o comprimir imágenes. Las fotos nunca se suben a un servidor.",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "inLanguage": ["es", "en", "pt"],
+      "featureList": [
+        "Quitar el fondo con IA (recorte automático)",
+        "Cambiar el fondo por un color o una imagen",
+        "Censurar y difuminar caras o datos",
+        "Filtros y ajustes de imagen",
+        "Marca de agua",
+        "Anotar con flechas y formas",
+        "Iconos de app y favicons",
+        "Paleta de color desde una imagen",
+        "Convertir y comprimir (PNG, JPG, WebP)",
+        "Redimensionar imágenes"
+      ],
+      "publisher": {
+        "@type": "Organization",
+        "name": "PhotoCut Studio",
+        "url": "https://www.photocutapp.com/"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Se suben mis fotos a un servidor?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Todo el procesamiento ocurre dentro de tu navegador (WebAssembly y un modelo de IA local). Las imágenes nunca salen de tu equipo." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿PhotoCut Studio es gratis?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. Es gratis, sin límite de usos y sin marca de agua en las exportaciones." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Necesito instalar algo o crear una cuenta?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Se usa directamente en el navegador, sin instalar programas ni registrarse." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿En qué formatos puedo exportar?",
+          "acceptedAnswer": { "@type": "Answer", "text": "PNG (con transparencia), WebP y JPG. También podés redimensionar, comprimir y convertir entre formatos." }
+        }
+      ]
+    }
+    </script>
+
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
   </head>
