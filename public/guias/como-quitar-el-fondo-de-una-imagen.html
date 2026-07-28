@@ -32,6 +32,10 @@
       "@type": "Article",
       "headline": "Cómo quitar el fondo de una imagen gratis (y sin subirla a ningún servidor)",
       "description": "Tres formas de quitar el fondo de una foto en 2026: IA automática, recorte interactivo y pinceles de refinado. Gratis, en tu navegador y sin subir la imagen a ningún servidor.",
+      "image": [
+        "https://www.photocutapp.com/media/guias/quitar-fondo-despues.png",
+        "https://www.photocutapp.com/media/guias/editor-recorte-ia.jpg"
+      ],
       "inLanguage": "es",
       "author": { "@type": "Person", "name": "Gabriel Maglia" },
       "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
@@ -106,6 +110,21 @@
         navegador</strong>, sin que el archivo salga de tu equipo.
       </p>
 
+      <div class="ba">
+        <figure class="before">
+          <span class="tag">Antes</span>
+          <img src="/media/guias/quitar-fondo-antes.jpg" width="720" height="900" loading="lazy"
+               alt="Imagen original con su fondo, antes de recortar" />
+          <figcaption>La imagen original, con su fondo.</figcaption>
+        </figure>
+        <figure class="after">
+          <span class="tag">Después</span>
+          <img src="/media/guias/quitar-fondo-despues.png" width="720" height="900" loading="lazy"
+               alt="La misma imagen con el fondo quitado, en PNG transparente" />
+          <figcaption>Sin fondo, en PNG transparente.</figcaption>
+        </figure>
+      </div>
+
       <h2>Los tres métodos (y cuándo usar cada uno)</h2>
 
       <h3>1. Segmentación con IA: el camino rápido</h3>
@@ -150,6 +169,34 @@
         <li>Ajusta el <strong>suavizado de borde</strong> (1–3&nbsp;px suele ser lo natural).</li>
         <li>Exporta como <strong>PNG transparente</strong> — o aplica fondo de color, sticker o sombra.</li>
       </ol>
+
+      <figure class="shot">
+        <img src="/media/guias/editor-recorte-ia.jpg" width="1600" height="1000" loading="lazy"
+             alt="El editor de PhotoCut Studio con el Recorte IA aplicado y, a la izquierda, los pinceles mantener/quitar y el comparador antes/después." />
+        <figcaption>El Recorte IA aplicado. En el rail izquierdo están los pinceles y el comparador que se mencionan en el paso a paso.</figcaption>
+      </figure>
+
+      <div class="tried">
+        <h3>Lo probamos: y comprobamos que la foto no salió del navegador</h3>
+        <p>
+          Recortamos una imagen real (1201 × 1500 px) con el <strong>Recorte
+          IA</strong> y, mientras tanto, dejamos abierta la pestaña de red del
+          navegador. Confirmamos lo que promete el método local:
+          <strong>no hubo ninguna subida de la imagen</strong> a un servidor —el
+          modelo <code>u2netp</code> (4,6 MB) se descarga una vez y a partir de
+          ahí todo el cómputo pasa en tu equipo.
+        </p>
+        <p>
+          En cuanto al resultado: el automático dejó la silueta lista de una, y
+          solo hubo que pasar el <strong>Pincel quitar</strong> por un fleco del
+          borde donde el fondo tenía un tono parecido a la ropa. La imagen
+          «después» de arriba es ese export, con el fondo 100 % transparente.
+        </p>
+        <p class="byline">
+          Prueba del equipo de PhotoCut Studio con la versión web en Chrome de
+          escritorio.
+        </p>
+      </div>
 
       <h2>Trucos para pelo y bordes finos</h2>
       <ul>
