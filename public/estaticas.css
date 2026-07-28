@@ -162,6 +162,108 @@ pre {
   font-size: 14.5px;
 }
 
+/* Capturas de producto (guías) */
+figure.shot {
+  margin: 22px 0;
+}
+figure.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #0e1014;
+}
+figure.shot figcaption {
+  font-size: 13px;
+  color: var(--ink-dim);
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Antes / Después */
+.ba {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 22px 0;
+}
+.ba figure {
+  margin: 0;
+}
+.ba img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+/* damero visible donde el PNG del "después" es transparente */
+.ba .after img {
+  background-color: #c9cdbf;
+  background-image:
+    linear-gradient(45deg, #97a08c 25%, transparent 25%),
+    linear-gradient(-45deg, #97a08c 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #97a08c 75%),
+    linear-gradient(-45deg, transparent 75%, #97a08c 75%);
+  background-size: 22px 22px;
+  background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+}
+.ba figcaption {
+  font-size: 12.5px;
+  color: var(--ink-dim);
+  text-align: center;
+  margin-top: 6px;
+}
+.ba .tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.ba .after .tag {
+  background: var(--acid);
+  color: #10130a;
+}
+.ba .before .tag {
+  background: var(--line);
+  color: var(--ink);
+}
+@media (max-width: 560px) {
+  .ba {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Bloque de experiencia propia "Lo probamos" (E-E-A-T) */
+.tried {
+  background: linear-gradient(180deg, rgba(214, 246, 75, 0.06), rgba(214, 246, 75, 0.02));
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--acid);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 26px 0;
+}
+.tried h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: 16px;
+}
+.tried p {
+  margin: 0 0 10px;
+}
+.tried p:last-child {
+  margin-bottom: 0;
+}
+.tried .byline {
+  font-size: 12.5px;
+  color: var(--ink-dim);
+}
+
 footer.site {
   margin-top: 48px;
   padding-top: 20px;

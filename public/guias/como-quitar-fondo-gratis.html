@@ -32,6 +32,10 @@
       "@type": "Article",
       "headline": "Quitar el fondo de una foto gratis, sin marca de agua y sin registro",
       "description": "Cómo quitar el fondo de una foto totalmente gratis, sin marca de agua, sin límite de usos y sin crear cuenta: recorte por IA en tu navegador, exportación en PNG transparente.",
+      "image": [
+        "https://www.photocutapp.com/media/guias/quitar-fondo-despues.png",
+        "https://www.photocutapp.com/media/guias/editor-recorte-ia.jpg"
+      ],
       "inLanguage": "es",
       "author": { "@type": "Person", "name": "Gabriel Maglia" },
       "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
@@ -101,6 +105,21 @@
         medio, y por eso puede ser gratis de verdad, sin letra chica.
       </p>
 
+      <div class="ba">
+        <figure class="before">
+          <span class="tag">Antes</span>
+          <img src="/media/guias/quitar-fondo-antes.jpg" width="720" height="900" loading="lazy"
+               alt="Foto original con su fondo, antes de recortar en PhotoCut Studio" />
+          <figcaption>La foto original, con su fondo.</figcaption>
+        </figure>
+        <figure class="after">
+          <span class="tag">Después</span>
+          <img src="/media/guias/quitar-fondo-despues.png" width="720" height="900" loading="lazy"
+               alt="La misma foto con el fondo eliminado, exportada como PNG transparente" />
+          <figcaption>El mismo sujeto sobre fondo transparente (PNG).</figcaption>
+        </figure>
+      </div>
+
       <h2>Por qué tantas herramientas «gratis» no lo son del todo</h2>
       <p>
         Cuando un servicio procesa tu imagen en su servidor, cada recorte le
@@ -121,6 +140,37 @@
         <li>Si quedaron restos de fondo o el pelo perdió detalle, usá los pinceles <strong>mantener/quitar</strong> para corregir a mano.</li>
         <li>Elegí modo de fondo <strong>transparente</strong> y formato <strong>PNG</strong> (o WebP) y descargá el resultado, sin marca de agua ni límite de descargas.</li>
       </ol>
+
+      <figure class="shot">
+        <img src="/media/guias/editor-recorte-ia.jpg" width="1600" height="1000" loading="lazy"
+             alt="El editor de PhotoCut Studio con el Recorte IA ya aplicado: el sujeto queda aislado sobre fondo transparente y a la izquierda están los pinceles para afinar el borde." />
+        <figcaption>El Recorte IA aplicado dentro de PhotoCut Studio. A la izquierda, los pinceles «mantener» y «quitar» para retocar el borde a mano.</figcaption>
+      </figure>
+
+      <div class="tried">
+        <h3>Lo probamos: qué pasó en la práctica</h3>
+        <p>
+          Para esta guía recortamos una foto real: un retrato de cuerpo medio de
+          1201 × 1500 px, con un fondo difícil a propósito (banderas y una cortina
+          de tonos oscuros, parecidos al traje del sujeto). Pulsamos
+          <strong>Recorte IA</strong> y el modelo —<code>u2netp</code>, de 4,6 MB
+          y licencia Apache-2.0, que corre en un <em>Web Worker</em> dentro del
+          navegador— aisló a la persona en unos segundos y
+          <strong>sin subir la foto a ningún servidor</strong>.
+        </p>
+        <p>
+          El resultado automático fue bueno pero no perfecto: en los hombros quedó
+          un fleco tenue del fondo, justo por lo parecidos que eran los colores.
+          Con dos pasadas del <strong>Pincel quitar</strong> sobre ese borde se
+          limpió. Al exportar comprobamos el PNG y el fondo quedó
+          <strong>100 % transparente</strong> (alpha 0): la imagen «después» de
+          arriba es exactamente ese archivo, sin retoques.
+        </p>
+        <p class="byline">
+          Prueba realizada por el equipo de PhotoCut Studio con la versión web en
+          Chrome de escritorio. Las capturas de esta página son de esa misma sesión.
+        </p>
+      </div>
 
       <h2>Sin registro: por qué importa</h2>
       <p>
