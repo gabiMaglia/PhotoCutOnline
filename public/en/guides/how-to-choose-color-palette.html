@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to choose a color palette (for a website, brand or design) — PhotoCut Studio</title>
+    <meta name="description" content="How to define a color palette that works: roles instead of favorites, deriving it from an image you like, 50–900 scales, quick harmony rules, and copying it as CSS or Tailwind. Free and in your browser." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/guides/how-to-choose-color-palette.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/en/guides/how-to-choose-color-palette.html" />
+    <meta property="og:title" content="How to choose a color palette (for a website, brand or design) — PhotoCut Studio" />
+    <meta property="og:description" content="How to define a color palette that works: roles instead of favorites, deriving it from an image you like, 50–900 scales, quick harmony rules, and copying it as CSS or Tailwind. Free and in your browser." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-paleta-en.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How to choose a color palette (for a website, brand or design)",
+      "description": "How to define a color palette that works: roles instead of favorites, deriving it from an image you like, 50–900 scales, quick harmony rules, and copying it as CSS or Tailwind.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-paleta-en.jpg",
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/en/guides/how-to-choose-color-palette.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "How many colors should a palette have?", "acceptedAnswer": { "@type": "Answer", "text": "A primary, one or two secondary/accent colors, a neutral (grays) and state colors. With 3 to 5 base colors and their variants you can cover almost everything." } },
+        { "@type": "Question", "name": "How do I pull a palette from an image?", "acceptedAnswer": { "@type": "Answer", "text": "With a palette extractor: you upload the image and get the dominant colors with their HEX." } },
+        { "@type": "Question", "name": "What is a color scale (50 to 900)?", "acceptedAnswer": { "@type": "Answer", "text": "Variants of the same color, from lightest (50) to darkest (900), keeping the hue. The standard in design systems." } },
+        { "@type": "Question", "name": "Does the palette work for people with color blindness?", "acceptedAnswer": { "@type": "Answer", "text": "It's worth checking: if information depends only on color, some of your users can't tell it apart. Simulate color blindness and mind the contrast." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>How to choose a color palette (for a website, brand or design)</h1>
+      <p class="meta">Updated: July 2026 · Reading time: 7 minutes</p>
+
+      <p>
+        Picking colors "by eye" is the fastest way to make a design look amateur.
+        A good palette isn't a list of pretty colors: it's a <strong>system</strong>
+        —a few colors with clear roles and their variants— that makes everything
+        you build look coherent. This guide shows how to define a palette that
+        works, how to derive it from an image you like, and how to get it ready for
+        your project.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-paleta-en.jpg" width="1600" height="1000" loading="lazy" alt="PhotoCut Studio's Color Studio showing a 6-color palette extracted from a photo, with HEX codes and buttons to copy HEX, CSS and JSON." />
+        <figcaption>The palette extracted from a photo, with the HEX values and the option to copy as HEX, CSS variables or JSON.</figcaption>
+      </figure>
+
+      <h2>The most common mistake: too many colors with no role</h2>
+      <p>Many people gather 8 or 10 colors they like and use them with no criteria. The result is noise. A professional palette is organized by <strong>roles</strong>, not by taste:</p>
+      <ul>
+        <li><strong>Primary:</strong> your brand color, the one that repeats most (buttons, links, accents).</li>
+        <li><strong>Secondary / accent:</strong> one or two supporting colors to highlight specific things.</li>
+        <li><strong>Neutral:</strong> a gray scale for backgrounds, borders and text. It's the most used, even if it doesn't seem so.</li>
+        <li><strong>State:</strong> success (green), warning (amber), error (red), info (blue). Conventions users already understand.</li>
+      </ul>
+
+      <h2>Where to get the colors</h2>
+      <p>
+        You don't have to invent from scratch. The best palettes usually derive
+        from a <strong>reference</strong>: a photo, a work of art, a product, a
+        landscape. If you already have an image whose combination you love, extract
+        its dominant colors with a <a href="/en/tools/color-palette-from-image.html">palette
+        extractor</a>: you upload the image and get the exact HEX. From there, you
+        assign roles.
+      </p>
+
+      <h2>Step by step</h2>
+      <ol>
+        <li>Choose a <strong>reference</strong> whose color combination you like.</li>
+        <li>Extract its <strong>dominant colors</strong> with their HEX.</li>
+        <li>Assign <strong>roles</strong>: primary, secondary, neutral and states.</li>
+        <li>Generate a <strong>scale</strong> for each color (light to dark).</li>
+        <li>Export to <strong>CSS variables</strong> or <strong>Tailwind</strong> to use it consistently.</li>
+      </ol>
+
+      <div class="tried">
+        <h3>We tested it: from a photo to a usable palette</h3>
+        <p>We loaded a photo and Color Studio extracted a <strong>6-color palette</strong> (adjustable). The eyedropper shows the <strong>exact HEX</strong> as you move over the image, and with a click you pin and copy it.</p>
+        <p>The practical part for design and web: besides copying the HEX values, it exports the palette as <strong>CSS variables</strong> or <strong>JSON</strong>, ready to paste into a project. No sign-up and without uploading the image.</p>
+        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
+      </div>
+
+      <h2>The 50–900 scales: the design-system trick</h2>
+      <p>
+        One version of a color isn't enough. You need the light primary for a soft
+        background, medium for a button, dark for text on light. That's why design
+        systems (Material, Tailwind) use <strong>scales</strong>: from
+        <code>50</code> (almost white) to <code>900</code> (almost black), keeping
+        the hue. With a scale per role you have every variant you'll need without
+        improvising. Color Studio can generate these scales —and the semantic
+        tokens— and copy them as CSS or Tailwind, ready to paste.
+      </p>
+
+      <h2>Quick harmony rules</h2>
+      <ul>
+        <li><strong>60-30-10:</strong> ~60% of a dominant color (almost always the neutral), 30% of the secondary and 10% of the accent. Keeps everything from competing.</li>
+        <li><strong>Contrast for text:</strong> text has to be readable. Aim for high contrast between text and background (check it with a contrast checker).</li>
+        <li><strong>A single strong accent:</strong> if everything shouts, nothing stands out. Reserve the most saturated color for what matters.</li>
+      </ul>
+
+      <h2>Don't forget accessibility</h2>
+      <p>
+        A pretty palette that can't be understood is useless. Two quick checks:
+        enough <strong>contrast</strong> between text and background, and that
+        information doesn't depend <strong>on color alone</strong> (around 8% of men
+        have color blindness). You can
+        <a href="/en/tools/color-blindness-simulator.html">simulate how your design
+        looks with color blindness</a> to be sure.
+      </p>
+
+      <h2>Frequently asked questions</h2>
+      <h3>How many colors should a palette have?</h3>
+      <p>A primary, one or two secondary/accent colors, a neutral (grays) and state colors. With 3 to 5 base colors and their variants you can cover almost everything.</p>
+      <h3>How do I pull a palette from an image?</h3>
+      <p>With a palette extractor: you upload the image and get the dominant colors with their HEX.</p>
+      <h3>What is a color scale (50 to 900)?</h3>
+      <p>Variants of the same color, from lightest (50) to darkest (900), keeping the hue. The standard in design systems.</p>
+      <h3>Does the palette work for people with color blindness?</h3>
+      <p>It's worth checking: if information depends only on color, some of your users can't tell it apart. Simulate color blindness and mind the contrast.</p>
+
+      <a class="cta" href="/en/tools/color-palette-from-image.html">Extract a palette from an image →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">More guides and tools</h2>
+        <a class="card" href="/en/tools/color-palette-from-image.html">
+          <h2>Color palette &amp; HEX from an image</h2>
+          <p>Pull the dominant colors from an image, generate 50–900 scales and copy CSS or Tailwind.</p>
+        </a>
+        <a class="card" href="/en/tools/color-blindness-simulator.html">
+          <h2>Color blindness simulator</h2>
+          <p>Check whether your design reads without relying on color.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/en/guides/">← More guides</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/en/about.html">About</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/guias/como-elegir-una-paleta-de-colores.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacy</a>
+      </footer>
+    </div>
+  </body>
+</html>

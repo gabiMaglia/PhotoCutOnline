@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Como remover a localização (GPS) e os metadados de uma foto — PhotoCut Studio</title>
+    <meta name="description" content="Toda foto de celular esconde dados EXIF dentro do arquivo — aparelho, data e a localização GPS exata. Veja por que isso importa e como remover a localização antes de compartilhar, sem enviar a foto a lugar nenhum." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/guias/remover-localizacao-de-foto.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/pt/guias/remover-localizacao-de-foto.html" />
+    <meta property="og:title" content="Como remover a localização (GPS) e os metadados de uma foto — PhotoCut Studio" />
+    <meta property="og:description" content="Toda foto de celular esconde dados EXIF dentro do arquivo — aparelho, data e a localização GPS exata. Veja por que isso importa e como remover a localização antes de compartilhar, sem enviar a foto a lugar nenhum." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-metadatos-pt.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Como remover a localização (GPS) e os metadados de uma foto",
+      "description": "Toda foto de celular esconde dados EXIF dentro do arquivo — aparelho, data e a localização GPS exata. Veja por que isso importa e como remover a localização antes de compartilhar, sem enviar a foto a lugar nenhum.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-metadatos-pt.jpg",
+      "inLanguage": "pt-br",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/remover-localizacao-de-foto.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Todas as fotos guardam a localização?", "acceptedAnswer": { "@type": "Answer", "text": "Muitas sim: os celulares costumam salvar o GPS por padrão. Você pode ver o que uma foto carrega abrindo-a em um visualizador de metadados." } },
+        { "@type": "Question", "name": "As redes sociais removem a localização?", "acceptedAnswer": { "@type": "Answer", "text": "Às vezes, mas não todas nem sempre. Se você envia a original por outros canais, a localização viaja com ela. Melhor remover você mesmo antes." } },
+        { "@type": "Question", "name": "Como removo a localização sem perder qualidade?", "acceptedAnswer": { "@type": "Answer", "text": "Ao regenerar a imagem os metadados são descartados mantendo a qualidade. A foto aparece igual; só perde os dados ocultos." } },
+        { "@type": "Question", "name": "É seguro fazer isso online?", "acceptedAnswer": { "@type": "Answer", "text": "No PhotoCut, sim: tudo acontece no seu navegador, a foto não é enviada a lugar nenhum." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Como remover a localização (GPS) e os metadados de uma foto</h1>
+      <p class="meta">Atualizado: julho de 2026 · Leitura: 5 minutos</p>
+
+      <p>
+        Toda foto que você tira com o celular guarda, dentro do arquivo, dados que
+        você não vê: o modelo do aparelho, a data e —o mais sensível— a
+        <strong>localização GPS</strong> exata de onde a tirou. São os metadados
+        EXIF, e viajam com a foto quando você a compartilha. Este guia explica por
+        que isso importa e como remover a localização antes de publicar ou enviar
+        uma imagem, sem enviá-la a lugar nenhum.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-metadatos-pt.jpg" width="1600" height="1000" loading="lazy" alt="O painel de metadados do PhotoCut Studio mostrando o EXIF de uma foto (câmera, data) e o botão 'Baixar sem metadados'." />
+        <figcaption>O painel mostra o EXIF da foto e o botão "Baixar sem metadados" para exportar uma cópia limpa.</figcaption>
+      </figure>
+
+      <a class="cta" href="/editor/?tab=meta">Ver e remover os metadados →</a>
+
+      <h2>Por que importa (mais do que parece)</h2>
+      <p>
+        Uma foto aparentemente inocente —seu pet, algo que você vende, seu carro—
+        pode levar dentro <strong>o endereço da sua casa</strong> se você a tirou
+        ali. Se você a publica num classificado, envia a um desconhecido ou sobe a
+        um site que não remove os metadados, está compartilhando sua localização
+        sem perceber. Para quem vende online, aceita encomendas ou simplesmente
+        cuida da privacidade, isso é um risco real e fácil de evitar.
+      </p>
+
+      <h2>Que dados uma foto guarda</h2>
+      <ul>
+        <li><strong>Localização GPS:</strong> latitude e longitude de onde foi tirada (o dado mais sensível).</li>
+        <li><strong>Aparelho:</strong> marca e modelo da câmera ou do celular.</li>
+        <li><strong>Data e hora:</strong> o momento exato da captura.</li>
+        <li><strong>Ajustes:</strong> parâmetros da foto e, às vezes, o software com que foi editada.</li>
+      </ul>
+
+      <h2>Passo a passo para remover</h2>
+      <ol>
+        <li>Abra a foto no <a href="/editor/?tab=meta">visualizador de metadados</a>.</li>
+        <li>Veja o que ela carrega: avisa se inclui <strong>localização GPS</strong>.</li>
+        <li>Toque em <strong>"Baixar sem metadados"</strong> para obter uma cópia limpa.</li>
+        <li>Compartilhe <strong>essa cópia</strong>, não a original.</li>
+      </ol>
+
+      <div class="tried">
+        <h3>Nós testamos: ver o EXIF e baixar uma cópia limpa</h3>
+        <p>Abrimos uma foto e o painel mostrou seus <strong>metadados EXIF</strong>: marca e modelo da câmera, data de captura, software. Numa foto tirada com o celular, ali também viajaria a <strong>localização GPS</strong>. O botão <strong>"Baixar sem metadados"</strong> gera uma cópia sem EXIF nem GPS.</p>
+        <p>Ponto-chave: a original nunca é enviada — a limpeza acontece <strong>no seu navegador</strong>. Sempre baixe a cópia sem metadados antes de subir uma foto às redes ou enviá-la por chat.</p>
+        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
+      </div>
+
+      <h2>As redes não removem sozinhas?</h2>
+      <p>
+        Às vezes sim, às vezes não. As grandes redes costumam remover os metadados
+        ao publicar, mas não todas nem sempre — e se você envia a <strong>foto
+        original</strong> por e-mail, por mensagem sem compressão ou sobe a um site
+        qualquer, a localização viaja com ela. Depender de que "a rede remova" não
+        é uma estratégia; remover você mesmo antes de compartilhar, sim.
+      </p>
+
+      <h2>Você não perde qualidade</h2>
+      <p>
+        Remover os metadados não degrada a imagem: a foto é regenerada sem os dados
+        ocultos, mantendo a qualidade visual. A foto aparece igual; só deixa de
+        carregar sua localização, o modelo do aparelho e a data.
+      </p>
+
+      <h2>Faça sem enviar sua foto</h2>
+      <p>
+        Seria absurdo enviar sua foto ao servidor de outra pessoa para
+        <em>proteger</em> sua privacidade. No PhotoCut tudo acontece no seu
+        navegador: a leitura dos metadados e a cópia limpa são feitas localmente, e
+        a imagem não é enviada a lugar nenhum.
+      </p>
+
+      <h2>Perguntas frequentes</h2>
+      <h3>Todas as fotos guardam a localização?</h3>
+      <p>Muitas sim: os celulares costumam salvar o GPS por padrão. Você pode ver o que uma foto carrega abrindo-a em um visualizador de metadados.</p>
+      <h3>As redes sociais removem a localização?</h3>
+      <p>Às vezes, mas não todas nem sempre. Se você envia a original por outros canais, a localização viaja com ela. Melhor remover você mesmo antes.</p>
+      <h3>Como removo a localização sem perder qualidade?</h3>
+      <p>Ao regenerar a imagem os metadados são descartados mantendo a qualidade. A foto aparece igual; só perde os dados ocultos.</p>
+      <h3>É seguro fazer isso online?</h3>
+      <p>No PhotoCut, sim: tudo acontece no seu navegador, a foto não é enviada a lugar nenhum.</p>
+
+      <a class="cta" href="/editor/?tab=meta">Remover a localização da minha foto →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Mais guias e ferramentas</h2>
+        <a class="card" href="/pt/ferramentas/metadados-exif.html">
+          <h2>Ver e remover os metadados EXIF de uma foto</h2>
+          <p>Veja que dados sua foto carrega (câmera, data, GPS) e baixe uma cópia sem metadados.</p>
+        </a>
+        <a class="card" href="/pt/guias/remover-fundo-no-celular.html">
+          <h2>Remover o fundo de uma foto no celular</h2>
+          <p>Sem instalar apps e sem enviar a foto a nenhum servidor.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/pt/guias/">← Mais guias</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/sobre.html">Sobre</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/guias/quitar-la-ubicacion-de-una-foto.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a>
+      </footer>
+    </div>
+  </body>
+</html>
