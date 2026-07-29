@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Como remover o fundo de uma imagem grátis (e sem enviá-la) — PhotoCut Studio</title>
+    <meta name="description" content="Os três métodos que existem para remover o fundo de uma imagem — IA, recorte interativo e pincéis de refino — quando usar cada um, e como conseguir bordas limpas no cabelo. Grátis e no seu navegador." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/guias/como-remover-fundo-de-imagem.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/pt/guias/como-remover-fundo-de-imagem.html" />
+    <meta property="og:title" content="Como remover o fundo de uma imagem grátis (e sem enviá-la) — PhotoCut Studio" />
+    <meta property="og:description" content="Os três métodos que existem para remover o fundo de uma imagem — IA, recorte interativo e pincéis de refino — quando usar cada um, e como conseguir bordas limpas no cabelo. Grátis e no seu navegador." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/quitar-fondo-despues.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Como remover o fundo de uma imagem grátis (e sem enviá-la)",
+      "description": "Os três métodos que existem para remover o fundo de uma imagem — IA, recorte interativo e pincéis de refino — quando usar cada um, e como conseguir bordas limpas no cabelo. Grátis e no seu navegador.",
+      "image": ["https://www.photocutapp.com/media/guias/quitar-fondo-despues.png", "https://www.photocutapp.com/media/guias/editor-recorte-pt.jpg"],
+      "inLanguage": "pt-br",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/como-remover-fundo-de-imagem.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Que formato exportar para manter a transparência?", "acceptedAnswer": { "@type": "Answer", "text": "PNG ou WebP. Ambos mantêm o canal alfa; o WebP gera arquivos muito menores para a web. O JPG não suporta transparência, então use só se aplicar um fundo de cor ou imagem." } },
+        { "@type": "Question", "name": "E se o recorte por IA errar a borda?", "acceptedAnswer": { "@type": "Answer", "text": "Recorra ao retângulo interativo (GrabCut): desenhe um retângulo ao redor do sujeito e o algoritmo decide o primeiro plano por cor e contraste. Depois refine com os pincéis manter/apagar com zoom." } },
+        { "@type": "Question", "name": "Minha imagem é enviada a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Todo o recorte roda no seu navegador com WebAssembly e um modelo de IA local. O arquivo nunca sai do seu equipamento — não há servidor para hackear nem política de retenção para ler." } },
+        { "@type": "Question", "name": "Funciona em cabelo e detalhes finos?", "acceptedAnswer": { "@type": "Answer", "text": "Sim, se você começar de uma imagem em alta resolução e refinar o cabelo com um pincel pequeno e zoom. Um suavizado moderado de 1–3 px mantém o contorno natural." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Como remover o fundo de uma imagem grátis (e sem enviá-la)</h1>
+      <p class="meta">Atualizado: julho de 2026 · Leitura: 5 minutos</p>
+
+      <p>
+        Remover o fundo de uma foto é provavelmente a edição mais repetida do
+        mundo: para uma loja online, uma figurinha de WhatsApp, uma foto de perfil
+        ou o ícone de um app. A maioria das ferramentas populares resolve enviando
+        sua imagem a um servidor, processando lá e devolvendo o resultado — o que
+        significa que sua foto viaja, é armazenada sabe-se lá por quanto tempo e
+        costuma estar limitada por um paywall. Há outra forma: processá-la
+        <strong>direto no seu navegador</strong>, sem o arquivo sair do seu
+        equipamento.
+      </p>
+
+      <div class="ba">
+        <figure class="before">
+          <span class="tag">Antes</span>
+          <img src="/media/guias/quitar-fondo-antes.jpg" width="720" height="900" loading="lazy" alt="Imagem original com o fundo, antes de recortar" />
+          <figcaption>A imagem original, com o fundo.</figcaption>
+        </figure>
+        <figure class="after">
+          <span class="tag">Depois</span>
+          <img src="/media/guias/quitar-fondo-despues.png" width="720" height="900" loading="lazy" alt="A mesma imagem com o fundo removido, em PNG transparente" />
+          <figcaption>Sem fundo, em PNG transparente.</figcaption>
+        </figure>
+      </div>
+
+      <h2>Os três métodos (e quando usar cada um)</h2>
+      <h3>1. Segmentação com IA: o caminho rápido</h3>
+      <p>
+        Uma rede neural treinada para separar "sujeito" e "fundo" analisa a imagem
+        e gera uma máscara automaticamente. É o melhor ponto de partida para fotos
+        com pessoas, animais ou produtos sobre fundos razoavelmente distinguíveis.
+        No <a href="/editor/">PhotoCut Studio</a> isso é o botão
+        <strong>"Recorte IA"</strong> (atalho <code>I</code>): o modelo é baixado
+        uma única vez, roda no seu navegador com WebAssembly e funciona até sem
+        conexão depois da primeira visita.
+      </p>
+      <h3>2. Recorte interativo: você marca, o algoritmo decide</h3>
+      <p>
+        Quando a IA se confunde — produtos translúcidos, fundos muito carregados,
+        vários sujeitos — o clássico algoritmo <strong>GrabCut</strong> continua
+        imbatível: você desenha um retângulo ao redor do sujeito e o algoritmo
+        estima quais pixels pertencem ao primeiro plano analisando cor e
+        contraste. É determinista e previsível: se o resultado não convence, você
+        ajusta o retângulo e pronto.
+      </p>
+      <h3>3. Pincéis de refino: o controle fino</h3>
+      <p>
+        Nenhum método automático é perfeito nas bordas difíceis. Por isso o fluxo
+        correto termina sempre com dois pincéis: <strong>manter</strong> (marca
+        zonas que o recorte apagou por engano) e <strong>apagar</strong> (tira
+        restos de fundo). Com zoom na tela você trabalha no nível do pixel.
+      </p>
+
+      <h2>O fluxo recomendado, passo a passo</h2>
+      <ol>
+        <li>Abra a foto (ou cole com <code>Ctrl/Cmd+V</code> da área de transferência).</li>
+        <li>Teste primeiro o <strong>Recorte IA</strong>. Na maioria das fotos já fica bom.</li>
+        <li>Se falhar, desenhe um <strong>retângulo</strong> ajustado ao sujeito.</li>
+        <li>Ative o <strong>comparador antes/depois</strong> para detectar restos.</li>
+        <li>Refine as bordas com os pincéis manter/apagar (zoom com a roda).</li>
+        <li>Ajuste o <strong>suavizado de borda</strong> (1–3&nbsp;px costuma ser o natural).</li>
+        <li>Exporte como <strong>PNG transparente</strong> — ou aplique fundo de cor, figurinha ou sombra.</li>
+      </ol>
+
+      <figure class="shot">
+        <img src="/media/guias/editor-recorte-pt.jpg" width="1600" height="1000" loading="lazy" alt="O editor do PhotoCut Studio com o Recorte IA aplicado e, à esquerda, os pincéis manter/apagar e o comparador antes/depois." />
+        <figcaption>O Recorte IA aplicado. No rail esquerdo estão os pincéis e o comparador mencionados no passo a passo.</figcaption>
+      </figure>
+
+      <div class="tried">
+        <h3>Nós testamos: e comprovamos que a foto não saiu do navegador</h3>
+        <p>Recortamos uma imagem real (1201 × 1500 px) com o <strong>Recorte IA</strong> e, enquanto isso, deixamos aberta a aba de rede do navegador. Confirmamos o que o método local promete: <strong>não houve nenhum envio da imagem</strong> a um servidor — o modelo <code>u2netp</code> (4,6 MB) é baixado uma vez e a partir daí todo o processamento acontece no seu equipamento.</p>
+        <p>Quanto ao resultado: o automático deixou a silhueta pronta de cara, e só foi preciso passar o <strong>pincel apagar</strong> por uma franja da borda onde o fundo tinha um tom parecido com a roupa. A imagem "depois" acima é esse export, com o fundo 100% transparente.</p>
+        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome de desktop.</p>
+      </div>
+
+      <h2>Truques para cabelo e bordas finas</h2>
+      <ul>
+        <li><strong>Resolução manda:</strong> recorte na maior imagem que tiver e reduza depois; ao contrário, os detalhes se perdem.</li>
+        <li><strong>Suavizado moderado:</strong> 1–3&nbsp;px de feather deixa a borda natural; mais de 5&nbsp;px parece "recortado com tesoura cega".</li>
+        <li><strong>Pincel pequeno no cabelo:</strong> várias passadas com um pincel de 8–12&nbsp;px são melhores que uma com um de 40.</li>
+        <li><strong>Confira sobre fundo claro e escuro:</strong> halos claros só aparecem sobre fundo escuro, e vice-versa. Use a prévia com fundo branco/preto antes de exportar.</li>
+      </ul>
+
+      <h2>Em que formato exportar?</h2>
+      <table>
+        <tr><th>Formato</th><th>Quando</th></tr>
+        <tr><td><strong>PNG</strong></td><td>O padrão com transparência: figurinhas, logos, ícones, impressão.</td></tr>
+        <tr><td><strong>WebP</strong></td><td>Transparência com arquivos muito menores — ideal para a web.</td></tr>
+        <tr><td><strong>JPG</strong></td><td>Sem transparência: só se aplicar um fundo de cor ou imagem.</td></tr>
+      </table>
+
+      <h2>Erros comuns ao remover um fundo</h2>
+      <ul>
+        <li><strong>Confundir "transparente" com "branco".</strong> Se exportar em JPG (que não suporta transparência) o vão é preenchido com branco ou preto sólido. Para manter a transparência você precisa de PNG ou WebP.</li>
+        <li><strong>Não revisar em zoom real.</strong> No tamanho de prévia os restos de fundo e os halos não aparecem; aproxime a 100–200% antes de dar o recorte por terminado.</li>
+        <li><strong>Recortar sobre uma foto já reduzida.</strong> Se a imagem vem comprimida ou em baixa resolução, o algoritmo tem menos informação de contraste para decidir a borda. Comece sempre da maior versão disponível.</li>
+        <li><strong>Abusar do pincel "apagar".</strong> Passá-lo perto demais do sujeito come partes que pertencem à figura (dedos, fios de cabelo). Melhor várias passadas suaves que uma agressiva.</li>
+      </ul>
+
+      <h2>Por que importa que a imagem não seja enviada?</h2>
+      <p>
+        Documentos de identidade, fotos de menores, produtos ainda não lançados,
+        material de clientes sob NDA… boa parte do que se recorta diariamente é
+        informação sensível. Se a ferramenta processa a imagem no seu navegador,
+        essa pergunta desaparece: o arquivo nunca sai do seu equipamento, não há
+        servidor para hackear nem política de retenção para ler. Essa é a
+        diferença técnica de fundo entre o PhotoCut Studio e os serviços de recorte
+        na nuvem.
+      </p>
+
+      <h2>Perguntas frequentes</h2>
+      <h3>Que formato exportar para manter a transparência?</h3>
+      <p>PNG ou WebP. Ambos mantêm o canal alfa; o WebP gera arquivos muito menores para a web. O JPG não suporta transparência, então use só se aplicar um fundo de cor ou imagem.</p>
+      <h3>E se o recorte por IA errar a borda?</h3>
+      <p>Recorra ao retângulo interativo (GrabCut): desenhe um retângulo ao redor do sujeito e o algoritmo decide o primeiro plano por cor e contraste. Depois refine com os pincéis manter/apagar com zoom.</p>
+      <h3>Minha imagem é enviada a um servidor?</h3>
+      <p>Não. Todo o recorte roda no seu navegador com WebAssembly e um modelo de IA local. O arquivo nunca sai do seu equipamento — não há servidor para hackear nem política de retenção para ler.</p>
+      <h3>Funciona em cabelo e detalhes finos?</h3>
+      <p>Sim, se você começar de uma imagem em alta resolução e refinar o cabelo com um pincel pequeno e zoom. Um suavizado moderado de 1–3&nbsp;px mantém o contorno natural.</p>
+
+      <a class="cta" href="/editor/">Remover o fundo de uma imagem →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Mais guias</h2>
+        <a class="card" href="/pt/guias/remover-fundo-gratis.html">
+          <h2>Remover o fundo de uma foto grátis, sem marca d'água e sem cadastro</h2>
+          <p>Por que muitas ferramentas "grátis" não são bem assim, e como recortar sem marca d'água, sem conta e sem limite de usos.</p>
+        </a>
+        <a class="card" href="/pt/guias/recortar-uma-pessoa.html">
+          <h2>Como recortar uma pessoa de uma foto sem bordas aparentes</h2>
+          <p>Recorte automático mais pincéis para isolar uma ou várias pessoas e manter o cabelo e os contornos limpos.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/pt/guias/">← Mais guias</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/sobre.html">Sobre</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/guias/como-quitar-el-fondo-de-una-imagen.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a>
+      </footer>
+    </div>
+  </body>
+</html>

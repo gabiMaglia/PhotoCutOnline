@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How to remove the background from an image free (and without uploading it) — PhotoCut Studio</title>
+    <meta name="description" content="The three methods that exist to remove an image background — AI, interactive cutout and refine brushes — when to use each, and how to get clean edges on hair. Free and in your browser." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/guides/how-to-remove-image-background.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/en/guides/how-to-remove-image-background.html" />
+    <meta property="og:title" content="How to remove the background from an image free (and without uploading it) — PhotoCut Studio" />
+    <meta property="og:description" content="The three methods that exist to remove an image background — AI, interactive cutout and refine brushes — when to use each, and how to get clean edges on hair. Free and in your browser." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/quitar-fondo-despues.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How to remove the background from an image free (and without uploading it)",
+      "description": "The three methods that exist to remove an image background — AI, interactive cutout and refine brushes — when to use each, and how to get clean edges on hair. Free and in your browser.",
+      "image": ["https://www.photocutapp.com/media/guias/quitar-fondo-despues.png", "https://www.photocutapp.com/media/guias/editor-recorte-en.jpg"],
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/en/guides/how-to-remove-image-background.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Which format should I export to keep transparency?", "acceptedAnswer": { "@type": "Answer", "text": "PNG or WebP. Both keep the alpha channel; WebP produces much smaller files for the web. JPG does not support transparency, so use it only if you apply a color or image background." } },
+        { "@type": "Question", "name": "What if the AI cutout gets the edge wrong?", "acceptedAnswer": { "@type": "Answer", "text": "Fall back to the interactive box (GrabCut): draw a rectangle around the subject and the algorithm decides the foreground by color and contrast. Then refine with the keep/remove brushes at zoom." } },
+        { "@type": "Question", "name": "Is my image uploaded to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. The whole cutout runs in your browser with WebAssembly and a local AI model. The file never leaves your device — there's no server to hack or retention policy to read." } },
+        { "@type": "Question", "name": "Does it work on hair and fine detail?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, if you start from a high-resolution image and refine the hair with a small brush and zoom. A moderate edge feather of 1–3 px keeps the outline natural." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>How to remove the background from an image free (and without uploading it)</h1>
+      <p class="meta">Updated: July 2026 · Reading time: 5 minutes</p>
+
+      <p>
+        Removing the background from a photo is probably the most repeated edit in
+        the world: for an online store, a WhatsApp sticker, a profile photo or an
+        app icon. Most popular tools solve it by uploading your image to a server,
+        processing it there and sending back the result — which means your photo
+        travels, is stored who-knows-how-long and is usually limited by a paywall.
+        There's another way: process it <strong>right in your browser</strong>,
+        without the file leaving your device.
+      </p>
+
+      <div class="ba">
+        <figure class="before">
+          <span class="tag">Before</span>
+          <img src="/media/guias/quitar-fondo-antes.jpg" width="720" height="900" loading="lazy" alt="Original image with its background, before cutting out" />
+          <figcaption>The original image, with its background.</figcaption>
+        </figure>
+        <figure class="after">
+          <span class="tag">After</span>
+          <img src="/media/guias/quitar-fondo-despues.png" width="720" height="900" loading="lazy" alt="The same image with the background removed, as a transparent PNG" />
+          <figcaption>No background, as a transparent PNG.</figcaption>
+        </figure>
+      </div>
+
+      <h2>The three methods (and when to use each)</h2>
+      <h3>1. AI segmentation: the fast path</h3>
+      <p>
+        A neural network trained to separate "subject" and "background" analyzes
+        the image and generates a mask automatically. It's the best starting
+        point for photos with people, pets or products on reasonably
+        distinguishable backgrounds. In <a href="/editor/">PhotoCut Studio</a>
+        this is the <strong>"AI Cutout"</strong> button (shortcut <code>I</code>):
+        the model downloads once, runs in your browser with WebAssembly and works
+        even offline after the first visit.
+      </p>
+      <h3>2. Interactive cutout: you mark, the algorithm decides</h3>
+      <p>
+        When the AI gets confused — translucent products, very busy backgrounds,
+        several subjects — the classic <strong>GrabCut</strong> algorithm is still
+        unbeatable: you draw a rectangle around the subject and the algorithm
+        estimates which pixels belong to the foreground by analyzing color and
+        contrast. It's deterministic and predictable: if the result isn't right,
+        you adjust the rectangle and you're done.
+      </p>
+      <h3>3. Refine brushes: fine control</h3>
+      <p>
+        No automatic method is perfect at hard edges. That's why the right
+        workflow always ends with two brushes: <strong>keep</strong> (marks areas
+        the cutout removed by mistake) and <strong>remove</strong> (erases
+        leftover background). With zoom on the canvas you can work at pixel level.
+      </p>
+
+      <h2>The recommended workflow, step by step</h2>
+      <ol>
+        <li>Open the photo (or paste it with <code>Ctrl/Cmd+V</code> from the clipboard).</li>
+        <li>Try the <strong>AI Cutout</strong> first. On most photos it's already good.</li>
+        <li>If it fails, draw a <strong>box</strong> tight around the subject.</li>
+        <li>Turn on the <strong>before/after compare</strong> to spot leftovers.</li>
+        <li>Refine the edges with the keep/remove brushes (zoom with the wheel).</li>
+        <li>Adjust the <strong>edge feather</strong> (1–3&nbsp;px is usually natural).</li>
+        <li>Export as a <strong>transparent PNG</strong> — or apply a color background, sticker or shadow.</li>
+      </ol>
+
+      <figure class="shot">
+        <img src="/media/guias/editor-recorte-en.jpg" width="1600" height="1000" loading="lazy" alt="The PhotoCut Studio editor with the AI Cutout applied and, on the left, the keep/remove brushes and the before/after compare." />
+        <figcaption>The AI Cutout applied. In the left rail are the brushes and the compare tool mentioned in the steps.</figcaption>
+      </figure>
+
+      <div class="tried">
+        <h3>We tested it: and confirmed the photo never left the browser</h3>
+        <p>We cut out a real image (1201 × 1500 px) with the <strong>AI Cutout</strong> and, meanwhile, kept the browser's network tab open. We confirmed what the local method promises: <strong>there was no upload of the image</strong> to a server — the <code>u2netp</code> model (4.6 MB) downloads once and from then on all the compute happens on your device.</p>
+        <p>As for the result: the automatic left the silhouette ready in one go, and we only had to run the <strong>remove brush</strong> over a fringe on the edge where the background had a tone similar to the clothing. The "after" image above is that export, with the background 100% transparent.</p>
+        <p class="byline">Test run by the PhotoCut Studio team using the web version in desktop Chrome.</p>
+      </div>
+
+      <h2>Tricks for hair and fine edges</h2>
+      <ul>
+        <li><strong>Resolution rules:</strong> cut out on the largest image you have and downscale later; the other way around loses detail.</li>
+        <li><strong>Moderate feather:</strong> 1–3&nbsp;px of feather makes the edge natural; more than 5&nbsp;px looks "cut with blunt scissors".</li>
+        <li><strong>Small brush on the hair:</strong> several passes with an 8–12&nbsp;px brush beat one with a 40&nbsp;px brush.</li>
+        <li><strong>Check on light and dark backgrounds:</strong> light halos only show on a dark background, and vice versa. Use the white/black preview before exporting.</li>
+      </ul>
+
+      <h2>Which format to export?</h2>
+      <table>
+        <tr><th>Format</th><th>When</th></tr>
+        <tr><td><strong>PNG</strong></td><td>The standard with transparency: stickers, logos, icons, print.</td></tr>
+        <tr><td><strong>WebP</strong></td><td>Transparency with much smaller files — ideal for the web.</td></tr>
+        <tr><td><strong>JPG</strong></td><td>No transparency: only if you apply a color or image background.</td></tr>
+      </table>
+
+      <h2>Common mistakes when removing a background</h2>
+      <ul>
+        <li><strong>Confusing "transparent" with "white".</strong> If you export as JPG (which doesn't support transparency) the gap is filled with solid white or black. To keep transparency you need PNG or WebP.</li>
+        <li><strong>Not checking at real zoom.</strong> At preview size, background leftovers and halos don't show; zoom to 100–200% before calling the cutout done.</li>
+        <li><strong>Cutting out on an already-reduced photo.</strong> If the image comes compressed or low-res, the algorithm has less contrast information to decide the edge. Always start from the largest version available.</li>
+        <li><strong>Overusing the "remove" brush.</strong> Running it too close to the subject eats parts that do belong to the figure (fingers, strands of hair). Several soft passes beat one aggressive one.</li>
+      </ul>
+
+      <h2>Why does it matter that the image isn't uploaded?</h2>
+      <p>
+        ID documents, photos of minors, unreleased products, client material under
+        NDA… a good part of what gets cut out daily is sensitive information. If
+        the tool processes the image in your browser, that question disappears: the
+        file never leaves your device, there's no server to hack or retention
+        policy to read. That's the underlying technical difference between PhotoCut
+        Studio and cloud cutout services.
+      </p>
+
+      <h2>Frequently asked questions</h2>
+      <h3>Which format should I export to keep transparency?</h3>
+      <p>PNG or WebP. Both keep the alpha channel; WebP produces much smaller files for the web. JPG does not support transparency, so use it only if you apply a color or image background.</p>
+      <h3>What if the AI cutout gets the edge wrong?</h3>
+      <p>Fall back to the interactive box (GrabCut): draw a rectangle around the subject and the algorithm decides the foreground by color and contrast. Then refine with the keep/remove brushes at zoom.</p>
+      <h3>Is my image uploaded to a server?</h3>
+      <p>No. The whole cutout runs in your browser with WebAssembly and a local AI model. The file never leaves your device — there's no server to hack or retention policy to read.</p>
+      <h3>Does it work on hair and fine detail?</h3>
+      <p>Yes, if you start from a high-resolution image and refine the hair with a small brush and zoom. A moderate edge feather of 1–3&nbsp;px keeps the outline natural.</p>
+
+      <a class="cta" href="/editor/">Remove an image's background →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">More guides</h2>
+        <a class="card" href="/en/guides/remove-background-free.html">
+          <h2>Remove the background from a photo free, no watermark and no sign-up</h2>
+          <p>Why many "free" tools aren't quite free, and how to cut out with no watermark, no account and no usage limit.</p>
+        </a>
+        <a class="card" href="/en/guides/cut-out-a-person.html">
+          <h2>How to cut a person out of a photo without visible edges</h2>
+          <p>Automatic cutout plus brushes to isolate one or several people and keep hair and outlines clean.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/en/guides/">← More guides</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/en/about.html">About</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/guias/como-quitar-el-fondo-de-una-imagen.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacy</a>
+      </footer>
+    </div>
+  </body>
+</html>
