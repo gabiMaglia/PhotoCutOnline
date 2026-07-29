@@ -35,9 +35,12 @@
   (recapturar UI solo si la guía muestra la UI, con pc-lang), agregar al índice +
   SEO_ROUTES + I18N_GROUPS.
 
+## Estado guías (actualizado)
+- **ES: 25/25** con molde (las 3 que faltaban —logo, firma, modo-oscuro— cerradas con assets sintéticos/captura de Tema).
+- **EN+PT: 4/25 pares traducidos** (fiel, no MT), con hreflang: remove-background-free, product-photos-white-background, change-photo-background, round-profile-picture (y sus PT). Assets de resultado neutros + 10 capturas de herramientas localizadas EN/PT ya generadas (`herramienta-*-en/pt.jpg`, `editor-recorte-en/pt.jpg`).
+
 ## Pendiente
-- **3 guías ES** sin molde (necesitan sujeto propio): `logo-con-fondo-transparente`, `quitar-fondo-a-una-firma`, `generar-modo-oscuro-desde-una-captura`.
-- **~20 guías ES restantes por traducir a EN+PT** siguiendo el patrón de arriba.
+- **~21 guías ES por traducir a EN+PT** (~42 páginas). Patrón 100% establecido; assets ya listos (neutros + UI localizada). Es trabajo en volumen: cada guía = leer ES + escribir EN + escribir PT + wire (índice + SEO_ROUTES + I18N_GROUPS). No entra en un solo turno; se continúa por tandas.
 - Tras aplicar todo: **esperar 2-4 semanas** y recién ahí reaplicar a AdSense.
 
 ## Assets reutilizables en public/media/guias/
