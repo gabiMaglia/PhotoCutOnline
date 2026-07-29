@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favicons in 2026: the sizes you need and the HTML to copy — PhotoCut Studio</title>
+    <meta name="description" content="In 2026 you cover every browser and device with 5 files and 5 lines of HTML. The essential favicon set, the ready-to-copy HTML and manifest, common mistakes, and the SVG favicon. Generate them free in your browser." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/guides/favicon-sizes-html.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/en/guides/favicon-sizes-html.html" />
+    <meta property="og:title" content="Favicons in 2026: the sizes you need and the HTML to copy — PhotoCut Studio" />
+    <meta property="og:description" content="In 2026 you cover every browser and device with 5 files and 5 lines of HTML. The essential favicon set, the ready-to-copy HTML and manifest, common mistakes, and the SVG favicon. Generate them free in your browser." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-iconos-en.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Favicons in 2026: the sizes you need and the HTML to copy",
+      "description": "In 2026 you cover every browser and device with 5 files and 5 lines of HTML. The essential favicon set, the ready-to-copy HTML and manifest, common mistakes, and the SVG favicon.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-iconos-en.jpg",
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/en/guides/favicon-sizes-html.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is favicon.ico still needed in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Although modern browsers prefer the PNG declared in link rel=icon, many clients (RSS readers, crawlers, bookmarks) still request /favicon.ico directly. It's the universal fallback and it's worth including it." } },
+        { "@type": "Question", "name": "What happens if I don't put a favicon?", "acceptedAnswer": { "@type": "Answer", "text": "The browser shows a generic icon (a blank page or the default icon) and, if the site is installed as a PWA, uses a square with the domain's initial. It doesn't break anything, but it looks unprofessional and doesn't identify your brand in tabs or bookmarks." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Favicons in 2026: the sizes you need and the HTML to copy</h1>
+      <p class="meta">Updated: July 2026 · Reading time: 4 minutes</p>
+
+      <p>
+        For years favicon generators produced twenty files "just in case": sizes for
+        Internet Explorer on Windows Vista, Windows 8 tiles, Safari pinned tabs… The
+        reality of 2026 is much simpler: with <strong>5 files and 5 lines of
+        HTML</strong> you cover every current browser and device.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-iconos-en.jpg" width="1600" height="1000" loading="lazy" alt="Preview of a favicon at 16, 32 and 48 px in PhotoCut Studio's Icon Studio." />
+        <figcaption>The pixel-perfect preview at 16/32/48 px shows how the favicon will look in the browser tab.</figcaption>
+      </figure>
+
+      <p>
+        It's worth the effort: a well-made favicon is the first thing a user sees
+        when they have ten tabs open, and it's usually the first thing a technical
+        SEO audit or a PWA checklist reviews. Missing or broken, it subtracts
+        professionalism even if the rest of the site is flawless.
+      </p>
+
+      <h2>The essential files</h2>
+      <table>
+        <tr><th>File</th><th>Size</th><th>Who uses it</th></tr>
+        <tr><td><code>favicon.ico</code></td><td>48 × 48</td><td>Old browsers, RSS readers, bookmarks. It may seem prehistoric, but it's still the universal fallback: many clients request it directly at <code>/favicon.ico</code>.</td></tr>
+        <tr><td><code>favicon-32.png</code></td><td>32 × 32</td><td>The browser tab on normal and retina screens.</td></tr>
+        <tr><td><code>apple-touch-icon-180.png</code></td><td>180 × 180</td><td>iPhone and iPad when adding the site to the home screen. No transparency: iOS fills transparent areas with black.</td></tr>
+        <tr><td><code>icon-192.png</code> + <code>icon-512.png</code></td><td>192 / 512</td><td>The PWA manifest: installed app icon and splash screen on Android/desktop.</td></tr>
+        <tr><td><code>maskable-512.png</code></td><td>512 × 512</td><td>"Maskable" manifest variant: Android crops it into a circle or other shapes, so the art must fit in the central 80%.</td></tr>
+      </table>
+
+      <h2>The HTML</h2>
+      <pre>&lt;link rel="icon" href="/favicon.ico" sizes="48x48"&gt;
+&lt;link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png"&gt;
+&lt;link rel="apple-touch-icon" href="/apple-touch-icon-180.png"&gt;
+&lt;link rel="manifest" href="/site.webmanifest"&gt;
+&lt;meta name="theme-color" content="#111317"&gt;</pre>
+
+      <p>And the minimal <code>site.webmanifest</code> that references the PWA icons:</p>
+      <pre>{
+  "name": "My App",
+  "short_name": "My App",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "display": "standalone"
+}</pre>
+
+      <div class="tried">
+        <h3>We tested it: how the favicon looks at 16 px</h3>
+        <p>The preview at <strong>16 and 32 px</strong> —the real size of a favicon in the tab— is the honest test: what looks good at 512 px can turn into a smudge at 16. With margin and a clear subject, the favicon stayed legible.</p>
+        <p>Icon Studio generates the favicon set and you can pair it with the <strong>HTML</strong> ready to paste into the <code>&lt;head&gt;</code>. All in the browser.</p>
+        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
+      </div>
+
+      <h2>Common mistakes</h2>
+      <ul>
+        <li><strong>Using the full logo at 16&nbsp;px.</strong> A few strokes fit in the tab: use the symbol, not the wordmark with text.</li>
+        <li><strong>Forgetting the maskable.</strong> Without it, Android puts your square icon inside a white circle — the classic "icon inside a fried egg".</li>
+        <li><strong>Transparency in the apple-touch-icon.</strong> iOS replaces it with black. Always put a color background.</li>
+        <li><strong>One SVG for everything.</strong> The SVG favicon is ideal as a modern complement, but the manifest icons and the apple-touch-icon still require PNG.</li>
+      </ul>
+
+      <h2>What about the SVG favicon?</h2>
+      <p>For a few years now, Chromium-based browsers and Firefox accept a vector favicon:</p>
+      <pre>&lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;</pre>
+      <p>
+        It's the ideal option if your icon is simple and geometric: a single file
+        looks sharp at any size and weighs a fraction of a PNG. But it doesn't
+        replace the full set: place it as an extra line <em>before</em> the
+        <code>favicon.ico</code>, not instead of it, because Safari and the manifest
+        icons still need PNG.
+      </p>
+
+      <h2>How to check they came out right</h2>
+      <ol>
+        <li>Open the site in a new tab and look at the favicon at real size (don't trust the editor preview).</li>
+        <li>Test in more than one browser: Chrome, Firefox and Safari interpret the order of <code>link rel="icon"</code> with subtle differences.</li>
+        <li>On the phone, add the site to the home screen to see the <code>apple-touch-icon</code> (iOS) and the manifest icon (Android) as a real user will.</li>
+        <li>If you don't see the change, clear the cache: browsers cache favicons very aggressively, sometimes for days.</li>
+      </ol>
+
+      <h2>Frequently asked questions</h2>
+      <h3>Is favicon.ico still needed in 2026?</h3>
+      <p>Yes. Although modern browsers prefer the PNG declared in <code>link rel="icon"</code>, many clients (RSS readers, crawlers, bookmarks) still request <code>/favicon.ico</code> directly. It's the universal fallback and it's worth including it.</p>
+      <h3>What happens if I don't put a favicon?</h3>
+      <p>The browser shows a generic icon (a blank page or the default icon) and, if the site is installed as a PWA, uses a square with the domain's initial. It doesn't break anything, but it looks unprofessional and doesn't identify your brand in tabs or bookmarks.</p>
+
+      <a class="cta" href="/editor/?tab=icons">Generate my favicons →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">More guides</h2>
+        <a class="card" href="/en/guides/app-icon-sizes.html">
+          <h2>App icon sizes in 2026: iOS, Android, macOS, Windows and Web</h2>
+          <p>Every current size in one place, including the iOS 18 and Android 13 variants.</p>
+        </a>
+        <a class="card" href="/en/guides/transparent-logo-png.html">
+          <h2>How to make a logo with a transparent background (PNG) free</h2>
+          <p>The clean cutout that's the base of any favicon or icon.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/en/guides/">← More guides</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/en/about.html">About</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/guias/favicons-medidas-y-html.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacy</a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Converter PNG para ICO grátis: favicon e ícone do Windows — PhotoCut Studio</title>
+    <meta name="description" content="Converta um PNG em um ICO multirresolução real para um favicon ou o ícone de um executável do Windows. Por que renomear o arquivo não funciona, o passo a passo, e como usar o .ico. Grátis, no navegador." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/guias/converter-png-para-ico.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/pt/guias/converter-png-para-ico.html" />
+    <meta property="og:title" content="Converter PNG para ICO grátis: favicon e ícone do Windows — PhotoCut Studio" />
+    <meta property="og:description" content="Converta um PNG em um ICO multirresolução real para um favicon ou o ícone de um executável do Windows. Por que renomear o arquivo não funciona, o passo a passo, e como usar o .ico. Grátis, no navegador." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-iconos-pt.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Converter PNG para ICO grátis: favicon e ícone do Windows",
+      "description": "Converta um PNG em um ICO multirresolução real para um favicon ou o ícone de um executável do Windows. Por que renomear o arquivo não funciona, o passo a passo, e como usar o .ico.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-iconos-pt.jpg",
+      "inLanguage": "pt-br",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/converter-png-para-ico.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "O que é exatamente um arquivo ICO?", "acceptedAnswer": { "@type": "Answer", "text": "Um ICO é um contêiner que agrupa várias imagens de resoluções diferentes (por exemplo 16, 32 e 256 px) em um único arquivo. O sistema operacional ou o navegador escolhe automaticamente a resolução de que precisa conforme onde o ícone é exibido." } },
+        { "@type": "Question", "name": "Posso converter qualquer PNG para ICO ou tem que ser quadrado?", "acceptedAnswer": { "@type": "Answer", "text": "Tecnicamente dá para converter qualquer PNG, mas o resultado fica melhor se o original for quadrado: se não for, o conversor o encaixa dentro de um quadrado e pode adicionar margens ou cortar as bordas mais longas." } },
+        { "@type": "Question", "name": "Qual a diferença entre o ICO para favicon e o ICO para um .exe do Windows?", "acceptedAnswer": { "@type": "Answer", "text": "Nenhuma no nível de formato: é o mesmo tipo de arquivo ICO com resoluções embutidas. A diferença é onde você usa — o navegador o lê como favicon, e o Windows o lê como ícone do executável." } },
+        { "@type": "Question", "name": "Renomear um PNG para .ico funciona?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Um ICO real tem um cabeçalho binário (ICONDIR) que descreve quantas imagens contém e em que resolução. Sem essa estrutura, o Windows e os navegadores não reconhecem o arquivo como um ícone válido, mesmo que a extensão diga .ico." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Converter PNG para ICO grátis: favicon e ícone do Windows</h1>
+      <p class="meta">Atualizado: julho de 2026 · Leitura: 5 minutos</p>
+
+      <p>
+        O formato <strong>ICO</strong> continua sendo, uns vinte e tantos anos após
+        sua criação, o que o Windows pede como ícone de um executável e o que muitos
+        navegadores buscam por padrão em <code>/favicon.ico</code>. A particularidade
+        do ICO é que ele não é uma única imagem: é um contêiner que agrupa
+        <strong>várias resoluções</strong> (16, 32, 256&nbsp;px…) dentro do mesmo
+        arquivo, e o sistema escolhe a de que precisa conforme onde é exibido.
+        Converter um PNG normal para esse formato exige uma ferramenta que monte essa
+        estrutura corretamente — não basta trocar a extensão do arquivo.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-iconos-pt.jpg" width="1600" height="1000" loading="lazy" alt="O Icon Studio do PhotoCut Studio gerando um ícone a partir de um recorte, com a prévia pixel-perfect a 128, 64, 48, 32 e 16 px." />
+        <figcaption>O Icon Studio gera o ícone e sua prévia a 128/64/48/32/16 px, pronto para exportar (inclui .ico).</figcaption>
+      </figure>
+
+      <h2>Por que não basta renomear o arquivo</h2>
+      <p>
+        Um erro frequente é pegar um <code>logo.png</code> e salvá-lo como
+        <code>logo.ico</code> esperando que funcione. Não funciona: um ICO real tem um
+        cabeçalho binário (<code>ICONDIR</code>) que descreve quantas imagens contém e
+        em que resolução, seguido dos dados de cada uma. Sem essa estrutura, o Windows
+        e os navegadores não reconhecem o arquivo como um ícone válido, mesmo que a
+        extensão diga <code>.ico</code>.
+      </p>
+
+      <h2>Como converter um PNG para ICO, passo a passo</h2>
+      <ol>
+        <li>Abra o <a href="/editor/?tab=icons">PhotoCut Studio</a> e entre na seção <strong>Icon Studio</strong>.</li>
+        <li>Envie seu PNG de origem, idealmente quadrado e de 512&nbsp;px ou mais, sem compressão.</li>
+        <li>Escolha o set do <strong>Windows</strong>: gera um <code>app.ico</code> com as resoluções 16, 24, 32, 48, 64, 128 e 256&nbsp;px embutidas em um único arquivo.</li>
+        <li>Revise a prévia nos tamanhos pequenos (16 e 32&nbsp;px) para confirmar que o ícone continua reconhecível.</li>
+        <li>Baixe o arquivo <code>.ico</code> e use como favicon (<code>favicon.ico</code>) ou como ícone do executável do seu app de Windows.</li>
+      </ol>
+
+      <div class="tried">
+        <h3>Nós testamos: de um recorte a um .ico em um passo</h3>
+        <p>Partimos de um recorte transparente e com <strong>"Usar recorte atual"</strong> o Icon Studio gerou o ícone em todos os tamanhos. A <strong>prévia pixel-perfect</strong> a 128/64/48/32/16 px mostra como o detalhe se degrada ao diminuir: a 16 px um sujeito simples com margem funciona melhor.</p>
+        <p>Ele exporta o set completo —incluído o <strong>.ico</strong> multirresolução para favicon— sem enviar nada a um servidor.</p>
+        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
+      </div>
+
+      <h2>Usar o ICO como favicon</h2>
+      <p>Para o navegador, basta enviar o <code>favicon.ico</code> para a raiz do site (ou onde seu servidor apontar) e, opcionalmente, declará-lo no HTML:</p>
+      <pre>&lt;link rel="icon" href="/favicon.ico" sizes="48x48"&gt;</pre>
+      <p>
+        Muitos navegadores e crawlers pedem <code>/favicon.ico</code> diretamente
+        mesmo sem estar declarado no HTML, então vale sempre tê-lo na raiz do domínio
+        como reserva, mesmo que seu favicon principal seja um PNG ou SVG mais moderno.
+      </p>
+
+      <h2>Usar o ICO num app de desktop para Windows</h2>
+      <p>
+        Se você está empacotando um aplicativo de desktop (com Electron, Tauri, .NET
+        ou qualquer outro stack), o instalador e o executável pedem um
+        <code>.ico</code> multirresolução para mostrar no Explorador de Arquivos, na
+        barra de tarefas e nos atalhos. É aí que mais se nota se o ICO tem poucas
+        resoluções: um ícone que só inclui 256&nbsp;px fica borrado ao ser reduzido
+        para a barra de tarefas (normalmente 32 ou 16&nbsp;px), enquanto um com as
+        sete resoluções padrão fica nítido em qualquer contexto.
+      </p>
+
+      <h2>Erros comuns ao converter PNG para ICO</h2>
+      <ul>
+        <li><strong>Incluir uma só resolução.</strong> Um ICO com só 256&nbsp;px obriga o sistema a reescalar para os tamanhos pequenos, perdendo nitidez. Inclua sempre o set completo (16 a 256&nbsp;px).</li>
+        <li><strong>Partir de um PNG com pouca margem.</strong> A 16&nbsp;px o detalhe fino some; se a arte chega bem na borda do canvas, é recortada visualmente ao aparecer tão pequena.</li>
+        <li><strong>Transparência mal tratada.</strong> O ICO admite transparência (diferente do BMP clássico), mas vale revisar a prévia: alguns visualizadores antigos do Windows mostram um fundo cinza em vez de transparente.</li>
+        <li><strong>Confundir ICO com favicon PNG.</strong> Hoje o favicon "moderno" costuma ser um PNG de 32&nbsp;px declarado no HTML; o ICO continua necessário como reserva universal e para o Windows, mas não substitui o resto do set de ícones web.</li>
+      </ul>
+
+      <h2>Perguntas frequentes</h2>
+      <h3>O que é exatamente um arquivo ICO?</h3>
+      <p>Um ICO é um contêiner que agrupa várias imagens de resoluções diferentes (por exemplo 16, 32 e 256&nbsp;px) em um único arquivo. O sistema operacional ou o navegador escolhe automaticamente a resolução de que precisa conforme onde o ícone é exibido.</p>
+      <h3>Posso converter qualquer PNG para ICO ou tem que ser quadrado?</h3>
+      <p>Tecnicamente dá para converter qualquer PNG, mas o resultado fica melhor se o original for quadrado: se não for, o conversor o encaixa dentro de um quadrado e pode adicionar margens ou cortar as bordas mais longas.</p>
+      <h3>Qual a diferença entre o ICO para favicon e o ICO para um .exe do Windows?</h3>
+      <p>Nenhuma no nível de formato: é o mesmo tipo de arquivo ICO com resoluções embutidas. A diferença é onde você usa — o navegador o lê como favicon, e o Windows o lê como ícone do executável.</p>
+      <h3>Renomear um PNG para .ico funciona?</h3>
+      <p>Não. Um ICO real tem um cabeçalho binário (ICONDIR) que descreve quantas imagens contém e em que resolução. Sem essa estrutura, o Windows e os navegadores não reconhecem o arquivo como um ícone válido, mesmo que a extensão diga .ico.</p>
+
+      <a class="cta" href="/editor/?tab=icons">Converter meu PNG para ICO →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Mais guias</h2>
+        <a class="card" href="/pt/guias/favicons-medidas-e-html.html">
+          <h2>Favicons: tamanhos e o HTML para copiar</h2>
+          <p>O conjunto completo de favicons que um site moderno precisa, com o HTML pronto para colar.</p>
+        </a>
+        <a class="card" href="/pt/guias/tamanhos-de-icones-de-app.html">
+          <h2>Tamanhos de ícones de app em 2026: iOS, Android, macOS, Windows e Web</h2>
+          <p>Todos os tamanhos atuais em um só lugar, incluído o set .ico do Windows.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/pt/guias/">← Mais guias</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/sobre.html">Sobre</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/guias/convertir-png-a-ico.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tamanhos de ícones de app em 2026: iOS, Android, macOS, Windows e Web — PhotoCut Studio</title>
+    <meta name="description" content="Todos os tamanhos atuais de ícone de app em um só lugar: iOS 18 (padrão/escuro/tinted), Android 13 adaptativo e monocromático, macOS, Windows e favicons — mais as regras de design que evitam dores de cabeça. Gere grátis no navegador." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/guias/tamanhos-de-icones-de-app.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/pt/guias/tamanhos-de-icones-de-app.html" />
+    <meta property="og:title" content="Tamanhos de ícones de app em 2026: iOS, Android, macOS, Windows e Web — PhotoCut Studio" />
+    <meta property="og:description" content="Todos os tamanhos atuais de ícone de app em um só lugar: iOS 18 (padrão/escuro/tinted), Android 13 adaptativo e monocromático, macOS, Windows e favicons — mais as regras de design que evitam dores de cabeça. Gere grátis no navegador." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-iconos-pt.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Tamanhos de ícones de app em 2026: iOS, Android, macOS, Windows e Web",
+      "description": "Todos os tamanhos atuais de ícone de app em um só lugar: iOS 18 (padrão/escuro/tinted), Android 13 adaptativo e monocromático, macOS, Windows e favicons — mais as regras de design que evitam dores de cabeça.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-iconos-pt.jpg",
+      "inLanguage": "pt-br",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/tamanhos-de-icones-de-app.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Um único ícone de 1024×1024 basta para tudo?", "acceptedAnswer": { "@type": "Answer", "text": "Sim, se você parte de um PNG 1024×1024 sem compressão e com margem de respiro, um gerador pode derivar dele todos os tamanhos de iOS, Android, macOS, Windows e Web sem perda de qualidade visível." } },
+        { "@type": "Question", "name": "Qual a diferença entre o ícone adaptativo e o maskable do Android?", "acceptedAnswer": { "@type": "Answer", "text": "São conceitos equivalentes em ecossistemas diferentes: o adaptive icon é o formato nativo do Android (foreground + background, recortado pelo sistema em várias formas), e o ícone maskable é o equivalente para PWA declarado no manifest. Ambos exigem que o conteúdo importante caiba na zona segura central." } },
+        { "@type": "Question", "name": "Preciso criar as variantes dark e tinted do iOS 18 na mão?", "acceptedAnswer": { "@type": "Answer", "text": "Não necessariamente na mão: você pode gerar uma versão com fundo escuro e uma em escala de cinza a partir da mesma arte de 1024×1024. Um gerador de ícones pode produzir as três variantes (padrão, dark, tinted) automaticamente de um único PNG." } },
+        { "@type": "Question", "name": "E se meu ícone não respeita a zona segura do adaptive/maskable?", "acceptedAnswer": { "@type": "Answer", "text": "O sistema o recorta de qualquer forma na shape correspondente (círculo, squircle, gota), então qualquer detalhe fora da zona segura central de 66–80% simplesmente some ou fica cortado pela metade." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Tamanhos de ícones de app em 2026: iOS, Android, macOS, Windows e Web</h1>
+      <p class="meta">Atualizado: julho de 2026 · Leitura: 6 minutos</p>
+
+      <p>
+        Cada plataforma pede os ícones do seu jeito: a Apple quer um
+        <code>appiconset</code> com variantes claro/escuro/tinted, o Android passou a
+        ícones adaptativos com camada monocromática para os temas do Material You, e
+        a web tem seu próprio pequeno zoológico de favicons. Este guia reúne
+        <strong>todos os tamanhos atuais em 2026</strong> em um só lugar.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-iconos-pt.jpg" width="1600" height="1000" loading="lazy" alt="O Icon Studio gerando todos os tamanhos de ícone de app para iOS, Android, macOS, Windows e Web a partir de um recorte." />
+        <figcaption>Um clique gera todos os tamanhos de ícone para iOS, Android, macOS, Windows e Web.</figcaption>
+      </figure>
+
+      <h2>iOS / iPadOS (Xcode 16+)</h2>
+      <p>Desde o Xcode 14 basta um único ícone de <strong>1024 × 1024&nbsp;px</strong> e o Xcode gera o resto. Com o iOS 18, a Apple adicionou duas variantes do mesmo tamanho:</p>
+      <table>
+        <tr><th>Variante</th><th>Tamanho</th><th>Notas</th></tr>
+        <tr><td>Padrão (any)</td><td>1024 × 1024</td><td>Sem transparência nem cantos arredondados: o sistema aplica a máscara.</td></tr>
+        <tr><td>Dark</td><td>1024 × 1024</td><td>Fundo transparente ou escuro; o sujeito deve funcionar sobre o fundo escuro do sistema.</td></tr>
+        <tr><td>Tinted</td><td>1024 × 1024</td><td>Escala de cinza; o iOS a tinge com a cor de destaque do usuário.</td></tr>
+      </table>
+      <p>Para projetos que ainda suportam versões antigas, os tamanhos legados continuam: 20, 29, 40, 60, 76 e 83.5&nbsp;pt em @1x/@2x/@3x por dispositivo (40, 58, 60, 80, 87, 120, 152, 167, 180&nbsp;px…).</p>
+
+      <h2>Android (API 33+ / Android 13)</h2>
+      <table>
+        <tr><th>Recurso</th><th>Tamanho</th><th>Notas</th></tr>
+        <tr><td>mipmap-mdpi</td><td>48 × 48</td><td rowspan="5">Ícones "clássicos" por densidade.</td></tr>
+        <tr><td>mipmap-hdpi</td><td>72 × 72</td></tr>
+        <tr><td>mipmap-xhdpi</td><td>96 × 96</td></tr>
+        <tr><td>mipmap-xxhdpi</td><td>144 × 144</td></tr>
+        <tr><td>mipmap-xxxhdpi</td><td>192 × 192</td></tr>
+        <tr><td>Adaptive (foreground/background)</td><td>432 × 432</td><td>O conteúdo "seguro" deve caber no círculo central de 264&nbsp;px: o sistema recorta a forma.</td></tr>
+        <tr><td>Themed / monochrome</td><td>432 × 432</td><td>Camada monocromática (branca sobre transparente) para o Material You no Android 13+.</td></tr>
+        <tr><td>Google Play Store</td><td>512 × 512</td><td>PNG de 32 bits, sem transparência.</td></tr>
+      </table>
+
+      <h2>macOS</h2>
+      <p>Um <code>AppIcon.iconset</code> com 10 arquivos que depois é compilado para <code>.icns</code> com <code>iconutil</code>:</p>
+      <pre>16, 16@2x, 32, 32@2x, 128, 128@2x, 256, 256@2x, 512, 512@2x
+(ou seja: 16, 32, 64, 128, 256, 512 e 1024 px)</pre>
+
+      <h2>Windows</h2>
+      <p>Um único <code>app.ico</code> multirresolução com 7 tamanhos embutidos: <strong>16, 24, 32, 48, 64, 128 e 256&nbsp;px</strong>. Os instaladores e a barra de tarefas escolhem o de que precisam.</p>
+
+      <h2>Web / PWA</h2>
+      <table>
+        <tr><th>Arquivo</th><th>Tamanho</th><th>Para quê</th></tr>
+        <tr><td>favicon.ico</td><td>48 × 48 (multi)</td><td>Abas e favoritos em navegadores antigos.</td></tr>
+        <tr><td>favicon-32.png</td><td>32 × 32</td><td>Aba padrão.</td></tr>
+        <tr><td>apple-touch-icon</td><td>180 × 180</td><td>Tela inicial no iPhone/iPad.</td></tr>
+        <tr><td>icon-192.png</td><td>192 × 192</td><td>PWA instalado (manifest).</td></tr>
+        <tr><td>icon-512.png</td><td>512 × 512</td><td>Splash de PWA (manifest).</td></tr>
+        <tr><td>maskable-512.png</td><td>512 × 512</td><td>Variante "maskable": a arte deve caber nos 80% centrais.</td></tr>
+      </table>
+
+      <div class="tried">
+        <h3>Nós testamos: todos os tamanhos de uma vez</h3>
+        <p>Em vez de exportar tamanho por tamanho, com <strong>"Usar recorte atual"</strong> a ferramenta gera todos os tamanhos das plataformas selecionadas (iOS/iPadOS <em>appiconset</em>, Android, macOS, Windows, Web) em uma única passada. A <strong>margem de 8%</strong> deixa ar ao redor do sujeito para não ficar colado na borda do ícone.</p>
+        <p>Prático para publicar um app: você baixa o pacote com a estrutura de pastas pronta, sem enviar a imagem.</p>
+        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
+      </div>
+
+      <h2>Regras de design que evitam dores de cabeça</h2>
+      <ul>
+        <li><strong>Trabalhe a partir de um PNG transparente de 1024&nbsp;px ou mais</strong> e gere tudo para baixo.</li>
+        <li><strong>Margem de respiro:</strong> 8–12% ao redor da arte; em adaptive/maskable, lembre que o sistema recorta as bordas.</li>
+        <li><strong>Verifique em tamanhos pequenos:</strong> um ícone que fica bom a 256&nbsp;px pode ser ilegível a 16. Se a 32&nbsp;px não se reconhece, simplifique.</li>
+        <li><strong>Nada de texto pequeno:</strong> some nos tamanhos de barra de tarefas.</li>
+      </ul>
+
+      <h2>Erros comuns ao preparar a arte fonte</h2>
+      <ul>
+        <li><strong>Partir de um tamanho pequeno.</strong> Escalar um ícone de 256&nbsp;px para cima até 1024 o deixa borrado. Projete ou exporte sempre do maior arquivo disponível.</li>
+        <li><strong>Deixar transparência no ícone padrão do iOS.</strong> A Apple não permite alfa na variante "any": se seu PNG tem transparência, o sistema a substitui por preto sólido, o que costuma estragar o design.</li>
+        <li><strong>Ignorar a zona segura do adaptive/maskable.</strong> O conteúdo fora do círculo central (264&nbsp;px sobre 432 no Android, 80% central no maskable) é recortado pela forma que cada launcher usa — quadrado, círculo, squircle ou gota.</li>
+        <li><strong>Um só design para dark e tinted.</strong> A variante tinted do iOS 18 aparece em escala de cinza com a cor de destaque do usuário: um ícone com muitas cores diferentes perde todo o contraste ao virar monocromático se não foi pensado para isso.</li>
+        <li><strong>Nomear errado os arquivos do iconset/appiconset.</strong> O Xcode e o <code>iconutil</code> esperam nomes exatos (<code>icon_16x16@2x.png</code>, etc.); um nome diferente e o build falha ou usa o ícone padrão.</li>
+      </ul>
+
+      <h2>Por onde começar se eu tenho um só logo?</h2>
+      <p>
+        Se seu ponto de partida é um logo com fundo transparente e sem pensar em
+        nenhuma dessas regras, a ordem recomendada é: 1) remova o fundo e deixe só o
+        símbolo (não o logotipo completo com texto, que fica ilegível em
+        16&nbsp;px); 2) centralize num canvas quadrado de 1024×1024 com 10–15% de
+        margem; 3) gere daí o set completo por plataforma. Esse primeiro recorte
+        limpo é o passo que mais economiza tempo depois.
+      </p>
+
+      <h2>Perguntas frequentes</h2>
+      <h3>Um único ícone de 1024×1024 basta para tudo?</h3>
+      <p>Sim, se você parte de um PNG 1024×1024 sem compressão e com margem de respiro, um gerador pode derivar dele todos os tamanhos de iOS, Android, macOS, Windows e Web sem perda de qualidade visível.</p>
+      <h3>Qual a diferença entre o ícone adaptativo e o maskable do Android?</h3>
+      <p>São conceitos equivalentes em ecossistemas diferentes: o adaptive icon é o formato nativo do Android (foreground + background, recortado pelo sistema em várias formas), e o ícone maskable é o equivalente para PWA declarado no manifest. Ambos exigem que o conteúdo importante caiba na zona segura central.</p>
+      <h3>Preciso criar as variantes dark e tinted do iOS 18 na mão?</h3>
+      <p>Não necessariamente na mão: você pode gerar uma versão com fundo escuro e uma em escala de cinza a partir da mesma arte de 1024×1024. Um gerador de ícones pode produzir as três variantes (padrão, dark, tinted) automaticamente de um único PNG.</p>
+      <h3>E se meu ícone não respeita a zona segura do adaptive/maskable?</h3>
+      <p>O sistema o recorta de qualquer forma na shape correspondente (círculo, squircle, gota), então qualquer detalhe fora da zona segura central de 66–80% simplesmente some ou fica cortado pela metade.</p>
+
+      <h2>Gerar todos de uma vez</h2>
+      <p>
+        O <strong>Icon Studio</strong> do <a href="/editor/?tab=icons">PhotoCut
+        Studio</a> gera os ~58 tamanhos das cinco plataformas a partir de um único
+        PNG — incluídas as variantes dark/tinted do iOS 18 e a camada monocromática
+        do Android 13 — e os baixa em um ZIP com a estrutura de pastas pronta para
+        colar no projeto. Grátis e sem enviar seu logo a lugar nenhum.
+      </p>
+
+      <a class="cta" href="/editor/?tab=icons">Gerar meus ícones de app →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Mais guias</h2>
+        <a class="card" href="/pt/guias/favicons-medidas-e-html.html">
+          <h2>Favicons: tamanhos e o HTML para copiar</h2>
+          <p>O conjunto de favicons que um site moderno realmente precisa, com o HTML pronto para colar.</p>
+        </a>
+        <a class="card" href="/pt/guias/logo-com-fundo-transparente.html">
+          <h2>Como deixar um logo com fundo transparente (PNG) grátis</h2>
+          <p>O recorte limpo que é o ponto de partida de qualquer ícone.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/pt/guias/">← Mais guias</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/sobre.html">Sobre</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/guias/medidas-de-iconos-de-app-ios-android-2026.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a>
+      </footer>
+    </div>
+  </body>
+</html>
