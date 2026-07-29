@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="What PhotoCut Studio is, why all processing happens in your browser (your photos are never uploaded to a server), the technology behind it and who builds it."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/about.html" />
+    <link rel="stylesheet" href="/estaticas.css" />
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>About PhotoCut Studio</h1>
+      <p class="meta">Updated: July 2026</p>
+
+      <p>
+        PhotoCut Studio is a free web tool to remove the background from images
+        and generate app icons in every size required by iOS, Android, macOS,
+        Windows and the web. It was born from a very specific frustration: most
+        "free" background removers upload your photo to an external server,
+        process it there, and after a few uses ask you to pay or create an
+        account. PhotoCut Studio does exactly the opposite.
+      </p>
+
+      <h2>The mission: privacy by design, not by promise</h2>
+      <p>
+        All processing — the AI segmentation, the interactive GrabCut cutout,
+        the refine brushes and the icon generation — happens
+        <strong>entirely inside your browser</strong>. There is no backend that
+        receives, stores or analyzes your images: there is no "upload" because
+        there is nowhere to upload to. It's a technical difference, not just a
+        marketing line, and it's verifiable by opening your browser's developer
+        tools while you use the app: you won't see any network request carrying
+        the contents of your photo. That's why it's a reasonable tool for ID
+        documents, photos of minors, unreleased products or material under NDA.
+      </p>
+
+      <h2>The technology</h2>
+      <p>
+        The app is built with <strong>React</strong> on top of a custom canvas
+        editor. Automatic segmentation uses a deep-learning model exported to
+        <strong>ONNX</strong> that runs in the browser via
+        <strong>WebAssembly</strong> (with WebGPU/WebGL acceleration when the
+        device allows it), downloaded once and cached so it works even offline.
+        The interactive cutout relies on the classic GrabCut algorithm, and edge
+        refinement on pixel-zoom mask brushes. The result is exported with a
+        real alpha channel as PNG or WebP.
+      </p>
+
+      <h2>Who makes it</h2>
+      <p>
+        PhotoCut Studio is developed and maintained independently by
+        <strong>Gabriel Maglia</strong>. The site is supported by discreet
+        advertising and voluntary donations — never by selling user data,
+        because we simply don't collect it. You can write to
+        <a href="mailto:gab.maglia@gmail.com">gab.maglia@gmail.com</a> or visit
+        the <a href="/en/contact.html">contact</a> page for questions, bug
+        reports or suggestions.
+      </p>
+
+      <p>
+        Want to dig deeper? We have <a href="/en/tools/">tools</a> for removing
+        and changing backgrounds and reading a color palette, plus the full
+        <a href="/legal/privacidad.html">privacy policy</a> and
+        <a href="/legal/terminos.html">terms of use</a>.
+      </p>
+
+      <a class="cta" href="/editor/">Try PhotoCut Studio free →</a>
+
+      <footer class="site">
+        <a href="/">← Back to PhotoCut Studio</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/acerca.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacy</a> ·
+        <a href="/legal/terminos.html">Terms</a>
+      </footer>
+    </div>
+  </body>
+</html>

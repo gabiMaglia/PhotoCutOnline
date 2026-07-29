@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sobre o PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="O que é o PhotoCut Studio, por que todo o processamento acontece no seu navegador (suas fotos nunca são enviadas a um servidor), a tecnologia por trás e quem o desenvolve."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/sobre.html" />
+    <link rel="stylesheet" href="/estaticas.css" />
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Sobre o PhotoCut Studio</h1>
+      <p class="meta">Atualizado: julho de 2026</p>
+
+      <p>
+        O PhotoCut Studio é uma ferramenta web gratuita para remover o fundo de
+        imagens e gerar ícones de aplicativo em todos os tamanhos exigidos por
+        iOS, Android, macOS, Windows e a web. Nasceu de um incômodo bem
+        concreto: a maioria dos editores de recorte "grátis" envia sua foto para
+        um servidor externo, processa lá e, depois de alguns usos, pede que você
+        pague ou crie uma conta. O PhotoCut Studio faz exatamente o contrário.
+      </p>
+
+      <h2>A missão: privacidade por design, não por promessa</h2>
+      <p>
+        Todo o processamento — a segmentação por inteligência artificial, o
+        recorte interativo com GrabCut, os pincéis de refino e a geração de
+        ícones — acontece <strong>inteiramente dentro do seu navegador</strong>.
+        Não existe um backend que receba, armazene ou analise suas imagens: não
+        há "upload" porque não há para onde enviar. É uma diferença técnica, não
+        apenas uma frase de marketing, e é verificável abrindo as ferramentas de
+        desenvolvedor do navegador enquanto você usa o app: você não verá
+        nenhuma requisição de rede com o conteúdo da sua foto. Por isso é uma
+        ferramenta razoável para documentos de identidade, fotos de menores,
+        produtos ainda não lançados ou material sob NDA.
+      </p>
+
+      <h2>A tecnologia</h2>
+      <p>
+        O app é construído em <strong>React</strong> sobre um editor de canvas
+        próprio. A segmentação automática usa um modelo de aprendizado profundo
+        exportado para <strong>ONNX</strong> que roda no navegador via
+        <strong>WebAssembly</strong> (com aceleração por WebGPU/WebGL quando o
+        dispositivo permite), baixado uma única vez e armazenado em cache para
+        funcionar até sem conexão. O recorte interativo se apoia no algoritmo
+        clássico GrabCut, e o refino de bordas em pincéis de máscara com zoom por
+        pixel. O resultado é exportado com canal alfa real em PNG ou WebP.
+      </p>
+
+      <h2>Quem faz</h2>
+      <p>
+        O PhotoCut Studio é desenvolvido e mantido de forma independente por
+        <strong>Gabriel Maglia</strong>. O site se sustenta com publicidade
+        discreta e doações voluntárias — nunca com a venda de dados de usuários,
+        porque simplesmente não os coletamos. Você pode escrever para
+        <a href="mailto:gab.maglia@gmail.com">gab.maglia@gmail.com</a> ou visitar
+        a página de <a href="/pt/contato.html">contato</a> para dúvidas,
+        relatos de erros ou sugestões.
+      </p>
+
+      <p>
+        Quer se aprofundar? Temos <a href="/pt/ferramentas/">ferramentas</a>
+        para remover e trocar fundos e ler a paleta de cores, além da
+        <a href="/legal/privacidad.html">política de privacidade</a> e dos
+        <a href="/legal/terminos.html">termos de uso</a>.
+      </p>
+
+      <a class="cta" href="/editor/">Testar o PhotoCut Studio grátis →</a>
+
+      <footer class="site">
+        <a href="/">← Voltar ao PhotoCut Studio</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/acerca.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a> ·
+        <a href="/legal/terminos.html">Termos</a>
+      </footer>
+    </div>
+  </body>
+</html>

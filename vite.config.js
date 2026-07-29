@@ -56,6 +56,10 @@ const SEO_ROUTES = [
   "/como-funciona.html",
   "/acerca.html",
   "/contacto.html",
+  "/en/about.html",
+  "/en/contact.html",
+  "/pt/sobre.html",
+  "/pt/contato.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
   // F3 i18n — versiones en inglés (bajo /en/). El slug puede diferir del ES.
