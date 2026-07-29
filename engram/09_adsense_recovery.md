@@ -16,7 +16,15 @@
 - `quitar-fondo-antes.jpg`, `quitar-fondo-despues.png` (recorte real transparente), `editor-recorte-ia.jpg`.
 - Generados con Playwright + Chrome contra el editor (script en scratchpad `shoot.mjs`): cargar imagen → Recorte IA → export. El export tiene alpha limpio.
 
+## Progreso (sesión 2026-07-28/29, PO eligió "todo a fondo")
+- **22/25 guías ES** con el molde (capturas propias reales + "Lo probamos" único). Capturas generadas con Playwright contra el editor: recorte IA, fondo blanco/color, avatar circular, marca de agua, paleta+contraste WCAG, EXIF/metadatos, Icon Studio (128/64/48/32/16px), sticker con contorno, producto (manzana PD) sobre blanco, redimensionar.
+- **About/Contact en EN y PT** creadas (/en/about, /en/contact, /pt/sobre, /pt/contato) y enlazadas en footers EN(17)/PT(5). En SEO_ROUTES.
+- `/editor/` indexable con contenido + JSON-LD. Índices EN/PT con estilos. Trust footers ES (44).
+
 ## Pendiente
-- Escalar el molde al resto de guías ES núcleo (cambiar-fondo, producto, avatar redondo, etc.). Cambiar-fondo/producto/avatar necesitan capturas nuevas (export con color/imagen de fondo; recorte de producto; avatar circular).
-- **Decisión PO:** alcance EN/PT (hoy 0 guías). Falta también About/Contact en EN/PT (los footers EN/PT enlazan solo a legales ES).
+- **3 guías ES** sin molde (necesitan sujeto propio): `logo-con-fondo-transparente` (un logo), `quitar-fondo-a-una-firma` (una firma escaneada), `generar-modo-oscuro-desde-una-captura` (un screenshot de UI como input).
+- **EN/PT: traducir las guías** (hoy EN/PT tienen 0 guías). Hacerlo por olas de calidad, reutilizando las capturas ya generadas, NO como dump masivo (riesgo scaled-content).
 - Tras aplicar todo: **esperar 2-4 semanas** y recién ahí reaplicar a AdSense.
+
+## Assets reutilizables en public/media/guias/
+quitar-fondo-antes/despues, editor-recorte-ia, fondo-blanco, fondo-color, avatar-redondo, herramienta-{marca-de-agua,paleta,metadatos,iconos}, sticker-{whatsapp,telegram}, producto-blanco. Script de captura: scratchpad `shoot.mjs` (patrón: goto editor → setInputFiles → click "Recorte IA" → export/screenshot). Imagen de prueba: retrato PD de Obama; producto: manzana PD de Wikimedia.
