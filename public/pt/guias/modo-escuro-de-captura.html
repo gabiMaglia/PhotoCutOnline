@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerar o modo escuro (ou claro) de uma captura de tela — PhotoCut Studio</title>
+    <meta name="description" content="Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e pode aplicar seu próprio esquema de cores. Grátis e no navegador." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/guias/modo-escuro-de-captura.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/pt/guias/modo-escuro-de-captura.html" />
+    <meta property="og:title" content="Gerar o modo escuro (ou claro) de uma captura de tela — PhotoCut Studio" />
+    <meta property="og:description" content="Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e pode aplicar seu próprio esquema de cores. Grátis e no navegador." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-pt.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Gerar o modo escuro (ou claro) de uma captura de tela",
+      "description": "Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e pode aplicar seu próprio esquema de cores.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-pt.jpg",
+      "inLanguage": "pt-br",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/modo-escuro-de-captura.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Realmente converte uma imagem para modo escuro?", "acceptedAnswer": { "@type": "Answer", "text": "Inverte a luminosidade mantendo tom e saturação —a base do modo escuro—: fundos claros escurecem, o texto clareia e as cores permanecem. Funciona muito bem com capturas de UI; com fotos dá um resultado artístico." } },
+        { "@type": "Question", "name": "Serve para desenhar o modo escuro do meu app ou site?", "acceptedAnswer": { "@type": "Answer", "text": "Como um mockup rápido a partir de uma captura, sem tocar em código. Não substitui implementar o tema no CSS, mas é ideal para explorar a ideia ou mostrar um mockup." } },
+        { "@type": "Question", "name": "Posso usar meu próprio esquema de cores como referência?", "acceptedAnswer": { "@type": "Answer", "text": "Sim, no modo Recolorir: você cola CSS, variáveis, config de Tailwind ou qualquer texto com cores, e a ferramenta remapeia a imagem com esse esquema." } },
+        { "@type": "Question", "name": "Minha captura é enviada a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Toda a transformação acontece no seu navegador; a captura não é enviada nem fica armazenada." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Gerar o modo escuro (ou claro) de uma captura de tela</h1>
+      <p class="meta">Atualizado: julho de 2026 · Leitura: 5 minutos</p>
+
+      <p>
+        Quer ver como seu app ou site ficaria em <strong>modo escuro</strong> sem
+        tocar em uma linha de código? Uma <strong>captura de tela</strong> basta. O
+        Color Studio pode inverter a luminosidade da imagem mantendo as cores —a
+        base real do dark mode— e devolver a versão escura (ou clara) na hora, com
+        um antes/depois para comparar. E se você tem um esquema de cores próprio,
+        pode aplicá-lo. Tudo grátis e no seu navegador: a captura não é enviada a
+        lugar nenhum.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-modo-oscuro-pt.jpg" width="1600" height="1000" loading="lazy" alt="O Color Studio do PhotoCut Studio gerando o modo escuro de uma captura: antes/depois com o tema invertido e o esquema de cor pronto para copiar como CSS ou Tailwind." />
+        <figcaption>O modo Escuro inverte a luminosidade da captura e gera o esquema de cor (CSS/Tailwind) do projeto.</figcaption>
+      </figure>
+
+      <h2>Como funciona o modo Tema</h2>
+      <p>
+        Não é um simples "negativo" da foto. Inverter as cores tal e qual deixa os
+        azuis laranjas e tudo fica ruim. O modo Tema inverte só a
+        <strong>luminosidade</strong> de cada pixel e mantém o <strong>tom</strong>
+        e a <strong>saturação</strong>: por isso um fundo branco fica escuro, o
+        texto preto clareia, e um botão azul continua azul (mais claro). É
+        exatamente o que um bom tema escuro faz.
+      </p>
+
+      <h2>Passo a passo</h2>
+      <ol>
+        <li>Entre no <a href="/editor/?tab=colors">Color Studio</a> e abra a captura (ou use a imagem que já tem carregada).</li>
+        <li>Escolha o modo <strong>Tema</strong> e o objetivo: <strong>Escuro</strong>, <strong>Claro</strong> ou <strong>Inverter</strong>.</li>
+        <li>Compare a original com a versão gerada nos painéis <strong>Antes</strong> e <strong>Depois</strong>.</li>
+        <li>Baixe o resultado em <strong>PNG</strong>.</li>
+      </ol>
+      <p>Os objetivos <strong>Escuro</strong> e <strong>Claro</strong> só invertem se preciso (conforme a captura já seja clara ou escura); <strong>Inverter</strong> força a mudança sempre.</p>
+
+      <div class="tried">
+        <h3>Nós testamos: de uma captura clara a um tema escuro</h3>
+        <p>Carregamos uma captura e o modo <strong>Escuro</strong> inverteu a luminosidade <strong>mantendo as cores</strong> (com opção de manter os acentos), mostrando antes/depois lado a lado. Com capturas de UI dá um ponto de partida realista; com fotos comuns, um efeito artístico.</p>
+        <p>O mais útil para desenvolvimento: além da imagem, gera o <strong>esquema de cor derivado</strong> (escalas 50–900) pronto para <strong>copiar como CSS ou Tailwind</strong> e colar no projeto. Tudo local, sem enviar a captura.</p>
+        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
+      </div>
+
+      <h2>Aplicar seu próprio esquema de cores</h2>
+      <p>
+        O modo <strong>Recolorir</strong> vai um passo além: você cola
+        <strong>CSS</strong>, umas variáveis <code>:root</code>, um config de
+        <strong>Tailwind</strong> ou qualquer texto com cores (HEX,
+        <code>rgb()</code>, <code>hsl()</code>), e a ferramenta extrai essa paleta e
+        <strong>remapeia a imagem</strong> conforme a luminosidade de cada pixel (um
+        "gradient map"). Serve para ver sua captura com a identidade da sua marca, ou
+        para explorar variantes de tema a partir de um esquema existente.
+      </p>
+
+      <h2>Para que serve (e para que não)</h2>
+      <ul>
+        <li><strong>Sim:</strong> mockups rápidos de dark mode, explorar paletas, peças para apresentações, ver como uma interface "respira" no escuro antes de programá-la.</li>
+        <li><strong>Sim, divertido:</strong> jogar fotos quaisquer para ver resultados artísticos e inesperados.</li>
+        <li><strong>Não:</strong> não substitui implementar o tema escuro real no seu CSS —uma imagem não é uma interface—, mas é a forma mais rápida de visualizar a ideia.</li>
+      </ul>
+
+      <h2>Funciona melhor com capturas de interfaces</h2>
+      <p>
+        Quanto mais "plana" e de interface for a imagem (um app, um site, um
+        painel), melhor fica: os fundos sólidos e o texto respondem perfeito à
+        inversão de luminosidade. Fotografias com degradês e pele dão um resultado
+        mais artístico que utilitário — mas testá-las é parte da graça.
+      </p>
+
+      <h2>Perguntas frequentes</h2>
+      <h3>Realmente converte uma imagem para modo escuro?</h3>
+      <p>Inverte a luminosidade mantendo tom e saturação —a base do modo escuro—: fundos claros escurecem, o texto clareia e as cores permanecem. Funciona muito bem com capturas de UI; com fotos dá um resultado artístico.</p>
+      <h3>Serve para desenhar o modo escuro do meu app ou site?</h3>
+      <p>Como um mockup rápido a partir de uma captura, sem tocar em código. Não substitui implementar o tema no CSS, mas é ideal para explorar a ideia ou mostrar um mockup.</p>
+      <h3>Posso usar meu próprio esquema de cores como referência?</h3>
+      <p>Sim, no modo Recolorir: você cola CSS, variáveis, config de Tailwind ou qualquer texto com cores, e a ferramenta remapeia a imagem com esse esquema.</p>
+      <h3>Minha captura é enviada a um servidor?</h3>
+      <p>Não. Toda a transformação acontece no seu navegador; a captura não é enviada nem fica armazenada.</p>
+
+      <a class="cta" href="/editor/?tab=colors">Gerar o modo escuro da minha captura →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Mais guias e ferramentas</h2>
+        <a class="card" href="/pt/guias/como-escolher-paleta-de-cores.html">
+          <h2>Como escolher uma paleta de cores</h2>
+          <p>Papéis, escalas 50–900 e como derivar uma paleta de uma imagem, pronta como CSS ou Tailwind.</p>
+        </a>
+        <a class="card" href="/pt/ferramentas/paleta-de-cores.html">
+          <h2>Extrair a paleta de cores e ver o HEX</h2>
+          <p>Tire as cores dominantes de uma imagem e leia o HEX de qualquer pixel com um conta-gotas.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/pt/guias/">← Mais guias</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/sobre.html">Sobre</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/guias/generar-modo-oscuro-desde-una-captura.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a>
+      </footer>
+    </div>
+  </body>
+</html>

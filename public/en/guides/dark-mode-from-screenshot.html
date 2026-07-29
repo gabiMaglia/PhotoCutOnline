@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate the dark mode (or light) of a screenshot — PhotoCut Studio</title>
+    <meta name="description" content="See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and can apply your own color scheme. Free and in your browser." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/guides/dark-mode-from-screenshot.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/en/guides/dark-mode-from-screenshot.html" />
+    <meta property="og:title" content="Generate the dark mode (or light) of a screenshot — PhotoCut Studio" />
+    <meta property="og:description" content="See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and can apply your own color scheme. Free and in your browser." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-en.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Generate the dark mode (or light) of a screenshot",
+      "description": "See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and can apply your own color scheme.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-en.jpg",
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/en/guides/dark-mode-from-screenshot.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Does it really convert an image to dark mode?", "acceptedAnswer": { "@type": "Answer", "text": "It inverts the lightness while keeping hue and saturation —the basis of dark mode—: light backgrounds darken, text lightens and colors stay. It works great with UI screenshots; with photos it gives an artistic result." } },
+        { "@type": "Question", "name": "Can I use it to design my app or website's dark mode?", "acceptedAnswer": { "@type": "Answer", "text": "As a quick mockup from a screenshot, without touching code. It doesn't replace implementing the theme in CSS, but it's ideal to explore the idea or show a mockup." } },
+        { "@type": "Question", "name": "Can I use my own color scheme as a reference?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, in Recolor mode: you paste CSS, variables, a Tailwind config or any text with colors, and the tool remaps the image with that scheme." } },
+        { "@type": "Question", "name": "Is my screenshot uploaded to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. The whole transformation happens in your browser; the screenshot isn't uploaded or stored." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Generate the dark mode (or light) of a screenshot</h1>
+      <p class="meta">Updated: July 2026 · Reading time: 5 minutes</p>
+
+      <p>
+        Want to see how your app or website would look in <strong>dark mode</strong>
+        without touching a line of code? A <strong>screenshot</strong> is enough.
+        Color Studio can invert the image's lightness while keeping the colors —the
+        real basis of dark mode— and give you the dark (or light) version instantly,
+        with a before/after to compare. And if you have your own color scheme, you
+        can apply it. All free and in your browser: the screenshot isn't uploaded
+        anywhere.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-modo-oscuro-en.jpg" width="1600" height="1000" loading="lazy" alt="PhotoCut Studio's Color Studio generating a screenshot's dark mode: before/after with the inverted theme and the color scheme ready to copy as CSS or Tailwind." />
+        <figcaption>Dark mode inverts the screenshot's lightness and generates the project's color scheme (CSS/Tailwind).</figcaption>
+      </figure>
+
+      <h2>How the Theme mode works</h2>
+      <p>
+        It's not a simple "negative" of the photo. Inverting the colors outright
+        turns blues orange and everything looks wrong. The Theme mode inverts only
+        the <strong>lightness</strong> of each pixel and keeps the <strong>hue</strong>
+        and the <strong>saturation</strong>: that's why a white background becomes
+        dark, black text lightens, and a blue button stays blue (lighter). It's
+        exactly what a good dark theme does.
+      </p>
+
+      <h2>Step by step</h2>
+      <ol>
+        <li>Go to <a href="/editor/?tab=colors">Color Studio</a> and open the screenshot (or use the image you already have loaded).</li>
+        <li>Choose the <strong>Theme</strong> mode and the target: <strong>Dark</strong>, <strong>Light</strong> or <strong>Invert</strong>.</li>
+        <li>Compare the original with the generated version in the <strong>Before</strong> and <strong>After</strong> panels.</li>
+        <li>Download the result as <strong>PNG</strong>.</li>
+      </ol>
+      <p>The <strong>Dark</strong> and <strong>Light</strong> targets only invert if needed (depending on whether the screenshot is already light or dark); <strong>Invert</strong> always forces the change.</p>
+
+      <div class="tried">
+        <h3>We tested it: from a light screenshot to a dark theme</h3>
+        <p>We loaded a screenshot and the <strong>Dark</strong> mode inverted the lightness <strong>keeping the colors</strong> (with an option to keep the accents), showing before/after side by side. With UI screenshots it gives a realistic starting point; with regular photos, an artistic effect.</p>
+        <p>The most useful part for development: besides the image, it generates the <strong>derived color scheme</strong> (50–900 scales) ready to <strong>copy as CSS or Tailwind</strong> and paste into the project. All local, without uploading the screenshot.</p>
+        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
+      </div>
+
+      <h2>Apply your own color scheme</h2>
+      <p>
+        The <strong>Recolor</strong> mode goes a step further: you paste
+        <strong>CSS</strong>, some <code>:root</code> variables, a
+        <strong>Tailwind</strong> config or any text with colors (HEX,
+        <code>rgb()</code>, <code>hsl()</code>), and the tool extracts that palette
+        and <strong>remaps the image</strong> according to each pixel's lightness (a
+        "gradient map"). It's useful to see your screenshot in your brand's identity,
+        or to explore theme variants from an existing scheme.
+      </p>
+
+      <h2>What it's for (and what it isn't)</h2>
+      <ul>
+        <li><strong>Yes:</strong> quick dark-mode mockups, exploring palettes, pieces for presentations, seeing how an interface "breathes" in dark before coding it.</li>
+        <li><strong>Yes, fun:</strong> throwing in any photos to see artistic and unexpected results.</li>
+        <li><strong>No:</strong> it doesn't replace implementing the real dark theme in your CSS —an image is not an interface—, but it's the fastest way to visualize the idea.</li>
+      </ul>
+
+      <h2>It works best with UI screenshots</h2>
+      <p>
+        The "flatter" and more UI-like the image (an app, a site, a dashboard), the
+        better it looks: solid backgrounds and text respond perfectly to the
+        lightness inversion. Photographs with gradients and skin give a more
+        artistic than utilitarian result — but trying them is part of the fun.
+      </p>
+
+      <h2>Frequently asked questions</h2>
+      <h3>Does it really convert an image to dark mode?</h3>
+      <p>It inverts the lightness keeping hue and saturation —the basis of dark mode—: light backgrounds darken, text lightens and colors stay. It works great with UI screenshots; with photos it gives an artistic result.</p>
+      <h3>Can I use it to design my app or website's dark mode?</h3>
+      <p>As a quick mockup from a screenshot, without touching code. It doesn't replace implementing the theme in CSS, but it's ideal to explore the idea or show a mockup.</p>
+      <h3>Can I use my own color scheme as a reference?</h3>
+      <p>Yes, in Recolor mode: you paste CSS, variables, a Tailwind config or any text with colors, and the tool remaps the image with that scheme.</p>
+      <h3>Is my screenshot uploaded to a server?</h3>
+      <p>No. The whole transformation happens in your browser; the screenshot isn't uploaded or stored.</p>
+
+      <a class="cta" href="/editor/?tab=colors">Generate my screenshot's dark mode →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">More guides and tools</h2>
+        <a class="card" href="/en/guides/how-to-choose-color-palette.html">
+          <h2>How to choose a color palette</h2>
+          <p>Roles, 50–900 scales and how to derive a palette from an image, ready as CSS or Tailwind.</p>
+        </a>
+        <a class="card" href="/en/tools/color-palette-from-image.html">
+          <h2>Color palette &amp; HEX from an image</h2>
+          <p>Pull the dominant colors from an image and read the HEX of any pixel with an eyedropper.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/en/guides/">← More guides</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/en/about.html">About</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/guias/generar-modo-oscuro-desde-una-captura.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacy</a>
+      </footer>
+    </div>
+  </body>
+</html>

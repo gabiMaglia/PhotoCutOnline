@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Acessibilidade de cor: contraste e daltonismo, explicado de forma simples — PhotoCut Studio</title>
+    <meta name="description" content="Como deixar suas cores acessíveis: razões de contraste WCAG (AA/AAA), por que não depender só da cor, e como conferir seu design para daltonismo em poucos minutos, grátis e no navegador." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/pt/guias/acessibilidade-de-cor-contraste.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/pt/guias/acessibilidade-de-cor-contraste.html" />
+    <meta property="og:title" content="Acessibilidade de cor: contraste e daltonismo, explicado de forma simples — PhotoCut Studio" />
+    <meta property="og:description" content="Como deixar suas cores acessíveis: razões de contraste WCAG (AA/AAA), por que não depender só da cor, e como conferir seu design para daltonismo em poucos minutos, grátis e no navegador." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-paleta-pt.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Acessibilidade de cor: contraste e daltonismo, explicado de forma simples",
+      "description": "Como deixar suas cores acessíveis: razões de contraste WCAG (AA/AAA), por que não depender só da cor, e como conferir seu design para daltonismo em poucos minutos.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-paleta-pt.jpg",
+      "inLanguage": "pt-br",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/acessibilidade-de-cor-contraste.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "O que é o contraste WCAG AA e AAA?", "acceptedAnswer": { "@type": "Answer", "text": "Uma razão de diferença entre texto e fundo. Para texto normal, mínimo 4.5:1 (AA) ou 7:1 (AAA); para texto grande, 3:1 (AA)." } },
+        { "@type": "Question", "name": "Por que não devo usar só a cor para dar informação?", "acceptedAnswer": { "@type": "Answer", "text": "Porque cerca de 8% dos homens tem daltonismo. Adicione outro sinal (ícone, texto, padrão) além da cor." } },
+        { "@type": "Question", "name": "Como confiro se meu design é acessível?", "acceptedAnswer": { "@type": "Answer", "text": "Meça o contraste (deve passar AA) e simule o daltonismo para confirmar que a informação não depende só da cor." } },
+        { "@type": "Question", "name": "A acessibilidade afeta o SEO ou só os usuários?", "acceptedAnswer": { "@type": "Answer", "text": "Ajuda os dois: melhora a experiência de todos e é uma boa prática valorizada, mas o motivo principal é que mais gente possa usar o que você faz." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Acessibilidade de cor: contraste e daltonismo, explicado de forma simples</h1>
+      <p class="meta">Atualizado: julho de 2026 · Leitura: 6 minutos</p>
+
+      <p>
+        Um design pode ser lindo e ainda assim ilegível para parte do seu público.
+        A acessibilidade de cor se resume a duas coisas fáceis de conferir:
+        <strong>contraste</strong> suficiente para o texto ser lido, e não depender
+        <strong>só da cor</strong> para transmitir informação. As duas podem ser
+        verificadas em poucos minutos.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-paleta-pt.jpg" width="1600" height="1000" loading="lazy" alt="O PhotoCut Studio mostrando o check de contraste WCAG entre texto e fundo, com a razão 11.98:1 e os selos AA e AAA em verde." />
+        <figcaption>O check de contraste WCAG: você combina texto e fundo e ele dá a razão com os selos AA/AAA.</figcaption>
+      </figure>
+
+      <h2>1. Contraste: para o texto ser lido</h2>
+      <p>O contraste mede o quanto o texto se diferencia do fundo. É expresso como uma <strong>razão</strong>, de 1:1 (invisível) a 21:1 (preto sobre branco). As diretrizes de acessibilidade <strong>WCAG</strong> fixam mínimos:</p>
+      <ul>
+        <li><strong>Texto normal:</strong> pelo menos <strong>4.5:1</strong> (nível AA), ou 7:1 para AAA (mais rigoroso).</li>
+        <li><strong>Texto grande</strong> (títulos): basta <strong>3:1</strong> (AA).</li>
+      </ul>
+      <p>
+        O erro típico é texto cinza claro sobre fundo branco: parece "elegante" mas
+        muita gente não lê. Antes de dar uma combinação por boa, meça a razão com um
+        <a href="/pt/ferramentas/paleta-de-cores.html">verificador de contraste</a>:
+        ele diz se passa AA/AAA para texto normal e grande.
+      </p>
+
+      <h2>2. Daltonismo: não dependa só da cor</h2>
+      <p>Cerca de <strong>8% dos homens</strong> tem algum tipo de daltonismo (e um percentual menor de mulheres). Os casos mais comuns confundem <strong>vermelho e verde</strong>. Isso quebra padrões que damos por óbvios:</p>
+      <ul>
+        <li>Um gráfico que distingue categorias só por cores vermelho/verde.</li>
+        <li>Um formulário onde o erro é marcado "deixando o campo vermelho".</li>
+        <li>Um semáforo de estado (verde/amarelo/vermelho) sem texto nem ícones.</li>
+      </ul>
+      <p>A regra de ouro: <strong>a cor nunca deveria ser o único sinal</strong>. Some sempre algo mais —um ícone, uma palavra, um padrão, um brilho diferente— para a informação ser entendida mesmo que a cor não seja percebida.</p>
+
+      <h2>Como revisar seu design em 2 passos</h2>
+      <ol>
+        <li><strong>Contraste:</strong> meça o texto contra o fundo com o verificador; deve passar AA no mínimo.</li>
+        <li><strong>Daltonismo:</strong> simule como seu design aparece com protanopia, deuteranopia, tritanopia e em escala de cinza. Se algo deixa de ser entendido, essa informação dependia só da cor.</li>
+      </ol>
+
+      <div class="tried">
+        <h3>Nós testamos: o contraste com número, não no olho</h3>
+        <p>Combinamos uma cor de texto e uma de fundo e a ferramenta devolveu a <strong>razão de contraste WCAG</strong> (por exemplo 11.98:1) com os selos <strong>AA</strong> e <strong>AAA</strong> em verde ou vermelho conforme cumpra. É a diferença entre "acho que dá para ler" e saber pelo padrão.</p>
+        <p>Para acessibilidade real também há uma <strong>simulação de daltonismo</strong>: você vê a paleta como alguém com visão de cor diferente percebe, e assim detecta combinações que se confundem. Tudo local.</p>
+        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
+      </div>
+
+      <h2>Boas práticas rápidas</h2>
+      <ul>
+        <li>Texto principal sempre com contraste alto; reserve os cinzas claros para detalhes secundários, não para leitura.</li>
+        <li>Estados (sucesso/erro) com <strong>ícone + texto</strong>, não só cor.</li>
+        <li>Em gráficos, combine cor com <strong>rótulos, padrões ou formas</strong>.</li>
+        <li>Teste sua paleta em <strong>escala de cinza</strong>: se tudo se distingue, você vai bem.</li>
+      </ul>
+
+      <h2>Tudo no seu navegador</h2>
+      <p>Tanto o verificador de contraste quanto o simulador de daltonismo funcionam localmente: você envia uma imagem ou escolhe cores e tudo é processado no seu equipamento, sem enviar nada.</p>
+
+      <h2>Perguntas frequentes</h2>
+      <h3>O que é o contraste WCAG AA e AAA?</h3>
+      <p>Uma razão de diferença entre texto e fundo. Para texto normal, mínimo 4.5:1 (AA) ou 7:1 (AAA); para texto grande, 3:1 (AA).</p>
+      <h3>Por que não devo usar só a cor para dar informação?</h3>
+      <p>Porque cerca de 8% dos homens tem daltonismo. Adicione outro sinal (ícone, texto, padrão) além da cor.</p>
+      <h3>Como confiro se meu design é acessível?</h3>
+      <p>Meça o contraste (deve passar AA) e simule o daltonismo para confirmar que a informação não depende só da cor.</p>
+      <h3>A acessibilidade afeta o SEO ou só os usuários?</h3>
+      <p>Ajuda os dois: melhora a experiência de todos e é uma boa prática valorizada, mas o motivo principal é que mais gente possa usar o que você faz.</p>
+
+      <a class="cta" href="/pt/ferramentas/paleta-de-cores.html">Revisar a acessibilidade das minhas cores →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">Mais guias e ferramentas</h2>
+        <a class="card" href="/pt/guias/como-escolher-paleta-de-cores.html">
+          <h2>Como escolher uma paleta de cores</h2>
+          <p>Papéis, escalas 50–900 e como derivar uma paleta de uma imagem.</p>
+        </a>
+        <a class="card" href="/pt/ferramentas/paleta-de-cores.html">
+          <h2>Paleta de cores, HEX e contraste</h2>
+          <p>Extraia cores de uma imagem e verifique o contraste WCAG entre texto e fundo.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/pt/guias/">← Mais guias</a> ·
+        <a href="/pt/ferramentas/">Ferramentas</a> ·
+        <a href="/pt/sobre.html">Sobre</a> ·
+        <a href="/pt/contato.html">Contato</a> ·
+        <a href="/guias/accesibilidad-de-color-contraste-y-daltonismo.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacidade</a>
+      </footer>
+    </div>
+  </body>
+</html>

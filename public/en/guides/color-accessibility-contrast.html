@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color accessibility: contrast and color blindness, explained simply — PhotoCut Studio</title>
+    <meta name="description" content="How to make your colors accessible: WCAG contrast ratios (AA/AAA), why you shouldn't rely on color alone, and how to check your design for color blindness in a couple of minutes, free and in your browser." />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/guides/color-accessibility-contrast.html" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://www.photocutapp.com/en/guides/color-accessibility-contrast.html" />
+    <meta property="og:title" content="Color accessibility: contrast and color blindness, explained simply — PhotoCut Studio" />
+    <meta property="og:description" content="How to make your colors accessible: WCAG contrast ratios (AA/AAA), why you shouldn't rely on color alone, and how to check your design for color blindness in a couple of minutes, free and in your browser." />
+    <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-paleta-en.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Color accessibility: contrast and color blindness, explained simply",
+      "description": "How to make your colors accessible: WCAG contrast ratios (AA/AAA), why you shouldn't rely on color alone, and how to check your design for color blindness in a couple of minutes.",
+      "image": "https://www.photocutapp.com/media/guias/herramienta-paleta-en.jpg",
+      "inLanguage": "en",
+      "author": { "@type": "Person", "name": "Gabriel Maglia" },
+      "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
+      "mainEntityOfPage": "https://www.photocutapp.com/en/guides/color-accessibility-contrast.html"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What are WCAG AA and AAA contrast?", "acceptedAnswer": { "@type": "Answer", "text": "A difference ratio between text and background. For normal text, a minimum of 4.5:1 (AA) or 7:1 (AAA); for large text, 3:1 (AA)." } },
+        { "@type": "Question", "name": "Why shouldn't I use color alone to convey information?", "acceptedAnswer": { "@type": "Answer", "text": "Because about 8% of men have color blindness. Add another signal (icon, text, pattern) besides color." } },
+        { "@type": "Question", "name": "How do I check if my design is accessible?", "acceptedAnswer": { "@type": "Answer", "text": "Measure the contrast (it should pass AA) and simulate color blindness to confirm the information doesn't depend on color alone." } },
+        { "@type": "Question", "name": "Does accessibility affect SEO or just users?", "acceptedAnswer": { "@type": "Answer", "text": "It helps both: it improves the experience for everyone and is a valued best practice, but the main reason is that more people can use what you make." } }
+      ]
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Color accessibility: contrast and color blindness, explained simply</h1>
+      <p class="meta">Updated: July 2026 · Reading time: 6 minutes</p>
+
+      <p>
+        A design can look beautiful and still be unreadable for part of your
+        audience. Color accessibility comes down to two things that are easy to
+        check: enough <strong>contrast</strong> so text can be read, and not
+        relying on <strong>color alone</strong> to convey information. Both can be
+        verified in a couple of minutes.
+      </p>
+
+      <figure class="shot">
+        <img src="/media/guias/herramienta-paleta-en.jpg" width="1600" height="1000" loading="lazy" alt="PhotoCut Studio showing the WCAG contrast check between text and background, with the 11.98:1 ratio and the AA and AAA badges in green." />
+        <figcaption>The WCAG contrast check: you combine text and background and it gives you the ratio with the AA/AAA badges.</figcaption>
+      </figure>
+
+      <h2>1. Contrast: so the text can be read</h2>
+      <p>Contrast measures how different the text is from its background. It's expressed as a <strong>ratio</strong>, from 1:1 (invisible) to 21:1 (black on white). The <strong>WCAG</strong> accessibility guidelines set minimums:</p>
+      <ul>
+        <li><strong>Normal text:</strong> at least <strong>4.5:1</strong> (AA level), or 7:1 for AAA (stricter).</li>
+        <li><strong>Large text</strong> (headings): <strong>3:1</strong> (AA) is enough.</li>
+      </ul>
+      <p>
+        The typical mistake is light-gray text on a white background: it looks
+        "elegant" but many people can't read it. Before calling a combination good,
+        measure the ratio with a
+        <a href="/en/tools/color-palette-from-image.html">contrast checker</a>: it
+        tells you if it passes AA/AAA for normal and large text.
+      </p>
+
+      <h2>2. Color blindness: don't rely on color alone</h2>
+      <p>About <strong>8% of men</strong> have some form of color blindness (and a smaller percentage of women). The most common cases confuse <strong>red and green</strong>. That breaks patterns we take for granted:</p>
+      <ul>
+        <li>A chart that distinguishes categories only by red/green colors.</li>
+        <li>A form where an error is marked by "turning the field red".</li>
+        <li>A status light (green/yellow/red) with no text or icons.</li>
+      </ul>
+      <p>The golden rule: <strong>color should never be the only signal</strong>. Always add something more —an icon, a word, a pattern, a different brightness— so the information is understood even if the color isn't perceived.</p>
+
+      <h2>How to check your design in 2 steps</h2>
+      <ol>
+        <li><strong>Contrast:</strong> measure the text against its background with the checker; it should pass AA at minimum.</li>
+        <li><strong>Color blindness:</strong> <a href="/en/tools/color-blindness-simulator.html">simulate how your design looks</a> with protanopia, deuteranopia, tritanopia and in grayscale. If something stops making sense, that information depended on color alone.</li>
+      </ol>
+
+      <div class="tried">
+        <h3>We tested it: contrast as a number, not by eye</h3>
+        <p>We combined a text color and a background color and the tool returned the <strong>WCAG contrast ratio</strong> (for example 11.98:1) with the <strong>AA</strong> and <strong>AAA</strong> badges in green or red depending on whether it passes. It's the difference between "I think it reads" and knowing it by the standard.</p>
+        <p>For real accessibility there's also a <strong>color blindness simulation</strong>: you see the palette as someone with different color vision perceives it, so you catch combinations that get confused. All local.</p>
+        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
+      </div>
+
+      <h2>Quick best practices</h2>
+      <ul>
+        <li>Body text always with high contrast; reserve light grays for secondary details, not for reading.</li>
+        <li>States (success/error) with <strong>icon + text</strong>, not just color.</li>
+        <li>In charts, combine color with <strong>labels, patterns or shapes</strong>.</li>
+        <li>Try your palette in <strong>grayscale</strong>: if everything is distinguishable, you're on the right track.</li>
+      </ul>
+
+      <h2>All in your browser</h2>
+      <p>Both the contrast checker and the color blindness simulator run locally: you upload an image or pick colors and everything is processed on your device, without uploading anything.</p>
+
+      <h2>Frequently asked questions</h2>
+      <h3>What are WCAG AA and AAA contrast?</h3>
+      <p>A difference ratio between text and background. For normal text, a minimum of 4.5:1 (AA) or 7:1 (AAA); for large text, 3:1 (AA).</p>
+      <h3>Why shouldn't I use color alone to convey information?</h3>
+      <p>Because about 8% of men have color blindness. Add another signal (icon, text, pattern) besides color.</p>
+      <h3>How do I check if my design is accessible?</h3>
+      <p>Measure the contrast (it should pass AA) and simulate color blindness to confirm the information doesn't depend on color alone.</p>
+      <h3>Does accessibility affect SEO or just users?</h3>
+      <p>It helps both: it improves the experience for everyone and is a valued best practice, but the main reason is that more people can use what you make.</p>
+
+      <a class="cta" href="/en/tools/color-blindness-simulator.html">Check my colors' accessibility →</a>
+
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">More guides and tools</h2>
+        <a class="card" href="/en/tools/color-blindness-simulator.html">
+          <h2>Color blindness simulator</h2>
+          <p>See how someone with color blindness sees your image or design and check accessibility.</p>
+        </a>
+        <a class="card" href="/en/guides/how-to-choose-color-palette.html">
+          <h2>How to choose a color palette</h2>
+          <p>Roles, 50–900 scales and how to derive a palette from an image.</p>
+        </a>
+      </section>
+
+      <footer class="site">
+        <a href="/en/guides/">← More guides</a> ·
+        <a href="/en/tools/">Tools</a> ·
+        <a href="/en/about.html">About</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/guias/accesibilidad-de-color-contraste-y-daltonismo.html">Español</a> ·
+        <a href="/legal/privacidad.html">Privacy</a>
+      </footer>
+    </div>
+  </body>
+</html>
