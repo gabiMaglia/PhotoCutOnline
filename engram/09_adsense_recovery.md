@@ -21,9 +21,23 @@
 - **About/Contact en EN y PT** creadas (/en/about, /en/contact, /pt/sobre, /pt/contato) y enlazadas en footers EN(17)/PT(5). En SEO_ROUTES.
 - `/editor/` indexable con contenido + JSON-LD. Índices EN/PT con estilos. Trust footers ES (44).
 
+## EN/PT (olas de calidad, iniciado)
+- Estructura creada: `/en/guides/` y `/pt/guias/` con índice cada uno.
+- **2 guías traducidas a EN+PT** (fiel, no MT): flagship "remover fundo"
+  (remove-background-free / remover-fundo-gratis) y "fotos de producto"
+  (product-photos-white-background / fotos-de-produto-fundo-branco).
+- Capturas del editor en EN y PT (`editor-recorte-en/pt.jpg`, UI real localizada
+  seteando `localStorage["pc-lang"]` antes de capturar). El resto de assets
+  (before/after, producto, avatar, stickers) son neutros y se reutilizan.
+- I18N_GROUPS + SEO_ROUTES: hreflang recíproco es/en/pt (+ x-default) para las 2
+  guías, los índices y About/Contact. Verificado en build.
+- **Patrón establecido** — cada guía nueva: traducir HTML, reusar assets neutros
+  (recapturar UI solo si la guía muestra la UI, con pc-lang), agregar al índice +
+  SEO_ROUTES + I18N_GROUPS.
+
 ## Pendiente
-- **3 guías ES** sin molde (necesitan sujeto propio): `logo-con-fondo-transparente` (un logo), `quitar-fondo-a-una-firma` (una firma escaneada), `generar-modo-oscuro-desde-una-captura` (un screenshot de UI como input).
-- **EN/PT: traducir las guías** (hoy EN/PT tienen 0 guías). Hacerlo por olas de calidad, reutilizando las capturas ya generadas, NO como dump masivo (riesgo scaled-content).
+- **3 guías ES** sin molde (necesitan sujeto propio): `logo-con-fondo-transparente`, `quitar-fondo-a-una-firma`, `generar-modo-oscuro-desde-una-captura`.
+- **~20 guías ES restantes por traducir a EN+PT** siguiendo el patrón de arriba.
 - Tras aplicar todo: **esperar 2-4 semanas** y recién ahí reaplicar a AdSense.
 
 ## Assets reutilizables en public/media/guias/
