@@ -60,6 +60,10 @@ const SEO_ROUTES = [
   "/en/contact.html",
   "/pt/sobre.html",
   "/pt/contato.html",
+  "/en/guides/",
+  "/en/guides/remove-background-free.html",
+  "/pt/guias/",
+  "/pt/guias/remover-fundo-gratis.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
   // F3 i18n — versiones en inglés (bajo /en/). El slug puede diferir del ES.
@@ -97,6 +101,10 @@ const SEO_ROUTES = [
 const I18N_GROUPS = [
   { es: "/", en: "/en/", pt: "/pt/" },
   { es: "/como-funciona.html", en: "/en/how-it-works.html" },
+  { es: "/acerca.html", en: "/en/about.html", pt: "/pt/sobre.html" },
+  { es: "/contacto.html", en: "/en/contact.html", pt: "/pt/contato.html" },
+  { es: "/guias/", en: "/en/guides/", pt: "/pt/guias/" },
+  { es: "/guias/como-quitar-fondo-gratis.html", en: "/en/guides/remove-background-free.html", pt: "/pt/guias/remover-fundo-gratis.html" },
   { es: "/herramientas/", en: "/en/tools/", pt: "/pt/ferramentas/" },
   { es: "/herramientas/quitar-fondo.html", en: "/en/tools/remove-background.html", pt: "/pt/ferramentas/remover-fundo.html" },
   { es: "/herramientas/cambiar-fondo.html", en: "/en/tools/change-background.html", pt: "/pt/ferramentas/trocar-fundo.html" },
