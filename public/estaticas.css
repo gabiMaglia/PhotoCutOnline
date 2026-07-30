@@ -169,6 +169,20 @@ pre {
   padding: 12px 20px;
 }
 
+.cluster-h {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--acid);
+  margin: 34px 0 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.cluster-h:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
 .card {
   display: block;
   background: var(--panel);

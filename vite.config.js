@@ -299,6 +299,30 @@ function seoArtifacts(site, env = {}) {
         `# PhotoCut Studio\nUser-agent: *\nAllow: /\n\nSitemap: ${site}/sitemap.xml\n`
       );
 
+      // Feed RSS de guías: Google lo rastrea más seguido que el sitemap →
+      // acelera la (re)indexación. Título/descr se leen del HTML ya construido.
+      const esc = (t) =>
+        String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const pubDate = new Date().toUTCString();
+      const guideRoutes = SEO_ROUTES.filter(
+        (r) => /\/(guias|guides)\//.test(r) && r.endsWith(".html")
+      );
+      const items = guideRoutes
+        .map((r) => {
+          const file = path.join(dist, r);
+          if (!fs.existsSync(file)) return "";
+          const html = fs.readFileSync(file, "utf8");
+          const title = (html.match(/<title>([^<]*)<\/title>/) || [, r])[1];
+          const desc = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/) || [, ""])[1];
+          return `    <item>\n      <title>${esc(title)}</title>\n      <link>${site}${r}</link>\n      <guid>${site}${r}</guid>\n      <description>${esc(desc)}</description>\n      <pubDate>${pubDate}</pubDate>\n    </item>`;
+        })
+        .filter(Boolean)
+        .join("\n");
+      fs.writeFileSync(
+        path.join(dist, "feed.xml"),
+        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador.</description>\n    <language>es</language>\n    <lastBuildDate>${pubDate}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
+      );
+
       // canonical/og:url + Umami en cada página estática (index/editor los hacen
       // absoluteOgTags/umamiTag). canonical y umami son independientes, con guard
       // anti-doble por si la página ya los trae.
