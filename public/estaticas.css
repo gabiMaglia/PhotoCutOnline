@@ -169,6 +169,23 @@ pre {
   padding: 12px 20px;
 }
 
+.crumbs {
+  font-size: 13px;
+  color: var(--ink-dim);
+  margin: 0 0 16px;
+  line-height: 1.6;
+}
+.crumbs a {
+  color: var(--ink-dim);
+  text-decoration: none;
+}
+.crumbs a:hover {
+  color: var(--acid);
+}
+.crumbs span {
+  color: var(--ink);
+}
+
 .cluster-back {
   margin: 6px 0 2px;
   font-size: 14.5px;
