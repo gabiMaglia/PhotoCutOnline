@@ -220,6 +220,7 @@ export default function TextToolPage({ active, subTool, onSubTool, onToast, onOp
               <div className="empty-glyph" aria-hidden>T</div>
               <h2>{t("tab.text")}</h2>
               <p>{t("txt.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {/* El canvas se mantiene SIEMPRE montado (oculto hasta que hay imagen):

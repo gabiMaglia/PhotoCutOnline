@@ -167,6 +167,7 @@ export default function AnnotatePage({ active, subTool, onSubTool, onToast, onOp
               <div className="empty-glyph" aria-hidden>➘</div>
               <h2>{t("annot.title")}</h2>
               <p>{t("annot.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {ready && (

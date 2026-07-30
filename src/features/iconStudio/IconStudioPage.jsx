@@ -170,6 +170,7 @@ export default function IconStudioPage({ active, onToast, onOpenDownload }) {
               <div className="empty-glyph" aria-hidden>▣</div>
               <h2>Icon Studio</h2>
               <p>{t("icon.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {s.source && (

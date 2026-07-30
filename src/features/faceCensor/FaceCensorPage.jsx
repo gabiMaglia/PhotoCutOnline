@@ -203,6 +203,7 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
               <div className="empty-glyph" aria-hidden>◔</div>
               <h2>{t("faces.title")}</h2>
               <p>{t("faces.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {ready && (

@@ -121,6 +121,7 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
               <div className="empty-glyph" aria-hidden>◐</div>
               <h2>{t("filters.title")}</h2>
               <p>{t("filters.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {ready && <canvas ref={canvasRef} className="faces-canvas" />}

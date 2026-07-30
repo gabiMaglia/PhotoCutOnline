@@ -119,6 +119,7 @@ export default function WatermarkPage({ active, subTool, onSubTool, onToast, onO
               <div className="empty-glyph" aria-hidden>©</div>
               <h2>{t("wm.title")}</h2>
               <p>{t("wm.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {ready && <canvas ref={canvasRef} className="faces-canvas" />}

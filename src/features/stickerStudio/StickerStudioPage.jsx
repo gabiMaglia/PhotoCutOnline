@@ -97,6 +97,7 @@ export default function StickerStudioPage({ active, onToast, onOpenDownload }) {
               <div className="empty-glyph" aria-hidden>✦</div>
               <h2>{t("tab.stickers")}</h2>
               <p>{t("sticker.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
           {s.source && (

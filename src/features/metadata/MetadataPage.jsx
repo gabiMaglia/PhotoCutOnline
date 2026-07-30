@@ -238,6 +238,7 @@ export default function MetadataPage({ active, onToast, onOpenDownload }) {
               <div className="empty-glyph" aria-hidden>⛭</div>
               <h2>{t("tab.meta")}</h2>
               <p>{t("meta.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
 

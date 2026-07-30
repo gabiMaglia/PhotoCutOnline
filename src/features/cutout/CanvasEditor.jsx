@@ -511,7 +511,8 @@ export default function CanvasEditor({
         <div className="canvas-empty">
           <div className="empty-glyph" aria-hidden>◐</div>
           <h2>{t("canvas.empty.title")}</h2>
-          <p>{t("canvas.empty.body")}</p>
+          <p>{t("cut.emptyDesc")}</p>
+          <p className="canvas-empty-hint">{t("empty.drag")}</p>
         </div>
       )}
 

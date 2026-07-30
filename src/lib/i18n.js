@@ -85,6 +85,9 @@ const DICT = {
     "canvas.empty.title": "Suelta una imagen aquí",
     "canvas.empty.body":
       "Arrastra un archivo, pega desde el portapapeles (⌘V) o usa «Abrir foto». Luego dibuja un recuadro alrededor del sujeto — o prueba el recorte automático.",
+    "cut.emptyDesc":
+      "Quitá el fondo con inteligencia artificial en un clic, o recortá a mano con precisión dibujando un recuadro alrededor del sujeto. Exportás con fondo transparente real (PNG/WebP).",
+    "empty.drag": "Arrastrá un archivo, pegá con ⌘V o usá «Abrir foto» arriba.",
     busy: "procesando…",
 
     "previewPanel.title": "Vista previa",
@@ -520,6 +523,9 @@ const DICT = {
     "canvas.empty.title": "Drop an image here",
     "canvas.empty.body":
       "Drag a file in, paste from the clipboard (⌘V) or use “Open photo”. Then draw a box around the subject — or try the auto cutout.",
+    "cut.emptyDesc":
+      "Remove the background with AI in one click, or cut out by hand with precision by drawing a box around the subject. Export with a real transparent background (PNG/WebP).",
+    "empty.drag": "Drag a file, paste with ⌘V, or use “Open photo” above.",
     busy: "processing…",
 
     "previewPanel.title": "Preview",
@@ -955,6 +961,9 @@ const DICT = {
     "canvas.empty.title": "Solte uma imagem aqui",
     "canvas.empty.body":
       "Arraste um arquivo, cole da área de transferência (⌘V) ou use «Abrir foto». Depois desenhe um retângulo ao redor do sujeito — ou experimente o recorte automático.",
+    "cut.emptyDesc":
+      "Remova o fundo com inteligência artificial em um clique, ou recorte à mão com precisão desenhando um retângulo ao redor do sujeito. Exporte com fundo transparente real (PNG/WebP).",
+    "empty.drag": "Arraste um arquivo, cole com ⌘V ou use «Abrir foto» acima.",
     busy: "processando…",
 
     "previewPanel.title": "Pré-visualização",

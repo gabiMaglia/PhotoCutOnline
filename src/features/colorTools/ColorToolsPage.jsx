@@ -364,6 +364,7 @@ export default function ColorToolsPage({ active, onToast, onOpenDownload }) {
               <div className="empty-glyph" aria-hidden>◔</div>
               <h2>Color Studio</h2>
               <p>{t("color.emptyBody")}</p>
+              <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
 
