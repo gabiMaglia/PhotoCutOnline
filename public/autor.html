@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gabriel Maglia — autor y desarrollador de PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Gabriel Maglia es el creador y desarrollador de PhotoCut Studio. Desarrollador fullstack con más de 4 años construyendo para la web; escribe y prueba cada guía en el propio editor."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/autor.html" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Gabriel Maglia",
+        "url": "https://www.photocutapp.com/autor.html",
+        "image": "https://www.photocutapp.com/media/autor-gabriel.jpg",
+        "jobTitle": "Desarrollador fullstack",
+        "description": "Creador y desarrollador de PhotoCut Studio. Desarrollador fullstack con más de 4 años construyendo aplicaciones web y móviles de principio a fin.",
+        "email": "mailto:gab.maglia@gmail.com",
+        "knowsAbout": ["Edición de imágenes en el navegador", "Recorte con IA (ONNX / WebAssembly)", "React", "Diseño de producto", "Accesibilidad de color"],
+        "sameAs": [
+          "https://www.gabrielmaglia.me",
+          "https://github.com/gabiMaglia",
+          "https://linkedin.com/in/gabriel-maglia"
+        ]
+      }
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Gabriel Maglia</h1>
+      <div class="author-hero">
+        <img src="/media/autor-gabriel.jpg" alt="Gabriel Maglia, creador y desarrollador de PhotoCut Studio" width="96" height="96" />
+        <div>
+          <p class="role">Creador y desarrollador de PhotoCut Studio</p>
+          <p class="meta">Desarrollador fullstack · Argentina · +4 años construyendo para la web</p>
+        </div>
+      </div>
+
+      <p>
+        Soy Gabriel Maglia, desarrollador fullstack. Construyo aplicaciones web
+        y móviles de principio a fin: pensar el producto, diseñar la interfaz,
+        escribir el código y ponerlo en producción. Trabajo sobre todo con
+        <strong>React, Next.js, TypeScript, Node.js y PostgreSQL</strong>, y en
+        móvil con React Native. Me obsesionan los detalles de interfaz —el
+        ritmo, la tipografía, el <em>timing</em> de las transiciones— porque son
+        los que hacen que una herramienta se sienta bien de usar.
+      </p>
+
+      <h2>Por qué hice PhotoCut Studio</h2>
+      <p>
+        PhotoCut Studio nació de una molestia concreta: casi todos los editores
+        de recorte «gratis» suben tu foto a un servidor externo, la procesan ahí
+        y a los pocos usos te piden pagar o crear una cuenta. Quise lo contrario:
+        una herramienta que corra <strong>íntegramente dentro del
+        navegador</strong>, donde la imagen nunca sale de tu dispositivo. El
+        recorte automático usa un modelo de IA (<code>u2netp</code>, 4,6 MB,
+        licencia Apache-2.0) exportado a ONNX que se ejecuta vía WebAssembly en
+        un <em>Web Worker</em>; el recorte interactivo se apoya en GrabCut
+        compilado a WASM. No hay backend que reciba tus fotos porque,
+        sencillamente, no hay a dónde subirlas.
+      </p>
+
+      <h2>Cómo escribo estas guías</h2>
+      <p>
+        No escribo sobre funciones que no probé. Cada guía de este sitio la
+        ejecuto en el propio editor —cargo una imagen real, sigo los pasos y
+        capturo la pantalla de esa misma sesión— antes de publicarla. Cuando una
+        guía dice que el PNG exportado queda con el fondo 100 % transparente, es
+        porque abrí el archivo y verifiqué el canal alfa. El bloque «Lo probamos»
+        que verás en cada una resume qué pasó de verdad en la práctica, incluidos
+        los casos en que el resultado automático necesitó un par de retoques.
+        Ese es el criterio: contar lo que efectivamente ocurre al usar la
+        herramienta, no una versión idealizada.
+      </p>
+
+      <h2>Dónde encontrarme</h2>
+      <p>
+        Si querés escribirme por una duda, un error o una sugerencia, el mail
+        directo es
+        <a href="mailto:gab.maglia@gmail.com">gab.maglia@gmail.com</a>. También
+        estoy acá:
+      </p>
+      <ul class="author-links">
+        <li><a href="https://www.gabrielmaglia.me" rel="me noopener" target="_blank">Sitio personal</a></li>
+        <li><a href="https://github.com/gabiMaglia" rel="me noopener" target="_blank">GitHub</a></li>
+        <li><a href="https://linkedin.com/in/gabriel-maglia" rel="me noopener" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:gab.maglia@gmail.com">Email</a></li>
+      </ul>
+
+      <a class="cta" href="/guias/">Ver las guías →</a>
+
+      <footer class="site">
+        <a href="/">← Volver a PhotoCut Studio</a> ·
+        <a href="/guias/">Guías</a> ·
+        <a href="/acerca.html">Acerca</a> ·
+        <a href="/contacto.html">Contacto</a> ·
+        <a href="/en/author.html">English</a> ·
+        <a href="/pt/autor.html">Português</a>
+      </footer>
+    </div>
+  </body>
+</html>

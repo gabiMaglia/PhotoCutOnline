@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gabriel Maglia — author and developer of PhotoCut Studio</title>
+    <meta
+      name="description"
+      content="Gabriel Maglia is the creator and developer of PhotoCut Studio. A fullstack developer with 4+ years building for the web; he writes and tests every guide in the editor itself."
+    />
+    <meta name="theme-color" content="#0b0d10" />
+    <link rel="canonical" href="https://www.photocutapp.com/en/author.html" />
+    <link rel="stylesheet" href="/estaticas.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "Gabriel Maglia",
+        "url": "https://www.photocutapp.com/en/author.html",
+        "image": "https://www.photocutapp.com/media/autor-gabriel.jpg",
+        "jobTitle": "Fullstack developer",
+        "description": "Creator and developer of PhotoCut Studio. Fullstack developer with 4+ years building web and mobile applications end to end.",
+        "email": "mailto:gab.maglia@gmail.com",
+        "knowsAbout": ["In-browser image editing", "AI background removal (ONNX / WebAssembly)", "React", "Product design", "Color accessibility"],
+        "sameAs": [
+          "https://www.gabrielmaglia.me",
+          "https://github.com/gabiMaglia",
+          "https://linkedin.com/in/gabriel-maglia"
+        ]
+      }
+    }
+    </script>
+      <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site">
+        <span class="mark" aria-hidden>◑</span>
+        <a href="/">PhotoCut <span>Studio</span></a>
+      </header>
+
+      <h1>Gabriel Maglia</h1>
+      <div class="author-hero">
+        <img src="/media/autor-gabriel.jpg" alt="Gabriel Maglia, creator and developer of PhotoCut Studio" width="96" height="96" />
+        <div>
+          <p class="role">Creator and developer of PhotoCut Studio</p>
+          <p class="meta">Fullstack developer · Argentina · 4+ years building for the web</p>
+        </div>
+      </div>
+
+      <p>
+        I'm Gabriel Maglia, a fullstack developer. I build web and mobile
+        applications end to end: thinking through the product, designing the
+        interface, writing the code and shipping it to production. I work mostly
+        with <strong>React, Next.js, TypeScript, Node.js and PostgreSQL</strong>,
+        and on mobile with React Native. I'm obsessed with interface details —
+        rhythm, typography, the timing of transitions — because those are what
+        make a tool feel good to use.
+      </p>
+
+      <h2>Why I built PhotoCut Studio</h2>
+      <p>
+        PhotoCut Studio came out of a specific frustration: almost every "free"
+        cutout editor uploads your photo to an external server, processes it
+        there, and after a few uses asks you to pay or create an account. I
+        wanted the opposite: a tool that runs
+        <strong>entirely inside the browser</strong>, where the image never
+        leaves your device. Automatic cutout uses an AI model
+        (<code>u2netp</code>, 4.6 MB, Apache-2.0 licensed) exported to ONNX that
+        runs via WebAssembly in a <em>Web Worker</em>; the interactive cutout
+        relies on GrabCut compiled to WASM. There is no backend that receives
+        your photos because there is simply nowhere to upload them.
+      </p>
+
+      <h2>How I write these guides</h2>
+      <p>
+        I don't write about features I haven't tested. I run every guide on this
+        site in the editor itself — I load a real image, follow the steps and
+        capture the screen from that same session — before publishing it. When a
+        guide says the exported PNG comes out with a 100% transparent background,
+        it's because I opened the file and checked the alpha channel. The
+        "We tried it" box you'll see in each one summarizes what actually
+        happened in practice, including the cases where the automatic result
+        needed a couple of touch-ups. That's the standard: reporting what really
+        happens when you use the tool, not an idealized version.
+      </p>
+
+      <h2>Where to find me</h2>
+      <p>
+        If you want to reach me with a question, a bug or a suggestion, the
+        direct email is
+        <a href="mailto:gab.maglia@gmail.com">gab.maglia@gmail.com</a>. I'm also
+        here:
+      </p>
+      <ul class="author-links">
+        <li><a href="https://www.gabrielmaglia.me" rel="me noopener" target="_blank">Personal site</a></li>
+        <li><a href="https://github.com/gabiMaglia" rel="me noopener" target="_blank">GitHub</a></li>
+        <li><a href="https://linkedin.com/in/gabriel-maglia" rel="me noopener" target="_blank">LinkedIn</a></li>
+        <li><a href="mailto:gab.maglia@gmail.com">Email</a></li>
+      </ul>
+
+      <a class="cta" href="/en/guides/">See the guides →</a>
+
+      <footer class="site">
+        <a href="/">← Back to PhotoCut Studio</a> ·
+        <a href="/en/guides/">Guides</a> ·
+        <a href="/en/about.html">About</a> ·
+        <a href="/en/contact.html">Contact</a> ·
+        <a href="/autor.html">Español</a> ·
+        <a href="/pt/autor.html">Português</a>
+      </footer>
+    </div>
+  </body>
+</html>

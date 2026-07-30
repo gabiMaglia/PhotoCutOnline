@@ -264,6 +264,66 @@ figure.shot figcaption {
   color: var(--ink-dim);
 }
 
+/* Byline de autor en la línea .meta de cada guía */
+.meta .author-link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+.meta .author-link:hover {
+  border-bottom-color: var(--acid);
+}
+
+/* Página de autor */
+.author-hero {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin: 4px 0 8px;
+}
+.author-hero img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  flex: none;
+  background: var(--panel);
+}
+.author-hero .role {
+  margin: 4px 0 0;
+  color: var(--acid);
+  font-size: 14px;
+  font-weight: 600;
+}
+.author-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 6px;
+  padding: 0;
+  list-style: none;
+}
+.author-links a {
+  display: inline-block;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13.5px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.author-links a:hover {
+  border-color: var(--acid);
+}
+@media (max-width: 480px) {
+  .author-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 footer.site {
   margin-top: 48px;
   padding-top: 20px;
