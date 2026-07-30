@@ -169,6 +169,18 @@ pre {
   padding: 12px 20px;
 }
 
+.cluster-back {
+  margin: 6px 0 2px;
+  font-size: 14.5px;
+}
+.cluster-back a {
+  color: var(--acid);
+  text-decoration: none;
+}
+.cluster-back a:hover {
+  text-decoration: underline;
+}
+
 .cluster-h {
   font-size: 15px;
   text-transform: uppercase;
