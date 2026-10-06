@@ -25,7 +25,9 @@ export function ensureDist(root) {
       break;
     } catch (e) {
       if (e.code !== "EEXIST") throw e;
-      if (ready()) return dist;
+      // Mientras otro proceso tiene el lock, el build puede haber escrito ya
+      // sitemap.xml pero seguir inyectando og/hreflang en las estáticas: no
+      // vale `ready()` hasta que el lock desaparezca (carrera vista en CI).
       // lock huérfano (proceso muerto): más de 10 min => se descarta
       if (Date.now() - fs.statSync(lock).mtimeMs > 10 * 60 * 1000) fs.rmSync(lock, { recursive: true, force: true });
       if (Date.now() > deadline) throw new Error("timeout esperando el build de dist/");
