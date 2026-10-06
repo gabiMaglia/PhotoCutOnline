@@ -349,6 +349,20 @@ function seoArtifacts(site, env = {}) {
           );
           changed = true;
         }
+        // og:image por defecto (/og.png) para toda página indexable que no traiga
+        // la suya (editor, hubs, acerca/contacto/autor, legales): sin esto las
+        // previsualizaciones en redes salen sin imagen.
+        if (!html.includes('property="og:image"')) {
+          const tags = [
+            `<meta property="og:image" content="${site}/og.png" />`,
+            `<meta property="og:image:width" content="1200" />`,
+            `<meta property="og:image:height" content="630" />`,
+          ];
+          if (!html.includes('name="twitter:image"')) tags.push(`<meta name="twitter:image" content="${site}/og.png" />`);
+          if (!html.includes('name="twitter:card"')) tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
+          html = html.replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
+          changed = true;
+        }
         if (umami && !html.includes("data-website-id")) {
           html = html.replace("</head>", `    ${umami}\n  </head>`);
           changed = true;
