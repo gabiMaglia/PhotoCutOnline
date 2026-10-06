@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+import { lastModified } from "./scripts/lib/lastmod.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -284,10 +285,18 @@ function seoArtifacts(site, env = {}) {
       if (!site) return;
       const dist = path.resolve("dist");
       if (!fs.existsSync(dist)) return;
-      const today = new Date().toISOString().slice(0, 10);
+
+      // Fuente de cada ruta: "/" y "/editor/" viven en la raíz (Vite), el resto en public/.
+      const sourceFor = (r) => {
+        if (r === "/") return path.resolve("index.html");
+        if (r === "/editor/") return path.resolve("editor/index.html");
+        return path.resolve("public", r.slice(1), r.endsWith("/") ? "index.html" : "");
+      };
+      // lastmod REAL = último commit del archivo fuente (ver scripts/lib/lastmod.mjs).
+      const modOf = (r) => lastModified(sourceFor(r));
 
       const urls = SEO_ROUTES.map(
-        (r) => `  <url><loc>${site}${r}</loc><lastmod>${today}</lastmod></url>`
+        (r) => `  <url><loc>${site}${r}</loc><lastmod>${modOf(r).slice(0, 10)}</lastmod></url>`
       ).join("\n");
       fs.writeFileSync(
         path.join(dist, "sitemap.xml"),
@@ -303,7 +312,6 @@ function seoArtifacts(site, env = {}) {
       // acelera la (re)indexación. Título/descr se leen del HTML ya construido.
       const esc = (t) =>
         String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      const pubDate = new Date().toUTCString();
       const guideRoutes = SEO_ROUTES.filter(
         (r) => /\/(guias|guides)\//.test(r) && r.endsWith(".html")
       );
@@ -314,13 +322,14 @@ function seoArtifacts(site, env = {}) {
           const html = fs.readFileSync(file, "utf8");
           const title = (html.match(/<title>([^<]*)<\/title>/) || [, r])[1];
           const desc = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/) || [, ""])[1];
+          const pubDate = new Date(modOf(r)).toUTCString();
           return `    <item>\n      <title>${esc(title)}</title>\n      <link>${site}${r}</link>\n      <guid>${site}${r}</guid>\n      <description>${esc(desc)}</description>\n      <pubDate>${pubDate}</pubDate>\n    </item>`;
         })
         .filter(Boolean)
         .join("\n");
       fs.writeFileSync(
         path.join(dist, "feed.xml"),
-        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador.</description>\n    <language>es</language>\n    <lastBuildDate>${pubDate}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
+        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador.</description>\n    <language>es</language>\n    <lastBuildDate>${new Date(Math.max(...guideRoutes.map((r) => +new Date(modOf(r))))).toUTCString()}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
       );
 
       // canonical/og:url + Umami en cada página estática (index/editor los hacen
