@@ -17,6 +17,25 @@ describe("FileButton", () => {
     expect(container.querySelector("input")).toBeDisabled();
   });
 
+  it("(GROW-27 c) el input es alcanzable con Tab (sin atributo hidden)", async () => {
+    const { container } = render(<FileButton>Abrir foto</FileButton>);
+    const input = container.querySelector("input[type=file]");
+    expect(input).not.toHaveAttribute("hidden");
+    await userEvent.tab();
+    expect(input).toHaveFocus();
+  });
+
+  it("(GROW-27 c) expone nombre accesible desde el texto del label", () => {
+    render(<FileButton>Abrir foto</FileButton>);
+    expect(screen.getByLabelText("Abrir foto")).toHaveAttribute("type", "file");
+  });
+
+  it("(GROW-27 c) deshabilitado no recibe foco", async () => {
+    const { container } = render(<FileButton disabled>Abrir foto</FileButton>);
+    await userEvent.tab();
+    expect(container.querySelector("input")).not.toHaveFocus();
+  });
+
   it("dispara onChange al elegir un archivo", async () => {
     const onChange = jest.fn();
     const { container } = render(<FileButton onChange={onChange}>Abrir</FileButton>);
