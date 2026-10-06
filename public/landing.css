@@ -190,50 +190,49 @@
         background: var(--panel-2);
       }
 
-      /* swatch decorativo: canal alfa / checker, como en el editor */
+      /* antes/después real del producto (reemplaza al damero decorativo) */
       .lp-hero-visual {
         display: flex;
         justify-content: center;
       }
 
-      .lp-swatch {
+      .lp-ba {
         position: relative;
-        width: min(100%, 360px);
-        aspect-ratio: 16 / 10;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: min(100%, 420px);
+      }
+
+      .lp-ba-pane {
+        position: relative;
+        margin: 0;
+        aspect-ratio: 4 / 5;
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--line);
+        background: #15181d;
       }
 
-      .lp-swatch-checker {
-        position: absolute;
-        inset: 0;
+      .lp-ba-pane img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* damero detrás del recorte: es la transparencia real del PNG */
+      .lp-ba-cut {
         background-image:
-          linear-gradient(45deg, #1d2127 25%, transparent 25%),
-          linear-gradient(-45deg, #1d2127 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #1d2127 75%),
-          linear-gradient(-45deg, transparent 75%, #1d2127 75%);
+          linear-gradient(45deg, #2a2f36 25%, transparent 25%),
+          linear-gradient(-45deg, #2a2f36 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #2a2f36 75%),
+          linear-gradient(-45deg, transparent 75%, #2a2f36 75%);
         background-size: 22px 22px;
         background-position: 0 0, 0 11px, 11px -11px, -11px 0;
-        background-color: #15181d;
-      }
-
-      .lp-swatch-checker::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        left: 52%;
-        background: linear-gradient(160deg, #2a2f10, #10130a 70%);
-      }
-
-      .lp-swatch-divider {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 52%;
-        width: 0;
-        border-left: 2px solid var(--acid);
-        box-shadow: 0 0 12px var(--acid-glow);
+        background-color: #1d2127;
+        outline: 2px solid var(--acid);
+        outline-offset: -2px;
       }
 
       .lp-swatch-tag {
@@ -252,11 +251,6 @@
 
       .lp-swatch-tag-l {
         left: 12px;
-      }
-
-      .lp-swatch-tag-r {
-        right: 12px;
-        color: var(--acid);
       }
 
       /* ------------------------------ secciones ------------------------------ */
@@ -522,7 +516,7 @@
         }
 
         .lp-hero-visual {
-          flex: 0 0 380px;
+          flex: 0 0 420px;
         }
 
         .lp-grid {

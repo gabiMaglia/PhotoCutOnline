@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+import { lastModified } from "./scripts/lib/lastmod.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -117,6 +118,10 @@ const SEO_ROUTES = [
   "/pt/guias/converter-png-para-ico.html",
   "/legal/privacidad.html",
   "/legal/terminos.html",
+  "/en/legal/privacy.html",
+  "/en/legal/terms.html",
+  "/pt/legal/privacidade.html",
+  "/pt/legal/termos.html",
   // F3 i18n — versiones en inglés (bajo /en/). El slug puede diferir del ES.
   "/en/",
   "/en/how-it-works.html",
@@ -155,6 +160,8 @@ const I18N_GROUPS = [
   { es: "/acerca.html", en: "/en/about.html", pt: "/pt/sobre.html" },
   { es: "/contacto.html", en: "/en/contact.html", pt: "/pt/contato.html" },
   { es: "/autor.html", en: "/en/author.html", pt: "/pt/autor.html" },
+  { es: "/legal/privacidad.html", en: "/en/legal/privacy.html", pt: "/pt/legal/privacidade.html" },
+  { es: "/legal/terminos.html", en: "/en/legal/terms.html", pt: "/pt/legal/termos.html" },
   { es: "/guias/", en: "/en/guides/", pt: "/pt/guias/" },
   { es: "/guias/como-quitar-fondo-gratis.html", en: "/en/guides/remove-background-free.html", pt: "/pt/guias/remover-fundo-gratis.html" },
   { es: "/guias/fotos-de-producto-amazon-etsy-shopify.html", en: "/en/guides/product-photos-white-background.html", pt: "/pt/guias/fotos-de-produto-fundo-branco.html" },
@@ -284,10 +291,18 @@ function seoArtifacts(site, env = {}) {
       if (!site) return;
       const dist = path.resolve("dist");
       if (!fs.existsSync(dist)) return;
-      const today = new Date().toISOString().slice(0, 10);
+
+      // Fuente de cada ruta: "/" y "/editor/" viven en la raíz (Vite), el resto en public/.
+      const sourceFor = (r) => {
+        if (r === "/") return path.resolve("index.html");
+        if (r === "/editor/") return path.resolve("editor/index.html");
+        return path.resolve("public", r.slice(1), r.endsWith("/") ? "index.html" : "");
+      };
+      // lastmod REAL = último commit del archivo fuente (ver scripts/lib/lastmod.mjs).
+      const modOf = (r) => lastModified(sourceFor(r));
 
       const urls = SEO_ROUTES.map(
-        (r) => `  <url><loc>${site}${r}</loc><lastmod>${today}</lastmod></url>`
+        (r) => `  <url><loc>${site}${r}</loc><lastmod>${modOf(r).slice(0, 10)}</lastmod></url>`
       ).join("\n");
       fs.writeFileSync(
         path.join(dist, "sitemap.xml"),
@@ -303,7 +318,6 @@ function seoArtifacts(site, env = {}) {
       // acelera la (re)indexación. Título/descr se leen del HTML ya construido.
       const esc = (t) =>
         String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-      const pubDate = new Date().toUTCString();
       const guideRoutes = SEO_ROUTES.filter(
         (r) => /\/(guias|guides)\//.test(r) && r.endsWith(".html")
       );
@@ -314,13 +328,14 @@ function seoArtifacts(site, env = {}) {
           const html = fs.readFileSync(file, "utf8");
           const title = (html.match(/<title>([^<]*)<\/title>/) || [, r])[1];
           const desc = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/) || [, ""])[1];
+          const pubDate = new Date(modOf(r)).toUTCString();
           return `    <item>\n      <title>${esc(title)}</title>\n      <link>${site}${r}</link>\n      <guid>${site}${r}</guid>\n      <description>${esc(desc)}</description>\n      <pubDate>${pubDate}</pubDate>\n    </item>`;
         })
         .filter(Boolean)
         .join("\n");
       fs.writeFileSync(
         path.join(dist, "feed.xml"),
-        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador.</description>\n    <language>es</language>\n    <lastBuildDate>${pubDate}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
+        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador.</description>\n    <language>es</language>\n    <lastBuildDate>${new Date(Math.max(...guideRoutes.map((r) => +new Date(modOf(r))))).toUTCString()}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
       );
 
       // canonical/og:url + Umami en cada página estática (index/editor los hacen
@@ -338,6 +353,20 @@ function seoArtifacts(site, env = {}) {
             "</head>",
             `  <link rel="canonical" href="${url}" />\n    <meta property="og:url" content="${url}" />\n  </head>`
           );
+          changed = true;
+        }
+        // og:image por defecto (/og.png) para toda página indexable que no traiga
+        // la suya (editor, hubs, acerca/contacto/autor, legales): sin esto las
+        // previsualizaciones en redes salen sin imagen.
+        if (!html.includes('property="og:image"')) {
+          const tags = [
+            `<meta property="og:image" content="${site}/og.png" />`,
+            `<meta property="og:image:width" content="1200" />`,
+            `<meta property="og:image:height" content="630" />`,
+          ];
+          if (!html.includes('name="twitter:image"')) tags.push(`<meta name="twitter:image" content="${site}/og.png" />`);
+          if (!html.includes('name="twitter:card"')) tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
+          html = html.replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
           changed = true;
         }
         if (umami && !html.includes("data-website-id")) {

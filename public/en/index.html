@@ -35,6 +35,7 @@
 
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d10'/%3E%3Cpath d='M16 5a11 11 0 1 1 0 22z' fill='%23d6f64b'/%3E%3Cpath d='M16 5a11 11 0 0 0 0 22z' fill='none' stroke='%23d6f64b' stroke-width='2'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -72,11 +73,15 @@
             </div>
           </div>
           <a href="/editor/" class="lp-hero-visual" aria-label="Open the editor and drop your photo">
-            <div class="lp-swatch">
-              <div class="lp-swatch-checker"></div>
-              <div class="lp-swatch-divider"></div>
-              <span class="lp-swatch-tag lp-swatch-tag-l">original background</span>
-              <span class="lp-swatch-tag lp-swatch-tag-r">alpha channel</span>
+            <div class="lp-ba">
+              <figure class="lp-ba-pane">
+                <img src="/media/hero-antes.jpg" width="480" height="600" fetchpriority="high" decoding="async" alt="Portrait of a man in a suit in front of flags and curtains, original photo with its background" />
+                <figcaption class="lp-swatch-tag lp-swatch-tag-l">Original</figcaption>
+              </figure>
+              <figure class="lp-ba-pane lp-ba-cut">
+                <img src="/media/hero-despues.png" width="480" height="600" decoding="async" alt="The same portrait cut out with no background, over a checkerboard that shows transparency" />
+                <figcaption class="lp-swatch-tag lp-swatch-tag-l">No background</figcaption>
+              </figure>
             </div>
           </a>
         </div>
@@ -311,10 +316,11 @@
             <a href="/en/tools/">Tools</a>
             <a href="/">Español</a>
             <a href="/pt/">Português</a>
-            <a href="/en/about.html">About</a> ·
-            <a href="/en/contact.html">Contact</a> ·
-            <a href="/legal/privacidad.html">Privacy</a>
-            <a href="/legal/terminos.html">Terms</a>
+            <a href="/en/legal/privacy.html">Privacy</a>
+            <a href="/en/legal/terms.html">Terms</a>
+            <a href="/en/contact.html">Contact</a>
+            <a href="/en/about.html">About</a>
+            <a href="/en/author.html">Author</a>
           </div>
           <p class="lp-copyright">PhotoCut Studio · www.photocutapp.com</p>
         </div>
