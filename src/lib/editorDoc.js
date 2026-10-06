@@ -52,7 +52,7 @@ export const EDITOR_DOC = {
       </ol>
       <p>
         Want the step-by-step with screenshots? Read the guide
-        <a href="/en/guides/remove-background-free.html">Remove a photo background for free</a>
+        <a href="/en/guides/how-to-remove-image-background.html">Remove a photo background for free</a>
         or browse all the <a href="/en/guides/">guides</a>.
       </p>
 
@@ -117,7 +117,7 @@ export const EDITOR_DOC = {
       </ol>
       <p>
         Quer o passo a passo com capturas de tela? Veja o guia
-        <a href="/pt/guias/remover-fundo-gratis.html">Remover o fundo de uma foto grátis</a>
+        <a href="/pt/guias/como-remover-fundo-de-imagem.html">Remover o fundo de uma foto grátis</a>
         ou todos os <a href="/pt/guias/">guias</a>.
       </p>
 
