@@ -19,7 +19,9 @@
     "brand-assets": "node scripts/gen-brand-assets.mjs",
     "build:wasm": "wasm-pack build crates/photocut-wasm --target web --release --out-dir ../../src/lib/wasm && rm -f src/lib/wasm/.gitignore",
     "tauri": "tauri",
-    "indexnow": "node scripts/indexnow.mjs"
+    "indexnow": "node scripts/indexnow.mjs",
+    "pruebas": "node scripts/pruebas/run.mjs",
+    "pruebas:render": "node scripts/render-pruebas.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
