@@ -105,3 +105,12 @@ Recorte IA (bordes buenos en retrato) · export JPEG se desactiva con alpha (evi
 - Umami: visitantes/mes y cuántos llegan a /editor/.
 - ¿"Privacidad y mensajes" está activado en la consola de AdSense?
 - Aprobar Fase A → ticketizar (GROW-25…).
+
+## 6. Línea base de uso (Umami, 90 días al 2026-10-06) — para el criterio de reaplicar
+- **258 visitantes / 281 visitas / 516 vistas en 90 días ≈ 86 visitantes/mes.** Rebote 65 %, duración 1 min.
+- **/editor/ = 92 visitantes (36 % del total)**: quien llega, usa la herramienta. El problema es volumen, no producto.
+- Fuentes: google.com 59 (coincide con los ~50 clics de GSC) · **bing.com 47 + Yahoo JP/BR/ES/CO (índice Bing) ≈ 60** → Bing/IndexNow ya rinde tanto como Google. DuckDuckGo 5, Ecosia 4.
+- Países: JP 24 %, US 23 %, CN 11 %, AR 9 %, ES 7 %, CO 6 %, TW 6 %, MX/BR 5 %. Asia llega vía Yahoo Japan/Bing al /en/ (78 visitantes, 24 %).
+- Páginas: home 105, /editor/ 92, /en/ 78, recortar-persona 14, quitar-fondo 10, foto-carnet 9.
+- **Objetivo para la 8ª solicitud:** ≥ 1.000 visitantes/mes (×12), ≥ 300 clics/mes en GSC, sostenido 4 semanas. Nota: parte de AR de hoy son pruebas propias (QA en vivo).
+- "Privacidad y mensajes" en AdSense: **GDPR activo (2 mensajes)**, confirmado por el PO 2026-10-06. US state: sin configurar (opcional).
