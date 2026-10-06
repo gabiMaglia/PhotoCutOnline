@@ -4,6 +4,12 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
+    { "source": "/guias/sticker-de-whatsapp.html", "destination": "/guias/stickers-de-whatsapp-y-telegram.html", "permanent": true },
+    { "source": "/guias/sticker-de-telegram.html", "destination": "/guias/stickers-de-whatsapp-y-telegram.html", "permanent": true },
+    { "source": "/en/guides/whatsapp-sticker.html", "destination": "/en/guides/whatsapp-and-telegram-stickers.html", "permanent": true },
+    { "source": "/en/guides/telegram-sticker.html", "destination": "/en/guides/whatsapp-and-telegram-stickers.html", "permanent": true },
+    { "source": "/pt/guias/figurinha-de-whatsapp.html", "destination": "/pt/guias/figurinhas-de-whatsapp-e-telegram.html", "permanent": true },
+    { "source": "/pt/guias/figurinha-de-telegram.html", "destination": "/pt/guias/figurinhas-de-whatsapp-e-telegram.html", "permanent": true },
     { "source": "/guias/convertir-png-a-ico.html", "destination": "/guias/favicons-medidas-y-html.html", "permanent": true },
     { "source": "/en/guides/convert-png-to-ico.html", "destination": "/en/guides/favicon-sizes-html.html", "permanent": true },
     { "source": "/pt/guias/converter-png-para-ico.html", "destination": "/pt/guias/favicons-medidas-e-html.html", "permanent": true },
