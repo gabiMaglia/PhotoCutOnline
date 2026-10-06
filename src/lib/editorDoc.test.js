@@ -1,4 +1,5 @@
 import { localizeEditorDoc, EDITOR_DOC } from "./editorDoc.js";
+import { TRUST } from "../../scripts/lib/trust.mjs";
 
 const ES_TITLE = "Editor de fotos gratis en el navegador — PhotoCut Studio";
 const ES_DOC = "<h1>Editor de fotos gratis en tu navegador</h1><p>Arrastrá una foto</p>";
@@ -42,6 +43,16 @@ describe("localizeEditorDoc (GROW-27 a)", () => {
     const hrefs = [...document.querySelectorAll(".ed-doc a, .ed-foot a")].map((a) => a.getAttribute("href"));
     expect(hrefs).toEqual(expect.arrayContaining(["/en/guides/", "/en/about.html", "/en/contact.html"]));
     expect(hrefs).not.toContain("/guias/");
+  });
+
+  it.each(["en", "pt"])("(D1) el pie en %s trae los 5 enlaces de confianza de check-footers, en su idioma", (lang) => {
+    localizeEditorDoc(lang);
+    const hrefs = [...document.querySelectorAll(".ed-foot a")].map((a) => a.getAttribute("href"));
+    for (const [href, label] of TRUST[lang]) {
+      expect(hrefs).toContain(href);
+      expect(document.querySelector(`.ed-foot a[href="${href}"]`).textContent).toBe(label);
+    }
+    expect(hrefs.some((h) => h.startsWith("/legal/") || h === "/acerca.html")).toBe(false);
   });
 
   it("volver a ES restaura el HTML estático original y el título", () => {

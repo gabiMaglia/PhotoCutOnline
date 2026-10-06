@@ -5,6 +5,14 @@
 // y es el fallback sin JS. Al montar la app (y al cambiar de idioma) se
 // reemplaza por la versión del idioma activo; "es" restaura el original.
 
+// Fuente de verdad de los enlaces de confianza (la misma que usa check-footers).
+import { TRUST } from "../../scripts/lib/trust.mjs";
+
+function buildFoot(home, guidesHref, guidesLabel, lang) {
+  const links = [[home, "PhotoCut Studio"], [guidesHref, guidesLabel], ...TRUST[lang]];
+  return links.map(([href, label]) => `<a href="${href}">${label}</a>`).join(" ·\n      ");
+}
+
 export const EDITOR_DOC = {
   en: {
     title: "Free online photo editor — remove background, crop and more — PhotoCut Studio",
@@ -68,14 +76,7 @@ export const EDITOR_DOC = {
 
       <a class="ed-cta" href="/en/guides/">See the step-by-step guides →</a>
     `,
-    foot: `
-      <a href="/en/">PhotoCut Studio</a> ·
-      <a href="/en/guides/">Guides</a> ·
-      <a href="/en/about.html">About</a> ·
-      <a href="/en/contact.html">Contact</a> ·
-      <a href="/legal/privacidad.html">Privacy</a> ·
-      <a href="/legal/terminos.html">Terms</a>
-    `,
+    foot: buildFoot("/en/", "/en/guides/", "Guides", "en"),
   },
   pt: {
     title: "Editor de fotos grátis no navegador — remover fundo, recortar e mais — PhotoCut Studio",
@@ -141,14 +142,7 @@ export const EDITOR_DOC = {
 
       <a class="ed-cta" href="/pt/guias/">Ver os guias passo a passo →</a>
     `,
-    foot: `
-      <a href="/pt/">PhotoCut Studio</a> ·
-      <a href="/pt/guias/">Guias</a> ·
-      <a href="/pt/sobre.html">Sobre</a> ·
-      <a href="/pt/contato.html">Contato</a> ·
-      <a href="/legal/privacidad.html">Privacidade</a> ·
-      <a href="/legal/terminos.html">Termos</a>
-    `,
+    foot: buildFoot("/pt/", "/pt/guias/", "Guias", "pt"),
   },
 };
 
