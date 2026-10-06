@@ -1,0 +1,35 @@
+import { t, tn, setLang } from "./i18n.js";
+
+describe("tn — plurales (GROW-27 g)", () => {
+  afterAll(() => setLang("es"));
+
+  it.each([
+    ["es", 1, "1 cara detectada"],
+    ["es", 2, "2 caras detectadas"],
+    ["es", 0, "0 caras detectadas"],
+    ["en", 1, "1 face detected"],
+    ["en", 3, "3 faces detected"],
+    ["pt", 1, "1 rosto detectado"],
+    ["pt", 4, "4 rostos detectados"],
+  ])("faces.found en %s con n=%i", (lang, n, expected) => {
+    setLang(lang);
+    expect(tn("faces.found", n)).toBe(expected);
+  });
+
+  it.each([
+    ["es", 1, "1 lista para descargar"],
+    ["es", 5, "5 listas para descargar"],
+    ["en", 1, "1 ready to download"],
+    ["en", 2, "2 ready to download"],
+    ["pt", 1, "1 pronta para baixar"],
+    ["pt", 2, "2 prontas para baixar"],
+  ])("batch.okCount en %s con n=%i", (lang, n, expected) => {
+    setLang(lang);
+    expect(tn("batch.okCount", n)).toBe(expected);
+  });
+
+  it("sin variantes .one/.other cae a la clave plana", () => {
+    setLang("es");
+    expect(tn("faces.title", 2)).toBe(t("faces.title"));
+  });
+});

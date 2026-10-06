@@ -237,7 +237,8 @@ const DICT = {
     "faces.title": "Censurar caras",
     "faces.detect": "Detectar caras",
     "faces.detecting": "Detectando caras…",
-    "faces.found": "{n} cara(s) detectada(s)",
+    "faces.found.one": "{n} cara detectada",
+    "faces.found.other": "{n} caras detectadas",
     "faces.none": "No se detectaron caras. Probá con otra foto o más nítida.",
     "faces.mode": "Modo",
     "faces.blur": "Desenfocar",
@@ -358,7 +359,8 @@ const DICT = {
     "batch.downloadZip": "Descargar ZIP",
     "batch.zipping": "Generando ZIP…",
     "batch.clear": "Nuevo lote",
-    "batch.okCount": "{n} listas para descargar",
+    "batch.okCount.one": "{n} lista para descargar",
+    "batch.okCount.other": "{n} listas para descargar",
     "batch.toast.zip": "ZIP descargado — {n} imágenes",
     "batch.toast.zipEmpty": "Todavía no hay ninguna imagen lista",
 
@@ -675,7 +677,8 @@ const DICT = {
     "faces.title": "Censor faces",
     "faces.detect": "Detect faces",
     "faces.detecting": "Detecting faces…",
-    "faces.found": "{n} face(s) detected",
+    "faces.found.one": "{n} face detected",
+    "faces.found.other": "{n} faces detected",
     "faces.none": "No faces detected. Try another or a sharper photo.",
     "faces.mode": "Mode",
     "faces.blur": "Blur",
@@ -796,7 +799,8 @@ const DICT = {
     "batch.downloadZip": "Download ZIP",
     "batch.zipping": "Building ZIP…",
     "batch.clear": "New batch",
-    "batch.okCount": "{n} ready to download",
+    "batch.okCount.one": "{n} ready to download",
+    "batch.okCount.other": "{n} ready to download",
     "batch.toast.zip": "ZIP downloaded — {n} images",
     "batch.toast.zipEmpty": "No images are ready yet",
 
@@ -1113,7 +1117,8 @@ const DICT = {
     "faces.title": "Censurar rostos",
     "faces.detect": "Detectar rostos",
     "faces.detecting": "Detectando rostos…",
-    "faces.found": "{n} rosto(s) detectado(s)",
+    "faces.found.one": "{n} rosto detectado",
+    "faces.found.other": "{n} rostos detectados",
     "faces.none": "Nenhum rosto detectado. Tente outra foto ou mais nítida.",
     "faces.mode": "Modo",
     "faces.blur": "Desfocar",
@@ -1234,7 +1239,8 @@ const DICT = {
     "batch.downloadZip": "Baixar ZIP",
     "batch.zipping": "Gerando ZIP…",
     "batch.clear": "Novo lote",
-    "batch.okCount": "{n} prontas para baixar",
+    "batch.okCount.one": "{n} pronta para baixar",
+    "batch.okCount.other": "{n} prontas para baixar",
     "batch.toast.zip": "ZIP baixado — {n} imagens",
     "batch.toast.zipEmpty": "Ainda não há nenhuma imagem pronta",
 
@@ -1377,4 +1383,16 @@ export function useLang() {
 export function t(key, vars) {
   const s = DICT[lang][key] ?? DICT.en[key] ?? key;
   return vars ? s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? "")) : s;
+}
+
+/**
+ * Plural por cantidad: usa `${key}.one` si n === 1 y `${key}.other` en el resto
+ * (en es/en/pt 0 va en plural). Cae a la clave plana si no hay variantes.
+ * Interpola {n} automáticamente además de `vars`.
+ */
+export function tn(key, n, vars) {
+  const variant = n === 1 ? "one" : "other";
+  const full = `${key}.${variant}`;
+  const hasVariant = DICT[lang][full] ?? DICT.en[full];
+  return t(hasVariant ? full : key, { n, ...vars });
 }

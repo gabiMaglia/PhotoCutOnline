@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { t } from "../../lib/i18n.js";
+import { t, tn } from "../../lib/i18n.js";
 import Button from "../../components/ui/Button.jsx";
 import Slider from "../../components/ui/Slider.jsx";
 import ChipGroup from "../../components/ui/ChipGroup.jsx";
@@ -81,15 +81,18 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     const img = imgRef.current;
     if (!img || busy) return;
     setBusy(true);
+    let progressToast;
     try {
-      if (!loadedWarm.current) { onToast?.(t("faces.detecting")); await warmupFaces(); loadedWarm.current = true; }
+      if (!loadedWarm.current) { progressToast = onToast?.(t("faces.detecting")); await warmupFaces(); loadedWarm.current = true; }
       const found = await detectFaces(img);
       setBoxes(found.map((b) => ({ ...b, on: true })));
       setDetected(true);
-      onToast?.(found.length ? t("faces.found", { n: found.length }) : t("faces.none"), found.length ? "ok" : "error");
+      onToast?.(found.length ? tn("faces.found", found.length) : t("faces.none"), found.length ? "ok" : "error");
     } catch (e) {
       onToast?.(String(e), "error");
     } finally {
+      // el aviso "Detectando…" no debe quedar flotando junto al resultado
+      if (progressToast != null) onToast?.dismiss?.(progressToast);
       setBusy(false);
     }
   }, [busy, onToast]);
