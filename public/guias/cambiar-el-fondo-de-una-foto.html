@@ -56,35 +56,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Puedo poner otra foto como fondo, no solo un color?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí. Además del fondo de color sólido, hay un modo Imagen donde subís una segunda foto y el sujeto recortado queda por delante de ella. Un control de opacidad te deja atenuarla para que no compita con el sujeto." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Se sube mi foto a algún servidor para cambiarle el fondo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Tanto la foto original como la imagen de fondo se procesan en tu propio navegador; ninguna de las dos se sube a un servidor ni queda almacenada al cerrar la pestaña." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué formato conviene al cambiar el fondo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Si el nuevo fondo es sólido u otra foto, cualquier formato sirve: PNG o WebP mantienen mejor los bordes, y JPEG está bien si el resultado no necesita transparencia. Solo evitá JPEG cuando querés dejar el fondo transparente." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo evito que el sujeto parezca pegado sobre el fondo nuevo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Cuidando el borde del recorte con zoom, eligiendo un fondo cuya luz e intensidad sean parecidas a las de la foto original, y bajando un poco la opacidad de la imagen de fondo para que el contraste no delate el montaje." }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -244,41 +216,29 @@
         pestaña, no queda rastro.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Puedo poner otra foto como fondo, no solo un color?</h3>
-      <p>
-        Sí. Además del fondo de color sólido, hay un modo <strong>Imagen</strong>
-        donde subís una segunda foto y el sujeto recortado queda por delante de
-        ella. Un control de opacidad te deja atenuarla para que no compita con
-        el sujeto.
-      </p>
-      <h3>¿Se sube mi foto a algún servidor para cambiarle el fondo?</h3>
-      <p>
-        No. Tanto la foto original como la imagen de fondo se procesan en tu
-        propio navegador; ninguna de las dos se sube a un servidor ni queda
-        almacenada al cerrar la pestaña.
-      </p>
-      <h3>¿Qué formato conviene al cambiar el fondo?</h3>
-      <p>
-        Si el nuevo fondo es sólido u otra foto, cualquier formato sirve: PNG o
-        WebP mantienen mejor los bordes, y JPEG está bien si el resultado no
-        necesita transparencia. Solo evitá JPEG cuando querés dejar el fondo
-        transparente.
-      </p>
-      <h3>¿Cómo evito que el sujeto parezca pegado sobre el fondo nuevo?</h3>
-      <p>
-        Cuidando el borde del recorte con zoom, eligiendo un fondo cuya luz e
-        intensidad sean parecidas a las de la foto original, y bajando un poco
-        la opacidad de la imagen de fondo para que el contraste no delate el
-        montaje.
-      </p>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: recortar primero, elegir fondo después</h3>
-        <p>Recortamos a la persona con el <strong>Recorte IA</strong> y luego cambiamos el fondo por un azul de estudio directamente en la exportación (modo <em>color sólido</em>). El borde del pelo se integró bien con el color nuevo dejando el <strong>suavizado en 1–2&nbsp;px</strong>: con 0 se veía un contorno duro, con más de 3 se «comía» detalle.</p>
-      <p>La clave práctica: el recorte es una sola vez; después podés probar cuantos fondos quieras —color o imagen— sin volver a recortar. Todo en el navegador, sin subir la foto.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: recortar una vez, probar fondos sin volver a recortar</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA, Exportar → Color / Imagen.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato y apliqué «Recorte IA» una sola vez.</li>
+          <li>Con «Transparente» + PNG descargué el recorte con el suavizado de borde en 0, 2 y 6 px y conté los píxeles semitransparentes.</li>
+          <li>Elegí modo «Color», #1e4d8c, formato JPEG y descargué.</li>
+          <li>Cargué paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) como imagen de fondo con opacidad 100 y descargué en JPEG.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Recorte IA una sola vez: 4,1 s. Cambiar de fondo después no volvió a correr la IA: exportar con color tardó 0,1 s y con imagen de fondo 0,3 s (incluye la descarga).</li>
+          <li>Píxeles semitransparentes del borde según el suavizado: 0 px → 1,3 %, 2 px → 3,3 %, 6 px → 7,3 %.</li>
+          <li>JPEG con fondo #1e4d8c: 720 × 900 px, 56 KB; el píxel de la esquina salió rgb(29, 77, 139) (pedí rgb(30, 77, 140)). Con la imagen de fondo: 65 KB.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El JPEG devolvió el color a un nivel de distancia de lo que pedí (por la compresión). Medí tamaños y píxeles de borde, no cuánto se integra el pelo con el fondo nuevo: eso lo juzgué a ojo y no lo cuantifiqué, así que no afirmo cuál suavizado se ve mejor.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/">Cambiar el fondo de mi foto →</a>
 

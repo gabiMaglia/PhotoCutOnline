@@ -54,7 +54,7 @@ export function renderBlock(e, lang = "es") {
     .map((i) => `<p><a href="${esc(i.src)}"><code>${esc(i.name)}</code></a>, ${i.w} × ${i.h} ${L.px}, ${num(i.kb)} KB.</p>`)
     .join("");
   const li = (a) => a.map((x) => `<li>${esc(x)}</li>`).join("\n          ");
-  return [
+  const lines = [
     START,
     `<div class="tried">`,
     `        <h3>${L.tried}: ${esc(e.title)}</h3>`,
@@ -72,7 +72,9 @@ export function renderBlock(e, lang = "es") {
     `        <p class="byline">${L.by} Gabriel Maglia ${L.on} <time datetime="${e.date}">${e.date}</time> ${L.with} ${esc(e.browser.replace(/^Chrome /, ""))} · ${esc(e.os)} · ${L.build}: commit ${esc(e.build)}.</p>`,
     `      </div>`,
     END,
-  ].join("\n");
+  ];
+  // la primera línea hereda la sangría del HTML original; el resto va a 6 espacios
+  return lines.map((l, i) => (i === 0 ? l : l.startsWith("  ") ? l : "      " + l)).join("\n");
 }
 
 const TRIED_RE = /<div class="tried">[\s\S]*?<\/div>/;

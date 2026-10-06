@@ -205,7 +205,7 @@ TESTS["poner-fondo-blanco-a-una-foto"] = async ({ browser }) => {
   const j = await L.analyze(ctx, dj.buf, "image/jpeg");
   await ctx.close();
   return {
-    title: "blanco puro: PNG contra JPEG",
+    title: "blanco puro en PNG y en JPEG",
     image,
     tool: "Recorte → Recorte IA, Exportar → Color #ffffff",
     steps: [

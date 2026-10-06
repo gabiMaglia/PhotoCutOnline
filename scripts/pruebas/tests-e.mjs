@@ -180,7 +180,7 @@ TESTS["generar-modo-oscuro-desde-una-captura"] = async ({ browser }) => {
   const names = ["fondo de página", "fondo de tarjeta", "botón azul", "sello rojo", "sello verde"];
   const ratio = (p, q) => wcag(hex(p), hex(q));
   return {
-    title: "una captura clara pasada a oscuro: qué cambia de verdad",
+    title: "una captura clara pasada a oscuro y qué cambia de verdad",
     image,
     tool: "Color Studio → Tema → «→ Oscuro»",
     steps: [

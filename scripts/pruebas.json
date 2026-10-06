@@ -218,7 +218,7 @@
     "browser": "Chrome 154.0.8037.98",
     "os": "macOS 14.8.8",
     "build": "bc142c7",
-    "title": "blanco puro: PNG contra JPEG",
+    "title": "blanco puro en PNG y en JPEG",
     "image": {
       "name": "quitar-fondo-antes.jpg",
       "src": "/media/guias/quitar-fondo-antes.jpg",
@@ -1377,7 +1377,7 @@
     "browser": "Chrome 154.0.8037.98",
     "os": "macOS 14.8.8",
     "build": "bc142c7",
-    "title": "una captura clara pasada a oscuro: qué cambia de verdad",
+    "title": "una captura clara pasada a oscuro y qué cambia de verdad",
     "image": {
       "name": "captura-ui-clara.png",
       "src": "/media/guias/pruebas/captura-ui-clara.png",

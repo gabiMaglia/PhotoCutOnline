@@ -56,39 +56,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Cómo pongo fondo blanco sin que se note el recorte?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Revisando el contorno —sobre todo el pelo— con zoom y repasándolo con los pinceles antes de exportar. Sobre blanco cualquier resto se nota más; el comparador antes/después ayuda a detectarlos."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿La primera foto de Mercado Libre tiene que ser con fondo blanco?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí. Mercado Libre recomienda con fuerza que la portada muestre el producto sobre fondo blanco puro, sin logos, textos ni marcos. Las fotos siguientes pueden ser en contexto o de uso, pero la portada es la que define cómo se ve tu publicación en los listados."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué tamaño conviene para las fotos de Mercado Libre?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Una imagen cuadrada y grande, del orden de 1200×1200 px, para que el zoom se vea nítido. El mínimo recomendado ronda los 500 px de lado, pero cuanto más grande subas, mejor se aprecia el detalle."
-          }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -292,20 +260,29 @@
         servidor ni queda almacenada al cerrar la pestaña.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Cómo pongo fondo blanco sin que se note el recorte?</h3>
-      <p>Revisando el contorno —sobre todo el pelo— con zoom y repasándolo con los pinceles antes de exportar. Sobre blanco cualquier resto se nota más; el comparador antes/después ayuda a detectarlos.</p>
-      <h3>¿La primera foto de Mercado Libre tiene que ser con fondo blanco?</h3>
-      <p>Sí. Mercado Libre recomienda con fuerza que la portada muestre el producto sobre fondo blanco puro, sin logos, textos ni marcos. Las fotos siguientes pueden ser en contexto o de uso, pero la portada es la que define cómo se ve tu publicación en los listados.</p>
-      <h3>¿Qué tamaño conviene para las fotos de Mercado Libre?</h3>
-      <p>Una imagen cuadrada y grande, del orden de 1200×1200 px, para que el zoom se vea nítido. El mínimo recomendado ronda los 500 px de lado, pero cuanto más grande subas, mejor se aprecia el detalle.</p>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: sobre blanco se nota más el borde</h3>
-        <p>Pusimos el recorte sobre <strong>blanco puro</strong> y ahí saltó algo útil: sobre transparente el fleco del borde casi no se veía, pero <strong>sobre blanco sí</strong>. Por eso conviene repasar el contorno con el <strong>Pincel quitar</strong> antes de exportar.</p>
-      <p>Para fondo blanco sólido exportamos en <strong>JPG</strong> (no PNG): pesa menos y no necesitás transparencia. El blanco quedó parejo, sin sombras ni halos.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: blanco puro en PNG y en JPEG</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA, Exportar → Color #ffffff.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato y apliqué «Recorte IA».</li>
+          <li>En Exportar elegí «Color» con #ffffff y descargué en PNG.</li>
+          <li>Cambié el formato a JPEG y descargué otra vez.</li>
+          <li>Medí en las dos salidas cuántos píxeles son exactamente blancos (255, 255, 255) y cuántos de los 4 recuadros de 40 × 40 px de las esquinas no lo son.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>PNG: 522 KB, 47,5 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.</li>
+          <li>JPEG: 58 KB (89 % menos), 46,4 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.</li>
+          <li>Recorte IA 4,0 s; la descarga del PNG tardó 0,1 s y la del JPEG 0,1 s.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/">Poner fondo blanco a mi foto →</a>
 
