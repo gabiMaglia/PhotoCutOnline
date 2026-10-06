@@ -88,6 +88,7 @@ export function useCutoutSession({ imageUrl, toast }) {
     (seed, additive) =>
       runOp(() => backend.wand(seed, wandTolerance, additive), additive ? null : "toast.wand", {
         method: "wand",
+        setCutMode: false, // seguir con la varita: el siguiente shift+clic quita otra zona
       }),
     [runOp, wandTolerance]
   );
