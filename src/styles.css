@@ -3190,3 +3190,84 @@ label.btn:has(.file-input-sr:focus-visible) {
 
 .an-actions { display: flex; gap: 6px; }
 .an-actions > * { flex: 1; }
+
+/* ------------------------- GROW-27: navbar móvil + táctil ------------------------- */
+/* En móvil la topbar pasa a dos filas: marca + acciones arriba, y las pestañas
+   en su propia fila de ancho completo. Las 6 siguen siendo alcanzables por
+   scroll horizontal; el fade (data-more-left/right, ver useScrollEdges) avisa
+   que hay más. Targets de 44 px (WCAG 2.5.5 / guía de Apple y Google). */
+@media (max-width: 760px) {
+  .topbar {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .brand {
+    order: 1;
+  }
+
+  .topbar-actions {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .tabs {
+    order: 3;
+    flex: 1 1 100%;
+    width: 100%;
+    scroll-snap-type: x proximity;
+  }
+
+  .tab {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 13.5px;
+    scroll-snap-align: center;
+  }
+
+  .tabs[data-more-right="true"] {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent);
+  }
+
+  .tabs[data-more-left="true"] {
+    -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(to left, #000 calc(100% - 36px), transparent);
+  }
+
+  .tabs[data-more-left="true"][data-more-right="true"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent);
+  }
+
+  .topbar-actions .btn,
+  .lang-select {
+    min-height: 44px;
+  }
+
+  .btn-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .btn-icon-guides {
+    width: auto;
+  }
+
+  .lang-select {
+    min-width: 44px;
+  }
+}
+
+/* Los atajos de teclado no sirven en pantallas táctiles: se ocultan los chips
+   de tecla, los <kbd> y el texto de ayuda de atajos. */
+@media (pointer: coarse) {
+  kbd,
+  .tool-key,
+  .rail-help {
+    display: none;
+  }
+}
