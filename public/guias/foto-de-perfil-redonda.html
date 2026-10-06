@@ -64,27 +64,23 @@
         {
           "@type": "Question",
           "name": "¿Por qué mi foto de perfil se ve cortada en algunas apps?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Porque cada app enmascara el círculo de forma un poco distinta y si el sujeto llega justo al borde del cuadrado, el círculo le come una porción. La solución es dejar margen: que la cara ocupe entre 60% y 75% del ancho del cuadrado, no el 100%." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué tamaño exacto necesito para WhatsApp, Instagram y LinkedIn?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No hace falta memorizar el tamaño exacto de cada red: un cuadrado de 512×512 px cubre cómodamente los mínimos de WhatsApp (~640×640, pero acepta y reduce imágenes mayores), Instagram (~320×320) y LinkedIn, que además reescalan automáticamente al subir." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo poner un fondo con foto, no solo de color?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí, el modo de exportación con imagen de fondo permite subir cualquier foto o textura y ajustar su opacidad. Para perfiles profesionales suele funcionar mejor un color sólido; para perfiles personales una foto de fondo le da más personalidad." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Porque cada app enmascara el círculo de forma un poco distinta y si el sujeto llega justo al borde del cuadrado, el círculo le come una porción. La solución es dejar margen: que la cara ocupe entre 60% y 75% del ancho del cuadrado, no el 100%."
+          }
         },
         {
           "@type": "Question",
           "name": "¿Se nota que edité la foto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Si el recorte quedó limpio (sin halos ni restos de fondo original) y el nuevo fondo es liso o coherente con la iluminación del sujeto, no se nota como una edición: se ve como una foto de estudio con fondo de color." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Si el recorte quedó limpio (sin halos ni restos de fondo original) y el nuevo fondo es liso o coherente con la iluminación del sujeto, no se nota como una edición: se ve como una foto de estudio con fondo de color."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -273,20 +269,6 @@
         porción. La solución es dejar margen: que la cara ocupe entre 60% y
         75% del ancho del cuadrado, no el 100%.
       </p>
-      <h3>¿Qué tamaño exacto necesito para WhatsApp, Instagram y LinkedIn?</h3>
-      <p>
-        No hace falta memorizar el tamaño exacto de cada red: un cuadrado de
-        512×512&nbsp;px cubre cómodamente los mínimos de WhatsApp (~640×640,
-        pero acepta y reduce imágenes mayores), Instagram (~320×320) y
-        LinkedIn, que además reescalan automáticamente al subir.
-      </p>
-      <h3>¿Puedo poner un fondo con foto, no solo de color?</h3>
-      <p>
-        Sí, el modo de exportación con imagen de fondo permite subir cualquier
-        foto o textura y ajustar su opacidad. Para perfiles profesionales
-        suele funcionar mejor un color sólido; para perfiles personales una
-        foto de fondo le da más personalidad.
-      </p>
       <h3>¿Se nota que edité la foto?</h3>
       <p>
         Si el recorte quedó limpio (sin halos ni restos de fondo original) y
@@ -295,12 +277,28 @@
         color.
       </p>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: dónde corta el círculo</h3>
-        <p>Generamos un <strong>avatar circular de 640&nbsp;px</strong> a partir del recorte. El detalle que descubrimos: el círculo recorta a la altura de los <strong>hombros</strong>, así que si la cara está muy arriba, la corona de la cabeza puede quedar pegada al borde. Dejá <strong>aire sobre la cabeza</strong> antes de exportar.</p>
-      <p>Con el sujeto ya recortado, el fondo del avatar puede ser transparente o un color; probamos un color de marca y quedó nítido para foto de perfil.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: qué queda dentro del círculo del preset «Avatar circular 512»</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA, preset «Avatar circular 512».</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato y apliqué «Recorte IA».</li>
+          <li>Elegí el preset «Avatar circular 512» con «Transparente» y PNG, y descargué.</li>
+          <li>Medí en el PNG la caja del sujeto, los píxeles transparentes y la alfa de las esquinas.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Salió un PNG de 512 × 512 px y 161 KB. Las cuatro esquinas tienen alfa 0, 0, 0, 0: el preset recorta en círculo de verdad, no solo centra.</li>
+          <li>72,0 % de la imagen quedó transparente: 21,5 % son las esquinas fuera del círculo y el resto es fondo recortado dentro de él.</li>
+          <li>La figura queda a 10,5 % del alto desde el borde de arriba hasta la coronilla y la figura empieza a 24,0 % del ancho contando desde el borde izquierdo (ocupa 51,8 % del ancho y 79,5 % del alto).</li>
+          <li>Recorte IA 4,0 s; la descarga del avatar 0,1 s.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El preset hace el recorte circular y la figura entra completa, pero no medí cómo cada red (WhatsApp, Instagram, Slack) enmascara el cuadrado: eso depende de la app. La coronilla quedó a un 10,5 % del borde de arriba con este retrato; con una cara más alta en el encuadre podría quedar más justa.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/">Crear mi foto de perfil →</a>
 

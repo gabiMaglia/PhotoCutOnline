@@ -56,35 +56,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Por qué la firma tiene que ser PNG y no JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Porque JPG no guarda transparencia: siempre rellena el fondo con un color, normalmente blanco. Si insertás una firma en JPG sobre un contrato, aparece un rectángulo blanco tapando el texto de abajo. El PNG conserva el fondo transparente, así que solo se ve el trazo." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Es seguro digitalizar mi firma acá?",
-          "acceptedAnswer": { "@type": "Answer", "text": "El procesamiento es 100% local: la foto de tu firma no se sube a ningún servidor ni queda almacenada al cerrar la pestaña. Aun así, tratá el archivo PNG resultante con el mismo cuidado que tu firma en papel y no lo compartas sin necesidad." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo consigo que el trazo quede limpio y sin manchas del papel?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Empieza por una buena foto: marcador oscuro sobre papel blanco liso, luz uniforme y sin sombras. Después, recortá con el recuadro la zona de la firma y usá los pinceles para borrar restos del papel alrededor del trazo antes de exportar en transparente." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Sirve para firmar un PDF o un contrato?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sirve para insertar la imagen de tu firma en un PDF, Word o Google Docs. Tené en cuenta que eso no es lo mismo que una firma digital con validez legal certificada: para trámites que exigen firma electrónica avanzada, necesitás una plataforma de firma homologada. Para la mayoría de documentos informales o internos, una firma PNG insertada alcanza." }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -246,44 +218,31 @@
         que tu firma en papel y no lo compartas sin necesidad.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Por qué la firma tiene que ser PNG y no JPG?</h3>
-      <p>
-        Porque JPG no guarda transparencia: siempre rellena el fondo con un
-        color, normalmente blanco. Si insertás una firma en JPG sobre un
-        contrato, aparece un rectángulo blanco tapando el texto de abajo. El PNG
-        conserva el fondo transparente, así que solo se ve el trazo.
-      </p>
-      <h3>¿Es seguro digitalizar mi firma acá?</h3>
-      <p>
-        El procesamiento es 100% local: la foto de tu firma no se sube a ningún
-        servidor ni queda almacenada al cerrar la pestaña. Aun así, tratá el PNG
-        resultante con el mismo cuidado que tu firma en papel.
-      </p>
-      <h3>¿Cómo consigo que el trazo quede limpio y sin manchas del papel?</h3>
-      <p>
-        Empezá por una buena foto: marcador oscuro sobre papel blanco liso, luz
-        uniforme y sin sombras. Después recortá con el recuadro la zona de la
-        firma y usá los pinceles para borrar restos del papel antes de exportar
-        en transparente.
-      </p>
-      <h3>¿Sirve para firmar un PDF o un contrato?</h3>
-      <p>
-        Sirve para insertar la imagen de tu firma en un PDF, Word o Google Docs.
-        No es lo mismo que una firma digital con validez legal certificada: para
-        trámites que exigen firma electrónica avanzada necesitás una plataforma
-        homologada. Para la mayoría de documentos informales o internos, una
-        firma PNG insertada alcanza.
-      </p>
 
       <a class="cta" href="/">Digitalizar mi firma →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: la tinta sobre transparente</h3>
-        <p>Escaneás o fotografiás tu firma sobre papel y querés solo la <strong>tinta</strong>, sin el blanco del fondo. La <strong>Varita mágica</strong> (o el recorte automático) quita el fondo claro del papel y deja los trazos sobre transparente. Subí un poco el <strong>suavizado de borde</strong> para que la línea no quede dentada.</p>
-      <p>Exportá en <strong>PNG transparente</strong> y ya podés insertar la firma en un PDF, un contrato o un documento sin el recuadro blanco. La imagen nunca sale de tu equipo.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: cuánta tinta sobrevive al quitar el papel</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/firma-antes.jpg"><code>firma-antes.jpg</code></a>, 820 × 410 px, 13,7 KB (imagen de ejemplo de esta web).</p>
+        <p><strong>Herramienta:</strong> Recorte → Varita mágica / Recorte automático.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué la foto de una firma sobre papel.</li>
+          <li>Con «Varita mágica» (tolerancia por defecto) hice un clic en el papel de la esquina superior izquierda y descargué el PNG.</li>
+          <li>En otra pestaña usé «Recorte automático» sobre el mismo archivo y descargué.</li>
+          <li>Conté los píxeles oscuros (luminancia &lt; 110 y opacos) en el original y en cada PNG.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>El original tiene 11416 píxeles de tinta (oscuros).</li>
+          <li>Varita mágica: 0,11 s, 92,6 % transparente, PNG de 92,4 KB y 100,0 % de la tinta conservada (11413 px).</li>
+          <li>Recorte automático: 20,01 s, 70,9 % transparente, 116,0 KB y 100,0 % de la tinta conservada (11416 px).</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El recorte automático tardó unos 20 s y dejó una mancha de papel claro alrededor de la firma (casi un 30 % de la imagen quedó opaco), mientras que la varita lo hizo en una fracción de segundo y limpio. La varita deja un halo claro y semitransparente alrededor del trazo. No pegué la firma sobre un PDF para ver cómo se ve ese halo.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>

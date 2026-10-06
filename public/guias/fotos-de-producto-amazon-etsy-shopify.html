@@ -60,28 +60,16 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Amazon rechaza fotos con fondo que no sea blanco puro?",
-          "acceptedAnswer": { "@type": "Answer", "text": "En la imagen principal (MAIN), sí: Amazon exige fondo blanco puro (RGB 255,255,255) y puede suprimir el listado si no lo cumple. En las imágenes secundarias del carrusel el fondo es libre y ahí sí podés mostrar el producto en contexto de uso." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo usar la misma foto recortada para varias plataformas?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí: recortás el fondo una sola vez y después exportás varias veces cambiando solo el preset de tamaño (Amazon, Etsy, Shopify, Instagram). El sujeto ya recortado se reencuadra automáticamente para cada medida." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué resolución mínima necesito para que el zoom de Amazon funcione?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Amazon activa el zoom con lupa cuando la imagen mide 1000 px o más de lado largo; para que el zoom se vea nítido conviene subir directamente a 2000×2000 px, que es además el tamaño recomendado por Amazon." }
-        },
-        {
-          "@type": "Question",
           "name": "¿Sirve para fotos tomadas con el celular en casa?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí, siempre que el producto esté bien iluminado y en foco. El recorte automático depende del contraste entre el producto y lo que haya detrás; una mesa lisa bajo luz natural suele dar mejores resultados que un fondo desordenado." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, siempre que el producto esté bien iluminado y en foco. El recorte automático depende del contraste entre el producto y lo que haya detrás; una mesa lisa bajo luz natural suele dar mejores resultados que un fondo desordenado."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -258,27 +246,6 @@
       </p>
 
       <h2>Preguntas frecuentes</h2>
-      <h3>¿Amazon rechaza fotos con fondo que no sea blanco puro?</h3>
-      <p>
-        En la imagen principal (MAIN), sí: Amazon exige fondo blanco puro
-        (RGB 255,255,255) y puede suprimir el listado si no lo cumple. En las
-        imágenes secundarias del carrusel el fondo es libre y ahí sí podés
-        mostrar el producto en contexto de uso.
-      </p>
-      <h3>¿Puedo usar la misma foto recortada para varias plataformas?</h3>
-      <p>
-        Sí: recortás el fondo una sola vez y después exportás varias veces
-        cambiando solo el preset de tamaño (Amazon, Etsy, Shopify, Instagram).
-        El sujeto ya recortado se reencuadra automáticamente para cada
-        medida.
-      </p>
-      <h3>¿Qué resolución mínima necesito para que el zoom de Amazon funcione?</h3>
-      <p>
-        Amazon activa el zoom con lupa cuando la imagen mide 1000&nbsp;px o
-        más de lado largo; para que el zoom se vea nítido conviene subir
-        directamente a 2000×2000&nbsp;px, que es además el tamaño recomendado
-        por Amazon.
-      </p>
       <h3>¿Sirve para fotos tomadas con el celular en casa?</h3>
       <p>
         Sí, siempre que el producto esté bien iluminado y en foco. El recorte
@@ -289,12 +256,28 @@
 
       <a class="cta" href="/">Preparar mis fotos de producto →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: un producto real sobre blanco puro</h3>
-        <p>Recortamos una foto de producto (una manzana) con el <strong>Recorte IA</strong>: aisló el objeto limpio, incluso el cabito, y lo pusimos sobre <strong>blanco puro (#ffffff)</strong> —el fondo que piden Amazon, Etsy y Shopify para la foto principal—. El resultado queda parejo, sin la sombra ni el gris del fondo original.</p>
-      <p>Detalle que confirmamos: exportá en <strong>JPG</strong> (no PNG) cuando el fondo es blanco sólido; pesa menos y es lo que esperan los marketplaces. Todo en el navegador, sin subir la imagen del producto.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La imagen de arriba es de esa sesión.</p>
+        <h3>Lo probamos: una taza sintética a 2000 × 2000 px sobre blanco</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/pruebas/producto-sintetico.jpg"><code>producto-sintetico.jpg</code></a>, 1200 × 1200 px, 29,1 KB (imagen sintética que dibujé con Pillow).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué una imagen dibujada por mí (una taza azul con sombra sobre un gris degradado) y apliqué «Recorte IA».</li>
+          <li>Elegí el preset «Amazon 2000×2000».</li>
+          <li>Con «Transparente» + PNG descargué para ver qué hacía el preset con la transparencia.</li>
+          <li>Elegí modo «Color» #ffffff, formato JPEG y descargué; medí la caja de los píxeles que no son casi blancos.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Recorte IA: 4,2 s sobre 1200 × 1200 px.</li>
+          <li>Con el preset salió un cuadro de 2000 × 2000 px. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.</li>
+          <li>JPEG sobre blanco: 90 KB, 40,3 % de píxeles #ffffff exactos, esquinas no blancas 0,0 %. El PNG pedido como «Transparente» con el preset pesó 586 KB y salió con 0,0 % de píxeles transparentes.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. Con el preset de Amazon el modo «Transparente» salió opaco, porque el preset trae su propio fondo blanco: no hay forma de pedir PNG transparente a 2000 × 2000 con ese preset.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>
