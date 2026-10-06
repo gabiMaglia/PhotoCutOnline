@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import { lastModified } from "./scripts/lib/lastmod.mjs";
+import { lastModified, publishedDate, isGuideSource } from "./scripts/lib/lastmod.mjs";
+import { injectGuideDates } from "./scripts/lib/dates.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -348,6 +349,16 @@ function seoArtifacts(site, env = {}) {
           if (!html.includes('name="twitter:card"')) tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
           html = html.replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
           changed = true;
+        }
+        // Fechas reales de las guías (Article JSON-LD + "Actualizado el" visible),
+        // desde los manifiestos commiteados: igual con git que en Vercel sin git.
+        if (isGuideSource(`public${r}`)) {
+          const lang = r.startsWith("/en/") ? "en" : r.startsWith("/pt/") ? "pt" : "es";
+          const next = injectGuideDates(html, { published: publishedDate(sourceFor(r)), modified: modOf(r), lang });
+          if (next !== html) {
+            html = next;
+            changed = true;
+          }
         }
         if (umami && !html.includes("data-website-id")) {
           html = html.replace("</head>", `    ${umami}\n  </head>`);
