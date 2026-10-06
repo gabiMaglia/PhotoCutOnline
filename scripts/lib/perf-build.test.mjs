@@ -2,17 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { ensureDist } from "./ensure-dist.mjs";
 
 // GROW-29: guardas de rendimiento sobre el build (dist/). Si no hay dist,
 // lo construimos una vez para no depender del orden en que se corre `npm test`.
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const dist = path.join(root, "dist");
-
-if (!fs.existsSync(path.join(dist, "index.html"))) {
-  execFileSync("npx", ["vite", "build"], { cwd: root, stdio: "ignore" });
-}
+const dist = ensureDist(root);
 
 function walk(dir, out = []) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

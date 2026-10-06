@@ -3,6 +3,26 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/guias/sticker-de-whatsapp.html", "destination": "/guias/stickers-de-whatsapp-y-telegram.html", "permanent": true },
+    { "source": "/guias/sticker-de-telegram.html", "destination": "/guias/stickers-de-whatsapp-y-telegram.html", "permanent": true },
+    { "source": "/en/guides/whatsapp-sticker.html", "destination": "/en/guides/whatsapp-and-telegram-stickers.html", "permanent": true },
+    { "source": "/en/guides/telegram-sticker.html", "destination": "/en/guides/whatsapp-and-telegram-stickers.html", "permanent": true },
+    { "source": "/pt/guias/figurinha-de-whatsapp.html", "destination": "/pt/guias/figurinhas-de-whatsapp-e-telegram.html", "permanent": true },
+    { "source": "/pt/guias/figurinha-de-telegram.html", "destination": "/pt/guias/figurinhas-de-whatsapp-e-telegram.html", "permanent": true },
+    { "source": "/guias/convertir-png-a-ico.html", "destination": "/guias/favicons-medidas-y-html.html", "permanent": true },
+    { "source": "/en/guides/convert-png-to-ico.html", "destination": "/en/guides/favicon-sizes-html.html", "permanent": true },
+    { "source": "/pt/guias/converter-png-para-ico.html", "destination": "/pt/guias/favicons-medidas-e-html.html", "permanent": true },
+    { "source": "/guias/fondo-blanco-para-mercadolibre.html", "destination": "/guias/poner-fondo-blanco-a-una-foto.html", "permanent": true },
+    { "source": "/en/guides/white-background-for-mercadolibre.html", "destination": "/en/guides/white-background-photo.html", "permanent": true },
+    { "source": "/pt/guias/fundo-branco-mercado-livre.html", "destination": "/pt/guias/fundo-branco-em-foto.html", "permanent": true },
+    { "source": "/guias/como-quitar-fondo-gratis.html", "destination": "/guias/como-quitar-el-fondo-de-una-imagen.html", "permanent": true },
+    { "source": "/guias/quitar-el-fondo-de-una-foto-en-el-celular.html", "destination": "/guias/como-quitar-el-fondo-de-una-imagen.html", "permanent": true },
+    { "source": "/en/guides/remove-background-free.html", "destination": "/en/guides/how-to-remove-image-background.html", "permanent": true },
+    { "source": "/en/guides/remove-background-on-phone.html", "destination": "/en/guides/how-to-remove-image-background.html", "permanent": true },
+    { "source": "/pt/guias/remover-fundo-gratis.html", "destination": "/pt/guias/como-remover-fundo-de-imagem.html", "permanent": true },
+    { "source": "/pt/guias/remover-fundo-no-celular.html", "destination": "/pt/guias/como-remover-fundo-de-imagem.html", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/editor", "destination": "/editor/index.html" }
   ],
