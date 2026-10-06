@@ -169,6 +169,17 @@ function capture() {
   return original;
 }
 
+// Solo una elección explícita del usuario (pc-lang) cambia el contenido
+// estático; la autodetección por navigator.language nunca lo toca, así el
+// rastreador (sin pc-lang) siempre ve el documento ES canónico.
+function hasExplicitLang() {
+  try {
+    return !!localStorage.getItem("pc-lang");
+  } catch {
+    return false;
+  }
+}
+
 /** Aplica el idioma al bloque SEO, pie, <title> y meta description. No-op fuera de /editor/. */
 export function localizeEditorDoc(lang) {
   if (typeof document === "undefined") return;
@@ -176,6 +187,7 @@ export function localizeEditorDoc(lang) {
   const foot = document.querySelector(".ed-foot");
   const desc = document.querySelector('meta[name="description"]');
   if (!doc && !foot) return;
+  if (!hasExplicitLang()) return;
   const src = capture();
   const tr = EDITOR_DOC[lang]; // undefined para "es" → restaurar
   document.title = tr?.title ?? src.title;

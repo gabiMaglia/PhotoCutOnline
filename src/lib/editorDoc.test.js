@@ -16,7 +16,11 @@ const ES_MARKERS =
   /(?<![\p{L}])(gratis|tu navegador|Preguntas frecuentes|Qué|podés|Cómo|nunca se suben|Acerca|Contacto|Privacidad|Términos|Guías|Quitar el fondo|Arrastrá|Cargá|Pulsá|Elegí|Mirá|ningún|equipo|cuenta)(?![\p{L}])/iu;
 
 describe("localizeEditorDoc (GROW-27 a)", () => {
-  beforeEach(fixture);
+  beforeEach(() => {
+    fixture();
+    localStorage.setItem("pc-lang", "en"); // elección explícita (el valor lo decide el argumento)
+  });
+  afterEach(() => localStorage.clear());
 
   it.each(["en", "pt"])("en %s no queda ninguna cadena en español visible", (lang) => {
     localizeEditorDoc(lang);
@@ -47,6 +51,20 @@ describe("localizeEditorDoc (GROW-27 a)", () => {
     expect(document.querySelector(".ed-doc").innerHTML).toBe(ES_DOC);
     expect(document.querySelector(".ed-foot").innerHTML).toBe(ES_FOOT);
     expect(document.querySelector('meta[name="description"]').content).toBe("Editor de fotos gratis en español");
+  });
+
+  it("sin pc-lang y navigator.language=en-US el bloque ES queda intacto (autodetección no cuenta)", () => {
+    localStorage.clear();
+    const nav = jest.spyOn(window.navigator, "language", "get").mockReturnValue("en-US");
+    try {
+      localizeEditorDoc("en");
+      expect(document.title).toBe(ES_TITLE);
+      expect(document.querySelector(".ed-doc").innerHTML).toBe(ES_DOC);
+      expect(document.querySelector(".ed-foot").innerHTML).toBe(ES_FOOT);
+      expect(document.querySelector('meta[name="description"]').content).toBe("Editor de fotos gratis en español");
+    } finally {
+      nav.mockRestore();
+    }
   });
 
   it("no rompe si la página no tiene el bloque (otras páginas)", () => {
