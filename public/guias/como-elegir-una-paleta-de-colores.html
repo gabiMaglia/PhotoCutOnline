@@ -60,27 +60,15 @@
         {
           "@type": "Question",
           "name": "¿Cuántos colores debería tener una paleta?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Como regla práctica: un color primario, uno o dos secundarios/acento, un neutro (grises para fondos y texto) y unos colores de estado (éxito, advertencia, error). Menos es más: demasiados colores hacen que un diseño se vea inconsistente. Con 3 a 5 colores base y sus variantes alcanza para casi todo." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo saco una paleta de una imagen?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Con un extractor de paleta: subís la imagen y la herramienta detecta los colores dominantes y te da su código HEX. Es la forma más rápida de derivar una paleta a partir de una foto, una obra o una marca que te inspira." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué es una escala de color (50 a 900)?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Es una serie de variantes de un mismo color, del más claro (50) al más oscuro (900), conservando el tono. Sirve para tener versiones para fondos suaves, bordes, estados hover y texto, todo derivado de un único color base. Es el estándar en sistemas de diseño como Material o Tailwind." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿La paleta funciona para personas con daltonismo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Conviene revisarlo: si tu diseño transmite información solo con el color (por ejemplo rojo/verde), parte de tus usuarios no la va a distinguir. Simulá cómo se ve con daltonismo y asegurate de que también haya contraste suficiente entre texto y fondo." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Como regla práctica: un color primario, uno o dos secundarios/acento, un neutro (grises para fondos y texto) y unos colores de estado (éxito, advertencia, error). Menos es más: demasiados colores hacen que un diseño se vea inconsistente. Con 3 a 5 colores base y sus variantes alcanza para casi todo."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -219,7 +207,7 @@
 
       <h2>Reglas rápidas de armonía</h2>
       <ul>
-        <li><strong>60-30-10:</strong> ~60% de un color dominante (casi siempre el neutro), 30% del secundario y 10% del acento. Evita que todo compita.</li>
+        <li><strong>60-30-10:</strong> ~60% de un color dominante (casi siempre el neutro), 30% del secundario y 10% del acento. Evitá que todo compita.</li>
         <li><strong>Contraste para el texto:</strong> el texto tiene que leerse. Apuntá a un contraste alto entre texto y fondo (revisalo con un verificador de contraste).</li>
         <li><strong>Un solo acento fuerte:</strong> si todo grita, nada resalta. Reservá el color más saturado para lo importante.</li>
       </ul>
@@ -237,21 +225,31 @@
       <h2>Preguntas frecuentes</h2>
       <h3>¿Cuántos colores debería tener una paleta?</h3>
       <p>Un primario, uno o dos secundarios/acento, un neutro (grises) y colores de estado. Con 3 a 5 colores base y sus variantes alcanza para casi todo.</p>
-      <h3>¿Cómo saco una paleta de una imagen?</h3>
-      <p>Con un extractor de paleta: subís la imagen y obtenés los colores dominantes con su HEX.</p>
-      <h3>¿Qué es una escala de color (50 a 900)?</h3>
-      <p>Variantes de un mismo color, del más claro (50) al más oscuro (900), conservando el tono. El estándar en sistemas de diseño.</p>
-      <h3>¿La paleta funciona para personas con daltonismo?</h3>
-      <p>Conviene revisarlo: si la información depende solo del color, parte de tus usuarios no la distingue. Simulá el daltonismo y cuidá el contraste.</p>
 
       <a class="cta" href="/herramientas/paleta-de-colores.html">Extraer una paleta de una imagen →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: de una foto a una paleta usable</h3>
-        <p>Cargamos una foto y Color Studio extrajo una <strong>paleta de 6 colores</strong> (ajustable). El cuentagotas muestra el <strong>HEX exacto</strong> al pasar el mouse por la imagen, y con un clic lo fijás y copiás.</p>
-      <p>Lo práctico para diseño y web: además de copiar los HEX, exporta la paleta como <strong>variables CSS</strong> o <strong>JSON</strong>, lista para pegar en un proyecto. Sin registro y sin subir la imagen.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La captura de arriba es de esa sesión.</p>
+        <h3>Lo probamos: de una foto a 6 HEX, a variables CSS, y el cuentagotas contra colores conocidos</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Color Studio → Paleta.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato con «Abrir foto» y fui a «Color Studio» (paleta de 6 colores por defecto).</li>
+          <li>Moví «Cantidad de colores» a 3, a 12 y de vuelta a 6; apreté «Copiar variables CSS» y «Copiar JSON» y leí el portapapeles.</li>
+          <li>Cargué captura-ui-clara.png (1280 × 720 px, 41 KB), una captura dibujada por mí con colores planos conocidos, y fijé con clic el cuentagotas sobre cuatro zonas.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Al entrar a Color Studio la paleta de 6 apareció en 0,47 s. Cambiar a 3 colores tardó 170 ms y a 12, 183 ms.</li>
+          <li>Paleta de 6: #0d121f, #34212b, #66423a, #a95444, #807c87, #d3b5a8. Con 3: #211925, #874b3f, #aa9898.</li>
+          <li>«Copiar variables CSS» dejó 8 líneas en el portapapeles (primera: «:root {»). «Copiar JSON» es un JSON válido.</li>
+          <li>Cuentagotas sobre colores planos conocidos: 4 de 4 HEX coincidieron exactamente (#F5F7FA → #f5f7fa; #2563EB → #2563eb; #DC2626 → #dc2626; #16A34A → #16a34a).</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Las paletas de 3 y de 6 colores no son una subparte de la otra (el primer color de 3 no está entre los de 6): cambiar la cantidad vuelve a calcular y puede cambiar colores. El cuentagotas lo comprobé solo sobre colores planos; en una foto con ruido depende del píxel exacto donde cae el clic.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías y herramientas relacionadas</h2>

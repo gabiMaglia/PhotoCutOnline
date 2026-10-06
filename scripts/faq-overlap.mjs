@@ -2,12 +2,15 @@
 //
 //   node scripts/faq-overlap.mjs                 # tabla de las guías ES
 //   node scripts/faq-overlap.mjs --questions     # además, por pregunta
+//   node scripts/faq-overlap.mjs --ref <commit>  # mide el HTML como estaba en ese commit
+//   node scripts/faq-overlap.mjs --json          # salida JSON (para armar la tabla antes/después)
 //
 // Métricas por página:
 //   faq%     palabras de la FAQ / palabras de la página
 //   dup%     5-gramas de la FAQ que también están en el cuerpo / 5-gramas de la FAQ
 //   shared%  5-gramas únicos compartidos FAQ↔cuerpo / 5-gramas únicos de la página (objetivo ≤ 10 %)
 import { readFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,14 +30,14 @@ const grams = (w, n = 5) => {
 export function split(html) {
   const start = html.indexOf("<h1>");
   const end = html.indexOf('<section aria-labelledby="related');
-  let main = html.slice(start, end > 0 ? end : undefined);
-  main = main.replace(/<!-- pruebas:start -->[\s\S]*?<!-- pruebas:end -->/, "").replace(/<div class="tried">[\s\S]*?<\/div>/, "");
+  const main = html.slice(start, end > 0 ? end : undefined);
   const fi = main.search(/<h2[^>]*>\s*Preguntas frecuentes\s*<\/h2>/);
   if (fi < 0) return { body: main, faq: "", questions: [] };
   let faq = main.slice(fi);
-  const cta = faq.search(/<a class="cta"/);
-  if (cta > 0) faq = faq.slice(0, cta);
-  const body = main.slice(0, fi) + (cta > 0 ? main.slice(fi).slice(cta) : "");
+  // la FAQ termina en el CTA o en el bloque «Lo probamos»; lo que sigue es cuerpo de la página
+  const stop = faq.search(/<a class="cta"|<!-- pruebas:start -->|<div class="tried">/);
+  if (stop > 0) faq = faq.slice(0, stop);
+  const body = main.slice(0, fi) + (stop > 0 ? main.slice(fi).slice(stop) : "");
   const questions = [...faq.matchAll(/<h3>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/g)].map((m) => ({
     q: strip(m[1]).replace(/\s+/g, " ").trim(),
     a: strip(m[2]).replace(/\s+/g, " ").trim(),
@@ -64,12 +67,23 @@ export function measure(html) {
   };
 }
 
+// HTML de una guía tal como está en el árbol de trabajo o en un commit anterior (--ref)
+export const read = (f, ref) =>
+  ref ? execFileSync("git", ["show", `${ref}:public/guias/${f}`], { cwd: ROOT, maxBuffer: 1 << 26 }).toString() : readFileSync(path.join(DIR, f), "utf8");
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
   const showQ = process.argv.includes("--questions");
-  console.log("slug".padEnd(48), "palabras", "faq%", "dup%", "shared%", "preguntas");
-  for (const f of readdirSync(DIR).filter((x) => x.endsWith(".html") && x !== "index.html").sort()) {
-    const m = measure(readFileSync(path.join(DIR, f), "utf8"));
-    console.log(f.replace(".html", "").padEnd(48), String(m.pageWords).padStart(8), String(m.faqPct).padStart(5), String(m.dupPct).padStart(5), String(m.sharedPct).padStart(7), String(m.questions.length).padStart(9));
-    if (showQ) for (const q of m.questions) console.log("     ", String(q.dupPct).padStart(5) + "%", String(q.words).padStart(3) + "w", q.q);
+  const asJson = process.argv.includes("--json");
+  const ri = process.argv.indexOf("--ref");
+  const ref = ri > 0 ? process.argv[ri + 1] : null;
+  const files = readdirSync(DIR).filter((x) => x.endsWith(".html") && x !== "index.html").sort();
+  const rows = Object.fromEntries(files.map((f) => [f.replace(".html", ""), measure(read(f, ref))]));
+  if (asJson) console.log(JSON.stringify(rows, null, 1));
+  else {
+    console.log("slug".padEnd(48), "palabras", "faq%", "dup%", "shared%", "preguntas");
+    for (const [slug, m] of Object.entries(rows)) {
+      console.log(slug.padEnd(48), String(m.pageWords).padStart(8), String(m.faqPct).padStart(5), String(m.dupPct).padStart(5), String(m.sharedPct).padStart(7), String(m.questions.length).padStart(9));
+      if (showQ) for (const q of m.questions) console.log("     ", String(q.dupPct).padStart(5) + "%", String(q.words).padStart(3) + "w", q.q);
+    }
   }
 }

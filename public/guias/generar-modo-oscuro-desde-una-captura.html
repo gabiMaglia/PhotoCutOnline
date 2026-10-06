@@ -6,7 +6,7 @@
     <title>Generar el modo oscuro (o claro) de una captura de pantalla, gratis — PhotoCut Studio</title>
     <meta
       name="description"
-      content="Convertí una captura de una app o web a su versión en modo oscuro (o claro) invirtiendo la luminosidad y conservando los colores, y recoloreá con un esquema CSS o Tailwind de referencia. Gratis y en tu navegador."
+      content="Convertí una captura de una app o web a su versión en modo oscuro (o claro) invirtiendo la luminosidad y conservando los colores, y copiá el esquema de color como CSS o Tailwind. Gratis y en tu navegador."
     />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="canonical" href="https://www.photocutapp.com/guias/generar-modo-oscuro-desde-una-captura.html" />
@@ -14,13 +14,13 @@
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.photocutapp.com/guias/generar-modo-oscuro-desde-una-captura.html" />
     <meta property="og:title" content="Generar el modo oscuro (o claro) de una captura de pantalla, gratis — PhotoCut Studio" />
-    <meta property="og:description" content="Convertí una captura de una app o web a modo oscuro (o claro) y recoloreá con un esquema CSS/Tailwind de referencia. Gratis y en tu navegador." />
+    <meta property="og:description" content="Convertí una captura de una app o web a modo oscuro (o claro) y copiá el esquema de color como CSS o Tailwind. Gratis y en tu navegador." />
     <meta property="og:image" content="https://www.photocutapp.com/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Generar el modo oscuro (o claro) de una captura de pantalla, gratis — PhotoCut Studio" />
-    <meta name="twitter:description" content="Convertí una captura a modo oscuro (o claro) y recoloreá con un esquema de referencia. Gratis y en tu navegador." />
+    <meta name="twitter:description" content="Convertí una captura a modo oscuro (o claro) y copiá el esquema de color. Gratis y en tu navegador." />
     <meta name="twitter:image" content="https://www.photocutapp.com/og.png" />
 
     <link rel="stylesheet" href="/estaticas.css" />
@@ -30,7 +30,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "Generar el modo oscuro (o claro) de una captura de pantalla, gratis",
-      "description": "Convertí una captura de una app o web a su versión en modo oscuro (o claro) invirtiendo la luminosidad y conservando los colores, y recoloreá con un esquema CSS o Tailwind de referencia.",
+      "description": "Convertí una captura de una app o web a su versión en modo oscuro (o claro) invirtiendo la luminosidad y conservando los colores, y copiá el esquema de color como CSS o Tailwind.",
       "image": "https://www.photocutapp.com/media/guias/herramienta-modo-oscuro.jpg",
       "inLanguage": "es",
       "author": { "@type": "Person", "name": "Gabriel Maglia", "url": "https://www.photocutapp.com/autor.html" },
@@ -51,35 +51,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Convierte una imagen a modo oscuro de verdad?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Invierte la luminosidad de cada píxel conservando el tono y la saturación, que es la base del modo oscuro: los fondos claros se oscurecen, el texto oscuro se aclara y los colores (azules, verdes) se mantienen reconocibles. Funciona muy bien con capturas de interfaces planas; con fotografías da un resultado artístico, no un 'modo oscuro' real." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Sirve para diseñar el dark mode de mi app o web?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sirve como maqueta rápida para ver cómo se vería tu interfaz en oscuro a partir de una captura, sin tocar el código. No reemplaza implementar el tema en CSS, pero es ideal para explorar la idea, mostrar un mockup o decidir la paleta antes de programarlo." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo usar mi propio esquema de colores como referencia?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí. En el modo Recolorear podés pegar un CSS, unas variables :root, un config de Tailwind o cualquier texto con colores (HEX, rgb, hsl). La herramienta extrae esos colores y remapea la imagen según la luminosidad de cada píxel, aplicando tu esquema." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Se sube mi captura a un servidor?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Toda la transformación ocurre en tu navegador. La captura no se sube a ningún servidor ni queda almacenada al cerrar la pestaña." }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -165,7 +137,7 @@
         alcanza. Color Studio puede invertir la luminosidad de la imagen
         conservando los colores —la base real del dark mode— y devolverte la
         versión oscura (o clara) al instante, con un antes/después para comparar.
-        Y si tenés un esquema de colores propio, podés aplicarlo. Todo gratis y en
+        Todo gratis y en
         tu navegador: la captura no se sube a ningún lado.
       </p>
 
@@ -180,7 +152,7 @@
         los azules naranjas y todo se ve mal. El modo Tema invierte solo la
         <strong>luminosidad</strong> de cada píxel y mantiene el <strong>tono</strong>
         y la <strong>saturación</strong>: por eso un fondo blanco se vuelve oscuro,
-        el texto negro se aclara, y un botón azul sigue siendo azul (más claro).
+        el texto negro se aclara, y un botón azul sigue siendo azul (en mi prueba, #2563eb pasó a #0744cb: más oscuro, no más claro).
         Es exactamente lo que hace un buen tema oscuro.
       </p>
 
@@ -197,15 +169,13 @@
         fuerza el cambio siempre.
       </p>
 
-      <h2>Aplicar tu propio esquema de colores</h2>
+      <h2>El esquema de color del proyecto</h2>
       <p>
-        El modo <strong>Recolorear</strong> va un paso más allá: pegás un
-        <strong>CSS</strong>, unas variables <code>:root</code>, un config de
-        <strong>Tailwind</strong> o cualquier texto con colores (HEX, <code>rgb()</code>,
-        <code>hsl()</code>), y la herramienta extrae esa paleta y
-        <strong>remapea la imagen</strong> según la luminosidad de cada píxel (un
-        «gradient map»). Sirve para ver tu captura con la identidad de tu marca, o
-        para explorar variantes de tema a partir de un esquema existente.
+        Debajo del antes/después, Color Studio arma el
+        <strong>esquema de color derivado</strong> de la imagen (escalas 50–900
+        por rol) y lo deja listo para copiar como <strong>CSS</strong> o
+        <strong>Tailwind</strong>. Sirve para pasar del mockup a variables
+        reales sin sacar los colores a mano de la captura.
       </p>
 
       <h2>Para qué sirve (y para qué no)</h2>
@@ -224,40 +194,37 @@
         gracia.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Convierte una imagen a modo oscuro de verdad?</h3>
-      <p>
-        Invierte la luminosidad conservando tono y saturación —la base del modo
-        oscuro—: los fondos claros se oscurecen, el texto se aclara y los colores
-        se mantienen. Funciona muy bien con capturas de UI; con fotos da un
-        resultado artístico.
-      </p>
-      <h3>¿Sirve para diseñar el dark mode de mi app o web?</h3>
-      <p>
-        Como maqueta rápida a partir de una captura, sin tocar código. No
-        reemplaza implementar el tema en CSS, pero es ideal para explorar la idea o
-        mostrar un mockup.
-      </p>
-      <h3>¿Puedo usar mi propio esquema de colores como referencia?</h3>
-      <p>
-        Sí, en el modo Recolorear: pegás CSS, variables, config de Tailwind o
-        cualquier texto con colores, y la herramienta remapea la imagen con ese
-        esquema.
-      </p>
-      <h3>¿Se sube mi captura a un servidor?</h3>
-      <p>
-        No. Toda la transformación ocurre en tu navegador; la captura no se sube ni
-        queda almacenada.
-      </p>
 
       <a class="cta" href="/editor/?tab=colors">Generar el modo oscuro de mi captura →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: de una captura clara a un tema oscuro</h3>
-        <p>Cargamos una captura y el modo <strong>Oscuro</strong> invirtió la luminosidad <strong>conservando los colores</strong> (con opción de mantener los acentos), mostrando antes/después lado a lado. Con capturas de UI da un punto de partida realista; con fotos comunes, un efecto artístico.</p>
-      <p>Lo más útil para desarrollo: además de la imagen, genera el <strong>esquema de color derivado</strong> (escalas 50–900) listo para <strong>copiar como CSS o Tailwind</strong> y pegar en el proyecto. Todo local, sin subir la captura.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La captura de arriba es de esa sesión.</p>
+        <h3>Lo probamos: una captura clara pasada a oscuro y qué cambia de verdad</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/pruebas/captura-ui-clara.png"><code>captura-ui-clara.png</code></a>, 1280 × 720 px, 41 KB (imagen sintética que dibujé con Pillow).</p>
+        <p><strong>Herramienta:</strong> Color Studio → Tema → «→ Oscuro».</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué captura-ui-clara.png (1280 × 720 px, 41 KB), una captura de una app en modo claro dibujada por mí.</li>
+          <li>En Color Studio → «Tema» dejé «→ Oscuro» con intensidad 100 y descargué la imagen.</li>
+          <li>Marqué «Mantener colores de acento», descargué otra vez y leí cinco píxeles de referencia en las tres versiones.</li>
+          <li>Apreté «Copiar CSS» del esquema de color y leí el portapapeles.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>La luminancia media pasó de 245 a 4 (de 0 a 255). El modo oscuro se dibujó en 14 ms y la descarga tardó 78 ms.</li>
+          <li>fondo de página: #f5f7fa → #000000 (con acentos: #000000).</li>
+          <li>fondo de tarjeta: #ffffff → #000000 (con acentos: #000000).</li>
+          <li>botón azul: #2563eb → #0744cb (con acentos: #2563eb).</li>
+          <li>sello rojo: #dc2626 → #a40000 (con acentos: #dc2626).</li>
+          <li>sello verde: #16a34a → #005600 (con acentos: #16a34a).</li>
+          <li>El contraste entre el fondo de página y el de tarjeta pasó de 1,07:1 a 1,00:1.</li>
+          <li>Con la intensidad en 70 el fondo de página queda #2f3033 y la tarjeta #2e2e2e: contraste 1,03:1.</li>
+          <li>El esquema CSS copiado tiene 87 líneas.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Con la intensidad en 100 el fondo de página y el de las tarjetas pasaron los dos a #000000: el contraste entre ellos cayó a 1,00:1 y las tarjetas dejan de distinguirse. Con la intensidad en 70 sigue siendo casi invisible. Los acentos se oscurecen si no marco «Mantener colores de acento». Es una captura sintética, simple: no probé una captura real con fotos.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías y herramientas relacionadas</h2>
