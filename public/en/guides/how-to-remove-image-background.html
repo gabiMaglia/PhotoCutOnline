@@ -33,7 +33,7 @@
       "@type": "FAQPage",
       "mainEntity": [
         { "@type": "Question", "name": "Which format should I export to keep transparency?", "acceptedAnswer": { "@type": "Answer", "text": "PNG or WebP. Both keep the alpha channel; WebP produces much smaller files for the web. JPG does not support transparency, so use it only if you apply a color or image background." } },
-        { "@type": "Question", "name": "What if the AI cutout gets the edge wrong?", "acceptedAnswer": { "@type": "Answer", "text": "Fall back to the interactive box (GrabCut): draw a rectangle around the subject and the algorithm decides the foreground by color and contrast. Then refine with the keep/remove brushes at zoom." } },
+        { "@type": "Question", "name": "What if the AI cutout gets the edge wrong?", "acceptedAnswer": { "@type": "Answer", "text": "Switch to the Magic wand: click the background and it removes that whole contiguous area of the same color (shift-click adds more areas). Then refine with the keep/remove brushes at zoom." } },
         { "@type": "Question", "name": "Is my image uploaded to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. The whole cutout runs in your browser with WebAssembly and a local AI model. The file never leaves your device — there's no server to hack or retention policy to read." } },
         { "@type": "Question", "name": "Does it work on hair and fine detail?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, if you start from a high-resolution image and refine the hair with a small brush and zoom. A moderate edge feather of 1–3 px keeps the outline natural." } }
       ]
@@ -153,14 +153,16 @@
         the model downloads once, runs in your browser with WebAssembly and works
         even offline after the first visit.
       </p>
-      <h3>2. Interactive cutout: you mark, the algorithm decides</h3>
+      <h3>2. Magic wand: one click on the background</h3>
       <p>
-        When the AI gets confused — translucent products, very busy backgrounds,
-        several subjects — the classic <strong>GrabCut</strong> algorithm is still
-        unbeatable: you draw a rectangle around the subject and the algorithm
-        estimates which pixels belong to the foreground by analyzing color and
-        contrast. It's deterministic and predictable: if the result isn't right,
-        you adjust the rectangle and you're done.
+        When the AI gets confused and the background is plain or a uniform color,
+        the <strong>Magic wand</strong> selects by color: you click the
+        background and that whole contiguous area of the same color is removed.
+        <strong>Shift-click</strong> adds other areas to remove, and the tolerance
+        sets how much color variation is accepted. It's deterministic and
+        predictable: if the result isn't right, you undo and adjust the
+        tolerance. If you only need to narrow down the area, "Crop area" makes a
+        rectangular crop (it doesn't separate the background).
       </p>
       <h3>3. Refine brushes: fine control</h3>
       <p>
@@ -174,7 +176,7 @@
       <ol>
         <li>Open the photo (or paste it with <code>Ctrl/Cmd+V</code> from the clipboard).</li>
         <li>Try the <strong>AI Cutout</strong> first. On most photos it's already good.</li>
-        <li>If it fails, draw a <strong>box</strong> tight around the subject.</li>
+        <li>If it fails, or the background is plain, use the <strong>Magic wand</strong>: one click on the background removes it (shift-click adds areas).</li>
         <li>Turn on the <strong>before/after compare</strong> to spot leftovers.</li>
         <li>Refine the edges with the keep/remove brushes (zoom with the wheel).</li>
         <li>Adjust the <strong>edge feather</strong> (1–3&nbsp;px is usually natural).</li>
@@ -231,7 +233,7 @@
       <h3>Which format should I export to keep transparency?</h3>
       <p>PNG or WebP. Both keep the alpha channel; WebP produces much smaller files for the web. JPG does not support transparency, so use it only if you apply a color or image background.</p>
       <h3>What if the AI cutout gets the edge wrong?</h3>
-      <p>Fall back to the interactive box (GrabCut): draw a rectangle around the subject and the algorithm decides the foreground by color and contrast. Then refine with the keep/remove brushes at zoom.</p>
+      <p>Switch to the Magic wand: click the background and it removes that whole contiguous area of the same color (shift-click adds more areas). Then refine with the keep/remove brushes at zoom.</p>
       <h3>Is my image uploaded to a server?</h3>
       <p>No. The whole cutout runs in your browser with WebAssembly and a local AI model. The file never leaves your device — there's no server to hack or retention policy to read.</p>
       <h3>Does it work on hair and fine detail?</h3>
