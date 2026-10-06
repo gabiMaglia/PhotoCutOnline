@@ -67,19 +67,49 @@ describe("variantes táctiles (GROW-27 D3)", () => {
   it.each(["es", "en", "pt"])("en %s con pointer:coarse no se mencionan ⌘V ni atajos de letra", (lang) => {
     setLang(lang);
     coarse(true);
-    for (const k of KEYS) expect(t(k)).not.toMatch(/⌘|\((A|P)\)/);
+    for (const k of KEYS) expect(t(k)).not.toMatch(/⌘|\((A|I|P)\)/);
   });
 
   it("con puntero fino se conserva el texto con atajos", () => {
     setLang("es");
     coarse(false);
     expect(t("empty.drag")).toContain("⌘V");
-    expect(t("ob.2.body")).toContain("(A)");
+    expect(t("ob.2.body")).toContain("(I)");
   });
 
   it("sin matchMedia (SSR/tests) usa el texto normal", () => {
     setLang("es");
     window.matchMedia = undefined;
     expect(t("empty.drag")).toContain("⌘V");
+  });
+});
+
+describe("onboarding honesto (GROW-28)", () => {
+  afterAll(() => setLang("es"));
+
+  it.each(["es", "en", "pt"])("%s: el paso 2 es Recorte IA y avisa del modelo de ~7 MB", (lang) => {
+    setLang(lang);
+    expect(t("ob.2.title")).toMatch(/IA|AI/);
+    for (const k of ["ob.2.body", "ob.2.body.touch"]) expect(t(k)).toContain("~7 MB");
+  });
+
+  it.each(["es", "en", "pt"])("%s: el onboarding no vende Recuadro ni Varita como paso", (lang) => {
+    setLang(lang);
+    const all = ["1", "2", "3"]
+      .flatMap((n) => [`ob.${n}.title`, `ob.${n}.body`, `ob.${n}.body.touch`])
+      .map((k) => t(k))
+      .join(" ");
+    expect(all).not.toMatch(/recuadro|varita|box|wand|retângulo|varinha/i);
+  });
+
+  it.each(["es", "en", "pt"])("%s: Recuadro pasa a «Recortar área»/«Crop area» y aclara que no quita el fondo", (lang) => {
+    setLang(lang);
+    expect(t("tool.rect")).toMatch(/Recortar área|Crop area/);
+    expect(t("tool.rect.hint")).toMatch(/no quita|not remove|não remove/);
+  });
+
+  it("el paso 3 habla de pinceles", () => {
+    setLang("es");
+    expect(t("ob.3.title")).toContain("pinceles");
   });
 });

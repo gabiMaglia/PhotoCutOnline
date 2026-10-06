@@ -64,16 +64,16 @@ async function main() {
   assert(document.documentElement.lang === "pt", "pt: html[lang] actualizado");
   assert(localStorage.getItem("pc-lang") === "pt", "pt: persistido en localStorage");
   assert(
-    [...document.querySelectorAll(".tool")].some((b) => /Retângulo/.test(b.textContent)),
-    "pt: herramienta «Retângulo» en vivo"
+    [...document.querySelectorAll(".tool")].some((b) => /Recortar área/.test(b.textContent)),
+    "pt: herramienta «Recortar área» en vivo"
   );
 
   // 4. cambio a ES
   switchLang("es");
   await tick();
   assert(
-    [...document.querySelectorAll(".tool")].some((b) => /Recuadro/.test(b.textContent)),
-    "es: herramienta «Recuadro» en vivo"
+    [...document.querySelectorAll(".tool")].some((b) => /Recortar área/.test(b.textContent)),
+    "es: herramienta «Recortar área» en vivo"
   );
   assert(
     [...document.querySelectorAll(".tool")].some((b) => /Pincel quitar/.test(b.textContent)),

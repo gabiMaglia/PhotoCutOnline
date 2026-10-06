@@ -3,7 +3,7 @@ import { t } from "../../lib/i18n.js";
 import { backend } from "../../lib/backend.js";
 
 // Lienzo interactivo. Modos de entrada:
-//  - "rect": arrastrar un recuadro alrededor del sujeto (marching ants)
+//  - "rect": arrastrar un recuadro para recortar esa área (no segmenta; marching ants)
 //  - "fg":   pincel mantener · "bg": pincel quitar
 //
 // Vista (N3): zoom hacia el cursor con rueda/pinch (1×–8× sobre el encaje),
@@ -316,7 +316,7 @@ export default function CanvasEditor({
 
     if (busy || compare) return;
 
-    // varita: un clic selecciona (shift = sumar a la selección); no arrastra
+    // varita: un clic quita la zona del mismo color (shift = sumar otra zona a quitar); no arrastra
     if (mode === "wand") {
       onWand?.(toImageCoords(e), e.shiftKey);
       return;

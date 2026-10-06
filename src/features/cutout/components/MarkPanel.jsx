@@ -3,7 +3,7 @@ import { t } from "../../../lib/i18n.js";
 import Button from "../../../components/ui/Button.jsx";
 import Slider from "../../../components/ui/Slider.jsx";
 
-// Grupo "Marcar": IA / automático / recuadro / pinceles + tamaño de pincel,
+// Grupo "Marcar": IA / automático / recortar área / varita / pinceles + tamaño de pincel,
 // suavizado y deshacer/rehacer. Presentacional: recibe estado y callbacks.
 export default function MarkPanel({
   imageUrl,
@@ -39,11 +39,21 @@ export default function MarkPanel({
         </Button>
       )}
 
-      <ToolButton active={mode === "rect"} onClick={() => setMode("rect")} disabled={!imageUrl}>
+      <ToolButton
+        active={mode === "rect"}
+        onClick={() => setMode("rect")}
+        disabled={!imageUrl}
+        title={t("tool.rect.hint")}
+      >
         <span className="tool-key">1</span> {t("tool.rect")}
       </ToolButton>
       {backend.features.wand && (
-        <ToolButton active={mode === "wand"} onClick={() => setMode("wand")} disabled={!imageUrl}>
+        <ToolButton
+          active={mode === "wand"}
+          onClick={() => setMode("wand")}
+          disabled={!imageUrl}
+          title={t("tool.wand.hint")}
+        >
           <span className="tool-key">W</span> {t("tool.wand")}
         </ToolButton>
       )}
