@@ -14,7 +14,19 @@
 | GROW-32 | **Fechas reales y /novedades** | 📋 | Article JSON-LD con `datePublished` (primer commit del archivo) y `dateModified` (manifiesto lastmod) en las 60 guías; fecha visible "Actualizado el …" junto al byline. Página /novedades (ES) + /en/changelog + /pt/novidades: changelog curado (hoy: Fase A completa, varita corregida, fuentes propias, legales EN/PT…) + entradas futuras; enlazada desde el footer de confianza (actualizar trust.mjs + check-footers a 6 enlaces) y en SEO_ROUTES/hreflang. Feed RSS incluye novedades. |
 | GROW-33 | **Autor verificable** | 📋 BLOQUEADO (necesita input PO) | 2-3 trabajos/proyectos verificables con enlace + por qué escribe sobre imagen/edición; foto ya existe. Enlazar desde "Lo probamos". |
 
-**Orden:** GROW-30 → GROW-31 → GROW-32 (GROW-33 cuando el PO pase los datos).
+**Orden:** GROW-30 → GROW-31 → GROW-32
+
+### Bugs de producto encontrados por las pruebas reales de GROW-31a (2026-10-06) — a priorizar por el PO
+| ID | Hallazgo medido | Impacto |
+|---|---|---|
+| BUG-01 | **Los presets de exportación (Amazon/Shopify/Instagram/LinkedIn) ignoran el color de fondo elegido** (sale #ffffff) y con "Transparente" el resultado sale 100 % opaco | Alta: contradice las guías; usuario pierde el fondo que eligió |
+| BUG-02 | **Recorte IA y Recorte automático eliminan el texto de un logo** (palabra "LUNARIS" perdida); la varita lo conserva | Media: UX — sugerir varita para logos con texto, o detectar texto |
+| BUG-03 | Recorte automático tardó **20 s** en una firma de 820×410 (la varita, 0,11 s) | Media: rendimiento del autoCut en imágenes de alto contraste |
+| BUG-04 | Modo oscuro (Color Studio) deja fondo y tarjeta en #000000 (contraste 1,00:1) y oscurece el azul | Media: el "tema" generado no es usable sin retoque |
+| BUG-05 | "Descargar sin metadatos" recomprime el JPEG (21,0→24,1 KB, píxeles no idénticos) y agrega perfil ICC | Baja: la guía ya lo dice; ideal strip sin re-encodear |
+| BUG-06 | Pestaña Stickers desactivada (`STICKERS_ENABLED=false`) mientras existían guías que la presentaban como flujo principal (guía corregida) | Decisión PO: ¿activar o eliminar? |
+| BUG-07 | `public/sw.js` comenta "~18MB" (real ~7 MB comprimido) | Trivial |
+ (GROW-33 cuando el PO pase los datos).
 
 ## Sprint 6 — Fase A auditoría 2026-10 (percepción + producto) — ✅ CERRADO 2026-10-06 (5/5 Done, main 9e89cf2, SIN PUSH: espera decisión PO sobre foto del hero)
 > Origen: engram/10_auditoria_2026-10.md. Objetivo: que un revisor humano (AdSense o usuario nuevo) vea un producto mantenido y profesional en 2 minutos. Rama: una por ticket desde main; QA antes de merge.
