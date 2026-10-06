@@ -1,5 +1,5 @@
 // Enlaces de confianza que debe tener el footer de TODA página, por idioma.
-// Orden fijo: Privacidad · Términos · Contacto · Acerca · Autor.
+// Orden fijo: Privacidad · Términos · Contacto · Acerca · Autor · Novedades.
 export const TRUST = {
   es: [
     ["/legal/privacidad.html", "Privacidad"],
@@ -7,6 +7,7 @@ export const TRUST = {
     ["/contacto.html", "Contacto"],
     ["/acerca.html", "Acerca"],
     ["/autor.html", "Autor"],
+    ["/novedades.html", "Novedades"],
   ],
   en: [
     ["/en/legal/privacy.html", "Privacy"],
@@ -14,6 +15,7 @@ export const TRUST = {
     ["/en/contact.html", "Contact"],
     ["/en/about.html", "About"],
     ["/en/author.html", "Author"],
+    ["/en/changelog.html", "Changelog"],
   ],
   pt: [
     ["/pt/legal/privacidade.html", "Privacidade"],
@@ -21,6 +23,7 @@ export const TRUST = {
     ["/pt/contato.html", "Contato"],
     ["/pt/sobre.html", "Sobre"],
     ["/pt/autor.html", "Autor"],
+    ["/pt/novidades.html", "Novidades"],
   ],
 };
 

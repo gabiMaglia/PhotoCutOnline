@@ -45,9 +45,11 @@ describe("localizeEditorDoc (GROW-27 a)", () => {
     expect(hrefs).not.toContain("/guias/");
   });
 
-  it.each(["en", "pt"])("(D1) el pie en %s trae los 5 enlaces de confianza de check-footers, en su idioma", (lang) => {
+  it.each(["en", "pt"])("(D1) el pie en %s trae los 6 enlaces de confianza (con novedades) de check-footers, en su idioma", (lang) => {
     localizeEditorDoc(lang);
     const hrefs = [...document.querySelectorAll(".ed-foot a")].map((a) => a.getAttribute("href"));
+    expect(TRUST[lang]).toHaveLength(6);
+    expect(hrefs).toContain({ en: "/en/changelog.html", pt: "/pt/novidades.html" }[lang]);
     for (const [href, label] of TRUST[lang]) {
       expect(hrefs).toContain(href);
       expect(document.querySelector(`.ed-foot a[href="${href}"]`).textContent).toBe(label);
