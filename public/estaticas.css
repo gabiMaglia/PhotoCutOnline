@@ -418,3 +418,18 @@ footer.site {
 footer.site a {
   color: var(--ink-dim);
 }
+
+/* Entradas de novedades / changelog */
+article.entry {
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+  padding-top: 4px;
+}
+
+article.entry h2 {
+  margin-top: 18px;
+}
+
+article.entry .meta {
+  margin: 0 0 8px;
+}
