@@ -4,6 +4,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
+    { "source": "/guias/convertir-png-a-ico.html", "destination": "/guias/favicons-medidas-y-html.html", "permanent": true },
+    { "source": "/en/guides/convert-png-to-ico.html", "destination": "/en/guides/favicon-sizes-html.html", "permanent": true },
+    { "source": "/pt/guias/converter-png-para-ico.html", "destination": "/pt/guias/favicons-medidas-e-html.html", "permanent": true },
     { "source": "/guias/fondo-blanco-para-mercadolibre.html", "destination": "/guias/poner-fondo-blanco-a-una-foto.html", "permanent": true },
     { "source": "/en/guides/white-background-for-mercadolibre.html", "destination": "/en/guides/white-background-photo.html", "permanent": true },
     { "source": "/pt/guias/fundo-branco-mercado-livre.html", "destination": "/pt/guias/fundo-branco-em-foto.html", "permanent": true },

@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Favicons en 2026: medidas necesarias y HTML listo para copiar — PhotoCut Studio</title>
+    <title>Favicons en 2026: medidas, HTML y cómo pasar PNG a ICO</title>
     <meta
       name="description"
-      content="Los 5 archivos de favicon que de verdad necesitas en 2026 (favicon.ico, PNG 32px, apple-touch-icon 180px y los iconos del manifest) con el snippet HTML completo."
+      content="Los 5 archivos de favicon que necesitás en 2026 con el HTML listo para copiar, y cómo convertir un PNG a .ico multi-resolución para favicon o para Windows."
     />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="canonical" href="https://www.photocutapp.com/guias/favicons-medidas-y-html.html" />
@@ -14,14 +14,14 @@
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.photocutapp.com/guias/favicons-medidas-y-html.html" />
-    <meta property="og:title" content="Favicons en 2026: medidas necesarias y HTML listo para copiar — PhotoCut Studio" />
-    <meta property="og:description" content="Los 5 archivos de favicon que de verdad necesitas en 2026 (favicon.ico, PNG 32px, apple-touch-icon 180px y los iconos del manifest) con el snippet HTML completo." />
+    <meta property="og:title" content="Favicons en 2026: medidas, HTML y cómo pasar PNG a ICO" />
+    <meta property="og:description" content="Los 5 archivos de favicon que necesitás en 2026 con el HTML listo para copiar, y cómo convertir un PNG a .ico multi-resolución para favicon o para Windows." />
     <meta property="og:image" content="https://www.photocutapp.com/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Favicons en 2026: medidas necesarias y HTML listo para copiar — PhotoCut Studio" />
-    <meta name="twitter:description" content="Los 5 archivos de favicon que de verdad necesitas en 2026 (favicon.ico, PNG 32px, apple-touch-icon 180px y los iconos del manifest) con el snippet HTML completo." />
+    <meta name="twitter:title" content="Favicons en 2026: medidas, HTML y cómo pasar PNG a ICO" />
+    <meta name="twitter:description" content="Los 5 archivos de favicon que necesitás en 2026 con el HTML listo para copiar, y cómo convertir un PNG a .ico multi-resolución para favicon o para Windows." />
     <meta name="twitter:image" content="https://www.photocutapp.com/og.png" />
 
     <link rel="stylesheet" href="/estaticas.css" />
@@ -30,8 +30,8 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "Favicons en 2026: qué medidas necesitas y el HTML listo para copiar",
-      "description": "Los 5 archivos de favicon que de verdad necesitas en 2026 (favicon.ico, PNG 32px, apple-touch-icon 180px y los iconos del manifest) con el snippet HTML completo.",
+      "headline": "Favicons en 2026: qué medidas necesitás y el HTML listo para copiar",
+      "description": "Los 5 archivos de favicon que necesitás en 2026 con el HTML listo para copiar, y cómo convertir un PNG a .ico multi-resolución para favicon o para Windows.",
       "image": "https://www.photocutapp.com/media/guias/herramienta-iconos.jpg",
       "inLanguage": "es",
       "author": { "@type": "Person", "name": "Gabriel Maglia", "url": "https://www.photocutapp.com/autor.html" },
@@ -55,27 +55,78 @@
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Cómo convertir un PNG a ICO con Icon Studio, paso a paso",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Abrir Icon Studio",
+          "text": "Abrí PhotoCut Studio y entrá a Icon Studio."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Subir el PNG",
+          "text": "Subí tu PNG de origen, idealmente cuadrado y de 512 px o más."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Elegir el set de Windows",
+          "text": "Elegí el set de Windows: genera un app.ico con las resoluciones 16, 24, 32, 48, 64, 128 y 256 px en un solo archivo."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Revisar los tamaños chicos",
+          "text": "Revisá la vista previa a 16 y 32 px para confirmar que el icono se sigue reconociendo."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Descargar el .ico",
+          "text": "Descargá el .ico y usalo como favicon.ico en la raíz del sitio o como icono de tu app de Windows."
+        }
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
         {
           "@type": "Question",
           "name": "¿El favicon.ico sigue siendo necesario en 2026?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí. Aunque los navegadores modernos prefieren el PNG declarado en el link rel=\"icon\", muchos clientes (lectores RSS, crawlers, navegadores muy antiguos) todavía piden /favicon.ico directamente en la raíz del dominio sin leer el HTML." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo usar solo un SVG y olvidarme del resto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No del todo. Un favicon SVG (link rel=\"icon\" type=\"image/svg+xml\") es un buen complemento porque escala perfecto y pesa poco, pero el apple-touch-icon y los iconos del manifest de PWA todavía requieren PNG: Safari y Android no aceptan SVG ahí." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo pruebo que mis favicons se ven bien en todos lados?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Abrí el sitio en una pestaña nueva (Chrome, Firefox y Safari si podés) y mirá la pestaña a tamaño real; después añadí el sitio a la pantalla de inicio en un iPhone/Android para ver el apple-touch-icon y el icono del manifest. Vaciá la caché del navegador: los favicons se cachean agresivamente." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí. Aunque los navegadores modernos prefieren el PNG declarado en el link rel=\"icon\", muchos clientes (lectores RSS, crawlers, navegadores muy antiguos) todavía piden /favicon.ico directamente en la raíz del dominio sin leer el HTML."
+          }
         },
         {
           "@type": "Question",
           "name": "¿Qué pasa si no subo ningún favicon?",
-          "acceptedAnswer": { "@type": "Answer", "text": "El navegador muestra un icono genérico (una hoja en blanco o el ícono por defecto) y, si el sitio se instala como PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se ve poco profesional y no identifica tu marca en pestañas ni marcadores." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "El navegador muestra un icono genérico y, si el sitio se instala como PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se ve poco profesional y no identifica tu marca en pestañas ni marcadores."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo convertir cualquier PNG a ICO o tiene que ser cuadrado?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Técnicamente se puede convertir cualquier PNG, pero el resultado se ve mejor si el original es cuadrado: si no lo es, el conversor lo encaja dentro de un cuadrado y puede agregar márgenes o recortar los bordes más largos."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Por qué mi ICO se ve borroso en la pestaña del navegador?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Casi siempre porque el ICO no incluye la resolución exacta que pide el navegador (16 o 32 px) y este escala una más grande al vuelo. Generalo con todas las resoluciones estándar (16, 24, 32, 48, 64, 128, 256)."
+          }
         }
       ]
     }
@@ -128,7 +179,7 @@
     {
       "@type": "ListItem",
       "position": 4,
-      "name": "Favicons en 2026: qué medidas necesitas y el HTML listo…",
+      "name": "Favicons en 2026: qué medidas necesitás y el HTML listo…",
       "item": "https://www.photocutapp.com/guias/favicons-medidas-y-html.html"
     }
   ]
@@ -153,19 +204,19 @@
         <a href="/">Inicio</a> ›
         <a href="/guias/">Guías</a> ›
         <a href="/guias/#c6">Iconos de app y favicons</a> ›
-        <span>Favicons en 2026: qué medidas necesitas y el HTML listo…</span>
+        <span>Favicons en 2026: qué medidas necesitás y el HTML listo…</span>
       </nav>
 
 
-      <h1>Favicons en 2026: qué medidas necesitas y el HTML listo para copiar</h1>
-      <p class="meta">Actualizado: junio de 2026 · Lectura: 4 minutos · Por <a class="author-link" href="/autor.html">Gabriel Maglia</a></p>
+      <h1>Favicons en 2026: qué medidas necesitás y el HTML listo para copiar</h1>
+      <p class="meta">Actualizado: octubre de 2026 · Lectura: 4 minutos · Por <a class="author-link" href="/autor.html">Gabriel Maglia</a></p>
 
       <p>
         Durante años los generadores de favicons producían veinte archivos
         «por si acaso»: tamaños para Internet Explorer en Windows Vista,
         azulejos de Windows 8, Safari pinned tabs… La realidad de 2026 es
         mucho más simple: con <strong>5 archivos y 5 líneas de HTML</strong>
-        cubres todos los navegadores y dispositivos actuales.
+        cubrís todos los navegadores y dispositivos actuales.
       </p>
 
       <figure class="shot">
@@ -210,11 +261,45 @@
   "display": "standalone"
 }</pre>
 
+      <h2>PNG a ICO: cuándo hace falta todavía un .ico</h2>
+      <p>
+        El <strong>ICO</strong> no es una sola imagen sino un contenedor que
+        agrupa <strong>varias resoluciones</strong> (16, 32, 256&nbsp;px…) en el
+        mismo archivo; el sistema elige la que necesita según dónde se muestre.
+        Hace falta en dos casos: el <code>/favicon.ico</code> de la raíz del
+        sitio, que muchos navegadores y crawlers piden aunque no esté declarado
+        en el HTML, y el icono del ejecutable de una app de Windows. Y no
+        alcanza con renombrar un <code>logo.png</code> a <code>logo.ico</code>:
+        un ICO real tiene una cabecera binaria (<code>ICONDIR</code>) que
+        describe cuántas imágenes contiene y a qué resolución, y sin ella
+        Windows y los navegadores no lo reconocen como icono válido.
+      </p>
+
+      <h3>Convertir un PNG a ICO con Icon Studio</h3>
+      <ol>
+        <li>Abrí <a href="/">PhotoCut Studio</a> y entrá a <strong>Icon Studio</strong>.</li>
+        <li>Subí tu PNG de origen, idealmente cuadrado y de 512&nbsp;px o más, sin comprimir.</li>
+        <li>Elegí el set de <strong>Windows</strong>: genera un <code>app.ico</code> con las resoluciones 16, 24, 32, 48, 64, 128 y 256&nbsp;px embebidas en un solo archivo.</li>
+        <li>Revisá la vista previa a 16 y 32&nbsp;px para confirmar que el icono se sigue reconociendo.</li>
+        <li>Descargá el <code>.ico</code>: subilo como <code>favicon.ico</code> a la raíz del sitio o usalo como icono de tu app.</li>
+      </ol>
+
+      <h3>Para el ejecutable de una app de Windows</h3>
+      <p>
+        Si empaquetás una app de escritorio (Electron, Tauri, .NET o lo que
+        uses), el instalador y el ejecutable piden un <code>.ico</code>
+        multi-resolución para el Explorador, la barra de tareas y los accesos
+        directos. Un ICO que solo trae 256&nbsp;px se ve borroso al escalarlo
+        a 32 o 16&nbsp;px; con las siete resoluciones estándar se ve nítido en
+        cualquier contexto. A nivel de formato es el mismo archivo que el del
+        favicon: cambia solo quién lo pide.
+      </p>
+
       <h2>Errores comunes</h2>
       <ul>
         <li>
           <strong>Usar el logo completo a 16&nbsp;px.</strong> En la pestaña
-          caben unos pocos trazos: usa el símbolo, no el logotipo con texto.
+          caben unos pocos trazos: usá el símbolo, no el logotipo con texto.
         </li>
         <li>
           <strong>Olvidar el maskable.</strong> Sin él, Android mete tu icono
@@ -223,12 +308,27 @@
         </li>
         <li>
           <strong>Transparencia en el apple-touch-icon.</strong> iOS la
-          sustituye por negro. Pon siempre un fondo de color.
+          sustituye por negro. Poné siempre un fondo de color.
         </li>
         <li>
           <strong>Un solo SVG para todo.</strong> El favicon SVG es ideal como
           complemento moderno, pero los iconos del manifest y el
           apple-touch-icon siguen requiriendo PNG.
+        </li>
+        <li>
+          <strong>Incluir una sola resolución en el .ico.</strong> Con solo
+          256&nbsp;px el sistema reescala para los tamaños chicos y pierde
+          nitidez: incluí siempre el set completo (16 a 256&nbsp;px).
+        </li>
+        <li>
+          <strong>Partir de un PNG sin margen.</strong> A 16&nbsp;px el detalle
+          fino desaparece y, si el arte llega al borde del lienzo, se ve
+          recortado.
+        </li>
+        <li>
+          <strong>Dar por buena la transparencia sin mirarla.</strong> El ICO la
+          admite, pero algunos visores antiguos de Windows muestran un fondo
+          gris en vez de transparente: revisá la vista previa.
         </li>
       </ul>
 
@@ -269,44 +369,13 @@
 
       <h2>Preguntas frecuentes</h2>
       <h3>¿El favicon.ico sigue siendo necesario en 2026?</h3>
-      <p>
-        Sí. Aunque los navegadores modernos prefieren el PNG declarado en el
-        <code>link rel="icon"</code>, muchos clientes (lectores RSS, crawlers,
-        navegadores muy antiguos) todavía piden <code>/favicon.ico</code>
-        directamente en la raíz del dominio sin leer el HTML.
-      </p>
-      <h3>¿Puedo usar solo un SVG y olvidarme del resto?</h3>
-      <p>
-        No del todo. Un favicon SVG es un buen complemento porque escala
-        perfecto y pesa poco, pero el apple-touch-icon y los iconos del
-        manifest de PWA todavía requieren PNG: Safari y Android no aceptan
-        SVG ahí.
-      </p>
-      <h3>¿Cómo pruebo que mis favicons se ven bien en todos lados?</h3>
-      <p>
-        Abrí el sitio en una pestaña nueva (Chrome, Firefox y Safari si
-        podés) y mirá la pestaña a tamaño real; después añadí el sitio a la
-        pantalla de inicio en un iPhone/Android para ver el apple-touch-icon
-        y el icono del manifest. Vaciá la caché del navegador: los favicons
-        se cachean agresivamente.
-      </p>
+      <p>Sí. Aunque los navegadores modernos prefieren el PNG declarado en el <code>link rel="icon"</code>, muchos clientes (lectores RSS, crawlers, navegadores muy antiguos) todavía piden <code>/favicon.ico</code> directamente en la raíz del dominio sin leer el HTML.</p>
       <h3>¿Qué pasa si no subo ningún favicon?</h3>
-      <p>
-        El navegador muestra un icono genérico y, si el sitio se instala como
-        PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se
-        ve poco profesional y no identifica tu marca en pestañas ni
-        marcadores.
-      </p>
-
-      <h2>Generarlos en 30 segundos</h2>
-      <p>
-        El <strong>Icon Studio</strong> de <a href="/">PhotoCut Studio</a>
-        produce exactamente este set (y los de iOS, Android, macOS y Windows
-        si los necesitas) desde cualquier PNG, con vista previa pixel-perfect
-        a 16, 32 y 48&nbsp;px y un botón que copia el snippet HTML al
-        portapapeles. Todo en tu navegador: tu logo no se sube a ningún
-        servidor.
-      </p>
+      <p>El navegador muestra un icono genérico y, si el sitio se instala como PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se ve poco profesional y no identifica tu marca en pestañas ni marcadores.</p>
+      <h3>¿Puedo convertir cualquier PNG a ICO o tiene que ser cuadrado?</h3>
+      <p>Técnicamente se puede convertir cualquier PNG, pero el resultado se ve mejor si el original es cuadrado: si no lo es, el conversor lo encaja dentro de un cuadrado y puede agregar márgenes o recortar los bordes más largos.</p>
+      <h3>¿Por qué mi ICO se ve borroso en la pestaña del navegador?</h3>
+      <p>Casi siempre porque el ICO no incluye la resolución exacta que pide el navegador (16 o 32&nbsp;px) y este escala una más grande al vuelo. Generalo con todas las resoluciones estándar (16, 24, 32, 48, 64, 128, 256).</p>
 
       <a class="cta" href="/">Generar mis favicons →</a>
 
