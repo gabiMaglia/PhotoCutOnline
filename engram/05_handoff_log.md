@@ -3,6 +3,12 @@
 > Entradas nuevas ARRIBA. Máx. 6 líneas por entrada. Al superar 30 entradas,
 > el Orquestador mueve las más viejas a ~/.nerv/archive/[alias]-handoffs-[fecha].md
 
+### [2026-10-06 18:06] CIERRE DE SESIÓN
+- Hecho hoy: auditoría 3 ejes (engram/10) → Fase A (GROW-25..29 + 25b) y Fase B (GROW-30/31/32) Done con QA Strong, todo mergeado, pusheado y verificado en vivo; D-06/D-07 cerradas; CI corre `npm test`; carrera de `ensure-dist` arreglada (0a181a1, CI verde; el run rojo de b58d222 fue esa carrera); IndexNow 125 URLs.
+- Próximo paso: Fase C del PO (launch kit, datos de autor GROW-33, decidir BUG-01/06); reaplicar AdSense por números (≥1.000 visitantes/mes).
+- Quien retoma: nerv-orquestador (con datos del PO: nerv-web para GROW-33 / BUG-01).
+
+
 ### 2026-07-07 Orquestador→nerv-web (T-011 RE-ESCOPADO: split MPA, Strong)
 - PO decidió separar en 2 páginas (el single-page tenía scroll feo + rail cortado D-03). Recon: index.html tiene #root+main.jsx+#landing juntos; vite sin rollupOptions.input.
 - Leer SOLO: index.html, src/main.jsx, vite.config.js, vercel.json.
