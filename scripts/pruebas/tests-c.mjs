@@ -134,7 +134,7 @@ TESTS["medidas-de-fotos-para-redes-sociales-2026"] = async ({ browser }) => {
     result: { original: { w: image.w, h: image.h, kb: image.kb }, conCandado: { w: a.a.w, h: a.a.h, kb: a.a.kb, altoMostrado: alto }, sinCandado: { w: b.a.w, h: b.a.h, kb: b.a.kb, factorDeformacion: stretch } },
     findings: [
       `Con el candado: ancho 1080 → alto ${alto}. Salió un JPG de ${a.a.w} × ${a.a.h} px y ${f(a.a.kb, 0)} KB (el original pesaba ${f(image.kb, 0)} KB) en ${f(a.ms / 1000, 1)} s contando la descarga.`,
-      `Sin el candado, 1080 × 1350 px: ${b.a.w} × ${b.a.h} px y ${f(b.a.kb, 0)} KB. Como la foto es 4:3 y la medida pedida 4:5, la imagen quedó estirada a ${f(stretch * 100, 0)} % de su proporción horizontal.`,
+      `Sin el candado, pidiendo 1080 × 1350 px, salió un JPG de ${b.a.w} × ${b.a.h} px y ${f(b.a.kb, 0)} KB. Como la foto es 4:3 y la medida pedida 4:5, la imagen quedó estirada a ${f(stretch * 100, 0)} % de su proporción horizontal.`,
     ],
     assets: [pub(file)],
   };

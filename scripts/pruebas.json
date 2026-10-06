@@ -932,7 +932,7 @@
     },
     "findings": [
       "Con el candado: ancho 1080 → alto 810. Salió un JPG de 1080 × 810 px y 16 KB (el original pesaba 97 KB) en 0,3 s contando la descarga.",
-      "Sin el candado, 1080 × 1350 px: 1080 × 1350 px y 23 KB. Como la foto es 4:3 y la medida pedida 4:5, la imagen quedó estirada a 60 % de su proporción horizontal."
+      "Sin el candado, pidiendo 1080 × 1350 px, salió un JPG de 1080 × 1350 px y 23 KB. Como la foto es 4:3 y la medida pedida 4:5, la imagen quedó estirada a 60 % de su proporción horizontal."
     ],
     "assets": [
       "/media/guias/pruebas/paisaje-sintetico.jpg"
