@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Generate the dark mode (or light) of a screenshot — PhotoCut Studio</title>
-    <meta name="description" content="See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and can apply your own color scheme. Free and in your browser." />
+    <meta name="description" content="See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and lets you copy the color scheme as CSS or Tailwind. Free and in your browser." />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="canonical" href="https://www.photocutapp.com/en/guides/dark-mode-from-screenshot.html" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.photocutapp.com/en/guides/dark-mode-from-screenshot.html" />
     <meta property="og:title" content="Generate the dark mode (or light) of a screenshot — PhotoCut Studio" />
-    <meta property="og:description" content="See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and can apply your own color scheme. Free and in your browser." />
+    <meta property="og:description" content="See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and lets you copy the color scheme as CSS or Tailwind. Free and in your browser." />
     <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-en.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="stylesheet" href="/estaticas.css" />
@@ -19,7 +19,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "Generate the dark mode (or light) of a screenshot",
-      "description": "See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and can apply your own color scheme.",
+      "description": "See how your app or website would look in dark mode without touching a line of code: Color Studio inverts a screenshot's lightness while keeping the colors, and lets you copy the color scheme as CSS or Tailwind.",
       "image": "https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-en.jpg",
       "inLanguage": "en",
       "author": { "@type": "Person", "name": "Gabriel Maglia", "url": "https://www.photocutapp.com/en/author.html" },
@@ -112,8 +112,7 @@
         without touching a line of code? A <strong>screenshot</strong> is enough.
         Color Studio can invert the image's lightness while keeping the colors —the
         real basis of dark mode— and give you the dark (or light) version instantly,
-        with a before/after to compare. And if you have your own color scheme, you
-        can apply it. All free and in your browser: the screenshot isn't uploaded
+        with a before/after to compare. All free and in your browser: the screenshot isn't uploaded
         anywhere.
       </p>
 
@@ -128,7 +127,7 @@
         turns blues orange and everything looks wrong. The Theme mode inverts only
         the <strong>lightness</strong> of each pixel and keeps the <strong>hue</strong>
         and the <strong>saturation</strong>: that's why a white background becomes
-        dark, black text lightens, and a blue button stays blue (lighter). It's
+        dark, black text lightens, and a blue button stays blue (in my test, #2563eb became #0744cb: darker, not lighter). It's
         exactly what a good dark theme does.
       </p>
 
@@ -148,15 +147,13 @@
         <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
       </div>
 
-      <h2>Apply your own color scheme</h2>
+      <h2>The project's color scheme</h2>
       <p>
-        The <strong>Recolor</strong> mode goes a step further: you paste
-        <strong>CSS</strong>, some <code>:root</code> variables, a
-        <strong>Tailwind</strong> config or any text with colors (HEX,
-        <code>rgb()</code>, <code>hsl()</code>), and the tool extracts that palette
-        and <strong>remaps the image</strong> according to each pixel's lightness (a
-        "gradient map"). It's useful to see your screenshot in your brand's identity,
-        or to explore theme variants from an existing scheme.
+        Below the before/after, Color Studio builds the
+        <strong>color scheme derived</strong> from the image (50–900 scales per
+        role) and leaves it ready to copy as <strong>CSS</strong> or
+        <strong>Tailwind</strong>. It's useful for going from the mockup to real
+        variables without picking the colors by hand out of the screenshot.
       </p>
 
       <h2>What it's for (and what it isn't)</h2>

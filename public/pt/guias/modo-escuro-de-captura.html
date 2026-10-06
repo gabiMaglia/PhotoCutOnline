@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerar o modo escuro (ou claro) de uma captura de tela — PhotoCut Studio</title>
-    <meta name="description" content="Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e pode aplicar seu próprio esquema de cores. Grátis e no navegador." />
+    <meta name="description" content="Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e permite copiar o esquema de cores como CSS ou Tailwind. Grátis e no navegador." />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="canonical" href="https://www.photocutapp.com/pt/guias/modo-escuro-de-captura.html" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.photocutapp.com/pt/guias/modo-escuro-de-captura.html" />
     <meta property="og:title" content="Gerar o modo escuro (ou claro) de uma captura de tela — PhotoCut Studio" />
-    <meta property="og:description" content="Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e pode aplicar seu próprio esquema de cores. Grátis e no navegador." />
+    <meta property="og:description" content="Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e permite copiar o esquema de cores como CSS ou Tailwind. Grátis e no navegador." />
     <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-pt.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="stylesheet" href="/estaticas.css" />
@@ -19,7 +19,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "Gerar o modo escuro (ou claro) de uma captura de tela",
-      "description": "Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e pode aplicar seu próprio esquema de cores.",
+      "description": "Veja como seu app ou site ficaria em modo escuro sem tocar em uma linha de código: o Color Studio inverte a luminosidade de uma captura mantendo as cores, e permite copiar o esquema de cores como CSS ou Tailwind.",
       "image": "https://www.photocutapp.com/media/guias/herramienta-modo-oscuro-pt.jpg",
       "inLanguage": "pt-br",
       "author": { "@type": "Person", "name": "Gabriel Maglia", "url": "https://www.photocutapp.com/pt/autor.html" },
@@ -112,8 +112,7 @@
         tocar em uma linha de código? Uma <strong>captura de tela</strong> basta. O
         Color Studio pode inverter a luminosidade da imagem mantendo as cores —a
         base real do dark mode— e devolver a versão escura (ou clara) na hora, com
-        um antes/depois para comparar. E se você tem um esquema de cores próprio,
-        pode aplicá-lo. Tudo grátis e no seu navegador: a captura não é enviada a
+        um antes/depois para comparar. Tudo grátis e no seu navegador: a captura não é enviada a
         lugar nenhum.
       </p>
 
@@ -128,7 +127,7 @@
         azuis laranjas e tudo fica ruim. O modo Tema inverte só a
         <strong>luminosidade</strong> de cada pixel e mantém o <strong>tom</strong>
         e a <strong>saturação</strong>: por isso um fundo branco fica escuro, o
-        texto preto clareia, e um botão azul continua azul (mais claro). É
+        texto preto clareia, e um botão azul continua azul (no meu teste, #2563eb virou #0744cb: mais escuro, não mais claro). É
         exatamente o que um bom tema escuro faz.
       </p>
 
@@ -148,15 +147,13 @@
         <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
       </div>
 
-      <h2>Aplicar seu próprio esquema de cores</h2>
+      <h2>O esquema de cores do projeto</h2>
       <p>
-        O modo <strong>Recolorir</strong> vai um passo além: você cola
-        <strong>CSS</strong>, umas variáveis <code>:root</code>, um config de
-        <strong>Tailwind</strong> ou qualquer texto com cores (HEX,
-        <code>rgb()</code>, <code>hsl()</code>), e a ferramenta extrai essa paleta e
-        <strong>remapeia a imagem</strong> conforme a luminosidade de cada pixel (um
-        "gradient map"). Serve para ver sua captura com a identidade da sua marca, ou
-        para explorar variantes de tema a partir de um esquema existente.
+        Abaixo do antes/depois, o Color Studio monta o
+        <strong>esquema de cores derivado</strong> da imagem (escalas 50–900 por
+        papel) e o deixa pronto para copiar como <strong>CSS</strong> ou
+        <strong>Tailwind</strong>. Serve para passar do mockup para variáveis
+        reais sem tirar as cores à mão da captura.
       </p>
 
       <h2>Para que serve (e para que não)</h2>
