@@ -128,6 +128,33 @@ async function main() {
   const fblob = await s2.previewBlob();
   assert(fblob instanceof Blob && fblob.type === "image/png", "feather: preview OK");
 
+  // 6b. Varita (GROW-28): un clic en el FONDO lo quita y deja el sujeto opaco.
+  // Regresión: antes la selección se conservaba (hacía lo inverso a la guía).
+  {
+    const c = document.createElement("canvas");
+    c.width = W;
+    c.height = H;
+    const cx = c.getContext("2d");
+    cx.fillStyle = "#ffffff";
+    cx.fillRect(0, 0, W, H);
+    cx.fillStyle = "#d02020";
+    cx.fillRect(80, 50, 80, 80); // logo: cuadrado rojo [80,160)x[50,130)
+    const sw = new CutoutSession();
+    sw.load(cx.getImageData(0, 0, W, H));
+    sw.setFeather(0);
+    const wblob = await sw.wandSelect({ x: 10, y: 10 }, 30, false);
+    const wimg = await blobToImageData(wblob);
+    assert(px(wimg, 10, 10)[3] === 0, "varita: clic en el fondo → fondo con alfa 0");
+    assert(px(wimg, 200, 160)[3] === 0, "varita: todo el fondo contiguo se quita");
+    const inside = px(wimg, 120, 90);
+    assert(inside[3] === 255 && inside[0] > 180, "varita: el logo queda opaco y con su color");
+    // aditivo: segunda selección sobre el logo lo quita también
+    const wblob2 = await sw.wandSelect({ x: 120, y: 90 }, 30, true);
+    const wimg2 = await blobToImageData(wblob2);
+    assert(px(wimg2, 120, 90)[3] === 0, "varita: shift+clic suma otra zona a quitar");
+    assert(px(wimg2, 10, 10)[3] === 0, "varita: la zona previa sigue quitada");
+  }
+
   // 7. acabado: sticker + sombra + preset
   s2.setFeather(0); // el feather de la sección 6 mezclaría el borde con el contorno
   s2.setFinish({ sticker: { width: 8, color: [255, 255, 255] }, shadow: null });

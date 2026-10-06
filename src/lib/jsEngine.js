@@ -262,9 +262,9 @@ export class CutoutSession {
   /**
    * Varita mágica por color: flood-fill desde un punto (coords completas),
    * selecciona la región CONTIGUA cuyo color difiere del píxel semilla en menos
-   * que `tolerance` (0..~120 por canal) y la marca como sujeto. Con `additive`
-   * suma a la selección actual (multi-selección); si no, empieza una nueva.
-   * Todo lo no seleccionado queda fuera del recorte (alfa 0).
+   * que `tolerance` (0..~120 por canal) y la QUITA (alfa 0): un clic en el fondo
+   * lo elimina y el sujeto queda. Con `additive` suma otra zona a lo ya quitado;
+   * si no, parte de la imagen entera y quita solo la zona clicada.
    */
   wandSelect(seedFull, tolerance = 30, additive = false) {
     if (!this.work) return null;
@@ -275,8 +275,14 @@ export class CutoutSession {
     const sx = clamp(Math.round(seedFull.x * s), 0, width - 1);
     const sy = clamp(Math.round(seedFull.y * s), 0, height - 1);
 
-    // base binaria: selección nueva, o sumar a la existente
-    const label = additive && this.label ? Uint8Array.from(this.label) : new Uint8Array(N);
+    // base binaria: todo se conserva salvo lo clicado; additive suma a lo ya quitado
+    let label;
+    if (additive && this.label) {
+      label = Uint8Array.from(this.label);
+    } else {
+      label = new Uint8Array(N).fill(1);
+      this.trimap = new Uint8Array(N);
+    }
     this.softAlpha = null; // la varita produce máscara binaria (no matte IA)
     this.rect = { x: 0, y: 0, w: width, h: height };
 
@@ -299,8 +305,8 @@ export class CutoutSession {
       const dg = data[o + 1] - sg;
       const db = data[o + 2] - sb;
       if (dr * dr + dg * dg + db * db > tol2) continue; // fuera de tolerancia: borde
-      label[p] = 1;
-      this.trimap[p] = TRI_FG; // restricción dura por si se re-segmenta luego
+      label[p] = 0;
+      this.trimap[p] = TRI_BG; // restricción dura por si se re-segmenta luego
       const x = p % width;
       const y = (p / width) | 0;
       if (x > 0 && !visited[p - 1]) (visited[p - 1] = 1), (stack[sp++] = p - 1);
