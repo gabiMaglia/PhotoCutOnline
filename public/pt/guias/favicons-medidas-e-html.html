@@ -73,14 +73,6 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "O favicon.ico ainda é necessário em 2026?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sim. Embora os navegadores modernos prefiram o PNG declarado no link rel=\"icon\", muitos clientes (leitores RSS, crawlers, favoritos) ainda pedem /favicon.ico diretamente. É o fallback universal e vale incluí-lo."
-          }
-        },
-        {
-          "@type": "Question",
           "name": "O que acontece se eu não colocar um favicon?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -94,19 +86,11 @@
             "@type": "Answer",
             "text": "Tecnicamente dá para converter qualquer PNG, mas o resultado fica melhor se o original for quadrado: se não for, o conversor o encaixa dentro de um quadrado e pode adicionar margens ou cortar as bordas mais longas."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "Por que meu ICO fica borrado na aba do navegador?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Quase sempre porque o ICO não inclui a resolução exata que o navegador pede (16 ou 32 px) e ele escala uma maior na hora. Gere-o com todas as resoluções padrão (16, 24, 32, 48, 64, 128, 256)."
-          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -317,14 +301,10 @@
       </ol>
 
       <h2>Perguntas frequentes</h2>
-      <h3>O favicon.ico ainda é necessário em 2026?</h3>
-      <p>Sim. Embora os navegadores modernos prefiram o PNG declarado no <code>link rel="icon"</code>, muitos clientes (leitores RSS, crawlers, favoritos) ainda pedem <code>/favicon.ico</code> diretamente. É o fallback universal e vale incluí-lo.</p>
       <h3>O que acontece se eu não colocar um favicon?</h3>
       <p>O navegador mostra um ícone genérico (uma folha em branco ou o ícone padrão) e, se o site for instalado como PWA, usa um quadrado com a inicial do domínio. Não quebra nada, mas parece pouco profissional e não identifica sua marca nas abas nem nos favoritos.</p>
       <h3>Posso converter qualquer PNG para ICO ou tem que ser quadrado?</h3>
       <p>Tecnicamente dá para converter qualquer PNG, mas o resultado fica melhor se o original for quadrado: se não for, o conversor o encaixa dentro de um quadrado e pode adicionar margens ou cortar as bordas mais longas.</p>
-      <h3>Por que meu ICO fica borrado na aba do navegador?</h3>
-      <p>Quase sempre porque o ICO não inclui a resolução exata que o navegador pede (16 ou 32&nbsp;px) e ele escala uma maior na hora. Gere-o com todas as resoluções padrão (16, 24, 32, 48, 64, 128, 256).</p>
 
       <a class="cta" href="/editor/?tab=icons">Gerar meus favicons →</a>
 

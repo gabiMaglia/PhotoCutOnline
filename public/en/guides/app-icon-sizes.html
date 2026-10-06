@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Is a single 1024×1024 icon enough for everything?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, if you start from an uncompressed 1024×1024 PNG with breathing margin, a generator can derive every iOS, Android, macOS, Windows and Web size from it with no visible quality loss." } },
-        { "@type": "Question", "name": "What's the difference between Android's adaptive and maskable icon?", "acceptedAnswer": { "@type": "Answer", "text": "They're equivalent concepts in different ecosystems: the adaptive icon is Android's native format (foreground + background, cropped by the system into different shapes), and the maskable icon is its PWA equivalent declared in the manifest. Both require the important content to fit in the central safe zone." } },
-        { "@type": "Question", "name": "Do I need to make the iOS 18 dark and tinted variants by hand?", "acceptedAnswer": { "@type": "Answer", "text": "Not necessarily by hand: you can generate a dark-background version and a grayscale one from the same 1024×1024 art. An icon generator can produce all three variants (standard, dark, tinted) automatically from a single PNG." } },
-        { "@type": "Question", "name": "What if my icon doesn't respect the adaptive/maskable safe zone?", "acceptedAnswer": { "@type": "Answer", "text": "The system still crops it to the corresponding shape (circle, squircle, teardrop), so any detail outside the central 66–80% safe zone simply disappears or gets cut in half." } }
+        {
+          "@type": "Question",
+          "name": "What's the difference between Android's adaptive and maskable icon?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They're equivalent concepts in different ecosystems: the adaptive icon is Android's native format (foreground + background, cropped by the system into different shapes), and the maskable icon is its PWA equivalent declared in the manifest. Both require the important content to fit in the central safe zone."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -209,14 +213,8 @@
       </p>
 
       <h2>Frequently asked questions</h2>
-      <h3>Is a single 1024×1024 icon enough for everything?</h3>
-      <p>Yes, if you start from an uncompressed 1024×1024 PNG with breathing margin, a generator can derive every iOS, Android, macOS, Windows and Web size from it with no visible quality loss.</p>
       <h3>What's the difference between Android's adaptive and maskable icon?</h3>
       <p>They're equivalent concepts in different ecosystems: the adaptive icon is Android's native format (foreground + background, cropped by the system into different shapes), and the maskable icon is its PWA equivalent declared in the manifest. Both require the important content to fit in the central safe zone.</p>
-      <h3>Do I need to make the iOS 18 dark and tinted variants by hand?</h3>
-      <p>Not necessarily by hand: you can generate a dark-background version and a grayscale one from the same 1024×1024 art. An icon generator can produce all three variants (standard, dark, tinted) automatically from a single PNG.</p>
-      <h3>What if my icon doesn't respect the adaptive/maskable safe zone?</h3>
-      <p>The system still crops it to the corresponding shape (circle, squircle, teardrop), so any detail outside the central 66–80% safe zone simply disappears or gets cut in half.</p>
 
       <h2>Generate them all at once</h2>
       <p>

@@ -73,14 +73,6 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Is favicon.ico still needed in 2026?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Although modern browsers prefer the PNG declared in link rel=\"icon\", many clients (RSS readers, crawlers, bookmarks) still request /favicon.ico directly. It's the universal fallback and it's worth including it."
-          }
-        },
-        {
-          "@type": "Question",
           "name": "What happens if I don't put a favicon?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -94,19 +86,11 @@
             "@type": "Answer",
             "text": "Technically you can convert any PNG, but the result looks better if the original is square: if it isn't, the converter fits it inside a square and may add margins or crop the longer edges."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "Why does my ICO look blurry in the browser tab?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Almost always because the ICO doesn't include the exact resolution the browser asks for (16 or 32 px) and it scales a larger one on the fly. Generate it with all the standard resolutions (16, 24, 32, 48, 64, 128, 256)."
-          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -318,14 +302,10 @@
       </ol>
 
       <h2>Frequently asked questions</h2>
-      <h3>Is favicon.ico still needed in 2026?</h3>
-      <p>Yes. Although modern browsers prefer the PNG declared in <code>link rel="icon"</code>, many clients (RSS readers, crawlers, bookmarks) still request <code>/favicon.ico</code> directly. It's the universal fallback and it's worth including it.</p>
       <h3>What happens if I don't put a favicon?</h3>
       <p>The browser shows a generic icon (a blank page or the default icon) and, if the site is installed as a PWA, uses a square with the domain's initial. It doesn't break anything, but it looks unprofessional and doesn't identify your brand in tabs or bookmarks.</p>
       <h3>Can I convert any PNG to ICO or does it have to be square?</h3>
       <p>Technically you can convert any PNG, but the result looks better if the original is square: if it isn't, the converter fits it inside a square and may add margins or crop the longer edges.</p>
-      <h3>Why does my ICO look blurry in the browser tab?</h3>
-      <p>Almost always because the ICO doesn't include the exact resolution the browser asks for (16 or 32&nbsp;px) and it scales a larger one on the fly. Generate it with all the standard resolutions (16, 24, 32, 48, 64, 128, 256).</p>
 
       <a class="cta" href="/editor/?tab=icons">Generate my favicons →</a>
 
