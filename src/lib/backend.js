@@ -43,9 +43,13 @@ function getWorker() {
     type: "module",
   });
   worker.onmessage = (e) => {
-    const { id, ok, result, error } = e.data;
+    const { id, ok, result, error, progress } = e.data;
     const p = pending.get(id);
     if (!p) return;
+    if (progress) {
+      p.onProgress?.(progress); // aviso intermedio: la llamada sigue pendiente
+      return;
+    }
     pending.delete(id);
     if (ok) p.resolve(result);
     else p.reject(new Error(error));
@@ -57,10 +61,10 @@ function getWorker() {
   return worker;
 }
 
-function callWorker(cmd, args) {
+function callWorker(cmd, args, onProgress) {
   return new Promise((resolve, reject) => {
     const id = nextId++;
-    pending.set(id, { resolve, reject });
+    pending.set(id, { resolve, reject, onProgress });
     getWorker().postMessage({ id, cmd, args });
   });
 }
@@ -102,7 +106,7 @@ async function packPreviewInline(s) {
   return { blob, bitmap };
 }
 
-async function callInline(cmd, args = {}) {
+async function callInline(cmd, args = {}, onProgress) {
   const s = inlineSession;
   switch (cmd) {
     case "load": {
@@ -135,7 +139,7 @@ async function callInline(cmd, args = {}) {
     case "warmupAi":
       return withAiIdleRelease(async () => {
         const mod = await import("./aiSegmenter.js");
-        return mod.warmupAi();
+        return mod.warmupAi(onProgress);
       });
     case "aiCut":
       return withAiIdleRelease(async () => {
@@ -262,9 +266,12 @@ export const backend = {
     return previewUrlFrom(pack);
   },
 
-  /** Pre-carga el modelo IA (primera vez: ~18MB runtime+modelo, luego caché). */
-  async warmupAi() {
-    return call("warmupAi");
+  /**
+   * Pre-carga el modelo IA (primera vez: ~7 MB entre runtime y modelo, luego
+   * caché). onProgress({stage:"model",loaded,total} | {stage:"init"}) opcional.
+   */
+  async warmupAi(onProgress) {
+    return call("warmupAi", {}, onProgress);
   },
 
   async aiCut() {

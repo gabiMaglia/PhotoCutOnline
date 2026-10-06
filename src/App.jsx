@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useLang } from "./lib/i18n.js";
+import { localizeEditorDoc } from "./lib/editorDoc.js";
 import pkg from "../package.json";
 import { useToasts } from "./hooks/useToasts.js";
 import { CutoutProvider, useCutoutContext } from "./features/cutout/CutoutContext.jsx";
@@ -41,7 +42,9 @@ function initialTab() {
 const IMAGE_TABS = ["cut", "colors", "meta", "text"];
 
 export default function App() {
-  useLang(); // re-render al cambiar idioma
+  const lang = useLang(); // re-render al cambiar idioma
+  // el bloque SEO estático de editor/index.html está en ES: lo traducimos acá
+  useEffect(() => localizeEditorDoc(lang), [lang]);
   const [tab, setTab] = useState(initialTab); // cut | icons | batch | colors
   const tabRef = useRef(tab);
   tabRef.current = tab;

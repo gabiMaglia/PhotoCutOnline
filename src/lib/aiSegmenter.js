@@ -11,6 +11,7 @@ import ortWasmUrl from "./ort-runtime/ort-wasm-simd-threaded.wasm?url";
 import ortMjsUrl from "./ort-runtime/ort-wasm-simd-threaded.mjs?url";
 
 const MODEL_URL = "/models/u2netp.onnx";
+const MODEL_BYTES = 4_574_861; // tamaño de u2netp.onnx: total de respaldo si el server no informa Content-Length
 const INPUT_SIZE = 320; // entrada fija de u2netp
 
 // normalización ImageNet usada por u2net
@@ -29,7 +30,40 @@ let sessionPromise = null;
 let inFlight = 0;
 let pendingRelease = false;
 
-async function getSession() {
+/**
+ * Descarga el modelo en streaming informando bytes. Devuelve null si el
+ * entorno no soporta streaming (se cae a que ORT lo pida por URL, sin
+ * progreso). `total` cae a MODEL_BYTES cuando el server comprime (el
+ * Content-Length no coincide con los bytes decodificados).
+ */
+async function fetchModelWithProgress(onProgress) {
+  const res = await fetch(MODEL_URL);
+  if (!res.ok) throw new Error(`Model download failed (${res.status})`);
+  const reader = res.body?.getReader?.();
+  if (!reader) return null;
+  const encoded = !!res.headers.get("content-encoding");
+  const total = (!encoded && Number(res.headers.get("content-length"))) || MODEL_BYTES;
+  const parts = [];
+  let loaded = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    parts.push(value);
+    loaded += value.byteLength;
+    onProgress({ stage: "model", loaded, total });
+  }
+  const bytes = new Uint8Array(loaded);
+  let off = 0;
+  for (const p of parts) {
+    bytes.set(p, off);
+    off += p.byteLength;
+  }
+  return bytes;
+}
+
+// onProgress solo aplica a quien CREA la sesión; si ya hay una en curso o
+// cacheada, no hay nada que informar.
+async function getSession(onProgress) {
   if (!sessionPromise) {
     sessionPromise = (async () => {
       const ort = await import("onnxruntime-web/wasm"); // build wasm-only (sin jsep/webgpu)
@@ -41,7 +75,14 @@ async function getSession() {
       };
       // sin COOP/COEP no hay SharedArrayBuffer: un solo hilo
       ort.env.wasm.numThreads = 1;
-      const session = await ort.InferenceSession.create(MODEL_URL, {
+      let model = MODEL_URL;
+      if (onProgress) {
+        onProgress({ stage: "model", loaded: 0, total: MODEL_BYTES });
+        model = (await fetchModelWithProgress(onProgress)) ?? MODEL_URL;
+        // el runtime WASM (~3 MB comprimido) lo baja ORT acá adentro, sin eventos
+        onProgress({ stage: "init" });
+      }
+      const session = await ort.InferenceSession.create(model, {
         executionProviders: ["wasm"],
       });
       return { ort, session };
@@ -53,11 +94,14 @@ async function getSession() {
   return sessionPromise;
 }
 
-/** Pre-descarga el modelo (para mostrar progreso antes del primer corte). */
-export async function warmupAi() {
+/**
+ * Pre-descarga el modelo (para mostrar progreso antes del primer corte).
+ * onProgress({stage: "model", loaded, total} | {stage: "init"}) es opcional.
+ */
+export async function warmupAi(onProgress) {
   inFlight++;
   try {
-    await getSession();
+    await getSession(onProgress);
     return true;
   } finally {
     inFlight--;

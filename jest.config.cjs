@@ -10,7 +10,7 @@ module.exports = {
   testMatch: ["**/*.test.{js,jsx}"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.cjs"],
   transform: {
-    "^.+\\.(js|jsx)$": [
+    "^.+\\.(js|jsx|mjs)$": [
       "babel-jest",
       {
         sourceType: "unambiguous",

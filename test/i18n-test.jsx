@@ -27,7 +27,7 @@ const railTitles = () =>
 
 const OB_TITLES = {
   en: "Remove the background in three steps",
-  es: "Quita el fondo en tres pasos",
+  es: "Quitá el fondo en tres pasos",
   pt: "Remova o fundo em três passos",
 };
 

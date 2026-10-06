@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { backend } from "../../../lib/backend.js";
 import { t } from "../../../lib/i18n.js";
 import { trackEvent } from "../../../services/analytics.js";
+import { warmupAiWithToast } from "../../../utils/aiWarmup.js";
 
 const ITERS = 4;
 
@@ -100,8 +101,7 @@ export function useCutoutSession({ imageUrl, toast }) {
     if (!imageUrl || busy) return;
     return runOp(async () => {
       if (!aiWarm.current) {
-        toast(t("toast.aiDownloading"), "ok");
-        await backend.warmupAi();
+        await warmupAiWithToast(toast, (onProgress) => backend.warmupAi(onProgress));
         aiWarm.current = true;
       }
       return backend.aiCut();

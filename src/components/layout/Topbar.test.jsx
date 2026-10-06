@@ -13,6 +13,7 @@ jest.mock("../../services/ads.js", () => ({
   initAds: jest.fn(),
 }));
 
+import { t } from "../../lib/i18n.js";
 import Topbar from "./Topbar.jsx";
 
 function setup(props = {}) {
@@ -59,9 +60,29 @@ describe("Topbar", () => {
     expect(donate).toHaveAttribute("href", expect.stringContaining("ko-fi.com"));
   });
 
+  it("(GROW-27 b) la tira de pestañas marca que hay más contenido a la derecha cuando desborda", () => {
+    const sw = jest.spyOn(HTMLElement.prototype, "scrollWidth", "get").mockReturnValue(431);
+    const cw = jest.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(128);
+    try {
+      setup();
+      const nav = screen.getByRole("tablist");
+      expect(nav).toHaveAttribute("data-more-right", "true");
+      expect(nav).toHaveAttribute("data-more-left", "false");
+    } finally {
+      sw.mockRestore();
+      cw.mockRestore();
+    }
+  });
+
+  it("(GROW-27 b) sin desborde no hay pista de scroll", () => {
+    setup();
+    const nav = screen.getByRole("tablist");
+    expect(nav).toHaveAttribute("data-more-right", "false");
+  });
+
   it("el logo enlaza al inicio (landing)", () => {
     setup();
-    const brand = screen.getByRole("link", { name: /ir al inicio/i });
+    const brand = screen.getByRole("link", { name: t("nav.home") });
     expect(brand).toHaveAttribute("href", "/");
   });
 });

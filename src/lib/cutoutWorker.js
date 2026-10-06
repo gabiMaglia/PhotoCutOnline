@@ -95,7 +95,7 @@ const handlers = {
     return packPreview();
   },
 
-  warmupAi: () => withAiIdleRelease(() => warmupAi()),
+  warmupAi: (_args, ctx) => withAiIdleRelease(() => warmupAi(ctx?.progress)),
 
   aiCut: () =>
     withAiIdleRelease(async () => {
@@ -147,7 +147,9 @@ self.onmessage = async (e) => {
   try {
     const handler = handlers[cmd];
     if (!handler) throw new Error(`comando desconocido: ${cmd}`);
-    const result = await handler(args || {});
+    const result = await handler(args || {}, {
+      progress: (p) => self.postMessage({ id, progress: p }),
+    });
     // El bitmap es transferible (sin copia); el resto del payload (blob,
     // metadata) se clona como siempre.
     const transfer = result?.bitmap ? [result.bitmap] : [];

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { backend } from "../../lib/backend.js";
 import { t } from "../../lib/i18n.js";
 import { DONATE_URL } from "../../services/ads.js";
@@ -6,11 +6,15 @@ import { STICKERS_ENABLED } from "../../config.js";
 import FileButton from "../ui/FileButton.jsx";
 import IconButton from "../ui/IconButton.jsx";
 import LangSwitch from "./LangSwitch.jsx";
+import { useScrollEdges } from "../../hooks/useScrollEdges.js";
 
 // Barra superior: marca, pestañas (Recorte / Icon Studio), abrir foto, idioma y
 // el grupo de íconos (donación, descarga de la app, acerca de).
 export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDownload }) {
   const activeRef = useRef(null);
+  // en móvil la tira scrollea: data-more-* alimenta el fade que avisa "hay más"
+  const [tabsEl, setTabsEl] = useState(null);
+  const edges = useScrollEdges(tabsEl);
 
   // La tira de pestañas scrollea horizontalmente cuando no entra (pantallas
   // medianas/chicas): al cambiar de pestaña, traerla a la vista. `inline:
@@ -30,7 +34,7 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
           <span className="brand-env">Desktop</span>
         </div>
       ) : (
-        <a className="brand" href="/" aria-label="PhotoCut Studio — ir al inicio">
+        <a className="brand" href="/" aria-label={t("nav.home")}>
           <span className="brand-mark" aria-hidden>◑</span>
           <span className="brand-name">PhotoCut</span>
           <span className="brand-sub">Studio</span>
@@ -38,7 +42,14 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
         </a>
       )}
 
-      <nav className="tabs" role="tablist" aria-label="Espacios de trabajo">
+      <nav
+        ref={setTabsEl}
+        className="tabs"
+        role="tablist"
+        aria-label={t("nav.tabs")}
+        data-more-left={edges.left}
+        data-more-right={edges.right}
+      >
         {[
           // Orden = flujo natural: recortás → editás encima → lote → iconos → color → archivo.
           // "Editar" (id interno "text" para no romper los deep-links ?tab=text) es el

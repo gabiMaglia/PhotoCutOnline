@@ -178,6 +178,36 @@ describe("aiSegmenter", () => {
     expect(ortMock.session.release).toHaveBeenCalledTimes(1);
   });
 
+  test("(GROW-27 e) warmupAi(onProgress) descarga el modelo en streaming, informa % y luego la etapa 'init'", async () => {
+    const chunks = [new Uint8Array(1000), new Uint8Array(1000), new Uint8Array(2000)];
+    let i = 0;
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      headers: { get: (h) => (h.toLowerCase() === "content-length" ? "4000" : null) },
+      body: {
+        getReader: () => ({
+          read: async () =>
+            i < chunks.length ? { done: false, value: chunks[i++] } : { done: true },
+        }),
+      },
+    });
+    const { warmupAi } = require("./aiSegmenter.js");
+    const seen = [];
+    const warm = warmupAi((p) => seen.push(p));
+    await new Promise((r) => setTimeout(r, 0));
+    ortMock.resolveCreate();
+    await warm;
+
+    const model = seen.filter((p) => p.stage === "model");
+    expect(model.map((p) => p.loaded)).toEqual([0, 1000, 2000, 4000]); // 0 = arranque
+    expect(model.slice(1).every((p) => p.total === 4000)).toBe(true);
+    expect(seen[seen.length - 1].stage).toBe("init");
+    // la sesión se crea con los bytes descargados, no con la URL
+    const arg = ortMock.ort.InferenceSession.create.mock.calls[0][0];
+    expect(arg).toBeInstanceOf(Uint8Array);
+    expect(arg.byteLength).toBe(4000);
+  });
+
   test("dispose() de feeds/results corre en finally aunque session.run() rechace", async () => {
     const { aiMatte } = require("./aiSegmenter.js");
 

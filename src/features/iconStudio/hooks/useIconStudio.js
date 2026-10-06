@@ -11,6 +11,7 @@ import { loadHtmlImage } from "../../../lib/jsEngine.js";
 import { saveExport } from "../../../utils/save.js";
 import { t } from "../../../lib/i18n.js";
 import { trackEvent } from "../../../services/analytics.js";
+import { warmupAiWithToast } from "../../../utils/aiWarmup.js";
 
 // Lógica de Icon Studio: fuente del arte (recorte actual / PNG abierto), quitar
 // fondo con IA, recortar al contenido, ajustes de render y generación del ZIP.
@@ -86,7 +87,7 @@ export function useIconStudio({ getCutout, onToast }) {
     setRemoving(true);
     try {
       if (!aiWarned.current) {
-        onToast(t("toast.aiDownloading"), "ok");
+        await warmupAiWithToast(onToast, (onProgress) => backend.warmupAi(onProgress));
         aiWarned.current = true;
       }
       const W = source.naturalWidth || source.width;

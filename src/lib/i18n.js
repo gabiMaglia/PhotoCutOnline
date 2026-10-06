@@ -16,6 +16,8 @@ export const LANGS = [
 const DICT = {
   es: {
     "tab.cut": "Recorte",
+    "nav.home": "PhotoCut Studio — ir al inicio",
+    "nav.tabs": "Espacios de trabajo",
     openPhoto: "Abrir foto",
     "about.aria": "Acerca de y licencias",
     "guides.label": "Guías",
@@ -52,22 +54,26 @@ const DICT = {
     "export.bgOpacity": "Opacidad del fondo — {n}%",
     "export.blurAmount": "Desenfoque del fondo — {n}px",
     "export.blurDownload": "⬇ Descargar con fondo desenfocado",
-    "toast.bgSet": "Fondo cargado — míralo en la vista previa (P)",
+    "toast.bgSet.touch": "Fondo cargado — mirálo en la vista previa",
+    "toast.bgSet": "Fondo cargado — mirálo en la vista previa (P)",
     "toast.cutLoaded": "Recorte cargado como nueva imagen — seguí editando",
-    "preview.dropHint": "Arrastra el recorte y suéltalo en el lienzo para seguir editándolo",
+    "preview.dropHint": "Arrastrá el recorte y soltalo en el lienzo para seguir editándolo",
     "rail.help":
-      "A automático · 1 recuadro · 2/3 pinceles · P vista previa · E exportar · ? atajos. Arrastra o pega (⌘V) cualquier imagen.",
+      "A automático · 1 recuadro · 2/3 pinceles · P vista previa · E exportar · ? atajos. Arrastrá o pegá (⌘V) cualquier imagen.",
 
     "toast.loaded": "{w} × {h} px cargados",
-    "toast.ai": "Recorte IA aplicado — pinta para afinar",
-    "toast.aiDownloading": "Descargando el modelo IA (~18 MB, solo la primera vez)…",
-    "toast.cut": "Recorte listo — pinta para afinar bordes",
+    "toast.ai": "Recorte IA aplicado — pintá para afinar",
+    "toast.aiDownloading": "Descargando el modelo IA (~7 MB, solo la primera vez)…",
+    "ai.stage.model": "Descargando modelo… {pct}%",
+    "ai.stage.modelIndet": "Descargando modelo…",
+    "ai.stage.init": "Iniciando…",
+    "toast.cut": "Recorte listo — pintá para afinar bordes",
     "toast.auto": "Recorte automático aplicado",
     "toast.exported": "Exportado ✓",
     "toast.saved": "Guardado ✓",
     "toast.copied": "PNG copiado al portapapeles ✓",
     "toast.copyfail": "No se pudo copiar: {e}",
-    "toast.heic": "HEIC del iPhone no soportado — exporta la foto como JPG o PNG",
+    "toast.heic": "HEIC del iPhone no soportado — exportá la foto como JPG o PNG",
     "toast.unreadable": "No se pudo leer ese archivo como imagen",
     "toast.reduced": "Reducida a 4K (original {w} × {h} px)",
     "toast.zip": "ZIP listo — {n}+ iconos en {p} plataformas",
@@ -80,13 +86,15 @@ const DICT = {
       "{w} × {h} px ({mp} MP). Procesarla entera puede agotar la memoria del navegador.",
     "large.reduce": "Reducir a 4K (recomendado)",
     "large.cancel": "Cancelar",
-    "drop.here": "Suéltala aquí",
+    "drop.here": "Soltala acá",
 
-    "canvas.empty.title": "Suelta una imagen aquí",
+    "canvas.empty.title": "Soltá una imagen acá",
+    "canvas.empty.body.touch": "Tocá «Abrir foto» o arrastrá un archivo. Luego dibujá un recuadro alrededor del sujeto — o probá el recorte automático.",
     "canvas.empty.body":
-      "Arrastra un archivo, pega desde el portapapeles (⌘V) o usa «Abrir foto». Luego dibuja un recuadro alrededor del sujeto — o prueba el recorte automático.",
+      "Arrastrá un archivo, pegá desde el portapapeles (⌘V) o usá «Abrir foto». Luego dibujá un recuadro alrededor del sujeto — o probá el recorte automático.",
     "cut.emptyDesc":
       "Quitá el fondo con inteligencia artificial en un clic, o recortá a mano con precisión dibujando un recuadro alrededor del sujeto. Exportás con fondo transparente real (PNG/WebP).",
+    "empty.drag.touch": "Tocá «Abrir foto» arriba para elegir una imagen.",
     "empty.drag": "Arrastrá un archivo, pegá con ⌘V o usá «Abrir foto» arriba.",
     busy: "procesando…",
 
@@ -137,7 +145,7 @@ const DICT = {
     "icon.py2": "genera las mismas medidas desde la terminal:",
     "icon.py3": "Solo requiere Pillow.",
     "icon.emptyBody":
-      "Usa el recorte actual o abre un PNG transparente. Generamos todas las medidas para iOS, Android, macOS, Windows y Web — listas para pegar en tu proyecto.",
+      "Usá el recorte actual o abrí un PNG transparente. Generamos todas las medidas para iOS, Android, macOS, Windows y Web — listas para pegar en tu proyecto.",
     "icon.note":
       "Vista pixel-perfect — así se verá el icono en el dock, la barra de pestañas y la home screen.",
 
@@ -237,7 +245,8 @@ const DICT = {
     "faces.title": "Censurar caras",
     "faces.detect": "Detectar caras",
     "faces.detecting": "Detectando caras…",
-    "faces.found": "{n} cara(s) detectada(s)",
+    "faces.found.one": "{n} cara detectada",
+    "faces.found.other": "{n} caras detectadas",
     "faces.none": "No se detectaron caras. Probá con otra foto o más nítida.",
     "faces.mode": "Modo",
     "faces.blur": "Desenfocar",
@@ -358,7 +367,8 @@ const DICT = {
     "batch.downloadZip": "Descargar ZIP",
     "batch.zipping": "Generando ZIP…",
     "batch.clear": "Nuevo lote",
-    "batch.okCount": "{n} listas para descargar",
+    "batch.okCount.one": "{n} lista para descargar",
+    "batch.okCount.other": "{n} listas para descargar",
     "batch.toast.zip": "ZIP descargado — {n} imágenes",
     "batch.toast.zipEmpty": "Todavía no hay ninguna imagen lista",
 
@@ -404,16 +414,18 @@ const DICT = {
     "sc.help": "Esta ayuda",
     "sc.close": "Cerrar paneles",
 
-    "ob.title": "Quita el fondo en tres pasos",
+    "ob.title": "Quitá el fondo en tres pasos",
     "ob.privacy":
       "Todo ocurre en tu navegador — tus fotos nunca se suben a ningún servidor.",
-    "ob.1.title": "Abre una foto",
-    "ob.1.body": "Arrastra un archivo, pega con ⌘V o toca «Abrir foto».",
-    "ob.2.title": "Marca el sujeto",
-    "ob.2.body": "Dibuja un recuadro alrededor — o usa el recorte automático (A).",
-    "ob.3.title": "Afina y exporta",
+    "ob.1.title": "Abrí una foto",
+    "ob.1.body.touch": "Tocá «Abrir foto» para elegir una imagen.",
+    "ob.1.body": "Arrastrá un archivo, pegá con ⌘V o tocá «Abrir foto».",
+    "ob.2.title": "Marcá el sujeto",
+    "ob.2.body.touch": "Dibujá un recuadro alrededor — o usá el recorte automático.",
+    "ob.2.body": "Dibujá un recuadro alrededor — o usá el recorte automático (A).",
+    "ob.3.title": "Afiná y exportá",
     "ob.3.body":
-      "Pinceles mantener/quitar para los bordes. Exporta PNG transparente o crea iconos de app.",
+      "Pinceles mantener/quitar para los bordes. Exportá PNG transparente o creá iconos de app.",
     "ob.go": "¡A recortar!",
 
     "finish.title": "Acabado",
@@ -447,13 +459,15 @@ const DICT = {
 
     "crash.title": "Algo salió mal",
     "crash.body":
-      "La aplicación encontró un error inesperado. Tu imagen no se ha enviado a ningún sitio — todo ocurre en tu navegador.",
+      "La aplicación encontró un error inesperado. Tu imagen no se envió a ningún lado — todo ocurre en tu navegador.",
     "crash.reset": "Reiniciar",
     "crash.detail": "Detalle técnico",
   },
 
   en: {
     "tab.cut": "Cutout",
+    "nav.home": "PhotoCut Studio — go to home",
+    "nav.tabs": "Workspaces",
     openPhoto: "Open photo",
     "about.aria": "About & licenses",
     "guides.label": "Guides",
@@ -490,6 +504,7 @@ const DICT = {
     "export.bgOpacity": "Background opacity — {n}%",
     "export.blurAmount": "Background blur — {n}px",
     "export.blurDownload": "⬇ Download with blurred background",
+    "toast.bgSet.touch": "Background loaded — see it in the preview",
     "toast.bgSet": "Background loaded — see it in the preview (P)",
     "toast.cutLoaded": "Cutout loaded as a new image — keep editing",
     "preview.dropHint": "Drag the cutout and drop it on the canvas to keep editing it",
@@ -498,7 +513,10 @@ const DICT = {
 
     "toast.loaded": "{w} × {h} px loaded",
     "toast.ai": "AI cutout applied — paint to refine",
-    "toast.aiDownloading": "Downloading the AI model (~18 MB, first time only)…",
+    "toast.aiDownloading": "Downloading the AI model (~7 MB, first time only)…",
+    "ai.stage.model": "Downloading model… {pct}%",
+    "ai.stage.modelIndet": "Downloading model…",
+    "ai.stage.init": "Starting…",
     "toast.cut": "Cutout ready — paint to refine edges",
     "toast.auto": "Auto cutout applied",
     "toast.exported": "Exported ✓",
@@ -521,10 +539,12 @@ const DICT = {
     "drop.here": "Drop it here",
 
     "canvas.empty.title": "Drop an image here",
+    "canvas.empty.body.touch": "Tap “Open photo” or drag a file in. Then draw a box around the subject — or try the auto cutout.",
     "canvas.empty.body":
       "Drag a file in, paste from the clipboard (⌘V) or use “Open photo”. Then draw a box around the subject — or try the auto cutout.",
     "cut.emptyDesc":
       "Remove the background with AI in one click, or cut out by hand with precision by drawing a box around the subject. Export with a real transparent background (PNG/WebP).",
+    "empty.drag.touch": "Tap “Open photo” above to pick an image.",
     "empty.drag": "Drag a file, paste with ⌘V, or use “Open photo” above.",
     busy: "processing…",
 
@@ -675,7 +695,8 @@ const DICT = {
     "faces.title": "Censor faces",
     "faces.detect": "Detect faces",
     "faces.detecting": "Detecting faces…",
-    "faces.found": "{n} face(s) detected",
+    "faces.found.one": "{n} face detected",
+    "faces.found.other": "{n} faces detected",
     "faces.none": "No faces detected. Try another or a sharper photo.",
     "faces.mode": "Mode",
     "faces.blur": "Blur",
@@ -796,7 +817,8 @@ const DICT = {
     "batch.downloadZip": "Download ZIP",
     "batch.zipping": "Building ZIP…",
     "batch.clear": "New batch",
-    "batch.okCount": "{n} ready to download",
+    "batch.okCount.one": "{n} ready to download",
+    "batch.okCount.other": "{n} ready to download",
     "batch.toast.zip": "ZIP downloaded — {n} images",
     "batch.toast.zipEmpty": "No images are ready yet",
 
@@ -846,8 +868,10 @@ const DICT = {
     "ob.privacy":
       "Everything happens in your browser — your photos never get uploaded anywhere.",
     "ob.1.title": "Open a photo",
+    "ob.1.body.touch": "Tap “Open photo” to pick an image.",
     "ob.1.body": "Drag a file in, paste with ⌘V or tap “Open photo”.",
     "ob.2.title": "Mark the subject",
+    "ob.2.body.touch": "Draw a box around it — or use the auto cutout.",
     "ob.2.body": "Draw a box around it — or use the auto cutout (A).",
     "ob.3.title": "Refine and export",
     "ob.3.body":
@@ -892,6 +916,8 @@ const DICT = {
 
   pt: {
     "tab.cut": "Recorte",
+    "nav.home": "PhotoCut Studio — ir para o início",
+    "nav.tabs": "Espaços de trabalho",
     openPhoto: "Abrir foto",
     "about.aria": "Sobre e licenças",
     "guides.label": "Guias",
@@ -928,6 +954,7 @@ const DICT = {
     "export.bgOpacity": "Opacidade do fundo — {n}%",
     "export.blurAmount": "Desfoque do fundo — {n}px",
     "export.blurDownload": "⬇ Baixar com fundo desfocado",
+    "toast.bgSet.touch": "Fundo carregado — veja na pré-visualização",
     "toast.bgSet": "Fundo carregado — veja na pré-visualização (P)",
     "toast.cutLoaded": "Recorte carregado como nova imagem — continue editando",
     "preview.dropHint": "Arraste o recorte e solte na tela para continuar editando",
@@ -936,7 +963,10 @@ const DICT = {
 
     "toast.loaded": "{w} × {h} px carregados",
     "toast.ai": "Recorte IA aplicado — pinte para refinar",
-    "toast.aiDownloading": "Baixando o modelo de IA (~18 MB, só na primeira vez)…",
+    "toast.aiDownloading": "Baixando o modelo de IA (~7 MB, só na primeira vez)…",
+    "ai.stage.model": "Baixando modelo… {pct}%",
+    "ai.stage.modelIndet": "Baixando modelo…",
+    "ai.stage.init": "Iniciando…",
     "toast.cut": "Recorte pronto — pinte para refinar as bordas",
     "toast.auto": "Recorte automático aplicado",
     "toast.exported": "Exportado ✓",
@@ -959,10 +989,12 @@ const DICT = {
     "drop.here": "Solte aqui",
 
     "canvas.empty.title": "Solte uma imagem aqui",
+    "canvas.empty.body.touch": "Toque em «Abrir foto» ou arraste um arquivo. Depois desenhe um retângulo ao redor do sujeito — ou experimente o recorte automático.",
     "canvas.empty.body":
       "Arraste um arquivo, cole da área de transferência (⌘V) ou use «Abrir foto». Depois desenhe um retângulo ao redor do sujeito — ou experimente o recorte automático.",
     "cut.emptyDesc":
       "Remova o fundo com inteligência artificial em um clique, ou recorte à mão com precisão desenhando um retângulo ao redor do sujeito. Exporte com fundo transparente real (PNG/WebP).",
+    "empty.drag.touch": "Toque em «Abrir foto» acima para escolher uma imagem.",
     "empty.drag": "Arraste um arquivo, cole com ⌘V ou use «Abrir foto» acima.",
     busy: "processando…",
 
@@ -1113,7 +1145,8 @@ const DICT = {
     "faces.title": "Censurar rostos",
     "faces.detect": "Detectar rostos",
     "faces.detecting": "Detectando rostos…",
-    "faces.found": "{n} rosto(s) detectado(s)",
+    "faces.found.one": "{n} rosto detectado",
+    "faces.found.other": "{n} rostos detectados",
     "faces.none": "Nenhum rosto detectado. Tente outra foto ou mais nítida.",
     "faces.mode": "Modo",
     "faces.blur": "Desfocar",
@@ -1234,7 +1267,8 @@ const DICT = {
     "batch.downloadZip": "Baixar ZIP",
     "batch.zipping": "Gerando ZIP…",
     "batch.clear": "Novo lote",
-    "batch.okCount": "{n} prontas para baixar",
+    "batch.okCount.one": "{n} pronta para baixar",
+    "batch.okCount.other": "{n} prontas para baixar",
     "batch.toast.zip": "ZIP baixado — {n} imagens",
     "batch.toast.zipEmpty": "Ainda não há nenhuma imagem pronta",
 
@@ -1284,8 +1318,10 @@ const DICT = {
     "ob.privacy":
       "Tudo acontece no seu navegador — suas fotos nunca são enviadas a nenhum servidor.",
     "ob.1.title": "Abra uma foto",
+    "ob.1.body.touch": "Toque em «Abrir foto» para escolher uma imagem.",
     "ob.1.body": "Arraste um arquivo, cole com ⌘V ou toque em «Abrir foto».",
     "ob.2.title": "Marque o sujeito",
+    "ob.2.body.touch": "Desenhe um retângulo ao redor — ou use o recorte automático.",
     "ob.2.body": "Desenhe um retângulo ao redor — ou use o recorte automático (A).",
     "ob.3.title": "Refine e exporte",
     "ob.3.body":
@@ -1374,7 +1410,31 @@ export function useLang() {
   return current;
 }
 
+// En táctil (pointer: coarse) los textos que mencionan teclado/atajos tienen
+// una variante `${key}.touch` sin esas referencias.
+function isCoarsePointer() {
+  try {
+    return typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
+  } catch {
+    return false;
+  }
+}
+
 export function t(key, vars) {
+  const touchKey = `${key}.touch`;
+  if ((DICT[lang][touchKey] ?? DICT.en[touchKey]) && isCoarsePointer()) key = touchKey;
   const s = DICT[lang][key] ?? DICT.en[key] ?? key;
   return vars ? s.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? "")) : s;
+}
+
+/**
+ * Plural por cantidad: usa `${key}.one` si n === 1 y `${key}.other` en el resto
+ * (en es/en/pt 0 va en plural). Cae a la clave plana si no hay variantes.
+ * Interpola {n} automáticamente además de `vars`.
+ */
+export function tn(key, n, vars) {
+  const variant = n === 1 ? "one" : "other";
+  const full = `${key}.${variant}`;
+  const hasVariant = DICT[lang][full] ?? DICT.en[full];
+  return t(hasVariant ? full : key, { n, ...vars });
 }
