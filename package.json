@@ -9,11 +9,12 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/gen-lastmod.mjs --auto && vite build",
     "preview": "vite preview",
     "test": "jest && node --test scripts/",
     "test:unit": "jest",
     "test:web": "node test/run-tests.mjs",
+    "lastmod": "node scripts/gen-lastmod.mjs",
     "licenses": "node scripts/gen-licenses.mjs",
     "brand-assets": "node scripts/gen-brand-assets.mjs",
     "build:wasm": "wasm-pack build crates/photocut-wasm --target web --release --out-dir ../../src/lib/wasm && rm -f src/lib/wasm/.gitignore",
