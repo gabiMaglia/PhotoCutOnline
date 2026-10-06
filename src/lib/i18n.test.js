@@ -41,7 +41,7 @@ describe("registro ES: voseo (GROW-27 d)", () => {
   const src = fs.readFileSync(require("path").join(__dirname, "i18n.js"), "utf8");
   const es = src.slice(src.indexOf("  es: {"), src.indexOf("  en: {"));
   const TUTEO =
-    /(?<![\p{L}])(Suelta|Suéltala|Arrastra|Pega|Usa|Abre|Dibuja|Prueba|Toca|Exporta|Afina|Crea|Quita|Mira|míralo|suéltalo|arrastra|pega|usa|abre|dibuja|prueba|toca|exporta|afina|crea|mira)(?![\p{L}])/u;
+    /(?<![\p{L}])(Suelta|Suéltala|Arrastra|Pega|Usa|Abre|Dibuja|Prueba|Toca|Exporta|Afina|Crea|Quita|Mira|míralo|suéltalo|arrastra|pega|usa|abre|dibuja|prueba|toca|exporta|afina|crea|mira|pinta)(?![\p{L}])/u;
 
   it("no hay imperativos de tuteo en el diccionario ES", () => {
     const hits = es
