@@ -3,21 +3,27 @@
 //   node scripts/faq-prune.mjs <slug> all            # saca toda la FAQ (sección + JSON-LD)
 //   node scripts/faq-prune.mjs <slug> 1,3            # saca las preguntas 1 y 3 (base 1, como en faq-overlap)
 //   node scripts/faq-prune.mjs <slug> keep:2         # deja solo la 2
+//   node scripts/faq-prune.mjs <slug> keep:2 --lang en|pt   # lo mismo en el par EN/PT del slug ES
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { guideFiles } from "./render-pruebas.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 export const norm = (s) =>
   s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim();
 
-const H2_RE = /<h2[^>]*>\s*Preguntas frecuentes\s*<\/h2>/;
+export const FAQ_H2 = {
+  es: /<h2[^>]*>\s*Preguntas frecuentes\s*<\/h2>/,
+  en: /<h2[^>]*>\s*Frequently asked questions\s*<\/h2>/,
+  pt: /<h2[^>]*>\s*Perguntas frequentes\s*<\/h2>/,
+};
 const LD_RE = /<script type="application\/ld\+json">([\s\S]*?)<\/script>\s*/g;
 
 // Devuelve { start, end, items:[{index, qNorm, from, to}] } de la FAQ visible.
-export function faqRegion(html) {
-  const m = H2_RE.exec(html);
+export function faqRegion(html, lang = "es") {
+  const m = FAQ_H2[lang].exec(html);
   if (!m) return null;
   const from = m.index + m[0].length;
   const rest = html.slice(from);
@@ -31,8 +37,8 @@ export function faqRegion(html) {
   return { h2: { from: m.index, to: from }, start: from, end: to, items };
 }
 
-export function pruneFaq(html, spec) {
-  const reg = faqRegion(html);
+export function pruneFaq(html, spec, lang = "es") {
+  const reg = faqRegion(html, lang);
   if (!reg) throw new Error("no hay FAQ");
   const n = reg.items.length;
   let drop;
@@ -44,7 +50,7 @@ export function pruneFaq(html, spec) {
   // de atrás para adelante para no mover los índices
   for (const it of [...dropped].reverse()) out = out.slice(0, it.from) + out.slice(it.to);
   if (dropped.length === n) {
-    const r2 = H2_RE.exec(out);
+    const r2 = FAQ_H2[lang].exec(out);
     out = out.slice(0, r2.index).replace(/[ \t]*$/, "") + out.slice(r2.index + r2[0].length).replace(/^\s*\n/, "\n");
   }
   const gone = new Set(dropped.map((i) => i.qNorm));
@@ -61,9 +67,12 @@ export function pruneFaq(html, spec) {
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  const [slug, spec] = process.argv.slice(2);
-  const f = path.join(ROOT, "public/guias", `${slug}.html`);
-  const r = pruneFaq(readFileSync(f, "utf8"), spec);
+  const args = process.argv.slice(2);
+  const li = args.indexOf("--lang");
+  const lang = li >= 0 ? args.splice(li, 2)[1] : "es";
+  const [slug, spec] = args;
+  const f = guideFiles(slug)[lang];
+  const r = pruneFaq(readFileSync(f, "utf8"), spec, lang);
   writeFileSync(f, r.html);
   console.log(`${slug}: quité ${r.dropped.length}, quedan ${r.kept}`);
   for (const q of r.dropped) console.log("   -", q);

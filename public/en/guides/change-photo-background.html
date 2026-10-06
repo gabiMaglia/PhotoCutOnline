@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/en/guides/change-photo-background.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Can I use another photo as the background, not just a color?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Besides a solid color background, there's an Image mode where you add a second photo and the cut-out subject sits in front of it. An opacity control lets you dim it so it doesn't compete with the subject." } },
-        { "@type": "Question", "name": "Is my photo uploaded to a server to change its background?", "acceptedAnswer": { "@type": "Answer", "text": "No. Both the original photo and the background image are processed in your own browser; neither is uploaded to a server or stored once you close the tab." } },
-        { "@type": "Question", "name": "Which format is best when changing the background?", "acceptedAnswer": { "@type": "Answer", "text": "If the new background is solid or another photo, any format works: PNG or WebP keep edges better, and JPEG is fine if the result doesn't need transparency. Only avoid JPEG when you want to keep the background transparent." } },
-        { "@type": "Question", "name": "How do I avoid the subject looking pasted onto the new background?", "acceptedAnswer": { "@type": "Answer", "text": "Take care of the cutout edge with zoom, pick a background whose light and intensity are similar to the original photo, and lower the background image's opacity a little so the contrast doesn't give away the montage." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -164,13 +152,6 @@
         <figcaption>Cut out the subject once in PhotoCut Studio; then try as many backgrounds as you like.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>We tested it: cut out first, choose the background after</h3>
-        <p>We cut out the person with the <strong>AI Cutout</strong> and then changed the background to a studio blue right in the export (<em>solid color</em> mode). The hair edge blended well with the new color with the <strong>edge feather at 1–2&nbsp;px</strong>: at 0 the outline looked hard, above 3 it "ate" detail.</p>
-        <p>The practical takeaway: you cut out once; after that you can try as many backgrounds as you want —color or image— without cutting out again. All in the browser, without uploading the photo.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version. The images above are from that session.</p>
-      </div>
-
       <h2>Color background: the shortcut that almost never fails</h2>
       <p>
         When the question is "which color?", the answer depends on the use. For
@@ -206,15 +187,29 @@
         tab, nothing is left behind.
       </p>
 
-      <h2>Frequently asked questions</h2>
-      <h3>Can I use another photo as the background, not just a color?</h3>
-      <p>Yes. Besides a solid color background, there's an <strong>Image</strong> mode where you add a second photo and the cut-out subject sits in front of it. An opacity control lets you dim it so it doesn't compete with the subject.</p>
-      <h3>Is my photo uploaded to a server to change its background?</h3>
-      <p>No. Both the original photo and the background image are processed in your own browser; neither is uploaded to a server or stored once you close the tab.</p>
-      <h3>Which format is best when changing the background?</h3>
-      <p>If the new background is solid or another photo, any format works: PNG or WebP keep edges better, and JPEG is fine if the result doesn't need transparency. Only avoid JPEG when you want to keep the background transparent.</p>
-      <h3>How do I avoid the subject looking pasted onto the new background?</h3>
-      <p>Take care of the cutout edge with zoom, pick a background whose light and intensity are similar to the original photo, and lower the background image's opacity a little so the contrast doesn't give away the montage.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: cut out once, try backgrounds without cutting out again</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, Export → Color / Image.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout” just once.</li>
+          <li>With “Transparent” + PNG I downloaded the cutout with the edge feather at 0, 2 and 6 px and counted the semi-transparent pixels.</li>
+          <li>I chose “Color” mode, #1e4d8c, JPEG format and downloaded.</li>
+          <li>I loaded paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) as the background image at opacity 100 and downloaded in JPEG.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout just once: 4.1 s. Changing the background afterwards didn't run the AI again: exporting with a color took 0.1 s and with a background image 0.3 s (download included).</li>
+          <li>Semi-transparent edge pixels by feather: 0 px → 1.3%, 2 px → 3.3%, 6 px → 7.3%.</li>
+          <li>JPEG with the #1e4d8c background: 720 × 900 px, 56 KB; the corner pixel came out rgb(29, 77, 139) (I asked for rgb(30, 77, 140)). With the background image: 65 KB.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The JPEG returned the color one level off from what I asked for (because of compression). I measured sizes and edge pixels, not how well the hair blends into the new background: I judged that by eye and didn't quantify it, so I'm not claiming which feather looks best.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Change my photo's background →</a>
 

@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/logo-com-fundo-transparente.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "O resultado serve como logo vetorial (SVG)?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Remover o fundo produz um PNG transparente, que é um mapa de pixels: nítido no tamanho exportado, mas pixeliza se você aumentar muito. Para escalar a qualquer tamanho sem perder qualidade é preciso um SVG feito num editor de vetores. O PNG resolve a maioria dos usos web e de documentos." } },
-        { "@type": "Question", "name": "Como evito o halo branco ao redor do logo?", "acceptedAnswer": { "@type": "Answer", "text": "Ajuste o contorno com os pincéis e revise o resultado sobre um fundo escuro na prévia: sobre escuro, qualquer resto de branco aparece na hora e você corrige antes de exportar." } },
-        { "@type": "Question", "name": "Por que o logo tem que ser PNG e não JPG?", "acceptedAnswer": { "@type": "Answer", "text": "Porque o JPG não guarda transparência e preenche o fundo com uma cor. Um logo em JPG arrasta um retângulo de fundo que aparece sobre qualquer outra cor. O PNG mantém a transparência e o logo se integra em qualquer lugar." } },
-        { "@type": "Question", "name": "O logo é enviado a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O recorte é feito no seu navegador: a imagem não é enviada a lugar nenhum nem fica salva ao fechar a aba — útil quando o logo é de um cliente ou ainda não é público." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -159,13 +147,6 @@
         <li>Baixe em <strong>PNG</strong>, num tamanho amplo para poder reduzir depois sem perder nitidez.</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: para um logo, a varinha ganha da IA</h3>
-        <p>Um logo costuma vir sobre um <strong>fundo sólido</strong> (branco ou uma cor plana). Ali o <strong>Recorte automático</strong> ou a <strong>Varinha mágica</strong> —que selecionam por cor— dão uma borda mais limpa que a IA, que é pensada para fotos de sujeitos. Um clique sobre o fundo e ele fica selecionado para remover.</p>
-        <p>Exportamos em <strong>PNG transparente</strong>: assim o logo fica bom sobre qualquer fundo (um site, uma nota, uma camiseta). Tudo no navegador, sem enviar sua marca.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. As imagens acima são dessa sessão.</p>
-      </div>
-
       <h2>O detalhe que estraga logos: o halo branco</h2>
       <p>
         O erro mais comum ao remover o fundo de um logo é deixar um
@@ -216,15 +197,30 @@
         a aba.
       </p>
 
-      <h2>Perguntas frequentes</h2>
-      <h3>O resultado serve como logo vetorial (SVG)?</h3>
-      <p>Não. Remover o fundo produz um PNG transparente, que é um mapa de pixels: nítido no tamanho exportado, mas pixeliza se você aumentar muito. Para escalar a qualquer tamanho sem perder qualidade é preciso um SVG feito num editor de vetores. O PNG resolve a maioria dos usos web e de documentos.</p>
-      <h3>Como evito o halo branco ao redor do logo?</h3>
-      <p>Ajuste o contorno com os pincéis e revise o resultado sobre um fundo escuro na prévia: sobre escuro, qualquer resto de branco aparece na hora e você corrige antes de exportar.</p>
-      <h3>Por que o logo tem que ser PNG e não JPG?</h3>
-      <p>Porque o JPG não guarda transparência e preenche o fundo com uma cor. Um logo em JPG arrasta um retângulo de fundo que aparece sobre qualquer outra cor. O PNG mantém a transparência e o logo se integra em qualquer lugar.</p>
-      <h3>O logo é enviado a um servidor?</h3>
-      <p>Não. O recorte é feito no seu navegador: a imagem não é enviada a lugar nenhum nem fica salva ao fechar a aba — útil quando o logo é de um cliente ou ainda não é público.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: o mesmo logo com o Recorte IA, o recorte automático e a varinha</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/logo-antes.jpg"><code>logo-antes.jpg</code></a>, 820 × 637 px, 15,5 KB (imagem de exemplo deste site).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA / Recorte automático / Varinha mágica.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o logo (JPG sobre fundo liso), apliquei «Recorte IA» e baixei o PNG.</li>
+          <li>Em uma aba nova, apliquei «Recorte automático» ao mesmo arquivo e baixei.</li>
+          <li>Em outra, escolhi «Varinha mágica» com a tolerância padrão, dei um único clique no canto superior esquerdo (fundo) e baixei.</li>
+          <li>De cada PNG medi a porcentagem de pixels transparentes e semitransparentes.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Recorte IA: 4,0 s, 89,4% transparente, 1,4% semitransparente, PNG de 84 KB.</li>
+          <li>Recorte automático: 1,45 s, 89,5% transparente, 1,2% semitransparente, 81 KB.</li>
+          <li>Varinha mágica (um clique): 0,16 s, 85,7% transparente, 3,6% semitransparente, 117 KB.</li>
+          <li>O logo tem um emblema e, embaixo, a palavra da marca. Na faixa onde está o texto (entre 68% e 85% da altura) a parte que ficou opaca foi 0,0% com a IA, 0,0% com o recorte automático e 15,4% com a varinha.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Nem o Recorte IA nem o recorte automático conservaram a palavra do logo: só sobrou o emblema. A varinha conservou, mas deixou preenchidos e opacos os buracos de letras como o do A, porque não tocam o fundo, e a borda ficou com mais semitransparência. Com um logo sem texto a IA teria bastado; com texto, precisei ir para a varinha e retocar os buracos à mão.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Deixar meu logo transparente →</a>
 

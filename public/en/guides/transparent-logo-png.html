@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/en/guides/transparent-logo-png.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Does the result work as a vector logo (SVG)?", "acceptedAnswer": { "@type": "Answer", "text": "No. Removing the background produces a transparent PNG, which is a pixel map: sharp at the exported size but it pixelates if you enlarge it a lot. To scale to any size without losing quality you need an SVG made in a vector editor. The PNG covers most web and document uses." } },
-        { "@type": "Question", "name": "How do I avoid the white halo around the logo?", "acceptedAnswer": { "@type": "Answer", "text": "Touch up the outline with the brushes and check the result on a dark background in the preview: on dark, any leftover white shows immediately and you can fix it before exporting." } },
-        { "@type": "Question", "name": "Why does the logo have to be PNG and not JPG?", "acceptedAnswer": { "@type": "Answer", "text": "Because JPG doesn't keep transparency and fills the background with a color. A logo in JPG drags a background rectangle that shows over any other color. PNG keeps the transparency and the logo blends in anywhere." } },
-        { "@type": "Question", "name": "Is the logo uploaded to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. The cutout is done in your browser: the image isn't uploaded anywhere or stored when you close the tab — useful when the logo is a client's or not yet public." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -159,13 +147,6 @@
         <li>Download as <strong>PNG</strong>, at a large size so you can shrink it later without losing sharpness.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: for a logo, the wand beats the AI</h3>
-        <p>A logo usually comes on a <strong>solid background</strong> (white or a flat color). There the <strong>Auto cutout</strong> or the <strong>Magic wand</strong> —which select by color— give a cleaner edge than the AI, which is designed for photos of subjects. One click on the background selects it for removal.</p>
-        <p>We exported as a <strong>transparent PNG</strong>: that way the logo looks good on any background (a website, an invoice, a t-shirt). All in the browser, without uploading your brand.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The images above are from that session.</p>
-      </div>
-
       <h2>The detail that ruins logos: the white halo</h2>
       <p>
         The most common mistake when removing a logo's background is leaving a
@@ -213,15 +194,30 @@
         browser: the image isn't uploaded anywhere or stored when you close the tab.
       </p>
 
-      <h2>Frequently asked questions</h2>
-      <h3>Does the result work as a vector logo (SVG)?</h3>
-      <p>No. Removing the background produces a transparent PNG, which is a pixel map: sharp at the exported size but it pixelates if you enlarge it a lot. To scale to any size without losing quality you need an SVG made in a vector editor. The PNG covers most web and document uses.</p>
-      <h3>How do I avoid the white halo around the logo?</h3>
-      <p>Touch up the outline with the brushes and check the result on a dark background in the preview: on dark, any leftover white shows immediately and you can fix it before exporting.</p>
-      <h3>Why does the logo have to be PNG and not JPG?</h3>
-      <p>Because JPG doesn't keep transparency and fills the background with a color. A logo in JPG drags a background rectangle that shows over any other color. PNG keeps the transparency and the logo blends in anywhere.</p>
-      <h3>Is the logo uploaded to a server?</h3>
-      <p>No. The cutout is done in your browser: the image isn't uploaded anywhere or stored when you close the tab — useful when the logo is a client's or not yet public.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the same logo with the AI cutout, the auto cutout and the wand</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/logo-antes.jpg"><code>logo-antes.jpg</code></a>, 820 × 637 px, 15.5 KB (sample image from this site).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout / Auto cutout / Magic wand.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the logo (JPG on a plain background), applied “AI cutout” and downloaded the PNG.</li>
+          <li>In a new tab I applied “Auto cutout” to the same file and downloaded.</li>
+          <li>In another one I chose “Magic wand” with the default tolerance, clicked once in the top-left corner (background) and downloaded.</li>
+          <li>On each PNG I measured the percentage of transparent and semi-transparent pixels.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout: 4.0 s, 89.4% transparent, 1.4% semi-transparent, 84 KB PNG.</li>
+          <li>Auto cutout: 1.45 s, 89.5% transparent, 1.2% semi-transparent, 81 KB.</li>
+          <li>Magic wand (one click): 0.16 s, 85.7% transparent, 3.6% semi-transparent, 117 KB.</li>
+          <li>The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 0.0% with the AI, 0.0% with the auto cutout and 15.4% with the wand.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> Neither the AI cutout nor the auto cutout kept the logo's wordmark: only the emblem survived. The wand did keep it, but it left letter holes like the one in the A filled in and opaque, because they don't touch the background, and the edge ended up with more semi-transparency. With a logo without text the AI would have been enough; with text, I had to go to the wand and touch up the holes by hand.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Make my logo transparent →</a>
 

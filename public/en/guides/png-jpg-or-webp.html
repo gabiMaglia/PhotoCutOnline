@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Which format keeps transparency?", "acceptedAnswer": { "@type": "Answer", "text": "PNG and WebP keep transparency; JPG doesn't. If your image has the background cut out and you export as JPG, the background is filled with a color. To keep transparency, export as PNG or WebP." } },
-        { "@type": "Question", "name": "Which is smaller, PNG, JPG or WebP?", "acceptedAnswer": { "@type": "Answer", "text": "For photos, JPG is much smaller than PNG, and WebP is usually even smaller than JPG while keeping the quality. WebP is the most efficient; JPG the most compatible; PNG the heaviest for photos." } },
-        { "@type": "Question", "name": "Does WebP display well everywhere?", "acceptedAnswer": { "@type": "Answer", "text": "In all modern browsers and most web platforms, yes. Where it can fail is old desktop software. For a modern website, WebP is a great choice; if in doubt, JPG or PNG are safe." } },
-        { "@type": "Question", "name": "What format for a product photo on a white background?", "acceptedAnswer": { "@type": "Answer", "text": "If the background is solid white, a good-quality JPG is standard and small. If you also want a transparent version to reuse the product, save a PNG too." } }
+        {
+          "@type": "Question",
+          "name": "Does WebP display well everywhere?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In all modern browsers and most web platforms, yes. Where it can fail is old desktop software. For a modern website, WebP is a great choice; if in doubt, JPG or PNG are safe."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -184,13 +188,6 @@
         export. With PNG (lossless) you can save a thousand times without degrading.
       </p>
 
-      <div class="tried">
-        <h3>We tested it: the size savings, as a number</h3>
-        <p>We converted the same photo between <strong>PNG, JPG and WebP</strong> with the quality control and the panel showed the savings live: from <strong>335 KB to 204 KB (−39%)</strong> switching to JPG. The rule we confirmed: <strong>PNG</strong> for transparency or flat graphics, <strong>JPG</strong> for photos, <strong>WebP</strong> when you want the best weight/quality balance.</p>
-        <p>When converting, the metadata (EXIF and location) is discarded and nothing is uploaded to a server.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>In PhotoCut you can export in all three</h2>
       <p>
         When downloading your cutout you can choose <strong>PNG</strong>,
@@ -202,14 +199,30 @@
       </p>
 
       <h2>Frequently asked questions</h2>
-      <h3>Which format keeps transparency?</h3>
-      <p>PNG and WebP keep transparency; JPG doesn't. If your image has the background cut out and you export as JPG, the background is filled with a color. To keep transparency, export as PNG or WebP.</p>
-      <h3>Which is smaller, PNG, JPG or WebP?</h3>
-      <p>For photos, JPG is much smaller than PNG, and WebP is usually even smaller than JPG while keeping the quality. WebP is the most efficient; JPG the most compatible; PNG the heaviest for photos.</p>
       <h3>Does WebP display well everywhere?</h3>
       <p>In all modern browsers and most web platforms, yes. Where it can fail is old desktop software. For a modern website, WebP is a great choice; if in doubt, JPG or PNG are safe.</p>
-      <h3>What format for a product photo on a white background?</h3>
-      <p>If the background is solid white, a good-quality JPG is standard and small. If you also want a transparent version to reuse the product, save a PNG too.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the same photo as PNG, JPG and WebP, and what happens to transparency</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> File → PNG / JPG / WebP with quality.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I opened the photo in the “File” tab (original JPG) and converted it to PNG, JPG quality 80, WebP quality 80, JPG 60 and WebP 60, downloading each one.</li>
+          <li>I repeated with logo-despues.png (820 × 637 px, 32 KB, PNG with a transparent background) as PNG, JPG 80 and WebP 80.</li>
+          <li>I measured the real weight of each download and, for the logo ones, the percentage of transparent pixels.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>78 KB photo: PNG 956 KB · JPG 80 80 KB · WebP 80 45 KB · JPG 60 60 KB · WebP 60 31 KB.</li>
+          <li>The File screen estimated “78 KB → 80 KB” for JPG 80 and the real download weighed 79.9 KB.</li>
+          <li>Logo with transparency (32 KB source): PNG 46 KB with 87.3% transparent; WebP 80 11 KB with 87.3% transparent; JPG 80 17 KB with 0.0% transparent (the corner turned rgb(255, 255, 255)).</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The photo's PNG weighed 12 times the original JPG: PNG isn't “better quality” for photos, just lossless. When I turned the logo into a JPG the transparency was lost (the corner turned white). I only measured weights: JPG 80 and WebP 80 aren't equivalent in visual quality and I didn't compare them by eye.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=meta">Export my image →</a>
 

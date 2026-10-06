@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/en/guides/linkedin-profile-photo.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "What size should a LinkedIn profile photo be?", "acceptedAnswer": { "@type": "Answer", "text": "LinkedIn accepts photos up to 8 MB and recommends a square image of at least 400×400 px. Exporting around 800×800 px is a safe bet: it stays within the size limit and looks sharp in the small feed circle and the enlarged profile." } },
-        { "@type": "Question", "name": "Does the photo show round or square on LinkedIn?", "acceptedAnswer": { "@type": "Answer", "text": "LinkedIn crops the photo into a circle to display it, but you upload a square image. That's why you should leave air around the head: the square's corners get cropped and you don't want to lose part of the face." } },
-        { "@type": "Question", "name": "White or color background for LinkedIn?", "acceptedAnswer": { "@type": "Answer", "text": "A flat, neutral background (light gray, muted blue, a soft corporate tone) usually looks more professional and current than pure white. The key is that the background doesn't distract or compete with your face." } },
-        { "@type": "Question", "name": "Is my photo uploaded to a server to edit it?", "acceptedAnswer": { "@type": "Answer", "text": "No. The cutout and background change happen in your browser. Your photo isn't uploaded to any server or stored once you close the tab: you upload it, already finished, straight to LinkedIn." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -144,11 +132,16 @@
 
       <h2>The right size</h2>
       <ul>
-        <li><strong>Format:</strong> square (1:1). LinkedIn always works with a square photo.</li>
-        <li><strong>Recommended size:</strong> minimum 400×400 px; <strong>800×800 px</strong> is a safe bet that looks sharp everywhere.</li>
-        <li><strong>Maximum size:</strong> up to 8 MB, so you won't fall short exporting in good quality.</li>
-        <li><strong>File format:</strong> JPG or PNG. JPG is perfect if the background is solid; PNG for maximum sharpness.</li>
+        <li><strong>Format:</strong> square (1:1). LinkedIn accepts other aspect ratios and lets you frame it afterwards; the simplest is to upload it already square.</li>
+        <li><strong>Size:</strong> between 400×400 px and 7680×4320 px. Within that range, <strong>800×800 px</strong> is a safe bet that looks sharp everywhere (that figure is my usual value, no official source).</li>
+        <li><strong>Maximum file size:</strong> 8 MB, so you won't fall short exporting in good quality.</li>
+        <li><strong>File format:</strong> JPG or PNG (GIF isn't accepted). JPG is perfect if the background is solid; PNG for maximum sharpness.</li>
       </ul>
+      <p>
+        Official source:
+        <a href="https://www.linkedin.com/help/linkedin/answer/a549049" rel="noopener">LinkedIn Help, “Photo won't upload to your profile”</a>,
+        verified on 2026-10-06.
+      </p>
 
       <h2>The circular-crop detail</h2>
       <p>
@@ -195,22 +188,30 @@
         upload it, already finished, straight to LinkedIn.
       </p>
 
-      <div class="tried">
-        <h3>We tested it: LinkedIn crops you into a circle</h3>
-        <p>Even if you upload a square photo, LinkedIn shows it <strong>inside a circle</strong>. So, after the cutout, we checked that the <strong>face stays centered</strong> and not pushed to one side: what's shown is the circle, not the full square.</p>
-        <p>Cutting out the background and placing it on a sober color (or white) gives a more professional photo, consistent with your personal brand. All local, without uploading the image.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version. The images above are from that session.</p>
-      </div>
 
-      <h2>Frequently asked questions</h2>
-      <h3>What size should a LinkedIn profile photo be?</h3>
-      <p>LinkedIn accepts photos up to 8 MB and recommends a square image of at least 400×400 px. Exporting around 800×800 px is a safe bet: it stays within the size limit and looks sharp in the small feed circle and the enlarged profile.</p>
-      <h3>Does the photo show round or square on LinkedIn?</h3>
-      <p>LinkedIn crops the photo into a circle to display it, but you upload a square image. That's why you should leave air around the head: the square's corners get cropped and you don't want to lose part of the face.</p>
-      <h3>White or color background for LinkedIn?</h3>
-      <p>A flat, neutral background (light gray, muted blue, a soft corporate tone) usually looks more professional and current than pure white. The key is that the background doesn't distract or compete with your face.</p>
-      <h3>Is my photo uploaded to a server to edit it?</h3>
-      <p>No. The cutout and background change happen in your browser. Your photo isn't uploaded to any server or stored once you close the tab: you upload it, already finished, straight to LinkedIn.</p>
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: how much of the figure is lost when LinkedIn shows the circle</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, square presets, Export → Color #c9ced6.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout”.</li>
+          <li>In Export I chose “Color” #c9ced6 (a sober gray) and JPEG.</li>
+          <li>I downloaded with three square presets: Amazon 2000×2000, Shopify 2048×2048 and Instagram post 1080×1080 (there is no LinkedIn preset).</li>
+          <li>In each JPEG I calculated what percentage of the figure's pixels falls outside the circle inscribed in the square, which is what LinkedIn doesn't show.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout: 4.0 s.</li>
+          <li>Amazon 2000×2000 (5% margin): 2000 × 2000 px, 198 KB; 0.1% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.</li>
+          <li>Shopify 2048×2048 (6% margin): 2048 × 2048 px, 200 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.</li>
+          <li>Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 78 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> There is no LinkedIn preset and the square presets ignored the gray I asked for: every output has a #ffffff background. For a colored background you have to leave the preset on “Original” and frame separately. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Make my LinkedIn photo →</a>
 

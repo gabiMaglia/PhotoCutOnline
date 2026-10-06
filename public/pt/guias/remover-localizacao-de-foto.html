@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/remover-localizacao-de-foto.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Todas as fotos guardam a localização?", "acceptedAnswer": { "@type": "Answer", "text": "Muitas sim: os celulares costumam salvar o GPS por padrão. Você pode ver o que uma foto carrega abrindo-a em um visualizador de metadados." } },
-        { "@type": "Question", "name": "As redes sociais removem a localização?", "acceptedAnswer": { "@type": "Answer", "text": "Às vezes, mas não todas nem sempre. Se você envia a original por outros canais, a localização viaja com ela. Melhor remover você mesmo antes." } },
-        { "@type": "Question", "name": "Como removo a localização sem perder qualidade?", "acceptedAnswer": { "@type": "Answer", "text": "Ao regenerar a imagem os metadados são descartados mantendo a qualidade. A foto aparece igual; só perde os dados ocultos." } },
-        { "@type": "Question", "name": "É seguro fazer isso online?", "acceptedAnswer": { "@type": "Answer", "text": "No PhotoCut, sim: tudo acontece no seu navegador, a foto não é enviada a lugar nenhum." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -161,13 +149,6 @@
         <li>Compartilhe <strong>essa cópia</strong>, não a original.</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: ver o EXIF e baixar uma cópia limpa</h3>
-        <p>Abrimos uma foto e o painel mostrou seus <strong>metadados EXIF</strong>: marca e modelo da câmera, data de captura, software. Numa foto tirada com o celular, ali também viajaria a <strong>localização GPS</strong>. O botão <strong>"Baixar sem metadados"</strong> gera uma cópia sem EXIF nem GPS.</p>
-        <p>Ponto-chave: a original nunca é enviada — a limpeza acontece <strong>no seu navegador</strong>. Sempre baixe a cópia sem metadados antes de subir uma foto às redes ou enviá-la por chat.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>As redes não removem sozinhas?</h2>
       <p>
         Às vezes sim, às vezes não. As grandes redes costumam remover os metadados
@@ -177,11 +158,13 @@
         é uma estratégia; remover você mesmo antes de compartilhar, sim.
       </p>
 
-      <h2>Você não perde qualidade</h2>
+      <h2>O que acontece com a qualidade</h2>
       <p>
-        Remover os metadados não degrada a imagem: a foto é regenerada sem os dados
-        ocultos, mantendo a qualidade visual. A foto aparece igual; só deixa de
-        carregar sua localização, o modelo do aparelho e a data.
+        Remover os metadados regenera a foto sem os dados ocultos, e para isso ela
+        é recomprimida: no meu teste os pixels da cópia já não eram idênticos aos
+        do original e o arquivo passou de 21,0 para 24,1&nbsp;KB. Não medi o quanto
+        isso se nota a olho nu. O que ela deixa de carregar é a sua localização, o
+        modelo do aparelho e a data.
       </p>
 
       <h2>Faça sem enviar sua foto</h2>
@@ -192,15 +175,29 @@
         a imagem não é enviada a lugar nenhum.
       </p>
 
-      <h2>Perguntas frequentes</h2>
-      <h3>Todas as fotos guardam a localização?</h3>
-      <p>Muitas sim: os celulares costumam salvar o GPS por padrão. Você pode ver o que uma foto carrega abrindo-a em um visualizador de metadados.</p>
-      <h3>As redes sociais removem a localização?</h3>
-      <p>Às vezes, mas não todas nem sempre. Se você envia a original por outros canais, a localização viaja com ela. Melhor remover você mesmo antes.</p>
-      <h3>Como removo a localização sem perder qualidade?</h3>
-      <p>Ao regenerar a imagem os metadados são descartados mantendo a qualidade. A foto aparece igual; só perde os dados ocultos.</p>
-      <h3>É seguro fazer isso online?</h3>
-      <p>No PhotoCut, sim: tudo acontece no seu navegador, a foto não é enviada a lugar nenhum.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: quais campos EXIF o painel mostra e o que fica na cópia limpa</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/pruebas/gps-sintetica.jpg"><code>gps-sintetica.jpg</code></a>, 1600 × 1200 px, 21 KB (imagem sintética que desenhei com o Pillow).</p>
+        <p><strong>Ferramenta:</strong> Arquivo → «Baixar sem metadados».</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Gerei com Pillow um JPG de 1600 × 1200 px com EXIF de teste: marca, modelo, software, data e coordenadas GPS de um monumento público.</li>
+          <li>Abri na aba «Arquivo» e li o que mostra a seção «Câmera e captura (EXIF)».</li>
+          <li>Apertei «Baixar sem metadados» e abri o resultado com Pillow para contar as etiquetas EXIF e o bloco GPS.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>O original traz 4 campos EXIF principais (marca, modelo, software, data), 1 no bloco de captura e 4 campos GPS.</li>
+          <li>O que o painel mostrou (minha sessão rodou na interface em espanhol; aqui dou os rótulos como a interface em português os chama): «Câmera e captura (EXIF) Marca PhotoCut Pruebas Modelo Camara Sintetica 1 Data de captura 2026:10:06 12:00:00 Software gen-inputs.py ⚠ Esta foto inclui sua localização GPS. Qualquer um com o arquivo pode vê-la. GPS -34.6037, -58.3816».</li>
+          <li>A cópia sem metadados: 0 campos EXIF, 0 campos GPS, 1600 × 1200 px e 24,1 KB (o original pesava 21,0 KB). Download em 0,1 s. Isso sim: traz um perfil de cor ICC que não estava no original.</li>
+          <li>Os pixels da cópia não são idênticos aos do original: o arquivo é recodificado com perda (JPEG).</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A foto é sintética e o GPS fui eu que coloquei: não testei fotos reais de celular, nem formatos como HEIC, nem outros campos que podem ficar (miniatura embutida, notas do fabricante). A cópia limpa é recomprimida (pesa mais e os pixels não são idênticos) e traz um perfil de cor ICC que o original não tinha.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=meta">Remover a localização da minha foto →</a>
 

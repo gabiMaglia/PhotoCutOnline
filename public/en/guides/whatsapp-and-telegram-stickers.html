@@ -66,58 +66,18 @@
           "@type": "HowToStep",
           "position": 4,
           "name": "Export for WhatsApp",
-          "text": "In Sticker/Icon choose the WhatsApp destination: it exports WebP at 512×512 px, under 100 KB. Use it in a sticker pack app."
+          "text": "In Export choose Transparent and WEBP and download; then, in the File tab, take the sticker to 512 px as WebP and check that it weighs less than 100 KB. Use it in a sticker pack app."
         },
         {
           "@type": "HowToStep",
           "position": 5,
           "name": "Export for Telegram",
-          "text": "In Export choose Transparent mode, keep the longest side at 512 px and download the PNG. Upload it with the @Stickers bot."
+          "text": "In Export choose Transparent mode and PNG, download and, in the File tab, set the longest side to 512 px. Upload it with the @Stickers bot."
         }
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Why does WhatsApp ask for WebP and not PNG for stickers?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "WebP compresses better than PNG while keeping transparency, so a sticker weighs much less at similar quality. WhatsApp caps each sticker at 100 KB, and WebP makes that limit much easier to meet without losing sharpness."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do I need a separate app to upload the sticker to WhatsApp?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. WhatsApp doesn't let you add a loose sticker from the gallery: you need a third-party app that builds the pack (minimum 3 stickers) and registers it. PhotoCut Studio prepares the file in the exact format those apps ask for."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does the same cutout work for WhatsApp and Telegram?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The concept is the same (cut-out subject, transparent, 512 px); what changes is the export format (WebP for WhatsApp, PNG for Telegram) and how you upload it (pack app or the @Stickers bot)."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I use a photo with a background to make a sticker?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "You can, but it looks much more like a sticker (and not a pasted rectangular photo) if you first remove the background and leave only the cut-out subject on transparency."
-          }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -233,9 +193,12 @@
 
       <h2>For WhatsApp: 512×512 WebP under 100 KB</h2>
       <p>
-        In the <strong>Sticker/Icon</strong> section choose the
-        <strong>WhatsApp</strong> destination: it exports WebP at 512×512&nbsp;px,
-        with compression tuned to stay under 100&nbsp;KB. WebP compresses better
+        In <strong>Export</strong> choose <strong>Transparent</strong> and the
+        <strong>WEBP</strong> format, download, and take the result to
+        512&nbsp;px in the <strong>File</strong> tab (WebP, at whatever quality it
+        takes to stay under 100&nbsp;KB). WhatsApp asks for exactly
+        512×512&nbsp;px: the File panel only scales, so frame it square first.
+        WebP compresses better
         than PNG while keeping transparency, which is why meeting the weight limit
         is much easier than with a PNG of the same size. Besides the sticker, the
         pack asks for:
@@ -252,10 +215,11 @@
 
       <h2>For Telegram: 512 px transparent PNG and the @Stickers bot</h2>
       <p>
-        In <strong>Export</strong> choose <strong>Transparent</strong> mode, frame
-        it so the longest side measures <strong>512&nbsp;px</strong> and download
-        as <strong>PNG</strong> (JPG doesn't work: it fills the background). To
-        upload it, Telegram doesn't use third-party apps but its own bot:
+        In <strong>Export</strong> choose <strong>Transparent</strong> mode and
+        <strong>PNG</strong> (JPG doesn't work: it fills the background), download
+        and, in the <strong>File</strong> tab, set the longest side to
+        <strong>512&nbsp;px</strong>.
+        To upload it, Telegram doesn't use third-party apps but its own bot:
       </p>
       <ol>
         <li>Search for and open the chat with <strong>@Stickers</strong>.</li>
@@ -299,23 +263,30 @@
         versions: WebP for WhatsApp and PNG for Telegram.
       </p>
 
-      <h2>Frequently asked questions</h2>
-      <h3>Why does WhatsApp ask for WebP and not PNG for stickers?</h3>
-      <p>WebP compresses better than PNG while keeping transparency, so a sticker weighs much less at similar quality. WhatsApp caps each sticker at 100&nbsp;KB, and WebP makes that limit much easier to meet without losing sharpness.</p>
-      <h3>Do I need a separate app to upload the sticker to WhatsApp?</h3>
-      <p>Yes. WhatsApp doesn't let you add a loose sticker from the gallery: you need a third-party app that builds the pack (minimum 3 stickers) and registers it. PhotoCut Studio prepares the file in the exact format those apps ask for.</p>
-      <h3>Does the same cutout work for WhatsApp and Telegram?</h3>
-      <p>Yes. The concept is the same (cut-out subject, transparent, 512&nbsp;px); what changes is the export format (WebP for WhatsApp, PNG for Telegram) and how you upload it (pack app or the @Stickers bot).</p>
-      <h3>Can I use a photo with a background to make a sticker?</h3>
-      <p>You can, but it looks much more like a sticker (and not a pasted rectangular photo) if you first remove the background and leave only the cut-out subject on transparency.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the sticker's weight against WhatsApp's 100 KB limit</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout + “Sticker (outline)”, and File → WebP.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout”; I downloaded a transparent PNG with no outline as a reference.</li>
+          <li>I turned on “Sticker (outline)” with the default width (14 px) and downloaded as PNG and as WebP.</li>
+          <li>I opened the WebP in the “File” tab, took it to 512 px tall at quality 80 and downloaded.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>Without outline, PNG: 720 × 900 px, 535 KB. With a 14 px white outline: PNG 720 × 900 px, 529 KB, and WebP 51 KB with 44.1% transparent pixels.</li>
+          <li>That WebP, taken in File to 410 × 512 px (quality 80): 15.0 KB and 43.5% transparent. WhatsApp's limit is 100 KB.</li>
+          <li>The editor let me set the height to 512 and the width adjusted itself to 410 px (the photo is vertical). A 512 × 512 square, which is what WhatsApp asks for, would have required stretching the image or cropping it first.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The Stickers tab (with the “WhatsApp · WebP 512” destination) is disabled in this version of the site, so I couldn't use it: with what's there, the sticker comes out at 720 × 900 px and has to be taken to 512 tall in File. An exact 512 × 512, which is what WhatsApp asks for, I didn't find how to get from a vertical photo without stretching it: File only scales and I didn't try framing beforehand with “Crop area”. I didn't build the pack or test it inside WhatsApp or Telegram.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Make my sticker →</a>
-
-      <div class="tried">
-        <h3>We tested it: the white outline makes the sticker</h3>
-        <p>We cut out the person and turned on <strong>Sticker (outline)</strong>: that white border is the classic sticker look and, above all, helps the figure <strong>stand out from the chat background</strong>, which can be light or dark. We raised the outline thickness until it looked even and checked that the <strong>exported PNG keeps the transparency</strong> around the figure.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The images above are from that session.</p>
-      </div>
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">More guides</h2>

@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Que tamanho tem a foto de perfil nas redes?", "acceptedAnswer": { "@type": "Answer", "text": "Quase todas usam avatar quadrado e o mostram em círculo. Enviar 400×400 px ou mais (por exemplo 800×800) cobre Instagram, Facebook, X e TikTok; o LinkedIn recomenda ao menos 400×400." } },
-        { "@type": "Question", "name": "Por que minha foto aparece cortada no story ou no post?", "acceptedAnswer": { "@type": "Answer", "text": "Porque a proporção não coincide com a do formato. Stories e Reels são 9:16; o feed do Instagram aceita 1:1 e 4:5. Se você envia horizontal a um formato vertical, a rede corta. Enquadre na proporção certa antes de enviar." } },
-        { "@type": "Question", "name": "JPG ou PNG para redes sociais?", "acceptedAnswer": { "@type": "Answer", "text": "Para fotos, um JPG de boa qualidade é o padrão e pesa menos. O PNG é melhor com texto, gráficos de bordas nítidas ou transparência. As redes recomprimem de qualquer forma, então enviar em boa qualidade ajuda no resultado." } },
-        { "@type": "Question", "name": "Minhas fotos são enviadas a um servidor para redimensionar?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O recorte e o enquadramento são feitos no seu navegador. Suas fotos não são enviadas a nenhum servidor nem ficam armazenadas ao fechar a aba." } }
+        {
+          "@type": "Question",
+          "name": "JPG ou PNG para redes sociais?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Para fotos, um JPG de boa qualidade é o padrão e pesa menos. O PNG é melhor com texto, gráficos de bordas nítidas ou transparência. As redes recomprimem de qualquer forma, então enviar em boa qualidade ajuda no resultado."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -136,7 +140,7 @@
       <h2>A regra que resolve 90%: pense em proporções</h2>
       <ul>
         <li><strong>1:1 (quadrado):</strong> fotos de perfil e posts quadrados do feed.</li>
-        <li><strong>4:5 (vertical):</strong> o formato que mais ocupa espaço no feed do Instagram sem ser cortado.</li>
+        <li><strong>4:5 (vertical):</strong> um dos formatos verticais que o Instagram deixa entrar inteiro no feed (aceita até 3:4).</li>
         <li><strong>9:16 (vertical alto):</strong> stories, Reels, TikTok, Shorts.</li>
         <li><strong>16:9 (horizontal):</strong> miniaturas do YouTube, capas largas.</li>
       </ul>
@@ -145,45 +149,84 @@
       <p>
         Quase todas as redes usam avatar <strong>quadrado</strong> e o mostram
         recortado em <strong>círculo</strong>. Por isso vale deixar ar ao redor da
-        cabeça. Tamanho seguro: <strong>800×800 px</strong> para Instagram, Facebook,
-        X e TikTok; o LinkedIn pede ao menos 400×400. Com um único arquivo quadrado
-        grande você cobre todas.
+        cabeça. Um quadrado de <strong>800×800 px</strong> cobre todas (é o meu valor
+        habitual, sem fonte oficial); o que cada plataforma de fato publica está nas
+        seções abaixo.
+      </p>
+
+      <h2>De onde vêm as medidas</h2>
+      <p>
+        Conferi cada número em <strong>2026-10-06</strong> na página de ajuda
+        oficial da plataforma e deixei o link. Quando não encontrei uma fonte
+        oficial, marquei como <em>sem fonte oficial, valor comum</em> em vez de dar
+        como certo. Essas páginas mudam: se um número não bate com o que você vê,
+        acredite na plataforma.
       </p>
 
       <h2>Instagram</h2>
+      <p>
+        Fonte oficial:
+        <a href="https://help.instagram.com/1631821640426723" rel="noopener">Ajuda do Instagram, «Image resolution of photos you share on Instagram»</a>
+        (verificado em 2026-10-06). O Instagram envia as fotos com até 1080 px de
+        largura e as mantém como estão se medem entre 320 e 1080 px de largura e a
+        proporção fica entre 1,91:1 e 3:4 (com 1080 px de largura, de 566 a
+        1440 px de altura). Fora desse intervalo, ele as corta.
+      </p>
       <ul>
-        <li><strong>Perfil:</strong> 1:1 (aparece em círculo). 320×320 mínimo; 800×800 sobra.</li>
-        <li><strong>Post quadrado:</strong> 1:1, tipicamente 1080×1080 px.</li>
-        <li><strong>Post vertical:</strong> 4:5, 1080×1350 px (o que mais ocupa a tela).</li>
-        <li><strong>Story / Reel:</strong> 9:16, 1080×1920 px.</li>
+        <li><strong>Perfil:</strong> 1:1 (aparece em círculo). 320×320 mínimo; 800×800 sobra. <em>Sem fonte oficial, valor comum.</em></li>
+        <li><strong>Post quadrado:</strong> 1:1, 1080×1080 px. Dentro do intervalo oficial.</li>
+        <li><strong>Post vertical:</strong> 4:5, 1080×1350 px. Dentro do intervalo oficial, que vai até 3:4 (1080×1440); a página não nomeia o 4:5 como tal.</li>
+        <li><strong>Story / Reel:</strong> 9:16, 1080×1920 px. <em>Sem fonte oficial, valor comum.</em></li>
       </ul>
 
       <h2>Facebook</h2>
+      <p>
+        Fonte oficial:
+        <a href="https://www.facebook.com/help/125379114252045" rel="noopener">Ajuda do Facebook, «Facebook Page profile picture and cover photo dimensions»</a>
+        (verificado em 2026-10-06). É a ajuda das <strong>Páginas</strong>;
+        não verifiquei as medidas do perfil pessoal.
+      </p>
       <ul>
-        <li><strong>Perfil:</strong> 1:1 (aparece em círculo). 720×720 ou mais.</li>
-        <li><strong>Capa:</strong> horizontal, em torno de 1640×624 px no desktop (recortada diferente no celular).</li>
-        <li><strong>Post:</strong> 1200×630 px é um tamanho versátil que também serve para links.</li>
+        <li><strong>Foto de perfil da Página:</strong> 320×320 px para a melhor qualidade. Aparece a 176×176 px no computador e 196×196 px no celular, recortada em círculo.</li>
+        <li><strong>Capa da Página:</strong> mínimo 400×150 px. Carrega mais rápido como JPG sRGB de 851×315 px e menos de 100 KB. No computador é 16:9 e no celular 2,4:1, então é recortada de forma diferente.</li>
+        <li><strong>Post:</strong> 1200×630 px é um tamanho versátil que também serve para links. <em>Sem fonte oficial, valor comum.</em></li>
       </ul>
 
       <h2>TikTok</h2>
+      <p>
+        Fonte oficial (só para anúncios in-feed):
+        <a href="https://ads.tiktok.com/help/article/video-ads-specifications" rel="noopener">TikTok Ads Manager, «In-Feed Ads»</a>
+        (verificado em 2026-10-06). Para publicações normais não encontrei uma
+        página oficial com medidas.
+      </p>
       <ul>
-        <li><strong>Perfil:</strong> quadrado, aparece em círculo. 200×200 mínimo; envie maior.</li>
-        <li><strong>Vídeo / foto vertical:</strong> 9:16, 1080×1920 px.</li>
+        <li><strong>Perfil:</strong> quadrado, aparece em círculo. 200×200 mínimo; envie maior. <em>Sem fonte oficial, valor comum.</em></li>
+        <li><strong>Vídeo / foto vertical:</strong> 9:16. A especificação oficial de anúncios recomenda 9:16 de pelo menos 540×960 px (e aceita 1:1 de pelo menos 640×640 px). 1080×1920 px é o tamanho comum, <em>sem fonte oficial para publicações normais</em>.</li>
       </ul>
 
       <h2>YouTube</h2>
+      <p>
+        Fonte oficial:
+        <a href="https://support.google.com/youtube/answer/72431" rel="noopener">Ajuda do YouTube, «Add custom thumbnails on YouTube»</a>
+        (verificado em 2026-10-06).
+      </p>
       <ul>
-        <li><strong>Foto de canal:</strong> quadrada, 800×800 px recomendado (aparece em círculo).</li>
-        <li><strong>Miniatura (thumbnail):</strong> 16:9, 1280×720 px. É onde mais se joga o clique: fundo limpo e sujeito recortado ajudam a destacar.</li>
+        <li><strong>Foto de canal:</strong> quadrada, 800×800 px recomendado (aparece em círculo). <em>Sem fonte oficial, valor comum:</em> a ajuda sobre o perfil do canal não indica pixels.</li>
+        <li><strong>Miniatura (thumbnail):</strong> 16:9. O YouTube recomenda 3840×2160 px com largura mínima de 640 px, em JPG ou PNG, e até 2 MB se você enviar pelo celular. 1280×720 px é o tamanho comum e cumpre o mínimo. É onde mais se joga o clique: fundo limpo e sujeito recortado ajudam a destacar.</li>
       </ul>
 
       <h2>X (Twitter) e LinkedIn</h2>
       <ul>
-        <li><strong>X — perfil:</strong> 1:1, 400×400 px ou mais (círculo).</li>
-        <li><strong>X — imagem de post:</strong> 16:9 aparece completo na timeline.</li>
-        <li><strong>LinkedIn — perfil:</strong> 1:1, mínimo 400×400 px (círculo).</li>
-        <li><strong>LinkedIn — capa:</strong> horizontal, em torno de 1584×396 px.</li>
+        <li><strong>X — perfil:</strong> 1:1, 400×400 px ou mais (círculo). <em>Sem fonte oficial, valor comum:</em> a ajuda do X não abriu no meu navegador de testes em 2026-10-06.</li>
+        <li><strong>X — imagem de post:</strong> 16:9 aparece completo na timeline. <em>Sem fonte oficial, valor comum</em> (mesmo motivo).</li>
+        <li><strong>LinkedIn — perfil:</strong> 1:1 recomendado; entre 400×400 e 7680×4320 px, até 8 MB, em PNG ou JPG.</li>
+        <li><strong>LinkedIn — capa:</strong> horizontal, 1584×396 px.</li>
       </ul>
+      <p>
+        Fonte oficial do LinkedIn:
+        <a href="https://www.linkedin.com/help/linkedin/answer/a549049" rel="noopener">Ajuda do LinkedIn, «Photo won't upload to your profile»</a>
+        (verificado em 2026-10-06).
+      </p>
 
       <h2>Como deixar a foto no tamanho, passo a passo</h2>
       <ol>
@@ -193,13 +236,6 @@
         <li>Use o controle de <strong>escala/enquadramento</strong> para acomodar o sujeito dentro da proporção certa.</li>
         <li>Exporte em <strong>JPG</strong> (fotos) ou <strong>PNG</strong> (gráficos, texto ou transparência).</li>
       </ol>
-
-      <div class="tried">
-        <h3>Nós testamos: redimensionar ao tamanho exato</h3>
-        <p>Para cada rede há um tamanho recomendado; no painel <strong>Arquivo</strong> colocamos a <strong>largura e altura em pixels</strong> (ou uma porcentagem) e a imagem se redimensionou na hora, mostrando o <strong>peso final</strong>. Com o cadeado de proporção ativado, não deforma.</p>
-        <p>Dica do teste: exporte em <strong>JPG</strong> para fotos e <strong>PNG</strong> se houver texto ou transparência. Tudo é processado no navegador, sem enviar a imagem.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
 
       <h2>Erros típicos de tamanho</h2>
       <ul>
@@ -213,14 +249,29 @@
       <p>Todo o recorte, a troca de fundo e o enquadramento acontecem no seu navegador. Suas fotos não são enviadas a nenhum servidor nem ficam salvas ao fechar a aba.</p>
 
       <h2>Perguntas frequentes</h2>
-      <h3>Que tamanho tem a foto de perfil nas redes?</h3>
-      <p>Quase todas usam avatar quadrado e o mostram em círculo. Enviar 400×400 px ou mais (por exemplo 800×800) cobre Instagram, Facebook, X e TikTok; o LinkedIn recomenda ao menos 400×400.</p>
-      <h3>Por que minha foto aparece cortada no story ou no post?</h3>
-      <p>Porque a proporção não coincide com a do formato. Stories e Reels são 9:16; o feed do Instagram aceita 1:1 e 4:5. Se você envia horizontal a um formato vertical, a rede corta. Enquadre na proporção certa antes de enviar.</p>
       <h3>JPG ou PNG para redes sociais?</h3>
       <p>Para fotos, um JPG de boa qualidade é o padrão e pesa menos. O PNG é melhor com texto, gráficos de bordas nítidas ou transparência. As redes recomprimem de qualquer forma, então enviar em boa qualidade ajuda no resultado.</p>
-      <h3>Minhas fotos são enviadas a um servidor para redimensionar?</h3>
-      <p>Não. O recorte e o enquadramento são feitos no seu navegador. Suas fotos não são enviadas a nenhum servidor nem ficam armazenadas ao fechar a aba.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: de 4000 × 3000 px às medidas de um post</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/pruebas/paisaje-sintetico.jpg"><code>paisaje-sintetico.jpg</code></a>, 4000 × 3000 px, 96,9 KB (imagem sintética que desenhei com o Pillow).</p>
+        <p><strong>Ferramenta:</strong> Arquivo → largura e altura com o cadeado.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Abri paisaje-sintetico.jpg (4000 × 3000 px, foto «de celular» sintética) e fui para «Arquivo».</li>
+          <li>Com o cadeado de proporção ativado coloquei largura 1080, JPG qualidade 80, e baixei.</li>
+          <li>Desliguei o cadeado, coloquei 1080 × 1350 (a medida vertical do Instagram) e baixei de novo.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Com o cadeado: largura 1080 → altura 810. Saiu um JPG de 1080 × 810 px e 16 KB (o original pesava 97 KB) em 0,3 s contando o download.</li>
+          <li>Sem o cadeado, pedindo 1080 × 1350 px, saiu um JPG de 1080 × 1350 px e 23 KB. Como a foto é 4:3 e a medida pedida 4:5, a imagem ficou esticada a 60% da sua proporção horizontal.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O painel Arquivo redimensiona mas não recorta para uma proporção: para levar uma foto 4:3 a 1080 × 1350 só consegui esticá-la (a 60% da sua proporção), ou deixá-la em 1080 × 810 com o cadeado. Para respeitar a proporção seria preciso enquadrar antes (não testei «Recortar área» para isso). A foto é sintética: não medi quanto cada rede recomprime.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Preparar minha foto para redes →</a>
 

@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Why does my profile picture look cropped in some apps?", "acceptedAnswer": { "@type": "Answer", "text": "Because each app masks the circle a little differently, and if the subject reaches right to the edge of the square, the circle eats a slice. The fix is to leave margin: have the face take up 60–75% of the square's width, not 100%." } },
-        { "@type": "Question", "name": "What exact size do I need for WhatsApp, Instagram and LinkedIn?", "acceptedAnswer": { "@type": "Answer", "text": "You don't need to memorize each network's exact size: a 512×512 px square comfortably covers the minimums for WhatsApp (~640×640, but it accepts and downscales larger images), Instagram (~320×320) and LinkedIn, which also rescale automatically on upload." } },
-        { "@type": "Question", "name": "Can I use a photo background, not just a color?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, the image-background export mode lets you add any photo or texture and adjust its opacity. For professional profiles a solid color usually works better; for personal profiles a photo background adds personality." } },
-        { "@type": "Question", "name": "Will people notice I edited the photo?", "acceptedAnswer": { "@type": "Answer", "text": "If the cutout is clean (no halos or leftover original background) and the new background is flat or consistent with the subject's lighting, it doesn't read as an edit: it looks like a studio photo on a color background." } }
+        {
+          "@type": "Question",
+          "name": "Why does my profile picture look cropped in some apps?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because each app masks the circle a little differently, and if the subject reaches right to the edge of the square, the circle eats a slice. The fix is to leave margin: have the face take up 60–75% of the square's width, not 100%."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -197,12 +201,29 @@
       <h2>Frequently asked questions</h2>
       <h3>Why does my profile picture look cropped in some apps?</h3>
       <p>Because each app masks the circle a little differently, and if the subject reaches right to the edge of the square, the circle eats a slice. The fix is to leave margin: have the face take up 60% to 75% of the square's width, not 100%.</p>
-      <h3>What exact size do I need for WhatsApp, Instagram and LinkedIn?</h3>
-      <p>You don't need to memorize each network's exact size: a 512×512&nbsp;px square comfortably covers the minimums for WhatsApp (~640×640, but it accepts and downscales larger images), Instagram (~320×320) and LinkedIn, which also rescale automatically on upload.</p>
-      <h3>Can I use a photo background, not just a color?</h3>
-      <p>Yes, the image-background export mode lets you add any photo or texture and adjust its opacity. For professional profiles a solid color usually works better; for personal profiles a photo background adds personality.</p>
-      <h3>Will people notice I edited the photo?</h3>
-      <p>If the cutout is clean (no halos or leftover original background) and the new background is flat or consistent with the subject's lighting, it doesn't read as an edit: it looks like a studio photo on a color background.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: what ends up inside the circle of the “Circle avatar 512” preset</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, “Circle avatar 512” preset.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout”.</li>
+          <li>I chose the “Circle avatar 512” preset with “Transparent” and PNG, and downloaded.</li>
+          <li>In the PNG I measured the subject's box, the transparent pixels and the alpha of the corners.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>It produced a 512 × 512 px, 161 KB PNG. The four corners have alpha 0, 0, 0, 0: the preset really crops to a circle, it doesn't just center.</li>
+          <li>72.0% of the image ended up transparent: 21.5% is the corners outside the circle and the rest is cut-out background inside it.</li>
+          <li>The figure sits 10.5% of the height from the top edge down to the crown of the head, and starts 24.0% of the width from the left edge (it takes up 51.8% of the width and 79.5% of the height).</li>
+          <li>AI cutout 4.0 s; the avatar download 0.1 s.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The preset does the circular crop and the figure fits whole, but I didn't measure how each network (WhatsApp, Instagram, Slack) masks the square: that depends on the app. The crown of the head ended up 10.5% from the top edge with this portrait; with a higher face in the frame it could end up tighter.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Make my profile picture →</a>
 

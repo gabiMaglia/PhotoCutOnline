@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Onde colocar a marca d'água?", "acceptedAnswer": { "@type": "Answer", "text": "Um canto é discreto mas fácil de cortar; centralizada ou grande protege mais ao custo da estética. Para a maioria dos casos, um canto é o melhor equilíbrio." } },
-        { "@type": "Question", "name": "Que opacidade deve ter?", "acceptedAnswer": { "@type": "Answer", "text": "Semitransparente, com cor clara e um contorno sutil: fica profissional e não cobre a foto. Nem opaca demais nem tênue demais." } },
-        { "@type": "Question", "name": "A marca d'água impede totalmente que roubem minha foto?", "acceptedAnswer": { "@type": "Answer", "text": "Não 100%: dissuade e mantém sua autoria visível. Para máxima proteção, combine com não publicar a resolução máxima das suas fotos." } },
-        { "@type": "Question", "name": "Minha foto é enviada a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. A marca é composta no seu navegador; a foto não é enviada nem fica armazenada." } }
+        {
+          "@type": "Question",
+          "name": "Que opacidade deve ter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Semitransparente, com cor clara e um contorno sutil: fica profissional e não cobre a foto. Nem opaca demais nem tênue demais."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -181,22 +185,31 @@
       <h2>Sem enviar sua foto a lugar nenhum</h2>
       <p>Tudo é composto no seu navegador: a foto com marca d'água é gerada localmente e não é enviada a nenhum servidor.</p>
 
-      <div class="tried">
-        <h3>Nós testamos: em mosaico e difícil de remover</h3>
-        <p>Aplicamos uma marca d'água de texto repetida na diagonal sobre a foto toda. Com a <strong>opacidade em ~28%</strong> a marca é legível mas não cobre a imagem, e por estar <strong>em mosaico</strong> é muito mais chata de apagar que uma única marca num canto.</p>
-        <p>Você pode mudar texto, cor, tamanho, ângulo e espaçamento ao vivo. Tudo é aplicado <strong>no navegador</strong>, sem enviar a foto: útil justamente quando você quer proteger uma imagem antes de publicá-la.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>Perguntas frequentes</h2>
-      <h3>Onde colocar a marca d'água?</h3>
-      <p>Um canto é discreto mas fácil de cortar; centralizada ou grande protege mais ao custo da estética. Para a maioria dos casos, um canto é o melhor equilíbrio.</p>
       <h3>Que opacidade deve ter?</h3>
       <p>Semitransparente, com cor clara e um contorno sutil: fica profissional e não cobre a foto. Nem opaca demais nem tênue demais.</p>
-      <h3>A marca d'água impede totalmente que roubem minha foto?</h3>
-      <p>Não 100%: dissuade e mantém sua autoria visível. Para máxima proteção, combine com não publicar a resolução máxima.</p>
-      <h3>Minha foto é enviada a um servidor?</h3>
-      <p>Não. A marca é composta no seu navegador; a foto não é enviada nem fica armazenada.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: quanto da foto a marca em mosaico cobre e quanto pesa o resultado</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Editar → Marca de água.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Abri o retrato, fui em «Editar» → «Marca de água» e escrevi «© Prueba PhotoCut».</li>
+          <li>Deixei tamanho 4, ângulo −30° e espaçamento 50 (os valores padrão) e baixei com opacidade 28 e com 60.</li>
+          <li>Comparei cada PNG com o original pixel a pixel (diferença &gt; 8 níveis em algum canal).</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Opacidade 28: 720 × 900 px, 1033 KB; 5,5% dos pixels mudaram (diferença média de 3,06 níveis).</li>
+          <li>Opacidade 60: 1060 KB; 6,3% dos pixels mudaram (diferença média de 6,11).</li>
+          <li>O original é um JPG de 78 KB e a saída é sempre PNG: pesa 13,2 vezes mais.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A saída é sempre PNG: uma foto de 78 KB passou a mais de 1 MB. Com opacidade 28 a marca toca cerca de 5% dos pixels. Não medi o quanto é difícil apagá-la com outras ferramentas, então não posso confirmar que o mosaico seja «difícil de tirar»: só medi quanto ele cobre.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=text&sub=watermark">Colocar minha marca d'água →</a>
 

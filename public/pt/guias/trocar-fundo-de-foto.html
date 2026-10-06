@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/trocar-fundo-de-foto.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Posso usar outra foto como fundo, não só uma cor?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. Além do fundo de cor sólida, há um modo Imagem onde você adiciona uma segunda foto e o sujeito recortado fica na frente dela. Um controle de opacidade permite atenuá-la para não competir com o sujeito." } },
-        { "@type": "Question", "name": "Minha foto é enviada a algum servidor para trocar o fundo?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Tanto a foto original quanto a imagem de fundo são processadas no seu próprio navegador; nenhuma é enviada a um servidor nem fica armazenada ao fechar a aba." } },
-        { "@type": "Question", "name": "Qual formato usar ao trocar o fundo?", "acceptedAnswer": { "@type": "Answer", "text": "Se o novo fundo é sólido ou outra foto, qualquer formato serve: PNG ou WebP mantêm melhor as bordas, e JPEG está bem se o resultado não precisa de transparência. Só evite JPEG quando quiser deixar o fundo transparente." } },
-        { "@type": "Question", "name": "Como evito que o sujeito pareça colado sobre o novo fundo?", "acceptedAnswer": { "@type": "Answer", "text": "Cuidando da borda do recorte com zoom, escolhendo um fundo cuja luz e intensidade sejam parecidas com as da foto original, e baixando um pouco a opacidade da imagem de fundo para o contraste não denunciar a montagem." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -163,13 +151,6 @@
         <figcaption>Recorte o sujeito uma vez no PhotoCut Studio; depois teste quantos fundos quiser.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>Nós testamos: recortar primeiro, escolher o fundo depois</h3>
-        <p>Recortamos a pessoa com o <strong>Recorte IA</strong> e depois trocamos o fundo por um azul de estúdio direto na exportação (modo <em>cor sólida</em>). A borda do cabelo se integrou bem à nova cor com o <strong>suavizado em 1–2&nbsp;px</strong>: com 0 a linha ficava dura, acima de 3 "comia" detalhe.</p>
-        <p>A dica prática: o recorte é uma vez só; depois você testa quantos fundos quiser —cor ou imagem— sem recortar de novo. Tudo no navegador, sem enviar a foto.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web. As imagens acima são dessa sessão.</p>
-      </div>
-
       <h2>Fundo de cor: o atalho que quase nunca falha</h2>
       <p>
         Quando a dúvida é "que cor coloco?", a resposta depende do uso. Para
@@ -205,15 +186,29 @@
         fechar a aba, não sobra rastro.
       </p>
 
-      <h2>Perguntas frequentes</h2>
-      <h3>Posso usar outra foto como fundo, não só uma cor?</h3>
-      <p>Sim. Além do fundo de cor sólida, há um modo <strong>Imagem</strong> onde você adiciona uma segunda foto e o sujeito recortado fica na frente dela. Um controle de opacidade permite atenuá-la para não competir com o sujeito.</p>
-      <h3>Minha foto é enviada a algum servidor para trocar o fundo?</h3>
-      <p>Não. Tanto a foto original quanto a imagem de fundo são processadas no seu próprio navegador; nenhuma é enviada a um servidor nem fica armazenada ao fechar a aba.</p>
-      <h3>Qual formato usar ao trocar o fundo?</h3>
-      <p>Se o novo fundo é sólido ou outra foto, qualquer formato serve: PNG ou WebP mantêm melhor as bordas, e JPEG está bem se o resultado não precisa de transparência. Só evite JPEG quando quiser deixar o fundo transparente.</p>
-      <h3>Como evito que o sujeito pareça colado sobre o novo fundo?</h3>
-      <p>Cuidando da borda do recorte com zoom, escolhendo um fundo cuja luz e intensidade sejam parecidas com as da foto original, e baixando um pouco a opacidade da imagem de fundo para o contraste não denunciar a montagem.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: recortar uma vez, testar fundos sem recortar de novo</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, Exportar → Cor / Imagem.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA» uma única vez.</li>
+          <li>Com «Transparente» + PNG baixei o recorte com a suavização de borda em 0, 2 e 6 px e contei os pixels semitransparentes.</li>
+          <li>Escolhi o modo «Cor», #1e4d8c, formato JPEG e baixei.</li>
+          <li>Carreguei paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) como imagem de fundo com opacidade 100 e baixei em JPEG.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Recorte IA uma única vez: 4,1 s. Trocar o fundo depois não rodou a IA de novo: exportar com cor levou 0,1 s e com imagem de fundo 0,3 s (inclui o download).</li>
+          <li>Pixels semitransparentes da borda conforme a suavização: 0 px → 1,3%, 2 px → 3,3%, 6 px → 7,3%.</li>
+          <li>JPEG com fundo #1e4d8c: 720 × 900 px, 56 KB; o pixel do canto saiu rgb(29, 77, 139) (pedi rgb(30, 77, 140)). Com a imagem de fundo: 65 KB.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O JPEG devolveu a cor a um nível de distância do que pedi (por causa da compressão). Medi tamanhos e pixels de borda, não o quanto o cabelo se integra ao fundo novo: isso eu julguei a olho e não quantifiquei, então não afirmo qual suavização fica melhor.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Trocar o fundo da minha foto →</a>
 

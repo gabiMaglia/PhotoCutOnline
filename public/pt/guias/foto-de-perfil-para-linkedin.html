@@ -27,19 +27,7 @@
       "mainEntityOfPage": "https://www.photocutapp.com/pt/guias/foto-de-perfil-para-linkedin.html"
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Que tamanho deve ter a foto de perfil do LinkedIn?", "acceptedAnswer": { "@type": "Answer", "text": "O LinkedIn aceita fotos de até 8 MB e recomenda uma imagem quadrada de pelo menos 400×400 px. Exportar em torno de 800×800 px é uma aposta segura: fica dentro do limite de peso e aparece nítida no círculo pequeno do feed e no perfil ampliado." } },
-        { "@type": "Question", "name": "A foto aparece redonda ou quadrada no LinkedIn?", "acceptedAnswer": { "@type": "Answer", "text": "O LinkedIn recorta a foto em círculo para exibi-la, mas você envia uma imagem quadrada. Por isso convém deixar ar ao redor da cabeça: os cantos do quadrado são cortados e você não quer perder parte do rosto." } },
-        { "@type": "Question", "name": "Fundo branco ou colorido para o LinkedIn?", "acceptedAnswer": { "@type": "Answer", "text": "Um fundo liso e neutro (cinza claro, azul suave, um tom corporativo discreto) costuma parecer mais profissional e atual que o branco puro. O importante é que o fundo não distraia nem compita com o seu rosto." } },
-        { "@type": "Question", "name": "Minha foto é enviada a algum servidor para editar?", "acceptedAnswer": { "@type": "Answer", "text": "Não. O recorte e a troca de fundo acontecem no seu navegador. Sua foto não é enviada a nenhum servidor nem fica armazenada ao fechar a aba: você a envia, já pronta, direto para o LinkedIn." } }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -144,11 +132,16 @@
 
       <h2>O tamanho certo</h2>
       <ul>
-        <li><strong>Formato:</strong> quadrado (1:1). O LinkedIn sempre trabalha com foto quadrada.</li>
-        <li><strong>Tamanho recomendado:</strong> mínimo 400×400 px; <strong>800×800 px</strong> é uma aposta segura que fica nítida em todo lugar.</li>
-        <li><strong>Peso máximo:</strong> até 8 MB, então você não vai ficar sem margem exportando em boa qualidade.</li>
-        <li><strong>Formato de arquivo:</strong> JPG ou PNG. JPG é perfeito se o fundo é sólido; PNG para máxima nitidez.</li>
+        <li><strong>Formato:</strong> quadrado (1:1). O LinkedIn aceita outras proporções e depois deixa você enquadrar; o mais simples é enviar já quadrada.</li>
+        <li><strong>Tamanho:</strong> entre 400×400 px e 7680×4320 px. Dentro desse intervalo, <strong>800×800 px</strong> é uma aposta segura que fica nítida em todo lugar (esse número é o meu valor habitual, sem fonte oficial).</li>
+        <li><strong>Peso máximo:</strong> 8 MB, então você não vai ficar sem margem exportando em boa qualidade.</li>
+        <li><strong>Formato de arquivo:</strong> JPG ou PNG (não aceita GIF). JPG é perfeito se o fundo é sólido; PNG para máxima nitidez.</li>
       </ul>
+      <p>
+        Fonte oficial:
+        <a href="https://www.linkedin.com/help/linkedin/answer/a549049" rel="noopener">Ajuda do LinkedIn, «Photo won't upload to your profile»</a>,
+        verificado em 2026-10-06.
+      </p>
 
       <h2>O detalhe do recorte circular</h2>
       <p>
@@ -195,22 +188,30 @@
         você a envia, já pronta, direto para o LinkedIn.
       </p>
 
-      <div class="tried">
-        <h3>Nós testamos: o LinkedIn recorta você em círculo</h3>
-        <p>Mesmo enviando uma foto quadrada, o LinkedIn a mostra <strong>dentro de um círculo</strong>. Por isso, após o recorte, verificamos que o <strong>rosto fica centralizado</strong> e não colado num lado: o que aparece é o círculo, não o quadrado completo.</p>
-        <p>Recortar o fundo e colocá-lo sobre uma cor sóbria (ou branco) dá uma foto mais profissional e consistente com sua marca pessoal. Tudo local, sem enviar a imagem.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web. As imagens acima são dessa sessão.</p>
-      </div>
 
-      <h2>Perguntas frequentes</h2>
-      <h3>Que tamanho deve ter a foto de perfil do LinkedIn?</h3>
-      <p>O LinkedIn aceita fotos de até 8 MB e recomenda uma imagem quadrada de pelo menos 400×400 px. Exportar em torno de 800×800 px é uma aposta segura: fica dentro do limite de peso e aparece nítida no círculo pequeno do feed e no perfil ampliado.</p>
-      <h3>A foto aparece redonda ou quadrada no LinkedIn?</h3>
-      <p>O LinkedIn recorta a foto em círculo para exibi-la, mas você envia uma imagem quadrada. Por isso convém deixar ar ao redor da cabeça: os cantos do quadrado são cortados e você não quer perder parte do rosto.</p>
-      <h3>Fundo branco ou colorido para o LinkedIn?</h3>
-      <p>Um fundo liso e neutro (cinza claro, azul suave, um tom corporativo discreto) costuma parecer mais profissional e atual que o branco puro. O importante é que o fundo não distraia nem compita com o seu rosto.</p>
-      <h3>Minha foto é enviada a algum servidor para editar?</h3>
-      <p>Não. O recorte e a troca de fundo acontecem no seu navegador. Sua foto não é enviada a nenhum servidor nem fica armazenada ao fechar a aba: você a envia, já pronta, direto para o LinkedIn.</p>
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: quanto da figura se perde quando o LinkedIn mostra o círculo</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, presets quadrados, Exportar → Cor #c9ced6.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA».</li>
+          <li>Em Exportar escolhi «Cor» #c9ced6 (um cinza sóbrio) e JPEG.</li>
+          <li>Baixei com três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn).</li>
+          <li>Em cada JPEG calculei que porcentagem dos pixels da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Recorte IA: 4,0 s.</li>
+          <li>Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, 198 KB; 0,1% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+          <li>Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, 200 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+          <li>Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, 78 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não existe preset do LinkedIn e os presets quadrados ignoraram a cor cinza que pedi: todas as saídas têm fundo #ffffff. Para um fundo colorido é preciso deixar o preset em «Original» e enquadrar à parte. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Fazer minha foto do LinkedIn →</a>
 

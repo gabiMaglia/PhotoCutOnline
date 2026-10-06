@@ -73,14 +73,6 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Is favicon.ico still needed in 2026?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Although modern browsers prefer the PNG declared in link rel=\"icon\", many clients (RSS readers, crawlers, bookmarks) still request /favicon.ico directly. It's the universal fallback and it's worth including it."
-          }
-        },
-        {
-          "@type": "Question",
           "name": "What happens if I don't put a favicon?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -94,19 +86,11 @@
             "@type": "Answer",
             "text": "Technically you can convert any PNG, but the result looks better if the original is square: if it isn't, the converter fits it inside a square and may add margins or crop the longer edges."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "Why does my ICO look blurry in the browser tab?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Almost always because the ICO doesn't include the exact resolution the browser asks for (16 or 32 px) and it scales a larger one on the fly. Generate it with all the standard resolutions (16, 24, 32, 48, 64, 128, 256)."
-          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -234,13 +218,6 @@
   "display": "standalone"
 }</pre>
 
-      <div class="tried">
-        <h3>We tested it: how the favicon looks at 16 px</h3>
-        <p>The preview at <strong>16 and 32 px</strong> —the real size of a favicon in the tab— is the honest test: what looks good at 512 px can turn into a smudge at 16. With margin and a clear subject, the favicon stayed legible.</p>
-        <p>Icon Studio generates the favicon set and you can pair it with the <strong>HTML</strong> ready to paste into the <code>&lt;head&gt;</code>. All in the browser.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>PNG to ICO: when you still need a .ico</h2>
       <p>
         <strong>ICO</strong> isn't a single image but a container that groups
@@ -318,14 +295,33 @@
       </ol>
 
       <h2>Frequently asked questions</h2>
-      <h3>Is favicon.ico still needed in 2026?</h3>
-      <p>Yes. Although modern browsers prefer the PNG declared in <code>link rel="icon"</code>, many clients (RSS readers, crawlers, bookmarks) still request <code>/favicon.ico</code> directly. It's the universal fallback and it's worth including it.</p>
       <h3>What happens if I don't put a favicon?</h3>
       <p>The browser shows a generic icon (a blank page or the default icon) and, if the site is installed as a PWA, uses a square with the domain's initial. It doesn't break anything, but it looks unprofessional and doesn't identify your brand in tabs or bookmarks.</p>
       <h3>Can I convert any PNG to ICO or does it have to be square?</h3>
       <p>Technically you can convert any PNG, but the result looks better if the original is square: if it isn't, the converter fits it inside a square and may add margins or crop the longer edges.</p>
-      <h3>Why does my ICO look blurry in the browser tab?</h3>
-      <p>Almost always because the ICO doesn't include the exact resolution the browser asks for (16 or 32&nbsp;px) and it scales a larger one on the fly. Generate it with all the standard resolutions (16, 24, 32, 48, 64, 128, 256).</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the Web/PWA set and how the favicon looks at 16 px</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/logo-despues.png"><code>logo-despues.png</code></a>, 820 × 637 px, 32.1 KB (sample image from this site).</p>
+        <p><strong>Tool:</strong> Icon Studio → only “Web / PWA” → “Download icon ZIP” and “Copy favicon HTML”.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>In Icon Studio I opened logo-despues.png (820 × 637 px, transparent PNG).</li>
+          <li>I unticked iOS, Android, macOS and Windows; I left only “Web / PWA”.</li>
+          <li>I downloaded the ZIP and pressed “Copy favicon HTML” to read the clipboard.</li>
+          <li>I opened the 16 px PNG from the ZIP and measured how much of the square stays opaque.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>59 KB ZIP with 11 files in 0.1 s: app-icons/LEEME.txt (0.9 KB), app-icons/web/favicon-16.png (0.4 KB), app-icons/web/favicon-32.png (0.7 KB), app-icons/web/favicon-48.png (1.1 KB), app-icons/web/apple-touch-icon-180.png (5.9 KB), app-icons/web/icon-192.png (6.6 KB), app-icons/web/icon-512.png (23.8 KB), app-icons/web/maskable-512.png (15.1 KB), app-icons/web/favicon.ico (2.2 KB), app-icons/web/site.webmanifest (0.4 KB), app-icons/web/snippet.html (0.3 KB).</li>
+          <li>The copied HTML has 5 &lt;link&gt;/&lt;meta&gt; lines.</li>
+          <li>The 16 × 16 px PNG: 1.6% of the pixels opaque, 20.3% semi-transparent and 78.1% transparent.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> At 16 px the logo's wordmark comes out as a gray streak and only the emblem is recognizable (I looked at it myself, I didn't measure it with a metric). Almost the whole 16 px square is transparent because the emblem is small inside the logo: for a favicon you should crop the logo to the emblem before generating the set.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=icons">Generate my favicons →</a>
 

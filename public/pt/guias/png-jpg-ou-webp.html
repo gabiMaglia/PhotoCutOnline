@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Qual formato mantém a transparência?", "acceptedAnswer": { "@type": "Answer", "text": "PNG e WebP mantêm a transparência; JPG não. Se sua imagem tem o fundo recortado e você exporta em JPG, o fundo é preenchido com uma cor. Para manter a transparência, exporte em PNG ou WebP." } },
-        { "@type": "Question", "name": "Qual pesa menos, PNG, JPG ou WebP?", "acceptedAnswer": { "@type": "Answer", "text": "Para fotos, o JPG pesa muito menos que o PNG, e o WebP costuma pesar ainda menos que o JPG mantendo a qualidade. O WebP é o mais eficiente; o JPG o mais compatível; o PNG o mais pesado em fotos." } },
-        { "@type": "Question", "name": "O WebP aparece bem em todo lugar?", "acceptedAnswer": { "@type": "Answer", "text": "Em todos os navegadores modernos e na maioria das plataformas web, sim. Onde pode falhar é em programas de desktop antigos. Para um site moderno, o WebP é uma ótima escolha; na dúvida, JPG ou PNG vão seguros." } },
-        { "@type": "Question", "name": "Que formato para foto de produto com fundo branco?", "acceptedAnswer": { "@type": "Answer", "text": "Se o fundo é branco sólido, um JPG de boa qualidade é o padrão e pesa pouco. Se quiser também uma versão transparente para reutilizar o produto, salve um PNG também." } }
+        {
+          "@type": "Question",
+          "name": "O WebP aparece bem em todo lugar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Em todos os navegadores modernos e na maioria das plataformas web, sim. Onde pode falhar é em programas de desktop antigos. Para um site moderno, o WebP é uma ótima escolha; na dúvida, JPG ou PNG vão seguros."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -185,13 +189,6 @@
         degradar.
       </p>
 
-      <div class="tried">
-        <h3>Nós testamos: a economia de peso, com número</h3>
-        <p>Convertemos a mesma foto entre <strong>PNG, JPG e WebP</strong> com o controle de qualidade e o painel mostrou a economia ao vivo: de <strong>335 KB para 204 KB (−39%)</strong> passando para JPG. A regra que confirmamos: <strong>PNG</strong> para transparência ou gráficos planos, <strong>JPG</strong> para fotos, <strong>WebP</strong> quando você quer o melhor equilíbrio peso/qualidade.</p>
-        <p>Ao converter, os metadados (EXIF e localização) são descartados e nada é enviado a um servidor.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>No PhotoCut você pode exportar nos três</h2>
       <p>
         Ao baixar seu recorte você pode escolher <strong>PNG</strong>,
@@ -203,14 +200,30 @@
       </p>
 
       <h2>Perguntas frequentes</h2>
-      <h3>Qual formato mantém a transparência?</h3>
-      <p>PNG e WebP mantêm a transparência; JPG não. Se sua imagem tem o fundo recortado e você exporta em JPG, o fundo é preenchido com uma cor. Para manter a transparência, exporte em PNG ou WebP.</p>
-      <h3>Qual pesa menos, PNG, JPG ou WebP?</h3>
-      <p>Para fotos, o JPG pesa muito menos que o PNG, e o WebP costuma pesar ainda menos que o JPG mantendo a qualidade. O WebP é o mais eficiente; o JPG o mais compatível; o PNG o mais pesado em fotos.</p>
       <h3>O WebP aparece bem em todo lugar?</h3>
       <p>Em todos os navegadores modernos e na maioria das plataformas web, sim. Onde pode falhar é em programas de desktop antigos. Para um site moderno, o WebP é uma ótima escolha; na dúvida, JPG ou PNG vão seguros.</p>
-      <h3>Que formato para foto de produto com fundo branco?</h3>
-      <p>Se o fundo é branco sólido, um JPG de boa qualidade é o padrão e pesa pouco. Se quiser também uma versão transparente para reutilizar o produto, salve um PNG também.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: a mesma foto em PNG, JPG e WebP, e o que acontece com a transparência</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Arquivo → PNG / JPG / WebP com qualidade.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Abri a foto na aba «Arquivo» (JPG original) e a converti para PNG, JPG qualidade 80, WebP qualidade 80, JPG 60 e WebP 60, baixando cada uma.</li>
+          <li>Repeti com logo-despues.png (820 × 637 px, 32 KB, PNG com fundo transparente) em PNG, JPG 80 e WebP 80.</li>
+          <li>Medi o peso real de cada download e, nos do logo, a porcentagem de pixels transparentes.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Foto de 78 KB: PNG 956 KB · JPG 80 80 KB · WebP 80 45 KB · JPG 60 60 KB · WebP 60 31 KB.</li>
+          <li>A tela de Arquivo estimou «78 KB → 80 KB» para JPG 80 e o download real pesou 79,9 KB.</li>
+          <li>Logo com transparência (32 KB de origem): PNG 46 KB com 87,3% transparente; WebP 80 11 KB com 87,3% transparente; JPG 80 17 KB com 0,0% transparente (o canto virou rgb(255, 255, 255)).</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O PNG da foto pesou 12 vezes o JPG original: PNG não é «melhor qualidade» para fotos, só sem perda. Ao passar o logo para JPG a transparência se perdeu (o canto virou branco). Medi só pesos: JPG 80 e WebP 80 não são equivalentes em qualidade visual e não os comparei a olho.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=meta">Exportar minha imagem →</a>
 

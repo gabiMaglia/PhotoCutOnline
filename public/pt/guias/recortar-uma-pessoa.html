@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Posso recortar várias pessoas da mesma foto?", "acceptedAnswer": { "@type": "Answer", "text": "Sim. O recorte automático detecta as pessoas da cena; com os pincéis você refina para manter todas, ou pinta para apagar quem não quer incluir. Para isolar uma só de um grupo, o retângulo ajuda a delimitar a área antes de ajustar as bordas." } },
-        { "@type": "Question", "name": "Como faço o cabelo não ficar recortado em bloco?", "acceptedAnswer": { "@type": "Answer", "text": "Deixe o recorte automático resolver a silhueta e depois ajuste os fios com o pincel pequeno e com zoom, mantendo o que é cabelo e apagando o fundo que passa entre os fios." } },
-        { "@type": "Question", "name": "Serve para tirar uma pessoa que está sobrando na foto?", "acceptedAnswer": { "@type": "Answer", "text": "Parcialmente. Você pode isolar a pessoa que quer manter e descartar o resto. O que não faz é preencher o buraco que uma pessoa apagada deixa no meio de uma cena: para isso é preciso um apagamento com preenchimento inteligente, que é outra função." } },
-        { "@type": "Question", "name": "A foto com pessoas é enviada a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Todo o recorte acontece no seu navegador. Fotos com pessoas não são enviadas a nenhum servidor nem ficam armazenadas ao fechar a aba." } }
+        {
+          "@type": "Question",
+          "name": "Serve para tirar uma pessoa que está sobrando na foto?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Depende do que você procura. Se quer ficar com uma só pessoa, você a recorta e descarta o resto. Se quer que alguém desapareça da cena e que o fundo se refaça atrás, não: este editor não reconstrói o que aquela pessoa tapava."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -164,13 +168,6 @@
         <figcaption>À esquerda da tela, os pincéis "manter" e "apagar": são eles que resolvem as zonas difíceis da borda.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>Nós testamos: onde a borda estava fraca</h3>
-        <p>Recortamos um retrato de meio corpo (1201 × 1500 px) sobre um fundo complicado de propósito: cores escuras muito parecidas com a roupa do sujeito. O <strong>Recorte IA</strong> resolveu toda a silhueta bem de cara, mas —como costuma acontecer quando fundo e roupa compartilham o tom— sobrou uma <strong>franja tênue nos ombros</strong>. Não no cabelo, que saiu limpo: no contorno do paletó.</p>
-        <p>Foi corrigido em menos de um minuto com o <strong>pincel apagar</strong>, baixando o tamanho do pincel para ir pela borda com precisão. A lição prática: o automático deixa você em 95%; o minuto de pincéis é o que faz não parecer uma figurinha. Tudo isso rodou <strong>no navegador</strong>, sem enviar a foto a lugar nenhum.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome de desktop; as capturas desta página são dessa sessão.</p>
-      </div>
-
       <h2>O cabelo: a prova de fogo</h2>
       <p>Se um recorte de pessoa fica ruim, quase sempre é pelo cabelo. Um contorno de cabelo recortado "em bloco" —como se fosse um capacete— é a marca inconfundível de um recorte apressado. Para ficar natural:</p>
       <ul>
@@ -208,14 +205,31 @@
       </p>
 
       <h2>Perguntas frequentes</h2>
-      <h3>Posso recortar várias pessoas da mesma foto?</h3>
-      <p>Sim. O recorte automático detecta as pessoas da cena; com os pincéis você refina para manter todas, ou pinta para apagar quem não quer incluir. Para isolar uma só de um grupo, o retângulo ajuda a delimitar a área antes de ajustar as bordas.</p>
-      <h3>Como faço o cabelo não ficar recortado em bloco?</h3>
-      <p>Deixe o recorte automático resolver a silhueta e depois ajuste os fios com o pincel pequeno e com zoom, mantendo o que é cabelo e apagando o fundo que passa entre os fios.</p>
       <h3>Serve para tirar uma pessoa que está sobrando na foto?</h3>
-      <p>Parcialmente. Você pode isolar a pessoa que quer manter e descartar o resto. O que não faz é preencher o buraco que uma pessoa apagada deixa no meio de uma cena: para isso é preciso um apagamento com preenchimento inteligente, que é outra função.</p>
-      <h3>A foto com pessoas é enviada a um servidor?</h3>
-      <p>Não. Todo o recorte acontece no seu navegador. Fotos com pessoas não são enviadas a nenhum servidor nem ficam armazenadas ao fechar a aba.</p>
+      <p>Depende do que você procura. Se quer ficar com uma só pessoa, você a recorta e descarta o resto. Se quer que alguém desapareça da cena e que o fundo se refaça atrás, não: este editor não reconstrói o que aquela pessoa tapava.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: onde a borda é mais fraca e quanto muda uma pincelada</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA e Pincel remover.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA».</li>
+          <li>Baixei o PNG e o dividi em quatro faixas (cabeça, ombros, braços, tronco) para contar os pixels semitransparentes do contorno.</li>
+          <li>Escolhi «Pincel remover» a 12 px e passei pelo contorno do ombro esquerdo, de cima para baixo, em um único traço.</li>
+          <li>Baixei de novo e comparei pixel a pixel; depois apertei «Desfazer» e baixei mais uma vez.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Recorte IA: 3,9 s. Largura aproximada da faixa de borda semitransparente (pixels semitransparentes por pixel de contorno): cabeça e cabelo 11,8 px, ombros 10,8 px, braços 9,5 px, tronco baixo 9,9 px. A zona mais difusa foi cabeça e cabelo.</li>
+          <li>Um traço do Pincel remover de 12 px sobre o ombro mudou 0,15% dos pixels da imagem (opacos: 49,2% → 49,1%).</li>
+          <li>«Desfazer» devolveu uma imagem idêntica à do recorte original (mesmo hash dos pixels RGBA).</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não consegui reproduzir o fiapo nos ombros que a versão anterior deste guia contava: neste retrato o contorno saiu limpo a olho nu, então dei a pincelada mesmo assim, para medir quanto muda, não para corrigir algo. O cabelo é a zona em que a borda é mais difusa, mas não medi o quanto isso aparece sobre um fundo novo.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Recortar uma pessoa →</a>
 

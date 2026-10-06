@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "What size is the profile photo on social networks?", "acceptedAnswer": { "@type": "Answer", "text": "Almost all use a square avatar and show it in a circle. Uploading 400×400 px or more (for example 800×800) covers Instagram, Facebook, X and TikTok; LinkedIn recommends at least 400×400." } },
-        { "@type": "Question", "name": "Why does my photo look cropped in the story or post?", "acceptedAnswer": { "@type": "Answer", "text": "Because the aspect ratio doesn't match the format's. Stories and Reels are 9:16; the Instagram feed accepts 1:1 and 4:5. If you upload horizontal to a vertical format, the network crops. Frame it in the right ratio before uploading." } },
-        { "@type": "Question", "name": "JPG or PNG for social media?", "acceptedAnswer": { "@type": "Answer", "text": "For photos, a good-quality JPG is standard and lighter. PNG is better with text, sharp-edged graphics or transparency. Networks recompress anyway, so uploading at good quality helps the result." } },
-        { "@type": "Question", "name": "Are my photos uploaded to a server to resize them?", "acceptedAnswer": { "@type": "Answer", "text": "No. The cutout and framing are done in your browser. Your photos aren't uploaded to any server or stored once you close the tab." } }
+        {
+          "@type": "Question",
+          "name": "JPG or PNG for social media?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For photos, a good-quality JPG is standard and lighter. PNG is better with text, sharp-edged graphics or transparency. Networks recompress anyway, so uploading at good quality helps the result."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -136,7 +140,7 @@
       <h2>The rule that solves 90%: think in ratios</h2>
       <ul>
         <li><strong>1:1 (square):</strong> profile photos and square feed posts.</li>
-        <li><strong>4:5 (vertical):</strong> the format that takes up the most feed space on Instagram without being cropped.</li>
+        <li><strong>4:5 (vertical):</strong> one of the vertical formats Instagram lets into the feed uncropped (it accepts up to 3:4).</li>
         <li><strong>9:16 (tall vertical):</strong> stories, Reels, TikTok, Shorts.</li>
         <li><strong>16:9 (horizontal):</strong> YouTube thumbnails, wide covers.</li>
       </ul>
@@ -145,45 +149,84 @@
       <p>
         Almost every network uses a <strong>square</strong> avatar and shows it
         cropped in a <strong>circle</strong>. That's why it pays to leave air around
-        the head. Safe size: <strong>800×800 px</strong> for Instagram, Facebook, X
-        and TikTok; LinkedIn wants at least 400×400. A single large square file
-        covers them all.
+        the head. A square of <strong>800×800 px</strong> covers them all (it's my
+        usual value, no official source); what each platform actually publishes is
+        in the sections below.
+      </p>
+
+      <h2>Where the sizes come from</h2>
+      <p>
+        I checked every figure on <strong>2026-10-06</strong> against the platform's
+        official help page and left the link. When I couldn't find an official
+        source I marked it as <em>no official source, common value</em> instead of
+        presenting it as certain. Those pages change: if a figure doesn't match what
+        you see, trust the platform.
       </p>
 
       <h2>Instagram</h2>
+      <p>
+        Official source:
+        <a href="https://help.instagram.com/1631821640426723" rel="noopener">Instagram Help, “Image resolution of photos you share on Instagram”</a>
+        (verified on 2026-10-06). Instagram uploads photos up to a width of
+        1080 px and keeps them as they are if they measure between 320 and 1080 px
+        wide and their aspect ratio is between 1.91:1 and 3:4 (at 1080 px wide,
+        from 566 to 1440 px tall). Outside that range it crops them.
+      </p>
       <ul>
-        <li><strong>Profile:</strong> 1:1 (shown in a circle). 320×320 minimum; 800×800 is plenty.</li>
-        <li><strong>Square post:</strong> 1:1, typically 1080×1080 px.</li>
-        <li><strong>Vertical post:</strong> 4:5, 1080×1350 px (the one that takes up the most screen).</li>
-        <li><strong>Story / Reel:</strong> 9:16, 1080×1920 px.</li>
+        <li><strong>Profile:</strong> 1:1 (shown in a circle). 320×320 minimum; 800×800 is plenty. <em>No official source, common value.</em></li>
+        <li><strong>Square post:</strong> 1:1, 1080×1080 px. Within the official range.</li>
+        <li><strong>Vertical post:</strong> 4:5, 1080×1350 px. Within the official range, which goes up to 3:4 (1080×1440); the page doesn't name 4:5 as such.</li>
+        <li><strong>Story / Reel:</strong> 9:16, 1080×1920 px. <em>No official source, common value.</em></li>
       </ul>
 
       <h2>Facebook</h2>
+      <p>
+        Official source:
+        <a href="https://www.facebook.com/help/125379114252045" rel="noopener">Facebook Help, “Facebook Page profile picture and cover photo dimensions”</a>
+        (verified on 2026-10-06). It's the help for <strong>Pages</strong>;
+        I didn't verify the personal profile sizes.
+      </p>
       <ul>
-        <li><strong>Profile:</strong> 1:1 (shown in a circle). 720×720 or more.</li>
-        <li><strong>Cover:</strong> horizontal, around 1640×624 px on desktop (cropped differently on mobile).</li>
-        <li><strong>Post:</strong> 1200×630 px is a versatile size that also works for links.</li>
+        <li><strong>Page profile photo:</strong> 320×320 px for the best quality. It shows at 176×176 px on computer and 196×196 px on mobile, cropped in a circle.</li>
+        <li><strong>Page cover:</strong> minimum 400×150 px. It loads faster as an sRGB JPG of 851×315 px and under 100 KB. On computer it's 16:9 and on mobile 2.4:1, so it's cropped differently.</li>
+        <li><strong>Post:</strong> 1200×630 px is a versatile size that also works for links. <em>No official source, common value.</em></li>
       </ul>
 
       <h2>TikTok</h2>
+      <p>
+        Official source (in-feed ads only):
+        <a href="https://ads.tiktok.com/help/article/video-ads-specifications" rel="noopener">TikTok Ads Manager, “In-Feed Ads”</a>
+        (verified on 2026-10-06). For regular posts I didn't find an official page
+        with sizes.
+      </p>
       <ul>
-        <li><strong>Profile:</strong> square, shown in a circle. 200×200 minimum; upload larger.</li>
-        <li><strong>Vertical video / photo:</strong> 9:16, 1080×1920 px.</li>
+        <li><strong>Profile:</strong> square, shown in a circle. 200×200 minimum; upload larger. <em>No official source, common value.</em></li>
+        <li><strong>Vertical video / photo:</strong> 9:16. The official ad specification recommends 9:16 of at least 540×960 px (and accepts 1:1 of at least 640×640 px). 1080×1920 px is the common size, <em>no official source for regular posts</em>.</li>
       </ul>
 
       <h2>YouTube</h2>
+      <p>
+        Official source:
+        <a href="https://support.google.com/youtube/answer/72431" rel="noopener">YouTube Help, “Add custom thumbnails on YouTube”</a>
+        (verified on 2026-10-06).
+      </p>
       <ul>
-        <li><strong>Channel photo:</strong> square, 800×800 px recommended (shown in a circle).</li>
-        <li><strong>Thumbnail:</strong> 16:9, 1280×720 px. It's where the click is won: a clean background and a cut-out subject help it stand out.</li>
+        <li><strong>Channel photo:</strong> square, 800×800 px recommended (shown in a circle). <em>No official source, common value:</em> the channel-profile help doesn't state pixels.</li>
+        <li><strong>Thumbnail:</strong> 16:9. YouTube recommends 3840×2160 px with a minimum width of 640 px, as JPG or PNG, and up to 2 MB if you upload from your phone. 1280×720 px is the common size and meets the minimum. It's where the click is won: a clean background and a cut-out subject help it stand out.</li>
       </ul>
 
       <h2>X (Twitter) and LinkedIn</h2>
       <ul>
-        <li><strong>X — profile:</strong> 1:1, 400×400 px or more (circle).</li>
-        <li><strong>X — post image:</strong> 16:9 shows in full in the timeline.</li>
-        <li><strong>LinkedIn — profile:</strong> 1:1, minimum 400×400 px (circle).</li>
-        <li><strong>LinkedIn — cover:</strong> horizontal, around 1584×396 px.</li>
+        <li><strong>X — profile:</strong> 1:1, 400×400 px or more (circle). <em>No official source, common value:</em> X's help page wouldn't open from my test browser on 2026-10-06.</li>
+        <li><strong>X — post image:</strong> 16:9 shows in full in the timeline. <em>No official source, common value</em> (same reason).</li>
+        <li><strong>LinkedIn — profile:</strong> 1:1 recommended; between 400×400 and 7680×4320 px, up to 8 MB, as PNG or JPG.</li>
+        <li><strong>LinkedIn — cover:</strong> horizontal, 1584×396 px.</li>
       </ul>
+      <p>
+        Official LinkedIn source:
+        <a href="https://www.linkedin.com/help/linkedin/answer/a549049" rel="noopener">LinkedIn Help, “Photo won't upload to your profile”</a>
+        (verified on 2026-10-06).
+      </p>
 
       <h2>How to get the photo to its size, step by step</h2>
       <ol>
@@ -193,13 +236,6 @@
         <li>Use the <strong>scale/framing</strong> control to fit the subject within the right ratio.</li>
         <li>Export as <strong>JPG</strong> (photos) or <strong>PNG</strong> (graphics, text or transparency).</li>
       </ol>
-
-      <div class="tried">
-        <h3>We tested it: resize to the exact size</h3>
-        <p>For each network there's a recommended size; in the <strong>File</strong> panel we set the <strong>width and height in pixels</strong> (or a percentage) and the image rescaled instantly, showing the <strong>final weight</strong>. With the aspect-ratio lock on, it doesn't distort.</p>
-        <p>A tip from the test: export as <strong>JPG</strong> for photos and <strong>PNG</strong> if there's text or transparency. Everything is processed in the browser, without uploading the image.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
 
       <h2>Typical size mistakes</h2>
       <ul>
@@ -213,14 +249,29 @@
       <p>The whole cutout, background change and framing happen in your browser. Your photos aren't uploaded to any server or stored when you close the tab.</p>
 
       <h2>Frequently asked questions</h2>
-      <h3>What size is the profile photo on social networks?</h3>
-      <p>Almost all use a square avatar and show it in a circle. Uploading 400×400 px or more (for example 800×800) covers Instagram, Facebook, X and TikTok; LinkedIn recommends at least 400×400.</p>
-      <h3>Why does my photo look cropped in the story or post?</h3>
-      <p>Because the aspect ratio doesn't match the format's. Stories and Reels are 9:16; the Instagram feed accepts 1:1 and 4:5. If you upload horizontal to a vertical format, the network crops. Frame it in the right ratio before uploading.</p>
       <h3>JPG or PNG for social media?</h3>
       <p>For photos, a good-quality JPG is standard and lighter. PNG is better with text, sharp-edged graphics or transparency. Networks recompress anyway, so uploading at good quality helps the result.</p>
-      <h3>Are my photos uploaded to a server to resize them?</h3>
-      <p>No. The cutout and framing are done in your browser. Your photos aren't uploaded to any server or stored once you close the tab.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: from 4000 × 3000 px to the size of a post</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/pruebas/paisaje-sintetico.jpg"><code>paisaje-sintetico.jpg</code></a>, 4000 × 3000 px, 96.9 KB (synthetic image I drew with Pillow).</p>
+        <p><strong>Tool:</strong> File → width and height with the lock.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I opened paisaje-sintetico.jpg (4000 × 3000 px, a synthetic “phone” photo) and went to “File”.</li>
+          <li>With the aspect-ratio lock on I set the width to 1080, JPG quality 80, and downloaded.</li>
+          <li>I turned the lock off, set 1080 × 1350 (Instagram's vertical size) and downloaded again.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>With the lock: width 1080 → height 810. It produced a 1080 × 810 px, 16 KB JPG (the original weighed 97 KB) in 0.3 s counting the download.</li>
+          <li>Without the lock, asking for 1080 × 1350 px, it produced a 1080 × 1350 px, 23 KB JPG. Since the photo is 4:3 and the requested size is 4:5, the image ended up stretched to 60% of its horizontal proportion.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The File panel resizes but doesn't crop to an aspect ratio: to take a 4:3 photo to 1080 × 1350 I could only stretch it (to 60% of its proportion), or leave it at 1080 × 810 with the lock. To respect the proportion you would have to frame it first (I didn't try “Crop area” for that). The photo is synthetic: I didn't measure how much each network recompresses.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Prepare my photo for social →</a>
 

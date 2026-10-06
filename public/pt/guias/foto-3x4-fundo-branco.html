@@ -32,14 +32,18 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        { "@type": "Question", "name": "Esta foto vale para passaporte ou RG?", "acceptedAnswer": { "@type": "Answer", "text": "Depende do órgão: muitos processos de identidade oficiais exigem que a foto seja tirada em um estúdio ou cabine homologada, com medidas exatas de cabeça e olhos. Este guia serve para fundo branco de uso geral (currículo, perfis, formulários internos); para documentos oficiais, verifique os requisitos específicos." } },
-        { "@type": "Question", "name": "Branco puro ou cinza clarinho?", "acceptedAnswer": { "@type": "Answer", "text": "Para a grande maioria dos usos, o branco puro (#ffffff) é a opção mais segura: é o que quase todos os formulários e modelos de currículo assumem e aparece consistente em qualquer tela ou impressora. Reserve o cinza claro só se o formulário pedir." } },
-        { "@type": "Question", "name": "Funciona com foto de celular?", "acceptedAnswer": { "@type": "Answer", "text": "Sim, desde que seja de frente, em foco e com luz uniforme. O recorte automático separa cabeça e ombros do fundo; uma parede lisa sob luz natural difusa dá o melhor resultado." } },
-        { "@type": "Question", "name": "Minha foto de rosto é enviada a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Todo o processamento acontece no seu navegador. Uma foto do seu rosto para um formulário é sensível; não é enviada a nenhum servidor nem fica armazenada ao fechar a aba." } }
+        {
+          "@type": "Question",
+          "name": "Branco puro ou cinza clarinho?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Para a grande maioria dos usos, o branco puro (#ffffff) é a opção mais segura: é o que quase todos os formulários e modelos de currículo assumem e aparece consistente em qualquer tela ou impressora. Reserve o cinza claro só se o formulário pedir."
+          }
+        }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -159,13 +163,6 @@
         <li>Baixe em <strong>JPG</strong> (sem transparência, ideal para enviar a formulários) ou <strong>PNG</strong> se precisar editar depois.</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: o branco tem que ser uniforme</h3>
-        <p>Para uma foto 3x4 o que importa é um <strong>fundo branco uniforme, sem sombras</strong>. Recortamos a pessoa e a colocamos sobre branco puro: como o fundo é gerado limpo (não o branco "sujo" de uma parede), ficou uniforme de cara.</p>
-        <p>Dica do teste: deixe um ar acima da cabeça e enquadre reto antes de exportar em <strong>JPG</strong>. O recorte automático resolveu a silhueta; só ajustamos a borda do cabelo com o pincel.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web. A imagem acima é dessa sessão.</p>
-      </div>
-
       <h2>Serve para RG ou passaporte?</h2>
       <p>
         Com ressalvas. Muitos processos de identidade oficiais (passaporte, RG,
@@ -196,14 +193,33 @@
       </p>
 
       <h2>Perguntas frequentes</h2>
-      <h3>Esta foto vale para passaporte ou RG?</h3>
-      <p>Depende do órgão: muitos processos de identidade exigem que a foto seja tirada em um estúdio ou cabine homologada, com medidas exatas de cabeça e olhos. Este guia serve para fundo branco de uso geral (currículo, perfis, formulários internos); para documentos oficiais, verifique os requisitos específicos.</p>
       <h3>Branco puro ou cinza clarinho?</h3>
       <p>Para a grande maioria dos usos, o branco puro (<code>#ffffff</code>) é a opção mais segura: é o que quase todos os formulários e modelos de currículo assumem e aparece consistente em qualquer tela ou impressora. Reserve o cinza claro só se o formulário pedir.</p>
-      <h3>Funciona com foto de celular?</h3>
-      <p>Sim, desde que seja de frente, em foco e com luz uniforme. O recorte automático separa cabeça e ombros do fundo; uma parede lisa sob luz natural difusa dá o melhor resultado.</p>
-      <h3>Minha foto de rosto é enviada a um servidor?</h3>
-      <p>Não. Todo o processamento acontece no seu navegador. Uma foto do seu rosto para um formulário é sensível; não é enviada a nenhum servidor nem fica armazenada ao fechar a aba.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: quanto o branco puro aguenta quando a qualidade do JPG cai</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, Exportar → Cor #ffffff, e Arquivo → JPG com qualidade.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato, apliquei «Recorte IA» e exportei em JPEG sobre branco #ffffff.</li>
+          <li>Abri esse JPEG na aba «Arquivo» e o recomprimi como JPG com qualidade 80, 50, 35, 20 e 5.</li>
+          <li>Em cada saída medi o peso e que porcentagem dos pixels dos quatro quadrados de 40 × 40 px dos cantos já não era #ffffff exato.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Exportação inicial (JPEG do Recorte): 57,5 KB, cantos não brancos 0,0%.</li>
+          <li>Qualidade 5: 10,3 KB (a tela estimava 58 KB → 10 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 47,2%.</li>
+          <li>Qualidade 20: 15,3 KB (a tela estimava 58 KB → 15 KB), cantos não brancos 100,0% (pixel do canto rgb(253, 253, 253)), #ffffff exatos na imagem toda 0,4%.</li>
+          <li>Qualidade 35: 22,2 KB (a tela estimava 58 KB → 22 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 46,5%.</li>
+          <li>Qualidade 50: 25,9 KB (a tela estimava 58 KB → 26 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,7%.</li>
+          <li>Qualidade 80: 45,8 KB (a tela estimava 58 KB → 46 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,9%.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não é monótono: na qualidade 20 os cantos já não eram branco puro (rgb(253, 253, 253)) e nas qualidades 5 e 35 eram, então não há uma qualidade «segura» que eu possa recomendar com um único número: confira a sua. Este teste só cobre o fundo branco; não mede o enquadramento nem a proporção da cabeça, e meu retrato corta o tronco, então não é uma foto de documento de verdade.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Fazer minha foto 3x4 →</a>
 
