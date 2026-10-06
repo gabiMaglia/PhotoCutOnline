@@ -52,3 +52,34 @@ describe("registro ES: voseo (GROW-27 d)", () => {
     expect(hits).toEqual([]);
   });
 });
+
+describe("variantes táctiles (GROW-27 D3)", () => {
+  const original = window.matchMedia;
+  afterEach(() => {
+    window.matchMedia = original;
+    setLang("es");
+  });
+  const coarse = (matches) => {
+    window.matchMedia = jest.fn((q) => ({ matches: matches && q.includes("coarse") }));
+  };
+  const KEYS = ["empty.drag", "canvas.empty.body", "ob.1.body", "ob.2.body", "toast.bgSet"];
+
+  it.each(["es", "en", "pt"])("en %s con pointer:coarse no se mencionan ⌘V ni atajos de letra", (lang) => {
+    setLang(lang);
+    coarse(true);
+    for (const k of KEYS) expect(t(k)).not.toMatch(/⌘|\((A|P)\)/);
+  });
+
+  it("con puntero fino se conserva el texto con atajos", () => {
+    setLang("es");
+    coarse(false);
+    expect(t("empty.drag")).toContain("⌘V");
+    expect(t("ob.2.body")).toContain("(A)");
+  });
+
+  it("sin matchMedia (SSR/tests) usa el texto normal", () => {
+    setLang("es");
+    window.matchMedia = undefined;
+    expect(t("empty.drag")).toContain("⌘V");
+  });
+});
