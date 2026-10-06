@@ -82,6 +82,34 @@ describe("BatchPage (integración)", () => {
     await waitFor(() => expect(global.URL.createObjectURL).toHaveBeenCalled());
   });
 
+  it("(GROW-27 f) 'Descargar ZIP' queda deshabilitado mientras hay archivos procesando y se habilita al terminar", async () => {
+    mockInspectImageFile.mockResolvedValue(okInspection());
+    let release;
+    mockLoadImage
+      .mockResolvedValueOnce({ width: 10, height: 10 })
+      .mockImplementationOnce(
+        () =>
+          new Promise((res) => {
+            release = () => res({ width: 10, height: 10 });
+          })
+      );
+    renderPage();
+
+    const input = document.querySelector('input[type="file"]');
+    await userEvent.upload(input, [
+      new File(["a"], "uno.jpg", { type: "image/jpeg" }),
+      new File(["b"], "dos.jpg", { type: "image/jpeg" }),
+    ]);
+
+    // el 1.º terminó, el 2.º sigue procesando: un ZIP ahora saldría incompleto
+    await waitFor(() => expect(screen.getAllByText(t("batch.status.done")).length).toBe(1));
+    expect(screen.getByRole("button", { name: t("batch.downloadZip") })).toBeDisabled();
+
+    release();
+    await waitFor(() => expect(screen.getAllByText(t("batch.status.done")).length).toBe(2));
+    expect(screen.getByRole("button", { name: t("batch.downloadZip") })).toBeEnabled();
+  });
+
   it("un archivo inválido queda en error sin abortar el resto del lote", async () => {
     mockInspectImageFile
       .mockResolvedValueOnce({ kind: "heic" })

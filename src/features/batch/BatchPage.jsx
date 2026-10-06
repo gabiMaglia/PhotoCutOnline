@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { t } from "../../lib/i18n.js";
+import { t, tn } from "../../lib/i18n.js";
 import FileButton from "../../components/ui/FileButton.jsx";
 import Button from "../../components/ui/Button.jsx";
 import { useBatch } from "./hooks/useBatch.js";
@@ -88,7 +88,7 @@ export default function BatchPage({ active, onToast }) {
                 </div>
                 <span className="batch-progress-label">
                   {t("batch.progress", { done: batch.settledCount, total: batch.total })}
-                  {batch.doneCount > 0 ? ` · ${t("batch.okCount", { n: batch.doneCount })}` : ""}
+                  {batch.doneCount > 0 ? ` · ${tn("batch.okCount", batch.doneCount)}` : ""}
                 </span>
               </div>
               <div className="batch-actions">
@@ -97,7 +97,7 @@ export default function BatchPage({ active, onToast }) {
                 </Button>
                 <Button
                   variant="primary"
-                  disabled={batch.doneCount === 0 || batch.zipping}
+                  disabled={batch.doneCount === 0 || batch.zipping || batch.running}
                   onClick={batch.downloadZip}
                 >
                   {batch.zipping ? t("batch.zipping") : t("batch.downloadZip")}
