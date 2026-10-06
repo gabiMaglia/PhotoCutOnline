@@ -87,3 +87,70 @@ export function manifestProblems(manifest, root = process.cwd()) {
   }
   return problems;
 }
+
+// ---- datePublished (fecha de PRIMER commit), solo para las guías ----------
+
+// Manifiesto hermano: Vercel no tiene git, así que también se commitea.
+export const PUBLISHED_PATH = "scripts/published.json";
+
+// Guías de contenido (ES/EN/PT), sin los índices: las únicas con Article JSON-LD.
+export const isGuideSource = (rel) =>
+  /^public\/(guias|en\/guides|pt\/guias)\/(?!index\.html$)[^/]+\.html$/.test(rel);
+
+// Fecha ISO del commit que CREÓ el archivo (siguiendo renombres), o null.
+export function gitPublished(file, cwd = process.cwd()) {
+  try {
+    const out = git(cwd, ["log", "--diff-filter=A", "--follow", "--format=%cI", "--", file]);
+    const first = out.split("\n").filter(Boolean).at(-1);
+    return first ? new Date(first).toISOString() : null;
+  } catch {
+    return null;
+  }
+}
+
+const publishedManifests = new Map();
+function loadPublished(cwd) {
+  if (!publishedManifests.has(cwd)) {
+    let m = {};
+    try {
+      m = JSON.parse(fs.readFileSync(path.join(cwd, PUBLISHED_PATH), "utf8"));
+    } catch {
+      // sin manifiesto: seguimos con git
+    }
+    publishedManifests.set(cwd, m);
+  }
+  return publishedManifests.get(cwd);
+}
+
+// Fecha de publicación original. Orden: manifiesto → git → última modificación.
+export function publishedDate(file, cwd = process.cwd()) {
+  const rel = path.relative(cwd, path.resolve(cwd, file)).split(path.sep).join("/");
+  const fromManifest = loadPublished(cwd)[rel];
+  if (fromManifest) return new Date(fromManifest).toISOString();
+  return gitPublished(file, cwd) || lastModified(file, cwd);
+}
+
+export function buildPublished(root = process.cwd()) {
+  const out = {};
+  for (const abs of sourcePages(root)) {
+    const rel = path.relative(root, abs).split(path.sep).join("/");
+    if (!isGuideSource(rel)) continue;
+    const d = gitPublished(rel, root);
+    if (!d) throw new Error(`git no tiene historial de alta para ${rel}`);
+    out[rel] = d;
+  }
+  return out;
+}
+
+export function publishedProblems(manifest, root = process.cwd()) {
+  const expected = buildPublished(root);
+  const problems = [];
+  for (const [rel, d] of Object.entries(expected)) {
+    if (!manifest[rel]) problems.push(`falta ${rel}`);
+    else if (manifest[rel] !== d) problems.push(`${rel}: manifiesto ${manifest[rel]} ≠ git ${d}`);
+  }
+  for (const rel of Object.keys(manifest)) {
+    if (!(rel in expected)) problems.push(`sobra ${rel}`);
+  }
+  return problems;
+}
