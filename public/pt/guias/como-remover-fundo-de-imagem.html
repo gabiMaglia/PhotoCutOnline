@@ -33,7 +33,7 @@
       "@type": "FAQPage",
       "mainEntity": [
         { "@type": "Question", "name": "Que formato exportar para manter a transparência?", "acceptedAnswer": { "@type": "Answer", "text": "PNG ou WebP. Ambos mantêm o canal alfa; o WebP gera arquivos muito menores para a web. O JPG não suporta transparência, então use só se aplicar um fundo de cor ou imagem." } },
-        { "@type": "Question", "name": "E se o recorte por IA errar a borda?", "acceptedAnswer": { "@type": "Answer", "text": "Recorra ao retângulo interativo (GrabCut): desenhe um retângulo ao redor do sujeito e o algoritmo decide o primeiro plano por cor e contraste. Depois refine com os pincéis manter/apagar com zoom." } },
+        { "@type": "Question", "name": "E se o recorte por IA errar a borda?", "acceptedAnswer": { "@type": "Answer", "text": "Recorra à Varinha mágica: clique no fundo e toda a zona contígua da mesma cor é removida (shift+clique soma outras zonas). Depois refine com os pincéis manter/apagar com zoom." } },
         { "@type": "Question", "name": "Minha imagem é enviada a um servidor?", "acceptedAnswer": { "@type": "Answer", "text": "Não. Todo o recorte roda no seu navegador com WebAssembly e um modelo de IA local. O arquivo nunca sai do seu equipamento — não há servidor para hackear nem política de retenção para ler." } },
         { "@type": "Question", "name": "Funciona em cabelo e detalhes finos?", "acceptedAnswer": { "@type": "Answer", "text": "Sim, se você começar de uma imagem em alta resolução e refinar o cabelo com um pincel pequeno e zoom. Um suavizado moderado de 1–3 px mantém o contorno natural." } }
       ]
@@ -154,14 +154,16 @@
         uma única vez, roda no seu navegador com WebAssembly e funciona até sem
         conexão depois da primeira visita.
       </p>
-      <h3>2. Recorte interativo: você marca, o algoritmo decide</h3>
+      <h3>2. Varinha mágica: um clique no fundo</h3>
       <p>
-        Quando a IA se confunde — produtos translúcidos, fundos muito carregados,
-        vários sujeitos — o clássico algoritmo <strong>GrabCut</strong> continua
-        imbatível: você desenha um retângulo ao redor do sujeito e o algoritmo
-        estima quais pixels pertencem ao primeiro plano analisando cor e
-        contraste. É determinista e previsível: se o resultado não convence, você
-        ajusta o retângulo e pronto.
+        Quando a IA se confunde e o fundo é liso ou de uma cor uniforme, a
+        <strong>Varinha mágica</strong> seleciona por cor: você clica no fundo e
+        toda a zona contígua dessa cor é removida. Com
+        <strong>shift+clique</strong> você soma outras zonas a remover, e a
+        tolerância controla quanta variação de cor é aceita. É determinista e
+        previsível: se o resultado não convence, você desfaz e ajusta a
+        tolerância. Se só precisa delimitar a área, «Recortar área» faz um
+        recorte retangular (não separa o fundo).
       </p>
       <h3>3. Pincéis de refino: o controle fino</h3>
       <p>
@@ -175,7 +177,7 @@
       <ol>
         <li>Abra a foto (ou cole com <code>Ctrl/Cmd+V</code> da área de transferência).</li>
         <li>Teste primeiro o <strong>Recorte IA</strong>. Na maioria das fotos já fica bom.</li>
-        <li>Se falhar, desenhe um <strong>retângulo</strong> ajustado ao sujeito.</li>
+        <li>Se falhar, ou o fundo for liso, use a <strong>Varinha mágica</strong>: um clique no fundo o remove (shift+clique soma zonas).</li>
         <li>Ative o <strong>comparador antes/depois</strong> para detectar restos.</li>
         <li>Refine as bordas com os pincéis manter/apagar (zoom com a roda).</li>
         <li>Ajuste o <strong>suavizado de borda</strong> (1–3&nbsp;px costuma ser o natural).</li>
@@ -233,7 +235,7 @@
       <h3>Que formato exportar para manter a transparência?</h3>
       <p>PNG ou WebP. Ambos mantêm o canal alfa; o WebP gera arquivos muito menores para a web. O JPG não suporta transparência, então use só se aplicar um fundo de cor ou imagem.</p>
       <h3>E se o recorte por IA errar a borda?</h3>
-      <p>Recorra ao retângulo interativo (GrabCut): desenhe um retângulo ao redor do sujeito e o algoritmo decide o primeiro plano por cor e contraste. Depois refine com os pincéis manter/apagar com zoom.</p>
+      <p>Recorra à Varinha mágica: clique no fundo e toda a zona contígua da mesma cor é removida (shift+clique soma outras zonas). Depois refine com os pincéis manter/apagar com zoom.</p>
       <h3>Minha imagem é enviada a um servidor?</h3>
       <p>Não. Todo o recorte roda no seu navegador com WebAssembly e um modelo de IA local. O arquivo nunca sai do seu equipamento — não há servidor para hackear nem política de retenção para ler.</p>
       <h3>Funciona em cabelo e detalhes finos?</h3>

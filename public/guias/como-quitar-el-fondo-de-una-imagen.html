@@ -50,7 +50,7 @@
       "step": [
         { "@type": "HowToStep", "position": 1, "name": "Abrir la foto", "text": "Abre la foto (o pégala con Ctrl/⌘+V desde el portapapeles)." },
         { "@type": "HowToStep", "position": 2, "name": "Probar el Recorte IA", "text": "Prueba primero el Recorte IA. En la mayoría de fotos ya queda bien." },
-        { "@type": "HowToStep", "position": 3, "name": "Dibujar un recuadro", "text": "Si falla, dibuja un recuadro ajustado al sujeto." },
+        { "@type": "HowToStep", "position": 3, "name": "Usar la Varita mágica", "text": "Si falla, o si el fondo es liso, usa la Varita mágica: un clic en el fondo lo quita (shift+clic suma otras zonas)." },
         { "@type": "HowToStep", "position": 4, "name": "Activar el comparador", "text": "Activa el comparador antes/después para detectar restos." },
         { "@type": "HowToStep", "position": 5, "name": "Refinar los bordes", "text": "Refina los bordes con los pinceles mantener/quitar (zoom con la rueda)." },
         { "@type": "HowToStep", "position": 6, "name": "Ajustar el suavizado", "text": "Ajusta el suavizado de borde (1–3 px suele ser lo natural)." },
@@ -81,7 +81,7 @@
         {
           "@type": "Question",
           "name": "¿Funciona con fotos tomadas con el celular?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí, tanto el Recorte IA como el recuadro interactivo funcionan con cualquier foto JPG o PNG, incluidas las de celular. Cuanta más resolución y contraste entre sujeto y fondo, mejor sale el recorte automático." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí, tanto el Recorte IA como la Varita mágica funcionan con cualquier foto JPG o PNG, incluidas las de celular. Cuanta más resolución y contraste entre sujeto y fondo, mejor sale el recorte automático." }
         }
       ]
     }
@@ -207,14 +207,16 @@
         visita.
       </p>
 
-      <h3>2. Recorte interactivo: tú marcas, el algoritmo decide</h3>
+      <h3>2. Varita mágica: un clic en el fondo</h3>
       <p>
-        Cuando la IA se confunde — productos translúcidos, fondos muy
-        cargados, varios sujetos — el clásico algoritmo
-        <strong>GrabCut</strong> sigue siendo imbatible: dibujas un recuadro
-        alrededor del sujeto y el algoritmo estima qué píxeles pertenecen al
-        primer plano analizando color y contraste. Es determinista y predecible:
-        si el resultado no convence, ajustas el recuadro y listo.
+        Cuando la IA se confunde y el fondo es liso o de un color uniforme, la
+        <strong>Varita mágica</strong> selecciona por color: haces clic en el
+        fondo y se quita toda la zona contigua de ese color. Con
+        <strong>shift+clic</strong> sumas otras zonas a quitar, y la tolerancia
+        controla cuánto color se acepta. Es determinista y predecible: si el
+        resultado no convence, deshaces y ajustas la tolerancia. Si solo
+        necesitas acotar la zona, «Recortar área» hace un recorte rectangular
+        (no separa el fondo).
       </p>
 
       <h3>3. Pinceles de refinado: el control fino</h3>
@@ -230,7 +232,7 @@
       <ol>
         <li>Abre la foto (o pégala con <code>Ctrl/⌘+V</code> desde el portapapeles).</li>
         <li>Prueba primero el <strong>Recorte IA</strong>. En la mayoría de fotos ya queda bien.</li>
-        <li>Si falla, dibuja un <strong>recuadro</strong> ajustado al sujeto.</li>
+        <li>Si falla, o el fondo es liso, usa la <strong>Varita mágica</strong>: un clic en el fondo lo quita (shift+clic suma zonas).</li>
         <li>Activa el <strong>comparador antes/después</strong> para detectar restos.</li>
         <li>Refina los bordes con los pinceles mantener/quitar (zoom con la rueda).</li>
         <li>Ajusta el <strong>suavizado de borde</strong> (1–3&nbsp;px suele ser lo natural).</li>
@@ -338,7 +340,7 @@
 
       <h2>Casos de uso típicos</h2>
       <p>
-        Los mismos tres pasos —IA, recuadro y pinceles— sirven para
+        Los mismos tres pasos —IA, varita y pinceles— sirven para
         prácticamente cualquier tipo de foto, pero conviene ajustar el enfoque
         según el objetivo:
       </p>
@@ -355,7 +357,7 @@
         </li>
         <li>
           <strong>Logo o icono:</strong> si el logo ya tiene bordes definidos,
-          el recuadro interactivo suele bastar sin necesidad de IA.
+          la Varita mágica suele bastar sin necesidad de IA.
         </li>
         <li>
           <strong>Sticker para chat:</strong> exportá en WebP cuadrado con un
@@ -384,7 +386,7 @@
       </p>
       <h3>¿Funciona con fotos tomadas con el celular?</h3>
       <p>
-        Sí, tanto el Recorte IA como el recuadro interactivo funcionan con
+        Sí, tanto el Recorte IA como la Varita mágica funcionan con
         cualquier foto JPG o PNG, incluidas las de celular. Cuanta más
         resolución y contraste entre sujeto y fondo, mejor sale el recorte
         automático.
