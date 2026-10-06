@@ -14,7 +14,27 @@
     <link rel="alternate" type="application/rss+xml" title="PhotoCut Studio — guías" href="/feed.xml" />
 
       <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+    <script>
+      // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
+      // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
+      addEventListener("load", function () {
+        var done = false;
+        var ev = ["pointerdown", "keydown", "scroll", "touchstart"];
+        function go() {
+          if (done) return;
+          done = true;
+          ev.forEach(function (e) { removeEventListener(e, go); });
+          if (document.querySelector('script[src*="adsbygoogle.js"]')) return;
+          var s = document.createElement("script");
+          s.async = true;
+          s.crossOrigin = "anonymous";
+          s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161";
+          document.head.appendChild(s);
+        }
+        ev.forEach(function (e) { addEventListener(e, go, { passive: true, once: true }); });
+        setTimeout(go, 3000);
+      });
+    </script>
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>

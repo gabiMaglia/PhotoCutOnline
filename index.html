@@ -41,12 +41,14 @@
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0d10'/%3E%3Cpath d='M16 5a11 11 0 1 1 0 22z' fill='%23d6f64b'/%3E%3Cpath d='M16 5a11 11 0 0 0 0 22z' fill='none' stroke='%23d6f64b' stroke-width='2'/%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Spline+Sans+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Fuentes autohospedadas (OFL, ver public/fonts/): sin requests a Google -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/bricolage-grotesque-latin.woff2" crossorigin />
+    <style>
+      @font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 300 800; font-stretch: 100%; font-display: swap; src: url(/fonts/bricolage-grotesque-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 300 800; font-stretch: 100%; font-display: swap; src: url(/fonts/bricolage-grotesque-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "Spline Sans Mono"; font-style: normal; font-weight: 400 600; font-display: swap; src: url(/fonts/spline-sans-mono-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Spline Sans Mono"; font-style: normal; font-weight: 400 600; font-display: swap; src: url(/fonts/spline-sans-mono-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    </style>
 
     <!--
       Landing estática de marketing/SEO (T-011): esta página YA NO monta
@@ -57,7 +59,27 @@
     -->
     <link rel="stylesheet" href="/landing.css" />
       <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161" crossorigin="anonymous"></script>
+    <script>
+      // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
+      // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
+      addEventListener("load", function () {
+        var done = false;
+        var ev = ["pointerdown", "keydown", "scroll", "touchstart"];
+        function go() {
+          if (done) return;
+          done = true;
+          ev.forEach(function (e) { removeEventListener(e, go); });
+          if (document.querySelector('script[src*="adsbygoogle.js"]')) return;
+          var s = document.createElement("script");
+          s.async = true;
+          s.crossOrigin = "anonymous";
+          s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3865058604661161";
+          document.head.appendChild(s);
+        }
+        ev.forEach(function (e) { addEventListener(e, go, { passive: true, once: true }); });
+        setTimeout(go, 3000);
+      });
+    </script>
   </head>
   <body id="top">
     <!-- Landing de marketing/SEO (T-011): página estática propia en `/`,
@@ -93,7 +115,7 @@
                 <figcaption class="lp-swatch-tag lp-swatch-tag-l">Original</figcaption>
               </figure>
               <figure class="lp-ba-pane lp-ba-cut">
-                <img src="/media/hero-despues.png" width="480" height="600" decoding="async" alt="El mismo retrato recortado sin fondo, sobre un patrón de cuadros que indica transparencia" />
+                <img src="/media/hero-despues.webp" width="480" height="600" decoding="async" alt="El mismo retrato recortado sin fondo, sobre un patrón de cuadros que indica transparencia" />
                 <figcaption class="lp-swatch-tag lp-swatch-tag-l">Sin fondo</figcaption>
               </figure>
             </div>
