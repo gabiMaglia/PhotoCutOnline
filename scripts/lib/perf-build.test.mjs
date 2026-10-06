@@ -33,6 +33,7 @@ const NO_ADS = new Set([
   "legal/privacidad.html", "legal/terminos.html",
   "en/legal/privacy.html", "en/legal/terms.html",
   "pt/legal/privacidade.html", "pt/legal/termos.html",
+  "novedades.html", "en/changelog.html", "pt/novidades.html",
 ]);
 
 test("el build contiene todas las páginas sin publicidad esperadas", () => {

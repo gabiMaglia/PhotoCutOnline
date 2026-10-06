@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
-import { lastModified } from "./scripts/lib/lastmod.mjs";
+import { lastModified, publishedDate, isGuideSource } from "./scripts/lib/lastmod.mjs";
+import { injectGuideDates } from "./scripts/lib/dates.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -59,6 +60,9 @@ const SEO_ROUTES = [
   "/autor.html",
   "/en/author.html",
   "/pt/autor.html",
+  "/novedades.html",
+  "/en/changelog.html",
+  "/pt/novidades.html",
   "/en/guides/",
   "/en/guides/product-photos-white-background.html",
   "/en/guides/change-photo-background.html",
@@ -145,6 +149,7 @@ const I18N_GROUPS = [
   { es: "/acerca.html", en: "/en/about.html", pt: "/pt/sobre.html" },
   { es: "/contacto.html", en: "/en/contact.html", pt: "/pt/contato.html" },
   { es: "/autor.html", en: "/en/author.html", pt: "/pt/autor.html" },
+  { es: "/novedades.html", en: "/en/changelog.html", pt: "/pt/novidades.html" },
   { es: "/legal/privacidad.html", en: "/en/legal/privacy.html", pt: "/pt/legal/privacidade.html" },
   { es: "/legal/terminos.html", en: "/en/legal/terms.html", pt: "/pt/legal/termos.html" },
   { es: "/guias/", en: "/en/guides/", pt: "/pt/guias/" },
@@ -301,21 +306,44 @@ function seoArtifacts(site, env = {}) {
       const guideRoutes = SEO_ROUTES.filter(
         (r) => /\/(guias|guides)\//.test(r) && r.endsWith(".html")
       );
-      const items = guideRoutes
+      const guideItems = guideRoutes
         .map((r) => {
           const file = path.join(dist, r);
-          if (!fs.existsSync(file)) return "";
+          if (!fs.existsSync(file)) return null;
           const html = fs.readFileSync(file, "utf8");
           const title = (html.match(/<title>([^<]*)<\/title>/) || [, r])[1];
           const desc = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/) || [, ""])[1];
-          const pubDate = new Date(modOf(r)).toUTCString();
-          return `    <item>\n      <title>${esc(title)}</title>\n      <link>${site}${r}</link>\n      <guid>${site}${r}</guid>\n      <description>${esc(desc)}</description>\n      <pubDate>${pubDate}</pubDate>\n    </item>`;
+          return { ts: +new Date(modOf(r)), title, link: `${site}${r}`, desc };
         })
-        .filter(Boolean)
+        .filter(Boolean);
+
+      // Novedades: un ítem por <article class="entry"> de /novedades.html (ES),
+      // con la fecha real de la entrada (mediodía UTC: solo se conoce el día).
+      const novFile = path.join(dist, "novedades.html");
+      const novItems = fs.existsSync(novFile)
+        ? [...fs.readFileSync(novFile, "utf8").matchAll(/<article class="entry" id="([^"]+)">([\s\S]*?)<\/article>/g)].map((m) => {
+            const strip = (t) => t.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+            const day = (m[2].match(/<time datetime="(\d{4}-\d{2}-\d{2})">/) || [])[1];
+            const lines = [...m[2].matchAll(/<li>([\s\S]*?)<\/li>/g)].map((x) => strip(x[1]));
+            return {
+              ts: +new Date(`${day}T12:00:00Z`),
+              title: `Novedades: ${strip((m[2].match(/<h2>([\s\S]*?)<\/h2>/) || [, ""])[1])}`,
+              link: `${site}/novedades.html#${m[1]}`,
+              desc: lines.join(" "),
+            };
+          })
+        : [];
+
+      const feedItems = [...guideItems, ...novItems].sort((x, y) => y.ts - x.ts);
+      const items = feedItems
+        .map(
+          (i) =>
+            `    <item>\n      <title>${esc(i.title)}</title>\n      <link>${i.link}</link>\n      <guid>${i.link}</guid>\n      <description>${esc(i.desc)}</description>\n      <pubDate>${new Date(i.ts).toUTCString()}</pubDate>\n    </item>`
+        )
         .join("\n");
       fs.writeFileSync(
         path.join(dist, "feed.xml"),
-        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador.</description>\n    <language>es</language>\n    <lastBuildDate>${new Date(Math.max(...guideRoutes.map((r) => +new Date(modOf(r))))).toUTCString()}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
+        `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n  <channel>\n    <title>PhotoCut Studio — guías y novedades</title>\n    <link>${site}/</link>\n    <description>Guías prácticas de recorte, fondos y preparación de imágenes en el navegador, y novedades del producto.</description>\n    <language>es</language>\n    <lastBuildDate>${new Date(Math.max(...feedItems.map((i) => i.ts))).toUTCString()}</lastBuildDate>\n${items}\n  </channel>\n</rss>\n`
       );
 
       // canonical/og:url + Umami en cada página estática (index/editor los hacen
@@ -348,6 +376,16 @@ function seoArtifacts(site, env = {}) {
           if (!html.includes('name="twitter:card"')) tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
           html = html.replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
           changed = true;
+        }
+        // Fechas reales de las guías (Article JSON-LD + "Actualizado el" visible),
+        // desde los manifiestos commiteados: igual con git que en Vercel sin git.
+        if (isGuideSource(`public${r}`)) {
+          const lang = r.startsWith("/en/") ? "en" : r.startsWith("/pt/") ? "pt" : "es";
+          const next = injectGuideDates(html, { published: publishedDate(sourceFor(r)), modified: modOf(r), lang });
+          if (next !== html) {
+            html = next;
+            changed = true;
+          }
         }
         if (umami && !html.includes("data-website-id")) {
           html = html.replace("</head>", `    ${umami}\n  </head>`);

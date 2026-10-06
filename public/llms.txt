@@ -26,4 +26,5 @@ PhotoCut Studio is a client-side web app. Unlike most online image tools, it doe
 ## About
 - [How it works (client-side AI, privacy by design)](https://www.photocutapp.com/como-funciona.html)
 - [About](https://www.photocutapp.com/acerca.html)
+- [What's new: public changelog with real dates (Spanish; also in English at /en/changelog.html and Portuguese at /pt/novidades.html)](https://www.photocutapp.com/novedades.html)
 - [Privacy](https://www.photocutapp.com/legal/privacidad.html)

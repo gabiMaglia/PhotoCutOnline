@@ -1,6 +1,6 @@
 // Verifica en dist/ (tras `npm run build`) que TODA página HTML tenga en su
-// footer los 5 enlaces de confianza de SU idioma: Privacidad · Términos ·
-// Contacto · Acerca · Autor. Sale con código 1 si alguna falla.
+// footer los 6 enlaces de confianza de SU idioma: Privacidad · Términos ·
+// Contacto · Acerca · Autor · Novedades. Sale con código 1 si alguna falla.
 // Uso: node scripts/check-footers.mjs [carpeta=dist]
 import fs from "node:fs";
 import path from "node:path";
@@ -38,5 +38,5 @@ for (const file of pages) {
 
 const ok = pages.length - failures.length;
 for (const f of failures) console.error(`FAIL ${f}`);
-console.log(`${ok}/${pages.length} páginas con los 5 enlaces de confianza en su idioma`);
+console.log(`${ok}/${pages.length} páginas con los ${TRUST.es.length} enlaces de confianza en su idioma`);
 process.exit(failures.length ? 1 : 0);

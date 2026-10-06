@@ -1,5 +1,5 @@
 // Footer único de confianza en TODAS las páginas fuente (landing, editor y
-// estáticas ES/EN/PT): Privacidad · Términos · Contacto · Acerca · Autor,
+// estáticas ES/EN/PT): Privacidad · Términos · Contacto · Acerca · Autor · Novedades,
 // cada idioma apuntando a SU versión. Determinista e idempotente: quita
 // cualquier enlace de confianza previo (de cualquier idioma) y agrega el set
 // canónico al final del footer. Los demás enlaces del footer se conservan.
