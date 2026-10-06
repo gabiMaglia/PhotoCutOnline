@@ -147,13 +147,6 @@
         <li>Download as <strong>PNG</strong>, at a large size so you can shrink it later without losing sharpness.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: for a logo, the wand beats the AI</h3>
-        <p>A logo usually comes on a <strong>solid background</strong> (white or a flat color). There the <strong>Auto cutout</strong> or the <strong>Magic wand</strong> —which select by color— give a cleaner edge than the AI, which is designed for photos of subjects. One click on the background selects it for removal.</p>
-        <p>We exported as a <strong>transparent PNG</strong>: that way the logo looks good on any background (a website, an invoice, a t-shirt). All in the browser, without uploading your brand.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The images above are from that session.</p>
-      </div>
-
       <h2>The detail that ruins logos: the white halo</h2>
       <p>
         The most common mistake when removing a logo's background is leaving a
@@ -201,6 +194,30 @@
         browser: the image isn't uploaded anywhere or stored when you close the tab.
       </p>
 
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the same logo with the AI cutout, the auto cutout and the wand</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/logo-antes.jpg"><code>logo-antes.jpg</code></a>, 820 × 637 px, 15.5 KB (sample image from this site).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout / Auto cutout / Magic wand.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the logo (JPG on a plain background), applied “AI cutout” and downloaded the PNG.</li>
+          <li>In a new tab I applied “Auto cutout” to the same file and downloaded.</li>
+          <li>In another one I chose “Magic wand” with the default tolerance, clicked once in the top-left corner (background) and downloaded.</li>
+          <li>On each PNG I measured the percentage of transparent and semi-transparent pixels.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout: 4.0 s, 89.4% transparent, 1.4% semi-transparent, 84 KB PNG.</li>
+          <li>Auto cutout: 1.45 s, 89.5% transparent, 1.2% semi-transparent, 81 KB.</li>
+          <li>Magic wand (one click): 0.16 s, 85.7% transparent, 3.6% semi-transparent, 117 KB.</li>
+          <li>The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 0.0% with the AI, 0.0% with the auto cutout and 15.4% with the wand.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> Neither the AI cutout nor the auto cutout kept the logo's wordmark: only the emblem survived. The wand did keep it, but it left letter holes like the one in the A filled in and opaque, because they don't touch the background, and the edge ended up with more semi-transparency. With a logo without text the AI would have been enough; with text, I had to go to the wand and touch up the holes by hand.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Make my logo transparent →</a>
 

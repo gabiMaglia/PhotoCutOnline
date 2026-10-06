@@ -203,6 +203,29 @@
       <h3>Por que minha foto de perfil aparece cortada em alguns apps?</h3>
       <p>Porque cada app mascara o círculo de um jeito um pouco diferente, e se o sujeito chega bem na borda do quadrado, o círculo come uma fatia. A solução é deixar margem: o rosto ocupar entre 60% e 75% da largura do quadrado, não 100%.</p>
 
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: o que fica dentro do círculo do preset «Avatar circular 512»</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, preset «Avatar circular 512».</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA».</li>
+          <li>Escolhi o preset «Avatar circular 512» com «Transparente» e PNG, e baixei.</li>
+          <li>No PNG medi a caixa do sujeito, os pixels transparentes e o alfa dos cantos.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Saiu um PNG de 512 × 512 px e 161 KB. Os quatro cantos têm alfa 0, 0, 0, 0: o preset recorta em círculo de verdade, não só centraliza.</li>
+          <li>72,0% da imagem ficou transparente: 21,5% são os cantos fora do círculo e o resto é fundo recortado dentro dele.</li>
+          <li>A figura fica a 10,5% da altura desde a borda de cima até o topo da cabeça e começa a 24,0% da largura contando da borda esquerda (ocupa 51,8% da largura e 79,5% da altura).</li>
+          <li>Recorte IA 4,0 s; o download do avatar 0,1 s.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O preset faz o recorte circular e a figura entra inteira, mas não medi como cada rede (WhatsApp, Instagram, Slack) mascara o quadrado: isso depende do app. O topo da cabeça ficou a 10,5% da borda de cima com este retrato; com um rosto mais alto no enquadramento poderia ficar mais apertado.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
+
       <a class="cta" href="/editor/">Fazer minha foto de perfil →</a>
 
       <section aria-labelledby="related-heading">

@@ -264,13 +264,29 @@
       </p>
 
 
-      <a class="cta" href="/editor/">Criar minha figurinha →</a>
-
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Nós testamos: o contorno branco faz a figurinha</h3>
-        <p>Recortamos a pessoa e ativamos <strong>Sticker (contorno)</strong>: essa borda branca é o visual clássico de figurinha e, principalmente, ajuda a figura a <strong>se destacar do fundo do chat</strong>, que pode ser claro ou escuro. Aumentamos a espessura do contorno até ficar uniforme e verificamos que o <strong>PNG exportado mantém a transparência</strong> ao redor da figura.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. As imagens acima são dessa sessão.</p>
+        <h3>Nós testamos: o peso da figurinha contra o limite de 100 KB do WhatsApp</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA + «Sticker (contorno)», e Arquivo → WebP.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA»; baixei um PNG transparente sem contorno como referência.</li>
+          <li>Ativei «Sticker (contorno)» com a espessura padrão (14 px) e baixei em PNG e em WebP.</li>
+          <li>Abri o WebP na aba «Arquivo», levei a 512 px de altura com qualidade 80 e baixei.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Sem contorno, PNG: 720 × 900 px, 535 KB. Com contorno branco de 14 px: PNG 720 × 900 px, 529 KB, e WebP 51 KB com 44,1% de pixels transparentes.</li>
+          <li>Esse WebP, levado em Arquivo a 410 × 512 px (qualidade 80): 15,0 KB e 43,5% transparente. O limite do WhatsApp é 100 KB.</li>
+          <li>O editor me deixou fixar a altura em 512 e a largura se ajustou sozinha a 410 px (a foto é vertical). Um quadrado de 512 × 512, que é o que o WhatsApp pede, teria exigido deformar a imagem ou recortá-la antes.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A aba Stickers (com o destino «WhatsApp · WebP 512») está desativada nesta versão do site, então não pude usá-la: com o que há, a figurinha sai a 720 × 900 px e é preciso levá-la a 512 de altura em Arquivo. Um 512 × 512 exato, que é o que o WhatsApp pede, não encontrei como tirar de uma foto vertical sem deformá-la: Arquivo só escala e não testei enquadrar antes com «Recortar área». Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
+
+      <a class="cta" href="/editor/">Criar minha figurinha →</a>
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Mais guias</h2>

@@ -185,16 +185,31 @@
       <h2>Without uploading your photo anywhere</h2>
       <p>Everything is composed in your browser: the watermarked photo is generated locally and isn't uploaded to any server.</p>
 
-      <div class="tried">
-        <h3>We tested it: tiled and hard to remove</h3>
-        <p>We applied a text watermark repeated diagonally over the whole photo. With the <strong>opacity at ~28%</strong> the mark is readable but doesn't cover the image, and being <strong>tiled</strong> it's much more annoying to erase than a single mark in a corner.</p>
-        <p>You can change text, color, size, angle and spacing live. Everything is applied <strong>in the browser</strong>, without uploading the photo: useful precisely when you want to protect an image before publishing it.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>Frequently asked questions</h2>
       <h3>What opacity should it have?</h3>
       <p>Semi-transparent, with a light color and a subtle outline: it looks professional and doesn't cover the photo. Neither too opaque nor too faint.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: how much of the photo the tiled watermark covers and how much the result weighs</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Edit → Watermark.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I opened the portrait, went to “Edit” → “Watermark” and typed “© Prueba PhotoCut”.</li>
+          <li>I left size 4, angle −30° and spacing 50 (the default values) and downloaded with opacity 28 and with 60.</li>
+          <li>I compared each PNG with the original pixel by pixel (difference &gt; 8 levels in some channel).</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>Opacity 28: 720 × 900 px, 1033 KB; 5.5% of the pixels changed (mean difference 3.06 levels).</li>
+          <li>Opacity 60: 1060 KB; 6.3% of the pixels changed (mean difference 6.11).</li>
+          <li>The original is a 78 KB JPG and the output is always PNG: it weighs 13.2 times more.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The output is always PNG: a 78 KB photo became more than 1 MB. At opacity 28 the watermark touches around 5% of the pixels. I didn't measure how hard it is to remove with other tools, so I can't confirm that the tile pattern is “hard to remove”: I only measured how much it covers.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=text&sub=watermark">Add my watermark →</a>
 

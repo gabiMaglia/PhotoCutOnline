@@ -127,7 +127,7 @@
           "name": "É mesmo grátis? Coloca marca d'água ou limita o uso?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Sim, é grátis de verdade: o recorte, o refino com pincéis e a exportação em PNG/WebP/JPG não têm custo, marca d'água nem limite de uso."
+            "text": "Sim, é grátis de verdade: o recorte, o refino com pincéis e a exportação em PNG/WebP/JPG não têm custo, marca d'água nem limite de uso. E funciona igual no Android e no iPhone, porque roda no navegador."
           }
         }
       ]
@@ -283,13 +283,6 @@
         <figcaption>O Recorte IA aplicado. No rail esquerdo estão os pincéis e o comparador mencionados no passo a passo.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>Nós testamos: e comprovamos que a foto não saiu do navegador</h3>
-        <p>Recortamos uma imagem real (1201 × 1500 px) com o <strong>Recorte IA</strong> e, enquanto isso, deixamos aberta a aba de rede do navegador. Confirmamos o que o método local promete: <strong>não houve nenhum envio da imagem</strong> a um servidor — o modelo <code>u2netp</code> (4,6 MB) é baixado uma vez e a partir daí todo o processamento acontece no seu equipamento.</p>
-        <p>Quanto ao resultado: o automático deixou a silhueta pronta de cara, e só foi preciso passar o <strong>pincel apagar</strong> por uma franja da borda onde o fundo tinha um tom parecido com a roupa. A imagem "depois" acima é esse export, com o fundo 100% transparente.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome de desktop.</p>
-      </div>
-
       <h2>Truques para cabelo e bordas finas</h2>
       <ul>
         <li><strong>Resolução manda:</strong> recorte na maior imagem que tiver e reduza depois; ao contrário, os detalhes se perdem.</li>
@@ -379,7 +372,32 @@
 
       <h2>Perguntas frequentes</h2>
       <h3>É mesmo grátis? Coloca marca d'água ou limita o uso?</h3>
-      <p>Sim, é grátis de verdade: o recorte, o refino com pincéis e a exportação em PNG/WebP/JPG não têm custo, marca d'água nem limite de uso.</p>
+      <p>Sim, é grátis de verdade: o recorte, o refino com pincéis e a exportação em PNG/WebP/JPG não têm custo, marca d'água nem limite de uso. E funciona igual no Android e no iPhone, porque roda no navegador.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: a foto não sai do navegador e o modelo demora o que demora</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Abri o /editor/ em uma aba sem cache e carreguei a foto com «Abrir foto».</li>
+          <li>Apertei «Recorte IA» e cronometrei do clique até o aviso «Recorte IA aplicado».</li>
+          <li>Baixei o PNG transparente com «Baixar».</li>
+          <li>Repeti o Recorte IA na mesma aba e depois de recarregar a página, com o modelo já no cache do navegador.</li>
+          <li>Registrei todas as requisições de rede da sessão.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Recorte IA, primeira vez (com o modelo baixado do meu servidor local): 5,0 s. Na mesma aba, segunda execução: 2,9 s. Depois de recarregar, com o modelo no cache: 3,6 s.</li>
+          <li>O que a IA baixa na primeira vez, sem compressão: 4,57 MB de modelo (u2netp.onnx) + 13,2 MB de motor WebAssembly. Com Brotli (nível 11, calculado sobre esses mesmos arquivos do dist/) o total cai para 6,4 MB, na ordem dos «~7 MB» que o guia menciona (o servidor real pode comprimir em outro nível).</li>
+          <li>PNG exportado: 720 × 900 px, 535 KB, 47,4% dos pixels totalmente transparentes e 3,3% semitransparentes (a borda suavizada).</li>
+          <li>Rede: 67 requisições na sessão inteira e nenhuma com corpo (0 bytes enviados). As 26 requisições a outros domínios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) são de publicidade do Google e não levam a foto.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Com este retrato a IA não deixou nenhum fiapo que eu conseguisse ver sobre fundo magenta, então não posso contar um caso difícil. Os tempos são de uma única execução cada um e com o modelo servido da minha máquina: na internet real, a primeira vez soma o download de uns 6 MB. Em outra execução do mesmo teste vi quatro POST de medição de anúncios do Google (de até 435 bytes, nenhum com a foto): a publicidade faz requisições, mas a imagem não viaja.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Remover o fundo de uma imagem →</a>
 

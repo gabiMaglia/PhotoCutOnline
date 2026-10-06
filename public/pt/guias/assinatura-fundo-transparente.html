@@ -149,13 +149,6 @@
         <li>Baixe em <strong>PNG</strong>, o único formato que mantém a transparência, pronto para inserir no seu documento.</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: a tinta sobre transparente</h3>
-        <p>Você digitaliza ou fotografa sua assinatura no papel e quer só a <strong>tinta</strong>, sem o fundo branco. A <strong>Varinha mágica</strong> (ou o recorte automático) remove o fundo claro do papel e deixa os traços sobre transparente. Suba um pouco o <strong>suavizado de borda</strong> para a linha não ficar serrilhada.</p>
-        <p>Exporte em <strong>PNG transparente</strong> e você pode inserir a assinatura em um PDF, um contrato ou um documento sem retângulo branco. A imagem nunca sai do seu equipamento.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. As imagens acima são dessa sessão.</p>
-      </div>
-
       <h2>Por que PNG e não JPG</h2>
       <p>
         É o erro número um ao digitalizar assinaturas. <strong>O JPG não guarda
@@ -193,6 +186,29 @@
         assinatura no papel e não o compartilhe sem necessidade.
       </p>
 
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: quanta tinta sobrevive ao tirar o papel</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/firma-antes.jpg"><code>firma-antes.jpg</code></a>, 820 × 410 px, 13,7 KB (imagem de exemplo deste site).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Varinha mágica / Recorte automático.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei a foto de uma assinatura sobre papel.</li>
+          <li>Com «Varinha mágica» (tolerância padrão) dei um clique no papel do canto superior esquerdo e baixei o PNG.</li>
+          <li>Em outra aba usei «Recorte automático» no mesmo arquivo e baixei.</li>
+          <li>Contei os pixels escuros (luminância &lt; 110 e opacos) no original e em cada PNG.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>O original tem 11416 pixels de tinta (escuros).</li>
+          <li>Varinha mágica: 0,11 s, 92,6% transparente, PNG de 92,4 KB e 100,0% da tinta conservada (11413 px).</li>
+          <li>Recorte automático: 20,01 s, 70,9% transparente, 116,0 KB e 100,0% da tinta conservada (11416 px).</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O recorte automático levou uns 20 s e deixou uma mancha de papel claro ao redor da assinatura (quase 30% da imagem ficou opaca), enquanto a varinha fez em uma fração de segundo e limpo. A varinha deixa um halo claro e semitransparente ao redor do traço. Não colei a assinatura sobre um PDF para ver como esse halo aparece.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Digitalizar minha assinatura →</a>
 

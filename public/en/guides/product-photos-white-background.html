@@ -169,13 +169,6 @@
         <li>Download. Repeat the same cutout for each platform by changing only the preset.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: a real product on pure white</h3>
-        <p>We cut out a product photo (an apple) with the <strong>AI Cutout</strong>: it isolated the object cleanly, even the stem, and we placed it on <strong>pure white (#ffffff)</strong> — the background Amazon, Etsy and Shopify ask for on the main photo. The result is even, without the shadow or gray of the original background.</p>
-        <p>A detail we confirmed: export as <strong>JPG</strong> (not PNG) when the background is solid white; it's lighter and it's what the marketplaces expect. All in the browser, without uploading the product image.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version, in desktop Chrome. The image above is from that session.</p>
-      </div>
-
       <h2>Tricks to make it look pro</h2>
       <ul>
         <li><strong>Breathing margin:</strong> leave 5–10% of air around the product; up against the edges it looks cramped. The presets already do this.</li>
@@ -203,6 +196,29 @@
       <h2>Frequently asked questions</h2>
       <h3>Does it work for photos taken with a phone at home?</h3>
       <p>Yes, as long as the product is well lit and in focus. Automatic cutout depends on the contrast between the product and what's behind it; a plain table under natural light usually gives better results than a cluttered background.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: a synthetic mug at 2000 × 2000 px on white</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/pruebas/producto-sintetico.jpg"><code>producto-sintetico.jpg</code></a>, 1200 × 1200 px, 29.1 KB (synthetic image I drew with Pillow).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, “Amazon 2000×2000” preset, Export → Color #ffffff.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded an image I drew myself (a blue mug with a shadow on a gradient gray) and applied “AI cutout”.</li>
+          <li>I chose the “Amazon 2000×2000” preset.</li>
+          <li>With “Transparent” + PNG I downloaded to see what the preset did with the transparency.</li>
+          <li>I chose “Color” mode #ffffff, JPEG format and downloaded; I measured the box of the pixels that aren't almost white.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout: 4.2 s on 1200 × 1200 px.</li>
+          <li>The preset produced a 2000 × 2000 px canvas. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.</li>
+          <li>JPEG on white: 90 KB, 40.3% of pixels exactly #ffffff, non-white corners 0.0%. The PNG requested as “Transparent” with the preset weighed 586 KB and came out with 0.0% transparent pixels.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. With the Amazon preset the “Transparent” mode came out opaque, because the preset brings its own white background: there's no way to ask for a transparent PNG at 2000 × 2000 with that preset.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Prepare my product photos →</a>
 

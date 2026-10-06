@@ -127,7 +127,7 @@
           "name": "Is it really free? Does it add a watermark or limit usage?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, it's genuinely free: the cutout, the brush refinement and PNG/WebP/JPG export have no cost, no watermark and no usage limit."
+            "text": "Yes, it's genuinely free: the cutout, the brush refinement and PNG/WebP/JPG export have no cost, no watermark and no usage limit. It also works the same on Android and iPhone, because it runs in the browser."
           }
         }
       ]
@@ -282,13 +282,6 @@
         <figcaption>The AI Cutout applied. In the left rail are the brushes and the compare tool mentioned in the steps.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>We tested it: and confirmed the photo never left the browser</h3>
-        <p>We cut out a real image (1201 × 1500 px) with the <strong>AI Cutout</strong> and, meanwhile, kept the browser's network tab open. We confirmed what the local method promises: <strong>there was no upload of the image</strong> to a server — the <code>u2netp</code> model (4.6 MB) downloads once and from then on all the compute happens on your device.</p>
-        <p>As for the result: the automatic left the silhouette ready in one go, and we only had to run the <strong>remove brush</strong> over a fringe on the edge where the background had a tone similar to the clothing. The "after" image above is that export, with the background 100% transparent.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in desktop Chrome.</p>
-      </div>
-
       <h2>Tricks for hair and fine edges</h2>
       <ul>
         <li><strong>Resolution rules:</strong> cut out on the largest image you have and downscale later; the other way around loses detail.</li>
@@ -376,7 +369,32 @@
 
       <h2>Frequently asked questions</h2>
       <h3>Is it really free? Does it add a watermark or limit usage?</h3>
-      <p>Yes, it's genuinely free: the cutout, the brush refinement and PNG/WebP/JPG export have no cost, no watermark and no usage limit.</p>
+      <p>Yes, it's genuinely free: the cutout, the brush refinement and PNG/WebP/JPG export have no cost, no watermark and no usage limit. It also works the same on Android and iPhone, because it runs in the browser.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the photo doesn't leave the browser, and the model takes as long as it takes</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I opened /editor/ in a tab with an empty cache and loaded the photo with “Open photo”.</li>
+          <li>I pressed “AI cutout” and timed it from the click to the “AI cutout applied” notice.</li>
+          <li>I downloaded the transparent PNG with “Download”.</li>
+          <li>I ran the AI cutout again in the same tab and after reloading the page, with the model already in the browser cache.</li>
+          <li>I logged every network request of the session.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout, first time (with the model downloaded from my local server): 5.0 s. In the same tab, second run: 2.9 s. After reloading, with the model in the cache: 3.6 s.</li>
+          <li>What the AI downloads the first time, uncompressed: 4.57 MB of model (u2netp.onnx) + 13.2 MB of WebAssembly engine. With Brotli (level 11, computed on those same files from dist/) the total drops to 6.4 MB, in the range of the “~7 MB” the guide mentions (the real server may compress at a different level).</li>
+          <li>Exported PNG: 720 × 900 px, 535 KB, 47.4% of pixels fully transparent and 3.3% semi-transparent (the smoothed edge).</li>
+          <li>Network: 67 requests in the whole session and none with a body (0 bytes sent). The 26 requests to other domains (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) are Google advertising and don't carry the photo.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> With this portrait the AI left no fringe I could see on a magenta background, so I can't describe a hard case. Each timing is from a single run and with the model served from my machine: on the real internet the first time adds the download of about 6 MB. In another run of the same test I saw four Google ad-measurement POSTs (up to 435 bytes, none with the photo): the ads make requests, but the image doesn't travel.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Remove an image's background →</a>
 

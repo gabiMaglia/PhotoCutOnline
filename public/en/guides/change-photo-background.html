@@ -152,13 +152,6 @@
         <figcaption>Cut out the subject once in PhotoCut Studio; then try as many backgrounds as you like.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>We tested it: cut out first, choose the background after</h3>
-        <p>We cut out the person with the <strong>AI Cutout</strong> and then changed the background to a studio blue right in the export (<em>solid color</em> mode). The hair edge blended well with the new color with the <strong>edge feather at 1–2&nbsp;px</strong>: at 0 the outline looked hard, above 3 it "ate" detail.</p>
-        <p>The practical takeaway: you cut out once; after that you can try as many backgrounds as you want —color or image— without cutting out again. All in the browser, without uploading the photo.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version. The images above are from that session.</p>
-      </div>
-
       <h2>Color background: the shortcut that almost never fails</h2>
       <p>
         When the question is "which color?", the answer depends on the use. For
@@ -194,6 +187,29 @@
         tab, nothing is left behind.
       </p>
 
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: cut out once, try backgrounds without cutting out again</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, Export → Color / Image.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout” just once.</li>
+          <li>With “Transparent” + PNG I downloaded the cutout with the edge feather at 0, 2 and 6 px and counted the semi-transparent pixels.</li>
+          <li>I chose “Color” mode, #1e4d8c, JPEG format and downloaded.</li>
+          <li>I loaded paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) as the background image at opacity 100 and downloaded in JPEG.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout just once: 4.1 s. Changing the background afterwards didn't run the AI again: exporting with a color took 0.1 s and with a background image 0.3 s (download included).</li>
+          <li>Semi-transparent edge pixels by feather: 0 px → 1.3%, 2 px → 3.3%, 6 px → 7.3%.</li>
+          <li>JPEG with the #1e4d8c background: 720 × 900 px, 56 KB; the corner pixel came out rgb(29, 77, 139) (I asked for rgb(30, 77, 140)). With the background image: 65 KB.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The JPEG returned the color one level off from what I asked for (because of compression). I measured sizes and edge pixels, not how well the hair blends into the new background: I judged that by eye and didn't quantify it, so I'm not claiming which feather looks best.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Change my photo's background →</a>
 

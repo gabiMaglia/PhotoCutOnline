@@ -165,13 +165,6 @@
         <li><strong>Color blindness:</strong> <a href="/en/tools/color-blindness-simulator.html">simulate how your design looks</a> with protanopia, deuteranopia, tritanopia and in grayscale. If something stops making sense, that information depended on color alone.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: contrast as a number, not by eye</h3>
-        <p>We combined a text color and a background color and the tool returned the <strong>WCAG contrast ratio</strong> (for example 11.98:1) with the <strong>AA</strong> and <strong>AAA</strong> badges in green or red depending on whether it passes. It's the difference between "I think it reads" and knowing it by the standard.</p>
-        <p>For real accessibility there's also a <strong>color blindness simulation</strong>: you see the palette as someone with different color vision perceives it, so you catch combinations that get confused. All local.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>Quick best practices</h2>
       <ul>
         <li>Body text always with high contrast; reserve light grays for secondary details, not for reading.</li>
@@ -186,6 +179,32 @@
       <h2>Frequently asked questions</h2>
       <h3>Does accessibility affect SEO or just users?</h3>
       <p>It helps both: it improves the experience for everyone and is a valued best practice, but the main reason is that more people can use what you make.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: the contrast checker against my own WCAG arithmetic</h3>
+        <p><strong>Image:</strong> I didn't use any image: the tests are on loose colors.</p>
+        <p><strong>Tool:</strong> Color Studio → Palette → Contrast (WCAG).</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>In Color Studio I entered five color pairs in “Text” and “Background” with the color picker (without loading any image).</li>
+          <li>I noted the ratio and the four badges (AA normal, AA large, AAA normal, AAA large) that it shows.</li>
+          <li>I calculated each ratio separately with the WCAG 2.x relative luminance formula and compared them.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>#1f2937 on #d6f64b: 11.98:1 → ✓ AA · normal, ✓ AA · large, ✓ AAA · normal, ✓ AAA · large.</li>
+          <li>#777777 on #ffffff: 4.48:1 → ✕ AA · normal, ✓ AA · large, ✕ AAA · normal, ✕ AAA · large.</li>
+          <li>#767676 on #ffffff: 4.54:1 → ✓ AA · normal, ✓ AA · large, ✕ AAA · normal, ✓ AAA · large.</li>
+          <li>#2563eb on #ffffff: 5.17:1 → ✓ AA · normal, ✓ AA · large, ✕ AAA · normal, ✓ AAA · large.</li>
+          <li>#ffffff on #d6f64b: 1.22:1 → ✕ AA · normal, ✕ AA · large, ✕ AAA · normal, ✕ AAA · large.</li>
+          <li>My separate calculation matched the one the app shows, to two decimals, in 5 of 5 pairs.</li>
+          <li>I didn't measure times: it's an arithmetic calculation that updates when the color changes, and the latency of my measuring tool is greater than that of the calculation.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The checker compares two flat colors: it doesn't measure text over photos or over gradients. In this test I didn't use the color-blindness simulation or measure times. The edge case is useful: #777777 on white (4.48:1) fails AA for normal text and #767676 (4.54:1) passes, by a very small margin.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/en/tools/color-blindness-simulator.html">Check my colors' accessibility →</a>
 

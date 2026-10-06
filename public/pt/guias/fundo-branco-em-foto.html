@@ -214,21 +214,37 @@
 
       <h2>Várias fotos com o mesmo fundo branco</h2>
       <p>
-        Se você precisa deixar muitas fotos com fundo branco —um catálogo, uma
-        equipe, uma série de produtos—, o <strong>modo Lote</strong> aplica o mesmo
+        Se você precisa deixar muitas fotos com fundo branco —um catálogo, um
+        time, uma série de produtos—, o <strong>modo Lote</strong> aplica o mesmo
         critério a todas e baixa juntas, com um estilo uniforme.
       </p>
 
       <h2>Sem enviar sua foto a lugar nenhum</h2>
       <p>Todo o processo acontece no seu navegador. Sua foto não é enviada a nenhum servidor nem fica armazenada ao fechar a aba.</p>
 
-      <div class="tried">
-        <h3>Nós testamos: sobre branco a borda aparece mais</h3>
-        <p>Colocamos o recorte sobre <strong>branco puro</strong> e aí saltou algo útil: sobre transparente a franja da borda quase não aparecia, mas <strong>sobre branco sim</strong>. Por isso vale passar o <strong>pincel apagar</strong> pelo contorno antes de exportar.</p>
-        <p>Para fundo branco sólido exportamos em <strong>JPG</strong> (não PNG): pesa menos e você não precisa de transparência. O branco ficou uniforme, sem sombras nem halos.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web. As imagens acima são dessa sessão.</p>
-      </div>
 
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: branco puro em PNG e em JPEG</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, Exportar → Cor #ffffff.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA».</li>
+          <li>Em Exportar escolhi «Cor» com #ffffff e baixei em PNG.</li>
+          <li>Mudei o formato para JPEG e baixei de novo.</li>
+          <li>Nas duas saídas medi quantos pixels são exatamente brancos (255, 255, 255) e quantos dos pixels dos 4 quadrados de 40 × 40 px dos cantos não são.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>PNG: 522 KB, 47,5% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.</li>
+          <li>JPEG: 58 KB (89% menos), 46,4% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.</li>
+          <li>Recorte IA 4,0 s; o download do PNG levou 0,1 s e o do JPEG 0,1 s.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O JPEG não deixa todo o branco exato: tem um pouco menos de pixels #ffffff que o PNG porque a compressão empurra alguns para 254 ou menos. Não medi o halo claro do contorno (sobre branco não dá para contar automaticamente) nem comparei PNG e JPEG a olho.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Colocar fundo branco na minha foto →</a>
 

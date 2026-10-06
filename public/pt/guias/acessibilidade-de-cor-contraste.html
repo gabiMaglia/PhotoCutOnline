@@ -164,13 +164,6 @@
         <li><strong>Daltonismo:</strong> simule como seu design aparece com protanopia, deuteranopia, tritanopia e em escala de cinza. Se algo deixa de ser entendido, essa informação dependia só da cor.</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: o contraste com número, não no olho</h3>
-        <p>Combinamos uma cor de texto e uma de fundo e a ferramenta devolveu a <strong>razão de contraste WCAG</strong> (por exemplo 11.98:1) com os selos <strong>AA</strong> e <strong>AAA</strong> em verde ou vermelho conforme cumpra. É a diferença entre "acho que dá para ler" e saber pelo padrão.</p>
-        <p>Para acessibilidade real também há uma <strong>simulação de daltonismo</strong>: você vê a paleta como alguém com visão de cor diferente percebe, e assim detecta combinações que se confundem. Tudo local.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>Boas práticas rápidas</h2>
       <ul>
         <li>Texto principal sempre com contraste alto; reserve os cinzas claros para detalhes secundários, não para leitura.</li>
@@ -185,6 +178,32 @@
       <h2>Perguntas frequentes</h2>
       <h3>A acessibilidade afeta o SEO ou só os usuários?</h3>
       <p>Ajuda os dois: melhora a experiência de todos e é uma boa prática valorizada, mas o motivo principal é que mais gente possa usar o que você faz.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: o verificador de contraste contra a minha própria conta de WCAG</h3>
+        <p><strong>Imagem:</strong> Não usei nenhuma imagem: os testes são sobre cores soltas.</p>
+        <p><strong>Ferramenta:</strong> Color Studio → Paleta → Contraste (WCAG).</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>No Color Studio coloquei cinco pares de cores em «Texto» e «Fundo» com o seletor de cor (sem carregar nenhuma imagem).</li>
+          <li>Anotei a proporção e os quatro selos (AA normal, AA grande, AAA normal, AAA grande) que ele mostra.</li>
+          <li>Calculei cada proporção à parte com a fórmula de luminância relativa do WCAG 2.x e as comparei.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>#1f2937 sobre #d6f64b: 11.98:1 → ✓ AA · normal, ✓ AA · grande, ✓ AAA · normal, ✓ AAA · grande.</li>
+          <li>#777777 sobre #ffffff: 4.48:1 → ✕ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✕ AAA · grande.</li>
+          <li>#767676 sobre #ffffff: 4.54:1 → ✓ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✓ AAA · grande.</li>
+          <li>#2563eb sobre #ffffff: 5.17:1 → ✓ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✓ AAA · grande.</li>
+          <li>#ffffff sobre #d6f64b: 1.22:1 → ✕ AA · normal, ✕ AA · grande, ✕ AAA · normal, ✕ AAA · grande.</li>
+          <li>Meu cálculo à parte coincidiu com o que o app mostra, com duas casas decimais, em 5 de 5 pares.</li>
+          <li>Não medi tempos: é uma conta aritmética que se atualiza ao mudar a cor, e a latência da minha ferramenta de medição é maior que a do cálculo.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O verificador compara duas cores chapadas: não mede texto sobre fotos nem sobre degradês. Neste teste não usei a simulação de daltonismo nem medi tempos. O caso limite é útil: #777777 sobre branco (4,48:1) falha no AA para texto normal e #767676 (4,54:1) passa, por muito pouco.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/pt/ferramentas/paleta-de-cores.html">Revisar a acessibilidade das minhas cores →</a>
 

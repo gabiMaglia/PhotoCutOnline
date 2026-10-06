@@ -165,13 +165,6 @@
         <li>Exporte para <strong>variáveis CSS</strong> ou <strong>Tailwind</strong> para usar de forma consistente.</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: de uma foto a uma paleta usável</h3>
-        <p>Carregamos uma foto e o Color Studio extraiu uma <strong>paleta de 6 cores</strong> (ajustável). O conta-gotas mostra o <strong>HEX exato</strong> ao passar o mouse pela imagem, e com um clique você fixa e copia.</p>
-        <p>A parte prática para design e web: além de copiar os HEX, exporta a paleta como <strong>variáveis CSS</strong> ou <strong>JSON</strong>, pronta para colar num projeto. Sem cadastro e sem enviar a imagem.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>As escalas 50–900: o truque dos design systems</h2>
       <p>
         Uma versão de uma cor não basta. Você precisa da primária clara para um
@@ -202,6 +195,29 @@
       <h2>Perguntas frequentes</h2>
       <h3>Quantas cores uma paleta deve ter?</h3>
       <p>Uma primária, uma ou duas secundárias/acento, uma neutra (cinzas) e cores de estado. Com 3 a 5 cores base e suas variantes dá para cobrir quase tudo.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: de uma foto a 6 HEX, a variáveis CSS, e o conta-gotas contra cores conhecidas</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Color Studio → Paleta.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato com «Abrir foto» e fui ao «Color Studio» (paleta de 6 cores por padrão).</li>
+          <li>Movi «Quantidade de cores» para 3, para 12 e de volta para 6; apertei «Copiar variáveis CSS» e «Copiar JSON» e li a área de transferência.</li>
+          <li>Carreguei captura-ui-clara.png (1280 × 720 px, 41 KB), uma captura desenhada por mim com cores chapadas conhecidas, e fixei com clique o conta-gotas sobre quatro zonas.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Ao entrar no Color Studio a paleta de 6 apareceu em 0,47 s. Mudar para 3 cores levou 170 ms e para 12, 183 ms.</li>
+          <li>Paleta de 6: #0d121f, #34212b, #66423a, #a95444, #807c87, #d3b5a8. Com 3: #211925, #874b3f, #aa9898.</li>
+          <li>«Copiar variáveis CSS» deixou 8 linhas na área de transferência (a primeira: «:root {»). «Copiar JSON» é um JSON válido.</li>
+          <li>Conta-gotas sobre cores chapadas conhecidas: 4 de 4 HEX coincidiram exatamente (#F5F7FA → #f5f7fa; #2563EB → #2563eb; #DC2626 → #dc2626; #16A34A → #16a34a).</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> As paletas de 3 e de 6 cores não são uma subparte da outra (a primeira cor das 3 não está entre as 6): mudar a quantidade recalcula e pode mudar cores. O conta-gotas só verifiquei sobre cores chapadas; numa foto com ruído depende do pixel exato onde cai o clique.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/pt/ferramentas/paleta-de-cores.html">Extrair uma paleta de uma imagem →</a>
 

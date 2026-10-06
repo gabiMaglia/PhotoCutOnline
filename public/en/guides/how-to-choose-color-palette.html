@@ -165,13 +165,6 @@
         <li>Export to <strong>CSS variables</strong> or <strong>Tailwind</strong> to use it consistently.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: from a photo to a usable palette</h3>
-        <p>We loaded a photo and Color Studio extracted a <strong>6-color palette</strong> (adjustable). The eyedropper shows the <strong>exact HEX</strong> as you move over the image, and with a click you pin and copy it.</p>
-        <p>The practical part for design and web: besides copying the HEX values, it exports the palette as <strong>CSS variables</strong> or <strong>JSON</strong>, ready to paste into a project. No sign-up and without uploading the image.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>The 50–900 scales: the design-system trick</h2>
       <p>
         One version of a color isn't enough. You need the light primary for a soft
@@ -203,6 +196,29 @@
       <h2>Frequently asked questions</h2>
       <h3>How many colors should a palette have?</h3>
       <p>A primary, one or two secondary/accent colors, a neutral (grays) and state colors. With 3 to 5 base colors and their variants you can cover almost everything.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: from a photo to 6 HEX values, to CSS variables, and the eyedropper against known colors</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Color Studio → Palette.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait with “Open photo” and went to “Color Studio” (6-color palette by default).</li>
+          <li>I moved “Number of colors” to 3, to 12 and back to 6; I pressed “Copy CSS variables” and “Copy JSON” and read the clipboard.</li>
+          <li>I loaded captura-ui-clara.png (1280 × 720 px, 41 KB), a screenshot I drew myself with known flat colors, and pinned the eyedropper with a click on four areas.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>On entering Color Studio the 6-color palette appeared in 0.47 s. Changing to 3 colors took 170 ms and to 12, 183 ms.</li>
+          <li>6-color palette: #0d121f, #34212b, #66423a, #a95444, #807c87, #d3b5a8. With 3: #211925, #874b3f, #aa9898.</li>
+          <li>“Copy CSS variables” left 8 lines in the clipboard (first: “:root {”). “Copy JSON” is valid JSON.</li>
+          <li>Eyedropper on known flat colors: 4 of 4 HEX values matched exactly (#F5F7FA → #f5f7fa; #2563EB → #2563eb; #DC2626 → #dc2626; #16A34A → #16a34a).</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The 3-color and 6-color palettes aren't a subset of each other (the first color of the 3 isn't among the 6): changing the number recalculates and can change colors. I only checked the eyedropper on flat colors; on a noisy photo it depends on the exact pixel where the click lands.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/en/tools/color-palette-from-image.html">Extract a palette from an image →</a>
 

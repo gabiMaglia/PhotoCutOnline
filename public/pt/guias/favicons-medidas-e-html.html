@@ -219,13 +219,6 @@
   "display": "standalone"
 }</pre>
 
-      <div class="tried">
-        <h3>Nós testamos: como o favicon aparece a 16 px</h3>
-        <p>A prévia a <strong>16 e 32 px</strong> —o tamanho real de um favicon na aba— é o teste honesto: o que fica bom a 512 px pode virar uma mancha a 16. Com margem e um sujeito claro, o favicon se manteve legível.</p>
-        <p>O Icon Studio gera o conjunto de favicons e você pode acompanhá-lo com o <strong>HTML</strong> pronto para colar no <code>&lt;head&gt;</code>. Tudo no navegador.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>PNG para ICO: quando ainda é preciso um .ico</h2>
       <p>
         O <strong>ICO</strong> não é uma imagem só, e sim um contêiner que reúne
@@ -305,6 +298,29 @@
       <p>O navegador mostra um ícone genérico (uma folha em branco ou o ícone padrão) e, se o site for instalado como PWA, usa um quadrado com a inicial do domínio. Não quebra nada, mas parece pouco profissional e não identifica sua marca nas abas nem nos favoritos.</p>
       <h3>Posso converter qualquer PNG para ICO ou tem que ser quadrado?</h3>
       <p>Tecnicamente dá para converter qualquer PNG, mas o resultado fica melhor se o original for quadrado: se não for, o conversor o encaixa dentro de um quadrado e pode adicionar margens ou cortar as bordas mais longas.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: o conjunto Web/PWA e como fica o favicon a 16 px</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/logo-despues.png"><code>logo-despues.png</code></a>, 820 × 637 px, 32,1 KB (imagem de exemplo deste site).</p>
+        <p><strong>Ferramenta:</strong> Icon Studio → só «Web / PWA» → «Baixar ZIP de ícones» e «Copiar HTML de favicons».</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>No Icon Studio abri logo-despues.png (820 × 637 px, PNG transparente).</li>
+          <li>Desmarquei iOS, Android, macOS e Windows; deixei só «Web / PWA».</li>
+          <li>Baixei o ZIP e apertei «Copiar HTML de favicons» para ler a área de transferência.</li>
+          <li>Abri o PNG de 16 px do ZIP e medi quanto do quadrado fica opaco.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>ZIP de 59 KB com 11 arquivos em 0,1 s: app-icons/LEEME.txt (0,9 KB), app-icons/web/favicon-16.png (0,4 KB), app-icons/web/favicon-32.png (0,7 KB), app-icons/web/favicon-48.png (1,1 KB), app-icons/web/apple-touch-icon-180.png (5,9 KB), app-icons/web/icon-192.png (6,6 KB), app-icons/web/icon-512.png (23,8 KB), app-icons/web/maskable-512.png (15,1 KB), app-icons/web/favicon.ico (2,2 KB), app-icons/web/site.webmanifest (0,4 KB), app-icons/web/snippet.html (0,3 KB).</li>
+          <li>O HTML copiado tem 5 linhas &lt;link&gt;/&lt;meta&gt;.</li>
+          <li>O PNG de 16 × 16 px: 1,6% dos pixels opacos, 20,3% semitransparentes e 78,1% transparentes.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A 16 px a palavra do logo vira um risco cinza e só o emblema se reconhece (olhei eu mesmo, não medi com uma métrica). Quase todo o quadrado de 16 px é transparente porque o emblema é pequeno dentro do logo: para um favicon convém recortar o logo no emblema antes de gerar o conjunto.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=icons">Gerar meus favicons →</a>
 

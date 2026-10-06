@@ -140,13 +140,6 @@
       </ol>
       <p>The <strong>Dark</strong> and <strong>Light</strong> targets only invert if needed (depending on whether the screenshot is already light or dark); <strong>Invert</strong> always forces the change.</p>
 
-      <div class="tried">
-        <h3>We tested it: from a light screenshot to a dark theme</h3>
-        <p>We loaded a screenshot and the <strong>Dark</strong> mode inverted the lightness <strong>keeping the colors</strong> (with an option to keep the accents), showing before/after side by side. With UI screenshots it gives a realistic starting point; with regular photos, an artistic effect.</p>
-        <p>The most useful part for development: besides the image, it generates the <strong>derived color scheme</strong> (50–900 scales) ready to <strong>copy as CSS or Tailwind</strong> and paste into the project. All local, without uploading the screenshot.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>The project's color scheme</h2>
       <p>
         Below the before/after, Color Studio builds the
@@ -171,6 +164,35 @@
         artistic than utilitarian result — but trying them is part of the fun.
       </p>
 
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: a light screenshot turned dark and what really changes</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/pruebas/captura-ui-clara.png"><code>captura-ui-clara.png</code></a>, 1280 × 720 px, 41 KB (synthetic image I drew with Pillow).</p>
+        <p><strong>Tool:</strong> Color Studio → Theme → “→ Dark”.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded captura-ui-clara.png (1280 × 720 px, 41 KB), a screenshot of an app in light mode that I drew myself.</li>
+          <li>In Color Studio → “Theme” I left “→ Dark” at intensity 100 and downloaded the image.</li>
+          <li>I ticked “Keep accent colors”, downloaded again and read five reference pixels in the three versions.</li>
+          <li>I pressed “Copy CSS” on the color scheme and read the clipboard.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>Mean luminance went from 245 to 4 (on a 0 to 255 scale). Dark mode was drawn in 14 ms and the download took 78 ms.</li>
+          <li>page background: #f5f7fa → #000000 (with accents: #000000).</li>
+          <li>card background: #ffffff → #000000 (with accents: #000000).</li>
+          <li>blue button: #2563eb → #0744cb (with accents: #2563eb).</li>
+          <li>red badge: #dc2626 → #a40000 (with accents: #dc2626).</li>
+          <li>green badge: #16a34a → #005600 (with accents: #16a34a).</li>
+          <li>The contrast between the page background and the card background went from 1.07:1 to 1.00:1.</li>
+          <li>With the intensity at 70 the page background is #2f3033 and the card #2e2e2e: contrast 1.03:1.</li>
+          <li>The copied color scheme has 87 lines.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> At intensity 100 the page background and the card background both became #000000: the contrast between them fell to 1.00:1 and the cards can no longer be told apart. At intensity 70 it is still almost invisible. The accents get darker if I don't tick “Keep accent colors”. It's a simple, synthetic screenshot: I didn't test a real screenshot with photos.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=colors">Generate my screenshot's dark mode →</a>
 

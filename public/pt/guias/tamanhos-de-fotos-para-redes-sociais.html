@@ -237,13 +237,6 @@
         <li>Exporte em <strong>JPG</strong> (fotos) ou <strong>PNG</strong> (gráficos, texto ou transparência).</li>
       </ol>
 
-      <div class="tried">
-        <h3>Nós testamos: redimensionar ao tamanho exato</h3>
-        <p>Para cada rede há um tamanho recomendado; no painel <strong>Arquivo</strong> colocamos a <strong>largura e altura em pixels</strong> (ou uma porcentagem) e a imagem se redimensionou na hora, mostrando o <strong>peso final</strong>. Com o cadeado de proporção ativado, não deforma.</p>
-        <p>Dica do teste: exporte em <strong>JPG</strong> para fotos e <strong>PNG</strong> se houver texto ou transparência. Tudo é processado no navegador, sem enviar a imagem.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>Erros típicos de tamanho</h2>
       <ul>
         <li><strong>Enviar horizontal a um formato vertical.</strong> A rede corta as laterais; enquadre vertical antes.</li>
@@ -258,6 +251,27 @@
       <h2>Perguntas frequentes</h2>
       <h3>JPG ou PNG para redes sociais?</h3>
       <p>Para fotos, um JPG de boa qualidade é o padrão e pesa menos. O PNG é melhor com texto, gráficos de bordas nítidas ou transparência. As redes recomprimem de qualquer forma, então enviar em boa qualidade ajuda no resultado.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: de 4000 × 3000 px às medidas de um post</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/pruebas/paisaje-sintetico.jpg"><code>paisaje-sintetico.jpg</code></a>, 4000 × 3000 px, 96,9 KB (imagem sintética que desenhei com o Pillow).</p>
+        <p><strong>Ferramenta:</strong> Arquivo → largura e altura com o cadeado.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Abri paisaje-sintetico.jpg (4000 × 3000 px, foto «de celular» sintética) e fui para «Arquivo».</li>
+          <li>Com o cadeado de proporção ativado coloquei largura 1080, JPG qualidade 80, e baixei.</li>
+          <li>Desliguei o cadeado, coloquei 1080 × 1350 (a medida vertical do Instagram) e baixei de novo.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Com o cadeado: largura 1080 → altura 810. Saiu um JPG de 1080 × 810 px e 16 KB (o original pesava 97 KB) em 0,3 s contando o download.</li>
+          <li>Sem o cadeado, pedindo 1080 × 1350 px, saiu um JPG de 1080 × 1350 px e 23 KB. Como a foto é 4:3 e a medida pedida 4:5, a imagem ficou esticada a 60% da sua proporção horizontal.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O painel Arquivo redimensiona mas não recorta para uma proporção: para levar uma foto 4:3 a 1080 × 1350 só consegui esticá-la (a 60% da sua proporção), ou deixá-la em 1080 × 810 com o cadeado. Para respeitar a proporção seria preciso enquadrar antes (não testei «Recortar área» para isso). A foto é sintética: não medi quanto cada rede recomprime.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Preparar minha foto para redes →</a>
 

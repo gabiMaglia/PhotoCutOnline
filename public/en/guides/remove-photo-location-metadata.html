@@ -149,13 +149,6 @@
         <li>Share <strong>that copy</strong>, not the original.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: see the EXIF and download a clean copy</h3>
-        <p>We opened a photo and the panel showed its <strong>EXIF metadata</strong>: camera make and model, capture date, software. On a phone photo, the <strong>GPS location</strong> would travel there too. The <strong>"Download without metadata"</strong> button generates a copy with no EXIF or GPS.</p>
-        <p>Key point: the original is never uploaded — the cleaning happens <strong>in your browser</strong>. Always download the metadata-free copy before uploading a photo to social media or sending it in a chat.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>Don't the networks strip it automatically?</h2>
       <p>
         Sometimes yes, sometimes no. Big networks usually remove metadata on
@@ -183,6 +176,29 @@
         image isn't uploaded anywhere.
       </p>
 
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: which EXIF fields the panel shows and what stays in the clean copy</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/pruebas/gps-sintetica.jpg"><code>gps-sintetica.jpg</code></a>, 1600 × 1200 px, 21 KB (synthetic image I drew with Pillow).</p>
+        <p><strong>Tool:</strong> File → “Download without metadata”.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>With Pillow I generated a 1600 × 1200 px JPG with test EXIF: make, model, software, date and the GPS coordinates of a public monument.</li>
+          <li>I opened it in the “File” tab and read what the “Camera &amp; capture (EXIF)” section shows.</li>
+          <li>I pressed “Download without metadata” and opened the result with Pillow to count the EXIF tags and the GPS block.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>The original has 4 main EXIF fields (make, model, software, date), 1 in the capture block and 4 GPS fields.</li>
+          <li>What the panel showed (my session ran in the Spanish interface; here I give the labels the way the English interface names them): “Camera &amp; capture (EXIF) Make PhotoCut Pruebas Model Camara Sintetica 1 Capture date 2026:10:06 12:00:00 Software gen-inputs.py ⚠ This photo includes your GPS location. Anyone with the file can see it. GPS -34.6037, -58.3816”.</li>
+          <li>The copy without metadata: 0 EXIF fields, 0 GPS fields, 1600 × 1200 px and 24.1 KB (the original weighed 21.0 KB). Download in 0.1 s. It does carry an ICC color profile that wasn't in the original.</li>
+          <li>The copy's pixels aren't identical to the original's: the file is re-encoded with loss (JPEG).</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The photo is synthetic and I put the GPS in myself: I didn't test real phone photos, or formats such as HEIC, or other fields that can remain (embedded thumbnail, maker notes). The clean copy is recompressed (it weighs more and the pixels aren't identical) and carries an ICC color profile the original didn't have.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=meta">Remove my photo's location →</a>
 

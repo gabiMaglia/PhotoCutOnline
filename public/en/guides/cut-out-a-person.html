@@ -37,7 +37,7 @@
           "name": "Does it work to remove a person who's in the way?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Partially. You can isolate the person you want to keep and discard the rest. What it doesn't do is fill the gap a deleted person leaves in the middle of a scene: that needs a content-aware erase, which is a different feature."
+            "text": "It depends on what you're after. If you want to keep just one person, you cut them out and discard the rest. If you want someone to disappear from the scene and the background rebuilt behind them, it doesn't: this editor doesn't reconstruct what that person was covering."
           }
         }
       ]
@@ -169,13 +169,6 @@
         <figcaption>To the left of the canvas, the "keep" and "remove" brushes: they're what solve the hard areas of the edge.</figcaption>
       </figure>
 
-      <div class="tried">
-        <h3>We tested it: where the edge was weak</h3>
-        <p>We cut out a half-body portrait (1201 × 1500 px) on a deliberately hard background: dark colors very similar to the subject's clothing. The <strong>AI Cutout</strong> resolved the whole silhouette well up front, but —as often happens when background and clothing share a tone— a <strong>faint fringe stayed on the shoulders</strong>. Not on the hair, which came out clean: on the jacket's outline.</p>
-        <p>It was fixed in under a minute with the <strong>remove brush</strong>, lowering the brush size to trace the edge precisely. The practical lesson: automatic gets you to 95%; the minute of brushing is what keeps it from looking like a sticker. All of this ran <strong>in the browser</strong>, without uploading the photo anywhere.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in desktop Chrome; the screenshots on this page are from that session.</p>
-      </div>
-
       <h2>The hair: the acid test</h2>
       <p>If a person cutout looks bad, it's almost always the hair. A hair outline cut "in a block" —like a helmet— is the unmistakable mark of a rushed cutout. To keep it natural:</p>
       <ul>
@@ -214,7 +207,30 @@
 
       <h2>Frequently asked questions</h2>
       <h3>Does it work to remove a person who's in the way?</h3>
-      <p>Partially. You can isolate the person you want to keep and discard the rest. What it doesn't do is fill the gap a deleted person leaves in the middle of a scene: that needs a content-aware erase, which is a different feature.</p>
+      <p>It depends on what you're after. If you want to keep just one person, you cut them out and discard the rest. If you want someone to disappear from the scene and the background rebuilt behind them, it doesn't: this editor doesn't reconstruct what that person was covering.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: where the edge is weakest and how much one brush stroke changes</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout and Remove brush.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout”.</li>
+          <li>I downloaded the PNG and split it into four strips (head, shoulders, arms, torso) to count the semi-transparent pixels along the outline.</li>
+          <li>I chose “Remove brush” at 12 px and ran it over the left shoulder's outline, top to bottom, in a single stroke.</li>
+          <li>I downloaded again and compared pixel by pixel; then I pressed “Undo” and downloaded once more.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>AI cutout: 3.9 s. Approximate width of the semi-transparent edge band (semi-transparent pixels per outline pixel): head and hair 11.8 px, shoulders 10.8 px, arms 9.5 px, lower torso 9.9 px. The blurriest area was head and hair.</li>
+          <li>One 12 px Remove brush stroke over the shoulder changed 0.15% of the image's pixels (opaque: 49.2% → 49.1%).</li>
+          <li>“Undo” returned an image identical to the original cutout (same hash of the RGBA pixels).</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> I couldn't reproduce the fringe on the shoulders that the previous version of this guide described: in this portrait the outline looked clean to the naked eye, so I made the brush stroke anyway, to measure how much it changes, not to fix anything. Hair is the area where the edge is blurriest, but I didn't measure how visible that is on a new background.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Cut out a person →</a>
 

@@ -163,13 +163,6 @@
         <li>Download as <strong>JPG</strong> (no transparency, ideal for uploading to forms) or <strong>PNG</strong> if you need to edit it later.</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: the white has to be uniform</h3>
-        <p>For an ID photo what matters is a <strong>flat white background, no shadows</strong>. We cut out the person and placed them on pure white: since the background is generated clean (not the "dirty" white of a wall), it came out uniform in one go.</p>
-        <p>A tip from the test: leave some air above the head and frame it straight before exporting as <strong>JPG</strong>. The automatic cutout resolved the silhouette; we only touched up the hair edge with the brush.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version. The image above is from that session.</p>
-      </div>
-
       <h2>Does it work for a passport or ID card?</h2>
       <p>
         With caveats. Many official ID processes (passport, ID card, driver's
@@ -200,6 +193,31 @@
       <h2>Frequently asked questions</h2>
       <h3>Pure white or light gray?</h3>
       <p>For the vast majority of uses, pure white (<code>#ffffff</code>) is the safest option: it's what almost every form and resume template assumes and looks consistent on any screen or printer. Reserve light gray only if the form asks for it.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: how much the pure white holds up when the JPG quality drops</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, Export → Color #ffffff, and File → JPG with quality.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait, applied “AI cutout” and exported as JPEG on white #ffffff.</li>
+          <li>I opened that JPEG in the “File” tab and recompressed it as JPG at quality 80, 50, 35, 20 and 5.</li>
+          <li>On each output I measured the file size and what percentage of the pixels in the four 40 × 40 px corner squares was no longer exactly #ffffff.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>Initial export (JPEG from the Cutout tab): 57.5 KB, non-white corners 0.0%.</li>
+          <li>Quality 5: 10.3 KB (the screen estimated 58 KB → 10 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 47.2%.</li>
+          <li>Quality 20: 15.3 KB (the screen estimated 58 KB → 15 KB), non-white corners 100.0% (corner pixel rgb(253, 253, 253)), exact #ffffff across the whole image 0.4%.</li>
+          <li>Quality 35: 22.2 KB (the screen estimated 58 KB → 22 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 46.5%.</li>
+          <li>Quality 50: 25.9 KB (the screen estimated 58 KB → 26 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 45.7%.</li>
+          <li>Quality 80: 45.8 KB (the screen estimated 58 KB → 46 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 45.9%.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> It isn't monotonic: at quality 20 the corners were no longer pure white (rgb(253, 253, 253)) and at quality 5 and 35 they were, so there's no “safe” quality I can recommend with a single number: check yours. This test only covers the white background; it doesn't measure the framing or the head proportion, and my portrait cuts off the torso, so it isn't a real ID photo.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Make my ID photo →</a>
 

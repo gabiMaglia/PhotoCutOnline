@@ -233,13 +233,6 @@
         O favicon de 32&nbsp;px é <em>sem fonte oficial, valor comum</em>.
       </p>
 
-      <div class="tried">
-        <h3>Nós testamos: todos os tamanhos de uma vez</h3>
-        <p>Em vez de exportar tamanho por tamanho, com <strong>"Usar recorte atual"</strong> a ferramenta gera todos os tamanhos das plataformas selecionadas (iOS/iPadOS <em>appiconset</em>, Android, macOS, Windows, Web) em uma única passada. A <strong>margem de 8%</strong> deixa ar ao redor do sujeito para não ficar colado na borda do ícone.</p>
-        <p>Prático para publicar um app: você baixa o pacote com a estrutura de pastas pronta, sem enviar a imagem.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>Regras de design que evitam dores de cabeça</h2>
       <ul>
         <li><strong>Trabalhe a partir de um PNG transparente de 1024&nbsp;px ou mais</strong> e gere tudo para baixo.</li>
@@ -279,6 +272,29 @@
         do Android 13 — e os baixa em um ZIP com a estrutura de pastas pronta para
         colar no projeto. Grátis e sem enviar seu logo a lugar nenhum.
       </p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: um ZIP com todas as plataformas a partir de um único PNG</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/logo-despues.png"><code>logo-despues.png</code></a>, 820 × 637 px, 32,1 KB (imagem de exemplo deste site).</p>
+        <p><strong>Ferramenta:</strong> Icon Studio → «Abrir PNG…» → «Baixar ZIP de ícones».</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>No Icon Studio abri logo-despues.png (820 × 637 px, 32 KB, PNG com fundo transparente).</li>
+          <li>Deixei os ajustes padrão (margem 8%, as cinco plataformas marcadas) e apertei «Baixar ZIP de ícones».</li>
+          <li>Abri o ZIP e contei os arquivos por pasta.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>O ZIP foi gerado e baixado em 0,5 s e pesa 641 KB.</li>
+          <li>Traz 60 arquivos: LEEME.txt 1, ios 17, android 21, macos 10, windows 1, web 10.</li>
+          <li>O maior arquivo é app-icons/ios/AppIcon.appiconset/icon-1024.png (67 KB).</li>
+          <li>Plataformas marcadas no início: 5 de 5.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Só contei arquivos e tamanhos do ZIP: não o abri no Xcode nem no Android Studio, então não verifiquei que eles aceitem os nomes e pastas. O logo que usei tem texto, que em tamanhos pequenos não se lê (veja o guia de favicons): para ícones convém partir só do emblema.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=icons">Gerar meus ícones de app →</a>
 

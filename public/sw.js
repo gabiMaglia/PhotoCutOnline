@@ -3,7 +3,7 @@
 // Dos estrategias según el tipo de recurso:
 //  - Inmutables (assets hasheados de Vite, runtime/wasm de ORT, modelo .onnx):
 //    cache-first. Su URL cambia si cambia el contenido, así que servir de caché
-//    sin revalidar es seguro y evita re-descargar megabytes (la IA pesa ~18MB)
+//    sin revalidar es seguro y evita re-descargar megabytes (la IA pesa ~7 MB comprimido)
 //    en cada carga.
 //  - Lo demás (HTML/navegación, que no lleva hash): stale-while-revalidate, para
 //    recoger nuevos deploys sin quedar pegado a una versión vieja.

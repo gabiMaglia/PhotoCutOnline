@@ -140,13 +140,6 @@
       </ol>
       <p>Os objetivos <strong>Escuro</strong> e <strong>Claro</strong> só invertem se preciso (conforme a captura já seja clara ou escura); <strong>Inverter</strong> força a mudança sempre.</p>
 
-      <div class="tried">
-        <h3>Nós testamos: de uma captura clara a um tema escuro</h3>
-        <p>Carregamos uma captura e o modo <strong>Escuro</strong> inverteu a luminosidade <strong>mantendo as cores</strong> (com opção de manter os acentos), mostrando antes/depois lado a lado. Com capturas de UI dá um ponto de partida realista; com fotos comuns, um efeito artístico.</p>
-        <p>O mais útil para desenvolvimento: além da imagem, gera o <strong>esquema de cor derivado</strong> (escalas 50–900) pronto para <strong>copiar como CSS ou Tailwind</strong> e colar no projeto. Tudo local, sem enviar a captura.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web no Chrome. A captura acima é dessa sessão.</p>
-      </div>
-
       <h2>O esquema de cores do projeto</h2>
       <p>
         Abaixo do antes/depois, o Color Studio monta o
@@ -171,6 +164,35 @@
         mais artístico que utilitário — mas testá-las é parte da graça.
       </p>
 
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: uma captura clara passada para escuro e o que muda de verdade</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/pruebas/captura-ui-clara.png"><code>captura-ui-clara.png</code></a>, 1280 × 720 px, 41 KB (imagem sintética que desenhei com o Pillow).</p>
+        <p><strong>Ferramenta:</strong> Color Studio → Tema → «→ Escuro».</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei captura-ui-clara.png (1280 × 720 px, 41 KB), uma captura de um app em modo claro desenhada por mim.</li>
+          <li>No Color Studio → «Tema» deixei «→ Escuro» com intensidade 100 e baixei a imagem.</li>
+          <li>Marquei «Manter cores de destaque», baixei de novo e li cinco pixels de referência nas três versões.</li>
+          <li>Apertei «Copiar CSS» do esquema de cor e li a área de transferência.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>A luminância média passou de 245 para 4 (de 0 a 255). O modo escuro foi desenhado em 14 ms e o download levou 78 ms.</li>
+          <li>fundo da página: #f5f7fa → #000000 (com destaques: #000000).</li>
+          <li>fundo do cartão: #ffffff → #000000 (com destaques: #000000).</li>
+          <li>botão azul: #2563eb → #0744cb (com destaques: #2563eb).</li>
+          <li>selo vermelho: #dc2626 → #a40000 (com destaques: #dc2626).</li>
+          <li>selo verde: #16a34a → #005600 (com destaques: #16a34a).</li>
+          <li>O contraste entre o fundo da página e o do cartão passou de 1,07:1 para 1,00:1.</li>
+          <li>Com a intensidade em 70 o fundo da página fica #2f3033 e o cartão #2e2e2e: contraste 1,03:1.</li>
+          <li>O esquema CSS copiado tem 87 linhas.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Com a intensidade em 100 o fundo da página e o dos cartões viraram os dois #000000: o contraste entre eles caiu para 1,00:1 e os cartões deixam de se distinguir. Com a intensidade em 70 continua quase invisível. Os destaques escurecem se eu não marcar «Manter cores de destaque». É uma captura sintética, simples: não testei uma captura real com fotos.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/?tab=colors">Gerar o modo escuro da minha captura →</a>
 

@@ -222,13 +222,29 @@
       <h2>Without uploading your photo anywhere</h2>
       <p>The whole process happens in your browser. Your photo isn't uploaded to any server or stored once you close the tab.</p>
 
-      <div class="tried">
-        <h3>We tested it: on white the edge shows more</h3>
-        <p>We placed the cutout on <strong>pure white</strong> and something useful jumped out: on transparent the edge fringe was barely visible, but <strong>on white it was</strong>. That's why it pays to go over the outline with the <strong>remove brush</strong> before exporting.</p>
-        <p>For a solid white background we exported as <strong>JPG</strong> (not PNG): it weighs less and you don't need transparency. The white came out even, with no shadows or halos.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version. The images above are from that session.</p>
-      </div>
 
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: pure white in PNG and in JPEG</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78.4 KB (public-domain portrait).</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, Export → Color #ffffff.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I loaded the portrait and applied “AI cutout”.</li>
+          <li>In Export I chose “Color” with #ffffff and downloaded as PNG.</li>
+          <li>I switched the format to JPEG and downloaded again.</li>
+          <li>In both outputs I measured how many pixels are exactly white (255, 255, 255) and how many of the pixels in the 4 corner squares of 40 × 40 px are not.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>PNG: 522 KB, 47.5% of pixels exactly #ffffff, 0.0% of the corners are not pure white.</li>
+          <li>JPEG: 58 KB (89% smaller), 46.4% of pixels exactly #ffffff, 0.0% of the corners are not pure white.</li>
+          <li>AI cutout 4.0 s; the PNG download took 0.1 s and the JPEG one 0.1 s.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The JPEG doesn't keep all the white exact: it has slightly fewer #ffffff pixels than the PNG because compression pushes some to 254 or lower. I didn't measure the light halo around the outline (on white it can't be counted automatically) or compare the PNG against the JPEG by eye.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Put a white background on my photo →</a>
 

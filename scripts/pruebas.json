@@ -373,7 +373,7 @@
           "I loaded the portrait and applied “AI cutout”.",
           "In Export I chose “Color” with #ffffff and downloaded as PNG.",
           "I switched the format to JPEG and downloaded again.",
-          "In both outputs I measured how many pixels are exactly white (255, 255, 255) and how many of the pixels in the four 40 × 40 px corner squares are not."
+          "In both outputs I measured how many pixels are exactly white (255, 255, 255) and how many of the pixels in the 4 corner squares of 40 × 40 px are not."
         ],
         "findings": [
           "PNG: 522 KB, 47.5% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
@@ -533,7 +533,7 @@
           "Qualidade 50: 25,9 KB (a tela estimava 58 KB → 26 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,7%.",
           "Qualidade 80: 45,8 KB (a tela estimava 58 KB → 46 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,9%."
         ],
-        "caveat": "Não é monótono: na qualidade 20 os cantos já não eram branco puro (rgb(253, 253, 253)) e nas qualidades 5 e 35 eram, então não há uma qualidade «segura» que eu possa recomendar com um único número: confira a sua. Este teste só cobre o fundo branco; não mede o enquadramento nem a proporção da cabeça, e meu retrato corta o tronco, então não é uma foto 3x4 de verdade."
+        "caveat": "Não é monótono: na qualidade 20 os cantos já não eram branco puro (rgb(253, 253, 253)) e nas qualidades 5 e 35 eram, então não há uma qualidade «segura» que eu possa recomendar com um único número: confira a sua. Este teste só cobre o fundo branco; não mede o enquadramento nem a proporção da cabeça, e meu retrato corta o tronco, então não é uma foto de documento de verdade."
       }
     }
   },

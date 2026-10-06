@@ -188,13 +188,30 @@
         você a envia, já pronta, direto para o LinkedIn.
       </p>
 
-      <div class="tried">
-        <h3>Nós testamos: o LinkedIn recorta você em círculo</h3>
-        <p>Mesmo enviando uma foto quadrada, o LinkedIn a mostra <strong>dentro de um círculo</strong>. Por isso, após o recorte, verificamos que o <strong>rosto fica centralizado</strong> e não colado num lado: o que aparece é o círculo, não o quadrado completo.</p>
-        <p>Recortar o fundo e colocá-lo sobre uma cor sóbria (ou branco) dá uma foto mais profissional e consistente com sua marca pessoal. Tudo local, sem enviar a imagem.</p>
-        <p class="byline">Teste feito pela equipe do PhotoCut Studio na versão web. As imagens acima são dessa sessão.</p>
-      </div>
 
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>Nós testamos: quanto da figura se perde quando o LinkedIn mostra o círculo</h3>
+        <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, presets quadrados, Exportar → Cor #c9ced6.</p>
+        <p><strong>O que eu fiz:</strong></p>
+        <ol>
+          <li>Carreguei o retrato e apliquei «Recorte IA».</li>
+          <li>Em Exportar escolhi «Cor» #c9ced6 (um cinza sóbrio) e JPEG.</li>
+          <li>Baixei com três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn).</li>
+          <li>Em cada JPEG calculei que porcentagem dos pixels da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra.</li>
+        </ol>
+        <p><strong>O que eu medi:</strong></p>
+        <ul>
+          <li>Recorte IA: 4,0 s.</li>
+          <li>Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, 198 KB; 0,1% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+          <li>Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, 200 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+          <li>Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, 78 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+        </ul>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não existe preset do LinkedIn e os presets quadrados ignoraram a cor cinza que pedi: todas as saídas têm fundo #ffffff. Para um fundo colorido é preciso deixar o preset em «Original» e enquadrar à parte. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Fazer minha foto do LinkedIn →</a>
 

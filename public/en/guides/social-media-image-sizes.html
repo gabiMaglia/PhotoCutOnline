@@ -237,13 +237,6 @@
         <li>Export as <strong>JPG</strong> (photos) or <strong>PNG</strong> (graphics, text or transparency).</li>
       </ol>
 
-      <div class="tried">
-        <h3>We tested it: resize to the exact size</h3>
-        <p>For each network there's a recommended size; in the <strong>File</strong> panel we set the <strong>width and height in pixels</strong> (or a percentage) and the image rescaled instantly, showing the <strong>final weight</strong>. With the aspect-ratio lock on, it doesn't distort.</p>
-        <p>A tip from the test: export as <strong>JPG</strong> for photos and <strong>PNG</strong> if there's text or transparency. Everything is processed in the browser, without uploading the image.</p>
-        <p class="byline">Test run by the PhotoCut Studio team using the web version in Chrome. The screenshot above is from that session.</p>
-      </div>
-
       <h2>Typical size mistakes</h2>
       <ul>
         <li><strong>Uploading horizontal to a vertical format.</strong> The network crops the sides; frame vertical first.</li>
@@ -258,6 +251,27 @@
       <h2>Frequently asked questions</h2>
       <h3>JPG or PNG for social media?</h3>
       <p>For photos, a good-quality JPG is standard and lighter. PNG is better with text, sharp-edged graphics or transparency. Networks recompress anyway, so uploading at good quality helps the result.</p>
+
+      <!-- pruebas:start -->
+      <div class="tried">
+        <h3>We tested it: from 4000 × 3000 px to the size of a post</h3>
+        <p><strong>Image:</strong> <a href="/media/guias/pruebas/paisaje-sintetico.jpg"><code>paisaje-sintetico.jpg</code></a>, 4000 × 3000 px, 96.9 KB (synthetic image I drew with Pillow).</p>
+        <p><strong>Tool:</strong> File → width and height with the lock.</p>
+        <p><strong>What I did:</strong></p>
+        <ol>
+          <li>I opened paisaje-sintetico.jpg (4000 × 3000 px, a synthetic “phone” photo) and went to “File”.</li>
+          <li>With the aspect-ratio lock on I set the width to 1080, JPG quality 80, and downloaded.</li>
+          <li>I turned the lock off, set 1080 × 1350 (Instagram's vertical size) and downloaded again.</li>
+        </ol>
+        <p><strong>What I measured:</strong></p>
+        <ul>
+          <li>With the lock: width 1080 → height 810. It produced a 1080 × 810 px, 16 KB JPG (the original weighed 97 KB) in 0.3 s counting the download.</li>
+          <li>Without the lock, asking for 1080 × 1350 px, it produced a 1080 × 1350 px, 23 KB JPG. Since the photo is 4:3 and the requested size is 4:5, the image ended up stretched to 60% of its horizontal proportion.</li>
+        </ul>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The File panel resizes but doesn't crop to an aspect ratio: to take a 4:3 photo to 1080 × 1350 I could only stretch it (to 60% of its proportion), or leave it at 1080 × 810 with the lock. To respect the proportion you would have to frame it first (I didn't try “Crop area” for that). The photo is synthetic: I didn't measure how much each network recompresses.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+      </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/editor/">Prepare my photo for social →</a>
 
