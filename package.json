@@ -11,7 +11,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "jest",
+    "test": "jest && node --test scripts/",
     "test:unit": "jest",
     "test:web": "node test/run-tests.mjs",
     "licenses": "node scripts/gen-licenses.mjs",
