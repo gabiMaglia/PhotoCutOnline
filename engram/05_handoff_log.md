@@ -54,3 +54,11 @@
 - Entrega: proyecto dado de alta en NERV; repo movido de Downloads a /Users/gabrielsk/Documents/Proyects/photocut; engram creado; fila agregada al registry.
 - Se espera: definir Sprint 1 (objetivo + tickets).
 - Pendientes: confirmar Figma (01_requirements.md §6).
+
+## 2026-10-06 — Sprint 6 Fase A (orquestador)
+- Auditoría 3 ejes (nerv-qa adversarial, seo-technical, seo-content) → engram/10. PO aprobó Fase A.
+- GROW-25+26 → nerv-web (worktree) → nerv-qa Strong APROBADO → merge 3b3a7c6.
+- GROW-27 → nerv-web → nerv-qa RECHAZADO (pie EN/PT del editor desalineado con GROW-26) → fix → re-QA APROBADO → merge 450f3a1.
+- GROW-29 → nerv-web → nerv-qa APROBADO → merge 5fd55ee.
+- GROW-28 → nerv-web → nerv-qa RECHAZADO (guías decían que Recuadro segmentaba) → fix → re-QA APROBADO → merge 9e89cf2.
+- Sin push: decisión PO sobre foto del hero.
