@@ -3208,6 +3208,14 @@ label.btn:has(.file-input-sr:focus-visible) {
     order: 1;
   }
 
+  /* el logo se ve igual (22 px) pero el área táctil llega a 44 px por padding */
+  a.brand {
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
   .topbar-actions {
     order: 2;
     margin-left: auto;
