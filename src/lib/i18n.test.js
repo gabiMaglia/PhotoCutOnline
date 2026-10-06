@@ -33,3 +33,22 @@ describe("tn — plurales (GROW-27 g)", () => {
     expect(tn("faces.title", 2)).toBe(t("faces.title"));
   });
 });
+
+describe("registro ES: voseo (GROW-27 d)", () => {
+  // Lee el bloque ES del fuente: si alguien vuelve a escribir un imperativo de
+  // tuteo ("Suelta", "Arrastra", "Usa"…), falla acá.
+  const fs = require("fs");
+  const src = fs.readFileSync(require("path").join(__dirname, "i18n.js"), "utf8");
+  const es = src.slice(src.indexOf("  es: {"), src.indexOf("  en: {"));
+  const TUTEO =
+    /(?<![\p{L}])(Suelta|Suéltala|Arrastra|Pega|Usa|Abre|Dibuja|Prueba|Toca|Exporta|Afina|Crea|Quita|Mira|míralo|suéltalo|arrastra|pega|usa|abre|dibuja|prueba|toca|exporta|afina|crea|mira)(?![\p{L}])/u;
+
+  it("no hay imperativos de tuteo en el diccionario ES", () => {
+    const hits = es
+      .split("\n")
+      .filter((l) => TUTEO.test(l))
+      // "WhatsApp usa…" / "se abre…" son 3.ª persona, no imperativo
+      .filter((l) => !/WhatsApp usa|se abre/.test(l));
+    expect(hits).toEqual([]);
+  });
+});

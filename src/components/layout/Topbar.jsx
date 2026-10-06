@@ -30,7 +30,7 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
           <span className="brand-env">Desktop</span>
         </div>
       ) : (
-        <a className="brand" href="/" aria-label="PhotoCut Studio — ir al inicio">
+        <a className="brand" href="/" aria-label={t("nav.home")}>
           <span className="brand-mark" aria-hidden>◑</span>
           <span className="brand-name">PhotoCut</span>
           <span className="brand-sub">Studio</span>
@@ -38,7 +38,7 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
         </a>
       )}
 
-      <nav className="tabs" role="tablist" aria-label="Espacios de trabajo">
+      <nav className="tabs" role="tablist" aria-label={t("nav.tabs")}>
         {[
           // Orden = flujo natural: recortás → editás encima → lote → iconos → color → archivo.
           // "Editar" (id interno "text" para no romper los deep-links ?tab=text) es el

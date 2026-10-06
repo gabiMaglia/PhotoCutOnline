@@ -13,6 +13,7 @@ jest.mock("../../services/ads.js", () => ({
   initAds: jest.fn(),
 }));
 
+import { t } from "../../lib/i18n.js";
 import Topbar from "./Topbar.jsx";
 
 function setup(props = {}) {
@@ -61,7 +62,7 @@ describe("Topbar", () => {
 
   it("el logo enlaza al inicio (landing)", () => {
     setup();
-    const brand = screen.getByRole("link", { name: /ir al inicio/i });
+    const brand = screen.getByRole("link", { name: t("nav.home") });
     expect(brand).toHaveAttribute("href", "/");
   });
 });

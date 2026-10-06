@@ -38,7 +38,7 @@ let pendingRelease = false;
  */
 async function fetchModelWithProgress(onProgress) {
   const res = await fetch(MODEL_URL);
-  if (!res.ok) throw new Error(`No se pudo descargar el modelo (${res.status})`);
+  if (!res.ok) throw new Error(`Model download failed (${res.status})`);
   const reader = res.body?.getReader?.();
   if (!reader) return null;
   const encoded = !!res.headers.get("content-encoding");

@@ -16,6 +16,8 @@ export const LANGS = [
 const DICT = {
   es: {
     "tab.cut": "Recorte",
+    "nav.home": "PhotoCut Studio — ir al inicio",
+    "nav.tabs": "Espacios de trabajo",
     openPhoto: "Abrir foto",
     "about.aria": "Acerca de y licencias",
     "guides.label": "Guías",
@@ -52,11 +54,11 @@ const DICT = {
     "export.bgOpacity": "Opacidad del fondo — {n}%",
     "export.blurAmount": "Desenfoque del fondo — {n}px",
     "export.blurDownload": "⬇ Descargar con fondo desenfocado",
-    "toast.bgSet": "Fondo cargado — míralo en la vista previa (P)",
+    "toast.bgSet": "Fondo cargado — mirálo en la vista previa (P)",
     "toast.cutLoaded": "Recorte cargado como nueva imagen — seguí editando",
-    "preview.dropHint": "Arrastra el recorte y suéltalo en el lienzo para seguir editándolo",
+    "preview.dropHint": "Arrastrá el recorte y soltalo en el lienzo para seguir editándolo",
     "rail.help":
-      "A automático · 1 recuadro · 2/3 pinceles · P vista previa · E exportar · ? atajos. Arrastra o pega (⌘V) cualquier imagen.",
+      "A automático · 1 recuadro · 2/3 pinceles · P vista previa · E exportar · ? atajos. Arrastrá o pegá (⌘V) cualquier imagen.",
 
     "toast.loaded": "{w} × {h} px cargados",
     "toast.ai": "Recorte IA aplicado — pinta para afinar",
@@ -70,7 +72,7 @@ const DICT = {
     "toast.saved": "Guardado ✓",
     "toast.copied": "PNG copiado al portapapeles ✓",
     "toast.copyfail": "No se pudo copiar: {e}",
-    "toast.heic": "HEIC del iPhone no soportado — exporta la foto como JPG o PNG",
+    "toast.heic": "HEIC del iPhone no soportado — exportá la foto como JPG o PNG",
     "toast.unreadable": "No se pudo leer ese archivo como imagen",
     "toast.reduced": "Reducida a 4K (original {w} × {h} px)",
     "toast.zip": "ZIP listo — {n}+ iconos en {p} plataformas",
@@ -83,11 +85,11 @@ const DICT = {
       "{w} × {h} px ({mp} MP). Procesarla entera puede agotar la memoria del navegador.",
     "large.reduce": "Reducir a 4K (recomendado)",
     "large.cancel": "Cancelar",
-    "drop.here": "Suéltala aquí",
+    "drop.here": "Soltala acá",
 
-    "canvas.empty.title": "Suelta una imagen aquí",
+    "canvas.empty.title": "Soltá una imagen acá",
     "canvas.empty.body":
-      "Arrastra un archivo, pega desde el portapapeles (⌘V) o usa «Abrir foto». Luego dibuja un recuadro alrededor del sujeto — o prueba el recorte automático.",
+      "Arrastrá un archivo, pegá desde el portapapeles (⌘V) o usá «Abrir foto». Luego dibujá un recuadro alrededor del sujeto — o probá el recorte automático.",
     "cut.emptyDesc":
       "Quitá el fondo con inteligencia artificial en un clic, o recortá a mano con precisión dibujando un recuadro alrededor del sujeto. Exportás con fondo transparente real (PNG/WebP).",
     "empty.drag": "Arrastrá un archivo, pegá con ⌘V o usá «Abrir foto» arriba.",
@@ -140,7 +142,7 @@ const DICT = {
     "icon.py2": "genera las mismas medidas desde la terminal:",
     "icon.py3": "Solo requiere Pillow.",
     "icon.emptyBody":
-      "Usa el recorte actual o abre un PNG transparente. Generamos todas las medidas para iOS, Android, macOS, Windows y Web — listas para pegar en tu proyecto.",
+      "Usá el recorte actual o abrí un PNG transparente. Generamos todas las medidas para iOS, Android, macOS, Windows y Web — listas para pegar en tu proyecto.",
     "icon.note":
       "Vista pixel-perfect — así se verá el icono en el dock, la barra de pestañas y la home screen.",
 
@@ -409,16 +411,16 @@ const DICT = {
     "sc.help": "Esta ayuda",
     "sc.close": "Cerrar paneles",
 
-    "ob.title": "Quita el fondo en tres pasos",
+    "ob.title": "Quitá el fondo en tres pasos",
     "ob.privacy":
       "Todo ocurre en tu navegador — tus fotos nunca se suben a ningún servidor.",
-    "ob.1.title": "Abre una foto",
-    "ob.1.body": "Arrastra un archivo, pega con ⌘V o toca «Abrir foto».",
-    "ob.2.title": "Marca el sujeto",
-    "ob.2.body": "Dibuja un recuadro alrededor — o usa el recorte automático (A).",
-    "ob.3.title": "Afina y exporta",
+    "ob.1.title": "Abrí una foto",
+    "ob.1.body": "Arrastrá un archivo, pegá con ⌘V o tocá «Abrir foto».",
+    "ob.2.title": "Marcá el sujeto",
+    "ob.2.body": "Dibujá un recuadro alrededor — o usá el recorte automático (A).",
+    "ob.3.title": "Afiná y exportá",
     "ob.3.body":
-      "Pinceles mantener/quitar para los bordes. Exporta PNG transparente o crea iconos de app.",
+      "Pinceles mantener/quitar para los bordes. Exportá PNG transparente o creá iconos de app.",
     "ob.go": "¡A recortar!",
 
     "finish.title": "Acabado",
@@ -452,13 +454,15 @@ const DICT = {
 
     "crash.title": "Algo salió mal",
     "crash.body":
-      "La aplicación encontró un error inesperado. Tu imagen no se ha enviado a ningún sitio — todo ocurre en tu navegador.",
+      "La aplicación encontró un error inesperado. Tu imagen no se envió a ningún lado — todo ocurre en tu navegador.",
     "crash.reset": "Reiniciar",
     "crash.detail": "Detalle técnico",
   },
 
   en: {
     "tab.cut": "Cutout",
+    "nav.home": "PhotoCut Studio — go to home",
+    "nav.tabs": "Workspaces",
     openPhoto: "Open photo",
     "about.aria": "About & licenses",
     "guides.label": "Guides",
@@ -902,6 +906,8 @@ const DICT = {
 
   pt: {
     "tab.cut": "Recorte",
+    "nav.home": "PhotoCut Studio — ir para o início",
+    "nav.tabs": "Espaços de trabalho",
     openPhoto: "Abrir foto",
     "about.aria": "Sobre e licenças",
     "guides.label": "Guias",
