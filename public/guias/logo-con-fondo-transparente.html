@@ -56,35 +56,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿El resultado sirve como logo vectorial (SVG)?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Quitar el fondo de una imagen produce un PNG transparente, que es un mapa de píxeles: se ve nítido al tamaño exportado pero se pixela si lo agrandás mucho. Para un logo que necesite escalar a cualquier tamaño sin perder calidad, hace falta un archivo vectorial (SVG) hecho en un editor de vectores. El PNG transparente resuelve la mayoría de usos web y de documentos." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo evito el halo blanco alrededor del logo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "El halo aparece cuando quedan píxeles casi blancos en el borde del logo. Repasá el contorno con los pinceles y revisá el resultado sobre un fondo oscuro en la vista previa: sobre oscuro, cualquier resto de blanco se nota de inmediato y podés corregirlo antes de exportar." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Por qué el logo tiene que ser PNG y no JPG?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Porque JPG no guarda transparencia y rellena el fondo con un color. Un logo en JPG arrastra un rectángulo de fondo que se nota en cuanto lo ponés sobre un color distinto. El PNG conserva el fondo transparente, así que el logo se integra en cualquier fondo." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Se sube el logo a algún servidor?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. El recorte se hace en tu navegador; la imagen del logo no se sube a ningún servidor ni queda almacenada al cerrar la pestaña. Útil si el logo todavía no es público o es de un cliente." }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -255,47 +227,37 @@
         guardada al cerrar la pestaña.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿El resultado sirve como logo vectorial (SVG)?</h3>
-      <p>
-        No. Quitar el fondo produce un PNG transparente, que es un mapa de
-        píxeles: se ve nítido al tamaño exportado pero se pixela si lo agrandás
-        mucho. Para escalar a cualquier tamaño sin perder calidad hace falta un
-        SVG hecho en un editor de vectores. El PNG resuelve la mayoría de usos
-        web y de documentos.
-      </p>
-      <h3>¿Cómo evito el halo blanco alrededor del logo?</h3>
-      <p>
-        Repasá el contorno con los pinceles y revisá el resultado sobre un fondo
-        oscuro en la vista previa: sobre oscuro, cualquier resto de blanco se
-        nota de inmediato y podés corregirlo antes de exportar.
-      </p>
-      <h3>¿Por qué el logo tiene que ser PNG y no JPG?</h3>
-      <p>
-        Porque JPG no guarda transparencia y rellena el fondo con un color. Un
-        logo en JPG arrastra un rectángulo de fondo que se nota sobre cualquier
-        otro color. El PNG conserva la transparencia y el logo se integra en
-        cualquier fondo.
-      </p>
-      <h3>¿Se sube el logo a algún servidor?</h3>
-      <p>
-        No. El recorte se hace en tu navegador; la imagen del logo no se sube a
-        ningún servidor ni queda almacenada al cerrar la pestaña.
-      </p>
 
       <a class="cta" href="/">Dejar mi logo transparente →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: para un logo, la varita gana a la IA</h3>
-        <p>Un logo suele venir sobre un <strong>fondo sólido</strong> (blanco o un color plano). Ahí el <strong>Recorte automático</strong> o la <strong>Varita mágica</strong> —que seleccionan por color— dan un borde más limpio que la IA, que está pensada para fotos de sujetos. Un clic sobre el fondo y queda seleccionado para quitar.</p>
-      <p>Exportamos en <strong>PNG transparente</strong>: así el logo se ve bien sobre cualquier fondo (una web, una factura, una remera). Todo en el navegador, sin subir tu marca.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: el mismo logo con IA, recorte automático y varita</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/logo-antes.jpg"><code>logo-antes.jpg</code></a>, 820 × 637 px, 15,5 KB (imagen de ejemplo de esta web).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA / Recorte automático / Varita mágica.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el logo (JPG sobre fondo liso) y apliqué «Recorte IA»; descargué el PNG.</li>
+          <li>En una pestaña nueva, apliqué «Recorte automático» al mismo archivo y descargué.</li>
+          <li>En otra, elegí «Varita mágica» con la tolerancia por defecto, hice un solo clic en la esquina superior izquierda (fondo) y descargué.</li>
+          <li>De cada PNG medí el porcentaje de píxeles transparentes y semitransparentes.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Recorte IA: 4,0 s, 89,4 % transparente, 1,4 % semitransparente, PNG de 84 KB.</li>
+          <li>Recorte automático: 1,45 s, 89,5 % transparente, 1,2 % semitransparente, 81 KB.</li>
+          <li>Varita mágica (un clic): 0,16 s, 85,7 % transparente, 3,6 % semitransparente, 117 KB.</li>
+          <li>El logo tiene un emblema y, debajo, la palabra de la marca. En la franja donde está el texto (entre 68 % y 85 % de la altura) quedó opaco: 0,0 % con la IA, 0,0 % con el recorte automático y 15,4 % con la varita.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Ni el Recorte IA ni el recorte automático conservaron la palabra del logo: solo quedó el emblema. La varita sí la conservó, pero dejó rellenos y opacos los huecos de letras como la de la A, porque no tocan el fondo, y el borde quedó con más semitransparencia. Con un logo sin texto la IA habría bastado; con texto, hubo que ir a la varita y repasar a mano los huecos.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>
         <a class="card" href="/guias/favicons-medidas-y-html.html">
-          <h2>Favicons en 2026: qué medidas necesitas y el HTML listo para copiar</h2>
+          <h2>Favicons en 2026: qué medidas necesitás y el HTML listo para copiar</h2>
           <p>De los 20 tamaños legendarios a los 5 archivos que de verdad hacen falta hoy, con el snippet HTML completo.</p>
         </a>
         <a class="card" href="/guias/quitar-fondo-a-una-firma.html">

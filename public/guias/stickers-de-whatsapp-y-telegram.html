@@ -78,58 +78,18 @@
           "@type": "HowToStep",
           "position": 4,
           "name": "Exportar para WhatsApp",
-          "text": "En Sticker/Icon elegí el destino WhatsApp: exporta en WebP a 512×512 px, bajo 100 KB. Usalo en una app de packs de stickers."
+          "text": "En Exportar elegí Transparente y WEBP y descargá; después, en la pestaña Archivo, llevá el sticker a 512 px en WebP y comprobá que pese menos de 100 KB. Usalo en una app de packs de stickers."
         },
         {
           "@type": "HowToStep",
           "position": 5,
           "name": "Exportar para Telegram",
-          "text": "En Exportar elegí modo Transparente, dejá el lado más largo en 512 px y descargá el PNG. Subilo con el bot @Stickers."
+          "text": "En Exportar elegí modo Transparente y PNG, descargá y, en la pestaña Archivo, dejá el lado más largo en 512 px. Subilo con el bot @Stickers."
         }
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Por qué WhatsApp pide WebP y no PNG para los stickers?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "WebP comprime mejor que PNG manteniendo la transparencia, así que un sticker pesa mucho menos con calidad similar. WhatsApp limita cada sticker a 100 KB, y WebP hace mucho más fácil cumplir ese límite sin perder nitidez."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Necesito una app aparte para subir el sticker a WhatsApp?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí. WhatsApp no permite agregar un sticker suelto desde la galería: hace falta una app de terceros que arme el pack (mínimo 3 stickers) y lo registre. PhotoCut Studio prepara el archivo en el formato exacto que esas apps piden."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Sirve el mismo recorte para WhatsApp y para Telegram?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí. El concepto es el mismo (sujeto recortado, transparente, 512 px); cambia el formato de exportación (WebP para WhatsApp, PNG para Telegram) y la forma de subirlo (app de packs o bot @Stickers)."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo usar una foto con fondo para hacer un sticker?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Se puede, pero se ve mucho más como sticker (y no como una foto rectangular pegada) si primero quitás el fondo y dejás solo el sujeto recortado sobre transparencia."
-          }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -245,9 +205,12 @@
 
       <h2>Para WhatsApp: WebP de 512×512 y menos de 100 KB</h2>
       <p>
-        En la sección <strong>Sticker/Icon</strong> elegí el destino
-        <strong>WhatsApp</strong>: exporta en WebP a 512×512&nbsp;px, con la
-        compresión ajustada para quedar bajo 100&nbsp;KB. WebP comprime mejor que
+        En <strong>Exportar</strong> elegí <strong>Transparente</strong> y el
+        formato <strong>WEBP</strong>, descargá y llevá el resultado a
+        512&nbsp;px en la pestaña <strong>Archivo</strong> (WebP, con la
+        calidad que haga falta para quedar bajo 100&nbsp;KB). WhatsApp pide
+        512×512&nbsp;px exactos: el panel Archivo solo escala, así que
+        encuadrá cuadrado antes. WebP comprime mejor que
         PNG manteniendo la transparencia, y por eso cumplir el límite de peso es
         mucho más fácil que con un PNG del mismo tamaño. Además del sticker, el
         pack pide:
@@ -264,9 +227,10 @@
 
       <h2>Para Telegram: PNG transparente de 512 px y el bot @Stickers</h2>
       <p>
-        En <strong>Exportar</strong> elegí modo <strong>Transparente</strong>,
-        encuadrá de modo que el lado más largo mida <strong>512&nbsp;px</strong>
-        y descargá en <strong>PNG</strong> (JPG no sirve: rellena el fondo).
+        En <strong>Exportar</strong> elegí modo <strong>Transparente</strong>
+        y <strong>PNG</strong> (JPG no sirve: rellena el fondo), descargá y, en
+        la pestaña <strong>Archivo</strong>, dejá el lado más largo en
+        <strong>512&nbsp;px</strong>.
         Para subirlo, Telegram no usa apps de terceros sino un bot propio:
       </p>
       <ol>
@@ -312,23 +276,30 @@
         versiones: WebP para WhatsApp y PNG para Telegram.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Por qué WhatsApp pide WebP y no PNG para los stickers?</h3>
-      <p>WebP comprime mejor que PNG manteniendo la transparencia, así que un sticker pesa mucho menos con calidad similar. WhatsApp limita cada sticker a 100&nbsp;KB, y WebP hace mucho más fácil cumplir ese límite sin perder nitidez.</p>
-      <h3>¿Necesito una app aparte para subir el sticker a WhatsApp?</h3>
-      <p>Sí. WhatsApp no permite agregar un sticker suelto desde la galería: hace falta una app de terceros que arme el pack (mínimo 3 stickers) y lo registre. PhotoCut Studio prepara el archivo en el formato exacto que esas apps piden.</p>
-      <h3>¿Sirve el mismo recorte para WhatsApp y para Telegram?</h3>
-      <p>Sí. El concepto es el mismo (sujeto recortado, transparente, 512&nbsp;px); cambia el formato de exportación (WebP para WhatsApp, PNG para Telegram) y la forma de subirlo (app de packs o bot @Stickers).</p>
-      <h3>¿Puedo usar una foto con fondo para hacer un sticker?</h3>
-      <p>Se puede, pero se ve mucho más como sticker (y no como una foto rectangular pegada) si primero quitás el fondo y dejás solo el sujeto recortado sobre transparencia.</p>
 
       <a class="cta" href="/">Crear mi sticker →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: el contorno blanco hace al sticker</h3>
-        <p>Recortamos a la persona y activamos <strong>Sticker (contorno)</strong>: ese borde blanco es el look clásico de sticker y, sobre todo, ayuda a que la figura <strong>se despegue del fondo del chat</strong>, que puede ser claro u oscuro. Subimos el grosor del contorno hasta que se vio parejo y verificamos que el <strong>PNG exportado mantiene la transparencia</strong> alrededor de la figura.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: el peso del sticker contra el límite de 100 KB de WhatsApp</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA + «Sticker (contorno)», y Archivo → WebP.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato y apliqué «Recorte IA»; descargué un PNG transparente sin contorno como referencia.</li>
+          <li>Activé «Sticker (contorno)» con el grosor por defecto (14 px) y descargué en PNG y en WebP.</li>
+          <li>Abrí el WebP en la pestaña «Archivo», lo llevé a 512 px de alto con calidad 80 y descargué.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Sin contorno, PNG: 720 × 900 px, 535 KB. Con contorno blanco de 14 px: PNG 720 × 900 px, 529 KB, y WebP 51 KB con 44,1 % de píxeles transparentes.</li>
+          <li>Ese WebP, llevado en Archivo a 410 × 512 px (calidad 80): 15,0 KB y 43,5 % transparente. El límite de WhatsApp es 100 KB.</li>
+          <li>El editor me dejó fijar el alto en 512 y el ancho se ajustó solo a 410 px (la foto es vertical). Un cuadrado de 512 × 512, que es lo que pide WhatsApp, habría exigido deformar la imagen o recortarla antes.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La pestaña Stickers (con el destino «WhatsApp · WebP 512») está desactivada en esta versión de la web, así que no pude usarla: con lo que hay, el sticker sale a 720 × 900 px y hay que llevarlo a 512 de alto en Archivo. Un 512 × 512 exacto, que es lo que pide WhatsApp, no encontré cómo sacarlo de una foto vertical sin deformarla: Archivo solo escala y no probé encuadrar antes con «Recortar área». No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>

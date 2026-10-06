@@ -46,28 +46,16 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Qué formato guarda la transparencia?",
-          "acceptedAnswer": { "@type": "Answer", "text": "PNG y WebP guardan transparencia; JPG no. Si tu imagen tiene el fondo recortado (un logo, una firma, un sujeto sin fondo) y la exportás en JPG, el fondo transparente se rellena con un color, normalmente blanco. Para conservar la transparencia, exportá en PNG o WebP." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cuál pesa menos, PNG, JPG o WebP?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Para fotos, JPG pesa mucho menos que PNG a igual calidad visual, y WebP suele pesar aún menos que JPG conservando la calidad. WebP es el más eficiente en general, pero JPG es el más universalmente compatible. PNG es el más pesado en fotos porque no las comprime con pérdida." }
-        },
-        {
-          "@type": "Question",
           "name": "¿WebP se ve bien en todos lados?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Hoy WebP está soportado en todos los navegadores modernos y en la mayoría de las plataformas web. Donde puede fallar es en programas de escritorio viejos o en algún flujo que espere específicamente JPG o PNG. Si tu destino es una web moderna, WebP es una gran opción; si dudás de la compatibilidad, JPG o PNG van seguros." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué formato uso para una foto de producto con fondo blanco?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Si el fondo es blanco sólido y no necesitás transparencia, JPG de buena calidad es lo estándar en marketplaces y pesa poco. Si además querés una versión con fondo transparente para reutilizar el producto en otros diseños, guardá también un PNG." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Hoy WebP está soportado en todos los navegadores modernos y en la mayoría de las plataformas web. Donde puede fallar es en programas de escritorio viejos o en algún flujo que espere específicamente JPG o PNG. Si tu destino es una web moderna, WebP es una gran opción; si dudás de la compatibilidad, JPG o PNG van seguros."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -230,39 +218,36 @@
       </p>
 
       <h2>Preguntas frecuentes</h2>
-      <h3>¿Qué formato guarda la transparencia?</h3>
-      <p>
-        PNG y WebP guardan transparencia; JPG no. Si tu imagen tiene el fondo
-        recortado y la exportás en JPG, el fondo se rellena con un color. Para
-        conservar la transparencia, exportá en PNG o WebP.
-      </p>
-      <h3>¿Cuál pesa menos, PNG, JPG o WebP?</h3>
-      <p>
-        Para fotos, JPG pesa mucho menos que PNG, y WebP suele pesar aún menos que
-        JPG conservando la calidad. WebP es el más eficiente; JPG el más
-        compatible; PNG el más pesado en fotos.
-      </p>
       <h3>¿WebP se ve bien en todos lados?</h3>
       <p>
         En todos los navegadores modernos y en la mayoría de las plataformas web,
         sí. Donde puede fallar es en programas de escritorio viejos. Para una web
         moderna, WebP es una gran opción; si dudás, JPG o PNG van seguros.
       </p>
-      <h3>¿Qué formato uso para una foto de producto con fondo blanco?</h3>
-      <p>
-        Si el fondo es blanco sólido, JPG de buena calidad es lo estándar y pesa
-        poco. Si además querés una versión con fondo transparente para reutilizar
-        el producto, guardá también un PNG.
-      </p>
 
       <a class="cta" href="/">Exportar mi imagen →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: el ahorro de peso, con número</h3>
-        <p>Convertimos la misma foto entre <strong>PNG, JPG y WebP</strong> con el control de calidad y el panel mostró el ahorro en vivo: de <strong>335 KB a 204 KB (−39 %)</strong> pasando a JPG. La regla que confirmamos: <strong>PNG</strong> para transparencia o gráficos planos, <strong>JPG</strong> para fotos, <strong>WebP</strong> cuando querés el mejor equilibrio peso/calidad.</p>
-      <p>Al convertir se descartan los metadatos (EXIF y ubicación) y nada se sube a un servidor.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La captura de arriba es de esa sesión.</p>
+        <h3>Lo probamos: la misma foto en PNG, JPG y WebP, y qué pasa con la transparencia</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Archivo → PNG / JPG / WebP con calidad.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Abrí la foto en la pestaña «Archivo» (JPG original) y la convertí a PNG, JPG calidad 80, WebP calidad 80, JPG 60 y WebP 60, descargando cada una.</li>
+          <li>Repetí con logo-despues.png (820 × 637 px, 32 KB, PNG con fondo transparente) en PNG, JPG 80 y WebP 80.</li>
+          <li>Medí el peso real de cada descarga y, en las del logo, el porcentaje de píxeles transparentes.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Foto de 78 KB: PNG 956 KB · JPG 80 80 KB · WebP 80 45 KB · JPG 60 60 KB · WebP 60 31 KB.</li>
+          <li>La pantalla de Archivo estimó «78 KB → 80 KB» para JPG 80 y la descarga real pesó 79,9 KB.</li>
+          <li>Logo con transparencia (32 KB de origen): PNG 46 KB con 87,3 % transparente; WebP 80 11 KB con 87,3 % transparente; JPG 80 17 KB con 0,0 % transparente (la esquina pasó a rgb(255, 255, 255)).</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El PNG de la foto pesó 12 veces el JPG original: PNG no es «mejor calidad» para fotos, solo sin pérdida. Al pasar el logo a JPG la transparencia se perdió (la esquina pasó a blanco). Medí solo pesos: JPG 80 y WebP 80 no son equivalentes en calidad visual y no los comparé a ojo.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>

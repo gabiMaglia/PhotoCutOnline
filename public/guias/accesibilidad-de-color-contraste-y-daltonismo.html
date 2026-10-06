@@ -45,28 +45,16 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Qué es el contraste WCAG AA y AAA?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Es una medida de cuánto se diferencia el texto de su fondo, expresada como un ratio (de 1:1 a 21:1). Las pautas WCAG piden, para texto normal, al menos 4.5:1 (nivel AA) o 7:1 (AAA, más estricto). Para texto grande basta 3:1 (AA). Si tu texto no llega al mínimo, hay gente que no lo va a poder leer cómodamente." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Por qué no debería usar solo el color para dar información?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Porque cerca del 8% de los hombres (y un porcentaje menor de mujeres) tiene daltonismo. Si un gráfico distingue categorías solo por rojo y verde, o si un campo con error solo se marca en rojo, esas personas no perciben la diferencia. La solución es sumar otra señal: un ícono, un texto, un patrón o distinto brillo." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo reviso si mi diseño es accesible?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Con dos chequeos: medí el contraste entre texto y fondo con un verificador (debe pasar AA como mínimo), y simulá cómo se ve tu diseño con los distintos tipos de daltonismo para confirmar que la información no depende solo del color." }
-        },
-        {
-          "@type": "Question",
           "name": "¿La accesibilidad afecta el SEO o solo a los usuarios?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Ayuda a ambos. Un buen contraste y una jerarquía clara mejoran la experiencia de todos los usuarios, reducen el rebote y son parte de las buenas prácticas que los buscadores valoran. Pero el motivo principal es simple: que más gente pueda usar lo que hacés." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ayuda a ambos. Un buen contraste y una jerarquía clara mejoran la experiencia de todos los usuarios, reducen el rebote y son parte de las buenas prácticas que los buscadores valoran. Pero el motivo principal es simple: que más gente pueda usar lo que hacés."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -218,23 +206,36 @@
       </p>
 
       <h2>Preguntas frecuentes</h2>
-      <h3>¿Qué es el contraste WCAG AA y AAA?</h3>
-      <p>Un ratio de diferencia entre texto y fondo. Para texto normal, mínimo 4.5:1 (AA) o 7:1 (AAA); para texto grande, 3:1 (AA).</p>
-      <h3>¿Por qué no debería usar solo el color para dar información?</h3>
-      <p>Porque ~8% de los hombres tiene daltonismo. Sumá otra señal (ícono, texto, patrón) además del color.</p>
-      <h3>¿Cómo reviso si mi diseño es accesible?</h3>
-      <p>Medí el contraste (que pase AA) y simulá el daltonismo para confirmar que la info no depende solo del color.</p>
       <h3>¿La accesibilidad afecta el SEO o solo a los usuarios?</h3>
       <p>Ayuda a ambos: mejora la experiencia de todos y es una buena práctica valorada, pero el motivo principal es que más gente pueda usar lo que hacés.</p>
 
       <a class="cta" href="/herramientas/simulador-daltonismo.html">Revisar la accesibilidad de mis colores →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: el contraste con número, no a ojo</h3>
-        <p>Combinamos un color de texto y uno de fondo y la herramienta devolvió el <strong>ratio de contraste WCAG</strong> (por ejemplo 11.98:1) con los sellos <strong>AA</strong> y <strong>AAA</strong> en verde o rojo según cumpla. Es la diferencia entre «me parece que se lee» y saberlo con el estándar.</p>
-      <p>Para accesibilidad real también hay una <strong>simulación de daltonismo</strong>: ves la paleta como la percibe alguien con visión de color distinta, así detectás combinaciones que se confunden. Todo local.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La captura de arriba es de esa sesión.</p>
+        <h3>Lo probamos: el verificador de contraste contra mi propia cuenta de WCAG</h3>
+        <p><strong>Imagen:</strong> No usé ninguna imagen: las pruebas son sobre colores sueltos.</p>
+        <p><strong>Herramienta:</strong> Color Studio → Paleta → Contraste (WCAG).</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>En Color Studio puse cinco pares de colores en «Texto» y «Fondo» con el selector de color (sin cargar ninguna imagen).</li>
+          <li>Anoté la proporción y los cuatro sellos (AA normal, AA grande, AAA normal, AAA grande) que muestra.</li>
+          <li>Calculé cada proporción aparte con la fórmula de luminancia relativa de WCAG 2.x y las comparé.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>#1f2937 sobre #d6f64b: 11.98:1 → ✓ AA · normal, ✓ AA · grande, ✓ AAA · normal, ✓ AAA · grande.</li>
+          <li>#777777 sobre #ffffff: 4.48:1 → ✕ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✕ AAA · grande.</li>
+          <li>#767676 sobre #ffffff: 4.54:1 → ✓ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✓ AAA · grande.</li>
+          <li>#2563eb sobre #ffffff: 5.17:1 → ✓ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✓ AAA · grande.</li>
+          <li>#ffffff sobre #d6f64b: 1.22:1 → ✕ AA · normal, ✕ AA · grande, ✕ AAA · normal, ✕ AAA · grande.</li>
+          <li>Mi cálculo aparte coincidió con el que muestra la app, a dos decimales, en 5 de 5 pares.</li>
+          <li>No medí tiempos: es una cuenta aritmética que se actualiza al cambiar el color, y la latencia de mi herramienta de medición es mayor que la del cálculo.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El verificador compara dos colores planos: no mide texto sobre fotos ni sobre degradados. En esta prueba no usé la simulación de daltonismo ni medí tiempos. El caso límite es útil: #777777 sobre blanco (4,48:1) falla AA para texto normal y #767676 (4,54:1) pasa, por muy poco.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías y herramientas relacionadas</h2>

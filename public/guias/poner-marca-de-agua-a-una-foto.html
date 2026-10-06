@@ -58,28 +58,16 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Dónde conviene poner la marca de agua?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Depende de qué querés proteger. Una esquina (abajo a la derecha suele ser lo estándar) es discreta pero fácil de recortar. Si querés que sea difícil de sacar, ponela más grande y hacia el centro o repetida, asumiendo que resta un poco a la imagen. Es un equilibrio entre protección y estética." }
-        },
-        {
-          "@type": "Question",
           "name": "¿Qué opacidad debería tener?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Una marca semitransparente (con un color claro y un contorno sutil) se ve profesional y no tapa la foto. Si es demasiado opaca, molesta; si es demasiado tenue, no se ve ni cumple su función. Un color blanco con contorno oscuro suele leerse bien sobre cualquier fondo." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿La marca de agua evita del todo que roben mi foto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No al 100%: una marca en una esquina se puede recortar, y una centrada se puede intentar quitar. Pero disuade el uso casual, deja tu autoría visible y funciona como firma. Para máxima protección, combiná una marca visible con no publicar la máxima resolución." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Se sube mi foto a un servidor?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. La marca de agua se compone sobre la foto en tu navegador; la imagen no se sube a ningún servidor ni queda almacenada al cerrar la pestaña." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Una marca semitransparente (con un color claro y un contorno sutil) se ve profesional y no tapa la foto. Si es demasiado opaca, molesta; si es demasiado tenue, no se ve ni cumple su función. Un color blanco con contorno oscuro suele leerse bien sobre cualquier fondo."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -230,23 +218,32 @@
       </p>
 
       <h2>Preguntas frecuentes</h2>
-      <h3>¿Dónde conviene poner la marca de agua?</h3>
-      <p>Una esquina es discreta pero fácil de recortar; centrada o grande protege más a costa de estética. Para la mayoría, una esquina es el mejor equilibrio.</p>
       <h3>¿Qué opacidad debería tener?</h3>
       <p>Semitransparente, con color claro y contorno sutil: se ve profesional y no tapa la foto. Ni demasiado opaca ni demasiado tenue.</p>
-      <h3>¿La marca de agua evita del todo que roben mi foto?</h3>
-      <p>No al 100%: disuade y deja tu autoría visible. Para máxima protección, combinala con no publicar la máxima resolución.</p>
-      <h3>¿Se sube mi foto a un servidor?</h3>
-      <p>No. La marca se compone en tu navegador; la foto no se sube ni queda almacenada.</p>
 
       <a class="cta" href="/editor/?tab=text&sub=watermark">Poner mi marca de agua →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: en mosaico y difícil de quitar</h3>
-        <p>Aplicamos una marca de agua de texto repetida en diagonal sobre toda la foto. Con la <strong>opacidad en ~28 %</strong> se lee la marca pero no tapa la imagen, y al estar <strong>repetida en mosaico</strong> es mucho más molesta de borrar que una sola marca en una esquina.</p>
-      <p>Podés cambiar texto, color, tamaño, ángulo y separación en vivo. Todo se aplica <strong>en el navegador</strong>, sin subir la foto: útil justamente cuando querés proteger una imagen antes de publicarla.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La captura de arriba es de esa sesión.</p>
+        <h3>Lo probamos: cuánta foto cubre la marca en mosaico y cuánto pesa el resultado</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Editar → Marca de agua.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Abrí el retrato, fui a «Editar» → «Marca de agua» y escribí «© Prueba PhotoCut».</li>
+          <li>Dejé tamaño 4, ángulo −30° y separación 50 (los valores por defecto) y descargué con opacidad 28 y con 60.</li>
+          <li>Comparé cada PNG con el original píxel a píxel (diferencia &gt; 8 niveles en algún canal).</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Opacidad 28: 720 × 900 px, 1033 KB; 5,5 % de los píxeles cambiaron (diferencia media 3,06 niveles).</li>
+          <li>Opacidad 60: 1060 KB; 6,3 % de los píxeles cambiaron (diferencia media 6,11).</li>
+          <li>El original es un JPG de 78 KB y la salida siempre es PNG: pesa 13,2 veces más.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La salida siempre es PNG: una foto de 78 KB pasó a más de 1 MB. Con opacidad 28 la marca toca alrededor del 5 % de los píxeles. No medí qué tan difícil es borrarla con otras herramientas, así que no puedo confirmar que el mosaico sea «difícil de quitar»: solo medí cuánto cubre.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías y herramientas relacionadas</h2>

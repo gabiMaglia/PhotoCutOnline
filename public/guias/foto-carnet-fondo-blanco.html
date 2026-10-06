@@ -56,35 +56,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Sirve esta foto para el DNI o el pasaporte?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Depende del organismo: muchos trámites de identidad exigen que la foto se tome en un estudio o cabina homologada, con medidas exactas de cabeza y ojos. Esta guía sirve para fondo blanco de uso general (CV, perfiles, formularios internos); para documentos oficiales, revisá primero el requisito específico de tu país." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Qué fondo blanco es el correcto: blanco puro o gris muy claro?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Para la mayoría de trámites y CV, blanco puro (#ffffff) es la opción más segura y la que menos dudas genera. Un gris muy claro puede leerse distinto según la pantalla o la impresora, así que conviene reservarlo solo si el formulario lo pide expresamente." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo evito que se note que recorté el fondo?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Revisando el contorno del pelo y los hombros con zoom antes de exportar: los restos de fondo original o los halos de color se notan más sobre un blanco uniforme que sobre un fondo con textura. El comparador antes/después ayuda a detectarlos." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo usar una foto que ya tenía otro fondo, no necesariamente tomada para esto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí, siempre que la cara esté de frente, bien iluminada y sin objetos que tapen el rostro. El recorte funciona igual de bien sobre una foto casual que sobre una tomada específicamente contra una pared lisa." }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -273,43 +245,31 @@
         después de que cerrás la pestaña.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Sirve esta foto para el DNI o el pasaporte?</h3>
-      <p>
-        Depende del organismo: muchos trámites de identidad exigen que la
-        foto se tome en un estudio o cabina homologada, con medidas exactas
-        de cabeza y ojos. Esta guía sirve para fondo blanco de uso general
-        (CV, perfiles, formularios internos); para documentos oficiales,
-        revisá primero el requisito específico de tu país.
-      </p>
-      <h3>¿Qué fondo blanco es el correcto: blanco puro o gris muy claro?</h3>
-      <p>
-        Para la mayoría de trámites y CV, blanco puro (<code>#ffffff</code>)
-        es la opción más segura y la que menos dudas genera. Un gris muy
-        claro puede leerse distinto según la pantalla o la impresora, así
-        que conviene reservarlo solo si el formulario lo pide expresamente.
-      </p>
-      <h3>¿Cómo evito que se note que recorté el fondo?</h3>
-      <p>
-        Revisando el contorno del pelo y los hombros con zoom antes de
-        exportar: los restos de fondo original o los halos de color se
-        notan más sobre un blanco uniforme que sobre un fondo con textura.
-        El comparador antes/después ayuda a detectarlos.
-      </p>
-      <h3>¿Puedo usar una foto que ya tenía otro fondo, no necesariamente tomada para esto?</h3>
-      <p>
-        Sí, siempre que la cara esté de frente, bien iluminada y sin objetos
-        que tapen el rostro. El recorte funciona igual de bien sobre una
-        foto casual que sobre una tomada específicamente contra una pared
-        lisa.
-      </p>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: el blanco tiene que ser uniforme</h3>
-        <p>Para carnet lo que importa es un <strong>fondo blanco parejo, sin sombras</strong>. Recortamos a la persona y la pusimos sobre blanco puro: como el fondo se genera limpio (no es el blanco «sucio» de una pared), quedó uniforme de una.</p>
-      <p>Consejo de la prueba: dejá algo de aire sobre la cabeza y encuadrá derecho antes de exportar en <strong>JPG</strong>. El recorte automático resolvió la silueta; solo repasamos el borde del pelo con el pincel.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web. Las imágenes de arriba son de esa sesión.</p>
+        <h3>Lo probamos: cuánto aguanta el blanco puro al bajar la calidad del JPG</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA, Exportar → Color #ffffff, y Archivo → JPG con calidad.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato, apliqué «Recorte IA» y exporté en JPEG sobre blanco #ffffff.</li>
+          <li>Abrí ese JPEG en la pestaña «Archivo» y lo recomprimí como JPG con calidad 80, 50, 35, 20 y 5.</li>
+          <li>En cada salida medí el peso y qué porcentaje de los cuatro recuadros de 40 × 40 px de las esquinas ya no era #ffffff exacto.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Exportación inicial (JPEG del Recorte): 57,5 KB, esquinas no blancas 0,0 %.</li>
+          <li>Calidad 5: 10,3 KB (la pantalla estimaba 58 KB → 10 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 47,2 %.</li>
+          <li>Calidad 20: 15,3 KB (la pantalla estimaba 58 KB → 15 KB), esquinas no blancas 100,0 % (píxel de la esquina rgb(253, 253, 253)), #ffffff exactos en toda la imagen 0,4 %.</li>
+          <li>Calidad 35: 22,2 KB (la pantalla estimaba 58 KB → 22 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 46,5 %.</li>
+          <li>Calidad 50: 25,9 KB (la pantalla estimaba 58 KB → 26 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 45,7 %.</li>
+          <li>Calidad 80: 45,8 KB (la pantalla estimaba 58 KB → 46 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 45,9 %.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> No es monótono: a calidad 20 las esquinas ya no eran blanco puro (rgb(253, 253, 253)) y a calidad 5 y 35 sí lo eran, así que no hay una calidad «segura» que pueda recomendar con un solo número: revisá la tuya. Esta prueba solo cubre el fondo blanco; no mide el encuadre ni la proporción de la cabeza, y mi retrato corta el torso, así que no es una foto carné real.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <a class="cta" href="/">Hacer mi foto con fondo blanco →</a>
 

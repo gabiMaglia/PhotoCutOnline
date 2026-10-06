@@ -132,63 +132,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Es realmente gratis? ¿Pone marca de agua o limita los usos?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí, es gratis de verdad: el recorte, el refinado con pinceles y la exportación en PNG/WebP/JPG no tienen costo, marca de agua ni límite de usos."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Necesito instalar algo o crear una cuenta?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. Es una web app: se abre en el navegador, no pide registro ni email y no hay que instalar ningún programa ni extensión."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Por qué mi foto queda con un halo de color alrededor del sujeto?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Suele ser el fondo original «sangrando» en el borde por el suavizado. Bajá el feather a 1–2 px, revisá con el comparador antes/después y repasá el contorno con el pincel quitar en zoom alto."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Funciona igual en Android y en iPhone?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí. Como corre en el navegador, funciona en Android (Chrome, Samsung Internet) y en iPhone/iPad (Safari, Chrome) sin diferencias. En teléfonos muy antiguos, las fotos muy grandes pueden tardar un poco más."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Gasta muchos datos móviles?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Muy pocos: la foto no se sube ni se baja para procesarse. El consumo se limita a cargar la web la primera vez; después recortás varias fotos sin gastar datos en cada una."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Puedo usar el resultado en mi tienda o con fines comerciales?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí. Las imágenes que recortás y exportás son tuyas, sin restricciones de licencia sobre el resultado."
-          }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -304,7 +248,7 @@
         razonablemente distinguibles. En
         <a href="/">PhotoCut Studio</a> esto es el botón
         <strong>«Recorte IA»</strong> (atajo <code>I</code>): el modelo se
-        descarga una sola vez (~18&nbsp;MB), corre en tu navegador con
+        descarga una sola vez (~7&nbsp;MB), corre en tu navegador con
         WebAssembly y funciona incluso sin conexión después de la primera
         visita.
       </p>
@@ -338,7 +282,7 @@
         <li>Activá el <strong>comparador antes/después</strong> para detectar restos.</li>
         <li>Refiná los bordes con los pinceles mantener/quitar (zoom con la rueda).</li>
         <li>Ajustá el <strong>suavizado de borde</strong> (1–3&nbsp;px suele ser lo natural).</li>
-        <li>Exportá como <strong>PNG transparente</strong> — o aplica fondo de color, sticker o sombra.</li>
+        <li>Exportá como <strong>PNG transparente</strong> — o aplicá fondo de color, sticker o sombra.</li>
       </ol>
 
       <figure class="shot">
@@ -347,27 +291,30 @@
         <figcaption>El Recorte IA aplicado. En el rail izquierdo están los pinceles y el comparador que se mencionan en el paso a paso.</figcaption>
       </figure>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: y comprobamos que la foto no salió del navegador</h3>
-        <p>
-          Recortamos una imagen real (1201 × 1500 px) con el <strong>Recorte
-          IA</strong> y, mientras tanto, dejamos abierta la pestaña de red del
-          navegador. Confirmamos lo que promete el método local:
-          <strong>no hubo ninguna subida de la imagen</strong> a un servidor —el
-          modelo <code>u2netp</code> (4,6 MB) se descarga una vez y a partir de
-          ahí todo el cómputo pasa en tu equipo.
-        </p>
-        <p>
-          En cuanto al resultado: el automático dejó la silueta lista de una, y
-          solo hubo que pasar el <strong>Pincel quitar</strong> por un fleco del
-          borde donde el fondo tenía un tono parecido a la ropa. La imagen
-          «después» de arriba es ese export, con el fondo 100 % transparente.
-        </p>
-        <p class="byline">
-          Prueba del equipo de PhotoCut Studio con la versión web en Chrome de
-          escritorio.
-        </p>
+        <h3>Lo probamos: la foto no sale del navegador y el modelo tarda lo que tarda</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Abrí /editor/ en una pestaña sin caché y cargué la foto con «Abrir foto».</li>
+          <li>Apreté «Recorte IA» y medí desde el clic hasta el aviso «Recorte IA aplicado».</li>
+          <li>Descargué el PNG transparente con «Descargar».</li>
+          <li>Repetí el Recorte IA en la misma pestaña y después de recargar la página, con el modelo ya en la caché del navegador.</li>
+          <li>Registré todas las peticiones de red de la sesión.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Recorte IA, primera vez (con la descarga del modelo desde mi servidor local): 5,0 s. En la misma pestaña, segunda corrida: 2,9 s. Tras recargar, con el modelo en la caché: 3,6 s.</li>
+          <li>Lo que baja la IA la primera vez, sin comprimir: 4,57 MB de modelo (u2netp.onnx) + 13,2 MB de motor WebAssembly. Con Brotli (nivel 11, calculado sobre esos mismos archivos de dist/) el total baja a 6,4 MB, en el orden de los «~7 MB» que cuenta la guía (el servidor real puede comprimir con otro nivel).</li>
+          <li>PNG exportado: 720 × 900 px, 535 KB, 47,4 % de píxeles totalmente transparentes y 3,3 % semitransparentes (el borde suavizado).</li>
+          <li>Red: 67 peticiones en toda la sesión y ninguna con cuerpo (0 bytes enviados). Las 26 peticiones a otros dominios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) son de publicidad de Google y no llevan la foto.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Con este retrato la IA no me dejó ningún fleco que pudiera ver sobre fondo magenta, así que no puedo contar un caso difícil. Los tiempos son de una sola corrida cada uno y con el modelo servido desde mi máquina: en internet real la primera vez suma la descarga de unos 6 MB. En otra corrida de la misma prueba vi cuatro POST de medición de anuncios de Google (de hasta 435 bytes, ninguno con la foto): la publicidad hace peticiones, pero la imagen no viaja.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <h2>Trucos para pelo y bordes finos</h2>
       <ul>
@@ -519,19 +466,6 @@
         </li>
       </ul>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Es realmente gratis? ¿Pone marca de agua o limita los usos?</h3>
-      <p>Sí, es gratis de verdad: el recorte, el refinado con pinceles y la exportación en PNG/WebP/JPG no tienen costo, marca de agua ni límite de usos.</p>
-      <h3>¿Necesito instalar algo o crear una cuenta?</h3>
-      <p>No. Es una web app: se abre en el navegador, no pide registro ni email y no hay que instalar ningún programa ni extensión.</p>
-      <h3>¿Por qué mi foto queda con un halo de color alrededor del sujeto?</h3>
-      <p>Suele ser el fondo original «sangrando» en el borde por el suavizado. Bajá el feather a 1–2&nbsp;px, revisá con el comparador antes/después y repasá el contorno con el pincel quitar en zoom alto.</p>
-      <h3>¿Funciona igual en Android y en iPhone?</h3>
-      <p>Sí. Como corre en el navegador, funciona en Android (Chrome, Samsung Internet) y en iPhone/iPad (Safari, Chrome) sin diferencias. En teléfonos muy antiguos, las fotos muy grandes pueden tardar un poco más.</p>
-      <h3>¿Gasta muchos datos móviles?</h3>
-      <p>Muy pocos: la foto no se sube ni se baja para procesarse. El consumo se limita a cargar la web la primera vez; después recortás varias fotos sin gastar datos en cada una.</p>
-      <h3>¿Puedo usar el resultado en mi tienda o con fines comerciales?</h3>
-      <p>Sí. Las imágenes que recortás y exportás son tuyas, sin restricciones de licencia sobre el resultado.</p>
 
       <a class="cta" href="/">Probar PhotoCut Studio gratis →</a>
 

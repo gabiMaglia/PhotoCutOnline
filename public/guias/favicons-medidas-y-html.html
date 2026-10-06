@@ -98,14 +98,6 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿El favicon.ico sigue siendo necesario en 2026?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Sí. Aunque los navegadores modernos prefieren el PNG declarado en el link rel=\"icon\", muchos clientes (lectores RSS, crawlers, navegadores muy antiguos) todavía piden /favicon.ico directamente en la raíz del dominio sin leer el HTML."
-          }
-        },
-        {
-          "@type": "Question",
           "name": "¿Qué pasa si no subo ningún favicon?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -119,19 +111,11 @@
             "@type": "Answer",
             "text": "Técnicamente se puede convertir cualquier PNG, pero el resultado se ve mejor si el original es cuadrado: si no lo es, el conversor lo encaja dentro de un cuadrado y puede agregar márgenes o recortar los bordes más largos."
           }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Por qué mi ICO se ve borroso en la pestaña del navegador?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Casi siempre porque el ICO no incluye la resolución exacta que pide el navegador (16 o 32 px) y este escala una más grande al vuelo. Generalo con todas las resoluciones estándar (16, 24, 32, 48, 64, 128, 256)."
-          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -368,23 +352,35 @@
       </ol>
 
       <h2>Preguntas frecuentes</h2>
-      <h3>¿El favicon.ico sigue siendo necesario en 2026?</h3>
-      <p>Sí. Aunque los navegadores modernos prefieren el PNG declarado en el <code>link rel="icon"</code>, muchos clientes (lectores RSS, crawlers, navegadores muy antiguos) todavía piden <code>/favicon.ico</code> directamente en la raíz del dominio sin leer el HTML.</p>
       <h3>¿Qué pasa si no subo ningún favicon?</h3>
       <p>El navegador muestra un icono genérico y, si el sitio se instala como PWA, usa un cuadrado con la inicial del dominio. No rompe nada, pero se ve poco profesional y no identifica tu marca en pestañas ni marcadores.</p>
       <h3>¿Puedo convertir cualquier PNG a ICO o tiene que ser cuadrado?</h3>
       <p>Técnicamente se puede convertir cualquier PNG, pero el resultado se ve mejor si el original es cuadrado: si no lo es, el conversor lo encaja dentro de un cuadrado y puede agregar márgenes o recortar los bordes más largos.</p>
-      <h3>¿Por qué mi ICO se ve borroso en la pestaña del navegador?</h3>
-      <p>Casi siempre porque el ICO no incluye la resolución exacta que pide el navegador (16 o 32&nbsp;px) y este escala una más grande al vuelo. Generalo con todas las resoluciones estándar (16, 24, 32, 48, 64, 128, 256).</p>
 
       <a class="cta" href="/">Generar mis favicons →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: cómo se ve el favicon a 16 px</h3>
-        <p>La vista a <strong>16 y 32 px</strong> —el tamaño real de un favicon en la pestaña— es la prueba honesta: lo que se ve bien a 512 px puede volverse una mancha a 16. Con margen y un sujeto claro, el favicon se mantuvo legible.</p>
-      <p>Icon Studio genera el set de favicons y podés acompañarlo con el <strong>HTML</strong> listo para pegar en el <code>&lt;head&gt;</code>. Todo en el navegador.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la versión web en Chrome. La captura de arriba es de esa sesión.</p>
+        <h3>Lo probamos: el set Web/PWA y cómo queda el favicon a 16 px</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/logo-despues.png"><code>logo-despues.png</code></a>, 820 × 637 px, 32,1 KB (imagen de ejemplo de esta web).</p>
+        <p><strong>Herramienta:</strong> Icon Studio → solo «Web / PWA» → «Descargar ZIP» y «Copiar HTML de favicons».</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>En Icon Studio abrí logo-despues.png (820 × 637 px, PNG transparente).</li>
+          <li>Desmarqué iOS, Android, macOS y Windows; dejé solo «Web / PWA».</li>
+          <li>Descargué el ZIP y apreté «Copiar HTML de favicons» para leer el portapapeles.</li>
+          <li>Abrí el PNG de 16 px del ZIP y medí cuánto del cuadro queda opaco.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>ZIP de 59 KB con 11 archivos en 0,1 s: app-icons/LEEME.txt (0,9 KB), app-icons/web/favicon-16.png (0,4 KB), app-icons/web/favicon-32.png (0,7 KB), app-icons/web/favicon-48.png (1,1 KB), app-icons/web/apple-touch-icon-180.png (5,9 KB), app-icons/web/icon-192.png (6,6 KB), app-icons/web/icon-512.png (23,8 KB), app-icons/web/maskable-512.png (15,1 KB), app-icons/web/favicon.ico (2,2 KB), app-icons/web/site.webmanifest (0,4 KB), app-icons/web/snippet.html (0,3 KB).</li>
+          <li>El HTML copiado tiene 5 líneas &lt;link&gt;/&lt;meta&gt;.</li>
+          <li>El PNG de 16 × 16 px: 1,6 % de los píxeles opacos, 20,3 % semitransparentes y 78,1 % transparentes.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> A 16 px la palabra del logo queda como una raya gris y solo el emblema se reconoce (lo miré yo, no lo medí con una métrica). Casi todo el cuadro de 16 px es transparente porque el emblema es chico dentro del logo: para un favicon conviene recortar el logo al emblema antes de generar el set.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>

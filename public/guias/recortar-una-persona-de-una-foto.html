@@ -56,35 +56,7 @@
       ]
     }
     </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "¿Puedo recortar a varias personas de la misma foto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí. El recorte automático detecta a las personas de la escena; con los pinceles podés afinar para quedarte con todas, o pintar de borrar a quien no quieras incluir. Si necesitás aislar solo a una de un grupo, el recuadro ayuda a acotar la zona antes de repasar los bordes." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Cómo consigo que el pelo no quede recortado en bloque?",
-          "acceptedAnswer": { "@type": "Answer", "text": "El pelo es la parte más difícil de cualquier recorte de personas. El truco es no exigirle todo al recorte automático: dejá que resuelva la silueta y después repasá los mechones con el pincel a tamaño chico y zoom, manteniendo lo que es pelo y borrando el fondo que se cuela entre los mechones." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Sirve para sacar a una persona que sobra en la foto?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Parcialmente. Podés aislar a la persona que querés conservar y descartar el resto, o recortar a alguien para pegarlo en otra imagen. Lo que esta herramienta no hace es rellenar el hueco que deja una persona borrada en el medio de una escena: para eso hace falta un borrado con relleno inteligente, que es otra función." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Se sube la foto con personas a un servidor?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. Todo el recorte ocurre en tu navegador. Las fotos con personas —que suelen ser lo más sensible— no se suben a ningún servidor ni quedan almacenadas al cerrar la pestaña." }
-        }
-      ]
-    }
-    </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -219,28 +191,28 @@
         <figcaption>A la izquierda del lienzo, los pinceles «mantener» y «quitar»: son los que resuelven las zonas difíciles del borde.</figcaption>
       </figure>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: dónde estaba el borde flojo</h3>
-        <p>
-          Recortamos un retrato de cuerpo medio (1201 × 1500 px) sobre un fondo
-          complicado a propósito: colores oscuros muy parecidos a la ropa del
-          sujeto. El <strong>Recorte IA</strong> resolvió toda la silueta bien de
-          entrada, pero —como suele pasar cuando el fondo y la ropa comparten
-          tono— quedó un <strong>fleco tenue en los hombros</strong>. No en el
-          pelo, que salió limpio: en el contorno del saco.
-        </p>
-        <p>
-          Se corrigió en menos de un minuto con el <strong>Pincel quitar</strong>,
-          bajando el tamaño del pincel para ir por el borde con precisión. La
-          lección práctica: el automático te deja el 95 %; el minuto de pinceles
-          es lo que hace que no parezca un sticker. Todo esto corrió
-          <strong>en el navegador</strong>, sin subir la foto a ningún lado.
-        </p>
-        <p class="byline">
-          Prueba del equipo de PhotoCut Studio con la versión web en Chrome de
-          escritorio; las capturas de esta página son de esa sesión.
-        </p>
+        <h3>Lo probamos: dónde es más flojo el borde y cuánto cambia un trazo de pincel</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA y Pincel quitar.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Cargué el retrato y apliqué «Recorte IA».</li>
+          <li>Descargué el PNG y lo dividí en cuatro franjas (cabeza, hombros, brazos, torso) para contar píxeles semitransparentes del contorno.</li>
+          <li>Elegí «Pincel quitar» a 12 px y lo pasé por el contorno del hombro izquierdo, de arriba abajo, en un solo trazo.</li>
+          <li>Descargué de nuevo y comparé píxel a píxel; después apreté «Deshacer» y descargué otra vez.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Recorte IA: 3,9 s. Ancho aproximado de la franja de borde semitransparente (píxeles semitransparentes por píxel de contorno): cabeza y pelo 11,8 px, hombros 10,8 px, brazos 9,5 px, torso bajo 9,9 px. La zona más difusa fue cabeza y pelo.</li>
+          <li>Un trazo del Pincel quitar de 12 px sobre el hombro cambió 0,15 % de los píxeles de la imagen (opacos: 49,2 % → 49,1 %).</li>
+          <li>«Deshacer» devolvió una imagen idéntica a la del recorte original (mismo hash de los píxeles RGBA).</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <h2>El pelo: la prueba de fuego</h2>
       <p>
@@ -282,32 +254,6 @@
         almacenadas al cerrar la pestaña.
       </p>
 
-      <h2>Preguntas frecuentes</h2>
-      <h3>¿Puedo recortar a varias personas de la misma foto?</h3>
-      <p>
-        Sí. El recorte automático detecta a las personas de la escena; con los
-        pinceles afinás para quedarte con todas, o pintás de borrar a quien no
-        quieras incluir. Para aislar a una sola de un grupo, el recuadro ayuda a
-        acotar la zona antes de repasar los bordes.
-      </p>
-      <h3>¿Cómo consigo que el pelo no quede recortado en bloque?</h3>
-      <p>
-        Dejá que el recorte automático resuelva la silueta y después repasá los
-        mechones con el pincel a tamaño chico y con zoom, manteniendo lo que es
-        pelo y borrando el fondo que se cuela entre los mechones.
-      </p>
-      <h3>¿Sirve para sacar a una persona que sobra en la foto?</h3>
-      <p>
-        Parcialmente. Podés aislar a la persona que querés conservar y descartar
-        el resto. Lo que no hace es rellenar el hueco que deja una persona
-        borrada en medio de una escena: para eso hace falta un borrado con
-        relleno inteligente, que es otra función.
-      </p>
-      <h3>¿Se sube la foto con personas a un servidor?</h3>
-      <p>
-        No. Todo el recorte ocurre en tu navegador. Las fotos con personas no se
-        suben a ningún servidor ni quedan almacenadas al cerrar la pestaña.
-      </p>
 
       <a class="cta" href="/">Recortar una persona →</a>
 

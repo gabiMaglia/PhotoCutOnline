@@ -60,28 +60,16 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Qué medida tiene la foto de perfil en las redes?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Casi todas las redes usan foto de perfil cuadrada y la muestran recortada en círculo. Subir una imagen de 400×400 px o más (por ejemplo 800×800) es una apuesta segura para Instagram, Facebook, X y TikTok. LinkedIn recomienda al menos 400×400 px." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Por qué mi foto se ve cortada en la historia o el post?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Porque la proporción de la foto no coincide con la del formato. Las historias y Reels son verticales (9:16); el feed de Instagram admite cuadrado (1:1) y vertical (4:5). Si subís una foto horizontal a un formato vertical, la red la recorta. La solución es encuadrar la foto en la proporción correcta antes de subirla." }
-        },
-        {
-          "@type": "Question",
           "name": "¿Conviene JPG o PNG para redes sociales?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Para fotos, JPG de buena calidad es lo estándar y pesa menos. PNG conviene si la imagen tiene texto, gráficos con bordes nítidos o si necesitás transparencia (por ejemplo, un logo). Las redes recomprimen las imágenes igual, así que subir en buena calidad ayuda a que el resultado final se vea mejor." }
-        },
-        {
-          "@type": "Question",
-          "name": "¿Se suben mis fotos a un servidor para redimensionarlas?",
-          "acceptedAnswer": { "@type": "Answer", "text": "No. El recorte y el encuadre se hacen en tu navegador. Tus fotos no se suben a ningún servidor ni quedan almacenadas al cerrar la pestaña." }
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Para fotos, JPG de buena calidad es lo estándar y pesa menos. PNG conviene si la imagen tiene texto, gráficos con bordes nítidos o si necesitás transparencia (por ejemplo, un logo). Las redes recomprimen las imágenes igual, así que subir en buena calidad ayuda a que el resultado final se vea mejor."
+          }
         }
       ]
     }
     </script>
-      <!-- Google AdSense -->
+    <!-- Google AdSense -->
     <script>
       // AdSense diferido: tras 'load' y al primer gesto del usuario (o a los 3 s).
       // Así no compite con el render ni con el LCP; un solo <script>, sin duplicar.
@@ -172,14 +160,14 @@
       </p>
 
       <figure class="shot">
-        <img src="/media/guias/herramienta-metadatos.jpg" width="1600" height="1000" loading="lazy" alt="El panel Archivo de PhotoCut Studio con los controles para redimensionar una imagen por pixeles o porcentaje y convertir el formato." />
-        <figcaption>El panel Archivo redimensiona por pixeles o porcentaje y convierte el formato, con el peso final en vivo.</figcaption>
+        <img src="/media/guias/herramienta-metadatos.jpg" width="1600" height="1000" loading="lazy" alt="El panel Archivo de PhotoCut Studio con los controles para redimensionar una imagen por píxeles o porcentaje y convertir el formato." />
+        <figcaption>El panel Archivo redimensiona por píxeles o porcentaje y convierte el formato, con el peso final en vivo.</figcaption>
       </figure>
 
       <h2>La regla que resuelve el 90%: pensá en proporciones</h2>
       <ul>
         <li><strong>1:1 (cuadrado):</strong> fotos de perfil y posts cuadrados de feed.</li>
-        <li><strong>4:5 (vertical):</strong> el formato que más espacio ocupa en el feed de Instagram sin recortarse.</li>
+        <li><strong>4:5 (vertical):</strong> uno de los formatos verticales que Instagram deja entrar entero en el feed (admite hasta 3:4).</li>
         <li><strong>9:16 (vertical alto):</strong> historias, Reels, TikTok, Shorts.</li>
         <li><strong>16:9 (horizontal):</strong> miniaturas de YouTube, portadas anchas.</li>
       </ul>
@@ -188,45 +176,84 @@
       <p>
         Casi todas las redes usan avatar <strong>cuadrado</strong> y lo muestran
         recortado en <strong>círculo</strong>. Por eso conviene dejar aire
-        alrededor de la cabeza. Medida segura: <strong>800×800 px</strong> para
-        Instagram, Facebook, X y TikTok; LinkedIn pide al menos 400×400. Con un
-        solo archivo cuadrado grande cubrís todas.
+        alrededor de la cabeza. Un cuadrado de <strong>800×800 px</strong> cubre
+        a todas (es mi valor habitual, sin fuente oficial); lo que sí publica
+        cada plataforma está en las secciones de abajo.
+      </p>
+
+      <h2>De dónde salen las medidas</h2>
+      <p>
+        Comprobé cada cifra el <strong>2026-10-06</strong> contra la página de
+        ayuda oficial de la plataforma y dejé el enlace. Cuando no encontré una
+        fuente oficial la marqué como <em>sin fuente oficial, valor habitual</em>
+        en vez de darla por cierta. Esas páginas cambian: si una cifra no
+        coincide con lo que ves, creele a la plataforma.
       </p>
 
       <h2>Instagram</h2>
+      <p>
+        Fuente oficial:
+        <a href="https://help.instagram.com/1631821640426723" rel="noopener">Ayuda de Instagram, «Image resolution of photos you share on Instagram»</a>
+        (verificado el 2026-10-06). Instagram sube las fotos hasta un ancho de
+        1080 px y las conserva tal cual si miden entre 320 y 1080 px de ancho
+        y su proporción está entre 1,91:1 y 3:4 (con 1080 px de ancho, de 566 a
+        1440 px de alto). Fuera de ese rango las recorta.
+      </p>
       <ul>
-        <li><strong>Perfil:</strong> 1:1 (se ve en círculo). 320×320 mínimo; 800×800 va sobrado.</li>
-        <li><strong>Post cuadrado:</strong> 1:1, típicamente 1080×1080 px.</li>
-        <li><strong>Post vertical:</strong> 4:5, 1080×1350 px (el que más pantalla ocupa).</li>
-        <li><strong>Historia / Reel:</strong> 9:16, 1080×1920 px.</li>
+        <li><strong>Perfil:</strong> 1:1 (se ve en círculo). 320×320 mínimo; 800×800 va sobrado. <em>Sin fuente oficial, valor habitual.</em></li>
+        <li><strong>Post cuadrado:</strong> 1:1, 1080×1080 px. Dentro del rango oficial.</li>
+        <li><strong>Post vertical:</strong> 4:5, 1080×1350 px. Dentro del rango oficial, que llega hasta 3:4 (1080×1440); la página no nombra el 4:5 como tal.</li>
+        <li><strong>Historia / Reel:</strong> 9:16, 1080×1920 px. <em>Sin fuente oficial, valor habitual.</em></li>
       </ul>
 
       <h2>Facebook</h2>
+      <p>
+        Fuente oficial:
+        <a href="https://www.facebook.com/help/125379114252045" rel="noopener">Ayuda de Facebook, «Facebook Page profile picture and cover photo dimensions»</a>
+        (verificado el 2026-10-06). Es la ayuda de las <strong>Páginas</strong>;
+        no verifiqué las medidas del perfil personal.
+      </p>
       <ul>
-        <li><strong>Perfil:</strong> 1:1 (se ve en círculo). 720×720 o más.</li>
-        <li><strong>Portada:</strong> horizontal, alrededor de 1640×624 px en escritorio (se recorta distinto en móvil).</li>
-        <li><strong>Post:</strong> 1200×630 px es un tamaño versátil que también sirve para enlaces.</li>
+        <li><strong>Foto de perfil de la Página:</strong> 320×320 px para la mejor calidad. Se muestra a 176×176 px en computadora y 196×196 px en celular, recortada en círculo.</li>
+        <li><strong>Portada de la Página:</strong> mínimo 400×150 px. Carga más rápido como JPG sRGB de 851×315 px y menos de 100 KB. En computadora es de 16:9 y en celular de 2,4:1, así que se recorta distinto.</li>
+        <li><strong>Post:</strong> 1200×630 px es un tamaño versátil que también sirve para enlaces. <em>Sin fuente oficial, valor habitual.</em></li>
       </ul>
 
       <h2>TikTok</h2>
+      <p>
+        Fuente oficial (solo para anuncios in-feed):
+        <a href="https://ads.tiktok.com/help/article/video-ads-specifications" rel="noopener">TikTok Ads Manager, «In-Feed Ads»</a>
+        (verificado el 2026-10-06). Para publicaciones normales no encontré una
+        página oficial con medidas.
+      </p>
       <ul>
-        <li><strong>Perfil:</strong> cuadrado, se ve en círculo. 200×200 mínimo; subí más grande.</li>
-        <li><strong>Video / foto vertical:</strong> 9:16, 1080×1920 px.</li>
+        <li><strong>Perfil:</strong> cuadrado, se ve en círculo. 200×200 mínimo; subí más grande. <em>Sin fuente oficial, valor habitual.</em></li>
+        <li><strong>Video / foto vertical:</strong> 9:16. La especificación oficial de anuncios recomienda 9:16 de al menos 540×960 px (y acepta 1:1 de al menos 640×640 px). 1080×1920 px es el tamaño habitual, <em>sin fuente oficial para publicaciones normales</em>.</li>
       </ul>
 
       <h2>YouTube</h2>
+      <p>
+        Fuente oficial:
+        <a href="https://support.google.com/youtube/answer/72431" rel="noopener">Ayuda de YouTube, «Add custom thumbnails on YouTube»</a>
+        (verificado el 2026-10-06).
+      </p>
       <ul>
-        <li><strong>Foto de canal:</strong> cuadrada, 800×800 px recomendado (se ve en círculo).</li>
-        <li><strong>Miniatura (thumbnail):</strong> 16:9, 1280×720 px. Es donde más se juega el clic: fondo limpio y sujeto recortado ayudan a destacar.</li>
+        <li><strong>Foto de canal:</strong> cuadrada, 800×800 px recomendado (se ve en círculo). <em>Sin fuente oficial, valor habitual:</em> la ayuda sobre el perfil del canal no indica píxeles.</li>
+        <li><strong>Miniatura (thumbnail):</strong> 16:9. YouTube recomienda 3840×2160 px con un mínimo de 640 px de ancho, en JPG o PNG, y hasta 2 MB si la subís desde el celular. 1280×720 px es el tamaño habitual y cumple el mínimo. Es donde más se juega el clic: fondo limpio y sujeto recortado ayudan a destacar.</li>
       </ul>
 
       <h2>X (Twitter) y LinkedIn</h2>
       <ul>
-        <li><strong>X — perfil:</strong> 1:1, 400×400 px o más (círculo).</li>
-        <li><strong>X — imagen de post:</strong> 16:9 se ve completo en el timeline.</li>
-        <li><strong>LinkedIn — perfil:</strong> 1:1, mínimo 400×400 px (círculo).</li>
-        <li><strong>LinkedIn — portada:</strong> horizontal, alrededor de 1584×396 px.</li>
+        <li><strong>X — perfil:</strong> 1:1, 400×400 px o más (círculo). <em>Sin fuente oficial, valor habitual:</em> la ayuda de X no se dejó abrir desde mi navegador de pruebas el 2026-10-06.</li>
+        <li><strong>X — imagen de post:</strong> 16:9 se ve completo en el timeline. <em>Sin fuente oficial, valor habitual</em> (mismo motivo).</li>
+        <li><strong>LinkedIn — perfil:</strong> 1:1 recomendado; entre 400×400 y 7680×4320 px, hasta 8 MB, en PNG o JPG.</li>
+        <li><strong>LinkedIn — portada:</strong> horizontal, 1584×396 px.</li>
       </ul>
+      <p>
+        Fuente oficial de LinkedIn:
+        <a href="https://www.linkedin.com/help/linkedin/answer/a549049" rel="noopener">Ayuda de LinkedIn, «Photo won't upload to your profile»</a>
+        (verificado el 2026-10-06).
+      </p>
 
       <h2>Cómo dejar la foto en su medida, paso a paso</h2>
       <ol>
@@ -253,39 +280,35 @@
       </p>
 
       <h2>Preguntas frecuentes</h2>
-      <h3>¿Qué medida tiene la foto de perfil en las redes?</h3>
-      <p>
-        Casi todas usan avatar cuadrado y lo muestran en círculo. Subir 400×400
-        px o más (por ejemplo 800×800) cubre Instagram, Facebook, X y TikTok;
-        LinkedIn recomienda al menos 400×400.
-      </p>
-      <h3>¿Por qué mi foto se ve cortada en la historia o el post?</h3>
-      <p>
-        Porque la proporción no coincide con la del formato. Historias y Reels
-        son 9:16; el feed de Instagram admite 1:1 y 4:5. Si subís horizontal a un
-        formato vertical, la red recorta. Encuadrá en la proporción correcta
-        antes de subir.
-      </p>
       <h3>¿Conviene JPG o PNG para redes sociales?</h3>
       <p>
         Para fotos, JPG de buena calidad es lo estándar y pesa menos. PNG
         conviene con texto, gráficos de bordes nítidos o transparencia. Las redes
         recomprimen igual, así que subir en buena calidad ayuda al resultado.
       </p>
-      <h3>¿Se suben mis fotos a un servidor para redimensionarlas?</h3>
-      <p>
-        No. El recorte y el encuadre se hacen en tu navegador. Tus fotos no se
-        suben a ningún servidor ni quedan almacenadas al cerrar la pestaña.
-      </p>
 
       <a class="cta" href="/">Preparar mi foto para redes →</a>
 
+      <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: redimensionar a la medida exacta</h3>
-        <p>Para cada red hay una medida recomendada; en el panel <strong>Archivo</strong> pusimos el <strong>ancho y alto en pixeles</strong> (o un porcentaje) y la imagen se re-escaló al instante, mostrando el <strong>peso final</strong>. Con el candado de proporcion activado no se deforma.</p>
-        <p>Consejo de la prueba: exporta en <strong>JPG</strong> para fotos y <strong>PNG</strong> si hay texto o transparencia. Todo se procesa en el navegador, sin subir la imagen.</p>
-        <p class="byline">Prueba del equipo de PhotoCut Studio con la version web en Chrome. La captura de arriba es de esa sesion.</p>
+        <h3>Lo probamos: de 4000 × 3000 px a las medidas de una publicación</h3>
+        <p><strong>Imagen:</strong> <a href="/media/guias/pruebas/paisaje-sintetico.jpg"><code>paisaje-sintetico.jpg</code></a>, 4000 × 3000 px, 96,9 KB (imagen sintética que dibujé con Pillow).</p>
+        <p><strong>Herramienta:</strong> Archivo → ancho y alto con el candado.</p>
+        <p><strong>Qué hice:</strong></p>
+        <ol>
+          <li>Abrí paisaje-sintetico.jpg (4000 × 3000 px, foto «de celular» sintética) y fui a «Archivo».</li>
+          <li>Con el candado de proporción activado puse ancho 1080, JPG calidad 80, y descargué.</li>
+          <li>Apagué el candado, puse 1080 × 1350 (la medida vertical de Instagram) y descargué otra vez.</li>
+        </ol>
+        <p><strong>Lo que medí:</strong></p>
+        <ul>
+          <li>Con el candado: ancho 1080 → alto 810. Salió un JPG de 1080 × 810 px y 16 KB (el original pesaba 97 KB) en 0,3 s contando la descarga.</li>
+          <li>Sin el candado, pidiendo 1080 × 1350 px, salió un JPG de 1080 × 1350 px y 23 KB. Como la foto es 4:3 y la medida pedida 4:5, la imagen quedó estirada a 60 % de su proporción horizontal.</li>
+        </ul>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El panel Archivo redimensiona pero no recorta a una proporción: para llevar una foto 4:3 a 1080 × 1350 solo pude estirarla (a un 60 % de su proporción), o dejarla en 1080 × 810 con el candado. Para respetar la proporción habría que encuadrar antes (no probé «Recortar área» para eso). La foto es sintética: no medí cuánto recomprime cada red.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
       </div>
+      <!-- pruebas:end -->
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Guías relacionadas</h2>
