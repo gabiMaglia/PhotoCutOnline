@@ -27,11 +27,17 @@ const grams = (w, n = 5) => {
 };
 
 // separa la página en cuerpo / FAQ (sin el bloque "Lo probamos" ni los enlaces relacionados)
-export function split(html) {
+const FAQ_H2 = {
+  es: /<h2[^>]*>\s*Preguntas frecuentes\s*<\/h2>/,
+  en: /<h2[^>]*>\s*Frequently asked questions\s*<\/h2>/,
+  pt: /<h2[^>]*>\s*Perguntas frequentes\s*<\/h2>/,
+};
+
+export function split(html, lang = "es") {
   const start = html.indexOf("<h1>");
   const end = html.indexOf('<section aria-labelledby="related');
   const main = html.slice(start, end > 0 ? end : undefined);
-  const fi = main.search(/<h2[^>]*>\s*Preguntas frecuentes\s*<\/h2>/);
+  const fi = main.search(FAQ_H2[lang]);
   if (fi < 0) return { body: main, faq: "", questions: [] };
   let faq = main.slice(fi);
   // la FAQ termina en el CTA o en el bloque «Lo probamos»; lo que sigue es cuerpo de la página
@@ -45,8 +51,8 @@ export function split(html) {
   return { body, faq, questions };
 }
 
-export function measure(html) {
-  const { body, faq, questions } = split(html);
+export function measure(html, lang = "es") {
+  const { body, faq, questions } = split(html, lang);
   const bw = words(strip(body)), fw = words(strip(faq));
   const bg = new Set(grams(bw)), fg = grams(fw);
   const fgSet = new Set(fg);

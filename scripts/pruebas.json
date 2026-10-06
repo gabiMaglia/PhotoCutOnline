@@ -65,7 +65,45 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "Con este retrato la IA no me dejó ningún fleco que pudiera ver sobre fondo magenta, así que no puedo contar un caso difícil. Los tiempos son de una sola corrida cada uno y con el modelo servido desde mi máquina: en internet real la primera vez suma la descarga de unos 6 MB. En otra corrida de la misma prueba vi cuatro POST de medición de anuncios de Google (de hasta 435 bytes, ninguno con la foto): la publicidad hace peticiones, pero la imagen no viaja."
+    "caveat": "Con este retrato la IA no me dejó ningún fleco que pudiera ver sobre fondo magenta, así que no puedo contar un caso difícil. Los tiempos son de una sola corrida cada uno y con el modelo servido desde mi máquina: en internet real la primera vez suma la descarga de unos 6 MB. En otra corrida de la misma prueba vi cuatro POST de medición de anuncios de Google (de hasta 435 bytes, ninguno con la foto): la publicidad hace peticiones, pero la imagen no viaja.",
+    "i18n": {
+      "en": {
+        "title": "the photo doesn't leave the browser, and the model takes as long as it takes",
+        "tool": "Cutout → AI cutout",
+        "steps": [
+          "I opened /editor/ in a tab with an empty cache and loaded the photo with “Open photo”.",
+          "I pressed “AI cutout” and timed it from the click to the “AI cutout applied” notice.",
+          "I downloaded the transparent PNG with “Download”.",
+          "I ran the AI cutout again in the same tab and after reloading the page, with the model already in the browser cache.",
+          "I logged every network request of the session."
+        ],
+        "findings": [
+          "AI cutout, first time (with the model downloaded from my local server): 5.0 s. In the same tab, second run: 2.9 s. After reloading, with the model in the cache: 3.6 s.",
+          "What the AI downloads the first time, uncompressed: 4.57 MB of model (u2netp.onnx) + 13.2 MB of WebAssembly engine. With Brotli (level 11, computed on those same files from dist/) the total drops to 6.4 MB, in the range of the “~7 MB” the guide mentions (the real server may compress at a different level).",
+          "Exported PNG: 720 × 900 px, 535 KB, 47.4% of pixels fully transparent and 3.3% semi-transparent (the smoothed edge).",
+          "Network: 67 requests in the whole session and none with a body (0 bytes sent). The 26 requests to other domains (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) are Google advertising and don't carry the photo."
+        ],
+        "caveat": "With this portrait the AI left no fringe I could see on a magenta background, so I can't describe a hard case. Each timing is from a single run and with the model served from my machine: on the real internet the first time adds the download of about 6 MB. In another run of the same test I saw four Google ad-measurement POSTs (up to 435 bytes, none with the photo): the ads make requests, but the image doesn't travel."
+      },
+      "pt": {
+        "title": "a foto não sai do navegador e o modelo demora o que demora",
+        "tool": "Recorte → Recorte IA",
+        "steps": [
+          "Abri o /editor/ em uma aba sem cache e carreguei a foto com «Abrir foto».",
+          "Apertei «Recorte IA» e cronometrei do clique até o aviso «Recorte IA aplicado».",
+          "Baixei o PNG transparente com «Baixar».",
+          "Repeti o Recorte IA na mesma aba e depois de recarregar a página, com o modelo já no cache do navegador.",
+          "Registrei todas as requisições de rede da sessão."
+        ],
+        "findings": [
+          "Recorte IA, primeira vez (com o modelo baixado do meu servidor local): 5,0 s. Na mesma aba, segunda execução: 2,9 s. Depois de recarregar, com o modelo no cache: 3,6 s.",
+          "O que a IA baixa na primeira vez, sem compressão: 4,57 MB de modelo (u2netp.onnx) + 13,2 MB de motor WebAssembly. Com Brotli (nível 11, calculado sobre esses mesmos arquivos do dist/) o total cai para 6,4 MB, na ordem dos «~7 MB» que o guia menciona (o servidor real pode comprimir em outro nível).",
+          "PNG exportado: 720 × 900 px, 535 KB, 47,4% dos pixels totalmente transparentes e 3,3% semitransparentes (a borda suavizada).",
+          "Rede: 67 requisições na sessão inteira e nenhuma com corpo (0 bytes enviados). As 26 requisições a outros domínios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) são de publicidade do Google e não levam a foto."
+        ],
+        "caveat": "Com este retrato a IA não deixou nenhum fiapo que eu conseguisse ver sobre fundo magenta, então não posso contar um caso difícil. Os tempos são de uma única execução cada um e com o modelo servido da minha máquina: na internet real, a primeira vez soma o download de uns 6 MB. Em outra execução do mesmo teste vi quatro POST de medição de anúncios do Google (de até 435 bytes, nenhum com a foto): a publicidade faz requisições, mas a imagem não viaja."
+      }
+    }
   },
   "recortar-una-persona-de-una-foto": {
     "date": "2026-10-06",
@@ -134,7 +172,41 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo."
+    "caveat": "No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo.",
+    "i18n": {
+      "en": {
+        "title": "where the edge is weakest and how much one brush stroke changes",
+        "tool": "Cutout → AI cutout and Remove brush",
+        "steps": [
+          "I loaded the portrait and applied “AI cutout”.",
+          "I downloaded the PNG and split it into four strips (head, shoulders, arms, torso) to count the semi-transparent pixels along the outline.",
+          "I chose “Remove brush” at 12 px and ran it over the left shoulder's outline, top to bottom, in a single stroke.",
+          "I downloaded again and compared pixel by pixel; then I pressed “Undo” and downloaded once more."
+        ],
+        "findings": [
+          "AI cutout: 3.9 s. Approximate width of the semi-transparent edge band (semi-transparent pixels per outline pixel): head and hair 11.8 px, shoulders 10.8 px, arms 9.5 px, lower torso 9.9 px. The blurriest area was head and hair.",
+          "One 12 px Remove brush stroke over the shoulder changed 0.15% of the image's pixels (opaque: 49.2% → 49.1%).",
+          "“Undo” returned an image identical to the original cutout (same hash of the RGBA pixels)."
+        ],
+        "caveat": "I couldn't reproduce the fringe on the shoulders that the previous version of this guide described: in this portrait the outline looked clean to the naked eye, so I made the brush stroke anyway, to measure how much it changes, not to fix anything. Hair is the area where the edge is blurriest, but I didn't measure how visible that is on a new background."
+      },
+      "pt": {
+        "title": "onde a borda é mais fraca e quanto muda uma pincelada",
+        "tool": "Recorte → Recorte IA e Pincel remover",
+        "steps": [
+          "Carreguei o retrato e apliquei «Recorte IA».",
+          "Baixei o PNG e o dividi em quatro faixas (cabeça, ombros, braços, tronco) para contar os pixels semitransparentes do contorno.",
+          "Escolhi «Pincel remover» a 12 px e passei pelo contorno do ombro esquerdo, de cima para baixo, em um único traço.",
+          "Baixei de novo e comparei pixel a pixel; depois apertei «Desfazer» e baixei mais uma vez."
+        ],
+        "findings": [
+          "Recorte IA: 3,9 s. Largura aproximada da faixa de borda semitransparente (pixels semitransparentes por pixel de contorno): cabeça e cabelo 11,8 px, ombros 10,8 px, braços 9,5 px, tronco baixo 9,9 px. A zona mais difusa foi cabeça e cabelo.",
+          "Um traço do Pincel remover de 12 px sobre o ombro mudou 0,15% dos pixels da imagem (opacos: 49,2% → 49,1%).",
+          "«Desfazer» devolveu uma imagem idêntica à do recorte original (mesmo hash dos pixels RGBA)."
+        ],
+        "caveat": "Não consegui reproduzir o fiapo nos ombros que a versão anterior deste guia contava: neste retrato o contorno saiu limpo a olho nu, então dei a pincelada mesmo assim, para medir quanto muda, não para corrigir algo. O cabelo é a zona em que a borda é mais difusa, mas não medi o quanto isso aparece sobre um fundo novo."
+      }
+    }
   },
   "cambiar-el-fondo-de-una-foto": {
     "date": "2026-10-06",
@@ -211,7 +283,41 @@
       "/media/guias/quitar-fondo-antes.jpg",
       "/media/guias/pruebas/paisaje-sintetico.jpg"
     ],
-    "caveat": "El JPEG devolvió el color a un nivel de distancia de lo que pedí (por la compresión). Medí tamaños y píxeles de borde, no cuánto se integra el pelo con el fondo nuevo: eso lo juzgué a ojo y no lo cuantifiqué, así que no afirmo cuál suavizado se ve mejor."
+    "caveat": "El JPEG devolvió el color a un nivel de distancia de lo que pedí (por la compresión). Medí tamaños y píxeles de borde, no cuánto se integra el pelo con el fondo nuevo: eso lo juzgué a ojo y no lo cuantifiqué, así que no afirmo cuál suavizado se ve mejor.",
+    "i18n": {
+      "en": {
+        "title": "cut out once, try backgrounds without cutting out again",
+        "tool": "Cutout → AI cutout, Export → Color / Image",
+        "steps": [
+          "I loaded the portrait and applied “AI cutout” just once.",
+          "With “Transparent” + PNG I downloaded the cutout with the edge feather at 0, 2 and 6 px and counted the semi-transparent pixels.",
+          "I chose “Color” mode, #1e4d8c, JPEG format and downloaded.",
+          "I loaded paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) as the background image at opacity 100 and downloaded in JPEG."
+        ],
+        "findings": [
+          "AI cutout just once: 4.1 s. Changing the background afterwards didn't run the AI again: exporting with a color took 0.1 s and with a background image 0.3 s (download included).",
+          "Semi-transparent edge pixels by feather: 0 px → 1.3%, 2 px → 3.3%, 6 px → 7.3%.",
+          "JPEG with the #1e4d8c background: 720 × 900 px, 56 KB; the corner pixel came out rgb(29, 77, 139) (I asked for rgb(30, 77, 140)). With the background image: 65 KB."
+        ],
+        "caveat": "The JPEG returned the color one level off from what I asked for (because of compression). I measured sizes and edge pixels, not how well the hair blends into the new background: I judged that by eye and didn't quantify it, so I'm not claiming which feather looks best."
+      },
+      "pt": {
+        "title": "recortar uma vez, testar fundos sem recortar de novo",
+        "tool": "Recorte → Recorte IA, Exportar → Cor / Imagem",
+        "steps": [
+          "Carreguei o retrato e apliquei «Recorte IA» uma única vez.",
+          "Com «Transparente» + PNG baixei o recorte com a suavização de borda em 0, 2 e 6 px e contei os pixels semitransparentes.",
+          "Escolhi o modo «Cor», #1e4d8c, formato JPEG e baixei.",
+          "Carreguei paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) como imagem de fundo com opacidade 100 e baixei em JPEG."
+        ],
+        "findings": [
+          "Recorte IA uma única vez: 4,1 s. Trocar o fundo depois não rodou a IA de novo: exportar com cor levou 0,1 s e com imagem de fundo 0,3 s (inclui o download).",
+          "Pixels semitransparentes da borda conforme a suavização: 0 px → 1,3%, 2 px → 3,3%, 6 px → 7,3%.",
+          "JPEG com fundo #1e4d8c: 720 × 900 px, 56 KB; o pixel do canto saiu rgb(29, 77, 139) (pedi rgb(30, 77, 140)). Com a imagem de fundo: 65 KB."
+        ],
+        "caveat": "O JPEG devolveu a cor a um nível de distância do que pedi (por causa da compressão). Medi tamanhos e pixels de borda, não o quanto o cabelo se integra ao fundo novo: isso eu julguei a olho e não quantifiquei, então não afirmo qual suavização fica melhor."
+      }
+    }
   },
   "poner-fondo-blanco-a-una-foto": {
     "date": "2026-10-06",
@@ -258,7 +364,41 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG."
+    "caveat": "El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG.",
+    "i18n": {
+      "en": {
+        "title": "pure white in PNG and in JPEG",
+        "tool": "Cutout → AI cutout, Export → Color #ffffff",
+        "steps": [
+          "I loaded the portrait and applied “AI cutout”.",
+          "In Export I chose “Color” with #ffffff and downloaded as PNG.",
+          "I switched the format to JPEG and downloaded again.",
+          "In both outputs I measured how many pixels are exactly white (255, 255, 255) and how many of the pixels in the four 40 × 40 px corner squares are not."
+        ],
+        "findings": [
+          "PNG: 522 KB, 47.5% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
+          "JPEG: 58 KB (89% smaller), 46.4% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
+          "AI cutout 4.0 s; the PNG download took 0.1 s and the JPEG one 0.1 s."
+        ],
+        "caveat": "The JPEG doesn't keep all the white exact: it has slightly fewer #ffffff pixels than the PNG because compression pushes some to 254 or lower. I didn't measure the light halo around the outline (on white it can't be counted automatically) or compare the PNG against the JPEG by eye."
+      },
+      "pt": {
+        "title": "branco puro em PNG e em JPEG",
+        "tool": "Recorte → Recorte IA, Exportar → Cor #ffffff",
+        "steps": [
+          "Carreguei o retrato e apliquei «Recorte IA».",
+          "Em Exportar escolhi «Cor» com #ffffff e baixei em PNG.",
+          "Mudei o formato para JPEG e baixei de novo.",
+          "Nas duas saídas medi quantos pixels são exatamente brancos (255, 255, 255) e quantos dos pixels dos 4 quadrados de 40 × 40 px dos cantos não são."
+        ],
+        "findings": [
+          "PNG: 522 KB, 47,5% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.",
+          "JPEG: 58 KB (89% menos), 46,4% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.",
+          "Recorte IA 4,0 s; o download do PNG levou 0,1 s e o do JPEG 0,1 s."
+        ],
+        "caveat": "O JPEG não deixa todo o branco exato: tem um pouco menos de pixels #ffffff que o PNG porque a compressão empurra alguns para 254 ou menos. Não medi o halo claro do contorno (sobre branco não dá para contar automaticamente) nem comparei PNG e JPEG a olho."
+      }
+    }
   },
   "foto-carnet-fondo-blanco": {
     "date": "2026-10-06",
@@ -357,7 +497,45 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "No es monótono: a calidad 20 las esquinas ya no eran blanco puro (rgb(253, 253, 253)) y a calidad 5 y 35 sí lo eran, así que no hay una calidad «segura» que pueda recomendar con un solo número: revisá la tuya. Esta prueba solo cubre el fondo blanco; no mide el encuadre ni la proporción de la cabeza, y mi retrato corta el torso, así que no es una foto carné real."
+    "caveat": "No es monótono: a calidad 20 las esquinas ya no eran blanco puro (rgb(253, 253, 253)) y a calidad 5 y 35 sí lo eran, así que no hay una calidad «segura» que pueda recomendar con un solo número: revisá la tuya. Esta prueba solo cubre el fondo blanco; no mide el encuadre ni la proporción de la cabeza, y mi retrato corta el torso, así que no es una foto carné real.",
+    "i18n": {
+      "en": {
+        "title": "how much the pure white holds up when the JPG quality drops",
+        "tool": "Cutout → AI cutout, Export → Color #ffffff, and File → JPG with quality",
+        "steps": [
+          "I loaded the portrait, applied “AI cutout” and exported as JPEG on white #ffffff.",
+          "I opened that JPEG in the “File” tab and recompressed it as JPG at quality 80, 50, 35, 20 and 5.",
+          "On each output I measured the file size and what percentage of the pixels in the four 40 × 40 px corner squares was no longer exactly #ffffff."
+        ],
+        "findings": [
+          "Initial export (JPEG from the Cutout tab): 57.5 KB, non-white corners 0.0%.",
+          "Quality 5: 10.3 KB (the screen estimated 58 KB → 10 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 47.2%.",
+          "Quality 20: 15.3 KB (the screen estimated 58 KB → 15 KB), non-white corners 100.0% (corner pixel rgb(253, 253, 253)), exact #ffffff across the whole image 0.4%.",
+          "Quality 35: 22.2 KB (the screen estimated 58 KB → 22 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 46.5%.",
+          "Quality 50: 25.9 KB (the screen estimated 58 KB → 26 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 45.7%.",
+          "Quality 80: 45.8 KB (the screen estimated 58 KB → 46 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 45.9%."
+        ],
+        "caveat": "It isn't monotonic: at quality 20 the corners were no longer pure white (rgb(253, 253, 253)) and at quality 5 and 35 they were, so there's no “safe” quality I can recommend with a single number: check yours. This test only covers the white background; it doesn't measure the framing or the head proportion, and my portrait cuts off the torso, so it isn't a real ID photo."
+      },
+      "pt": {
+        "title": "quanto o branco puro aguenta quando a qualidade do JPG cai",
+        "tool": "Recorte → Recorte IA, Exportar → Cor #ffffff, e Arquivo → JPG com qualidade",
+        "steps": [
+          "Carreguei o retrato, apliquei «Recorte IA» e exportei em JPEG sobre branco #ffffff.",
+          "Abri esse JPEG na aba «Arquivo» e o recomprimi como JPG com qualidade 80, 50, 35, 20 e 5.",
+          "Em cada saída medi o peso e que porcentagem dos pixels dos quatro quadrados de 40 × 40 px dos cantos já não era #ffffff exato."
+        ],
+        "findings": [
+          "Exportação inicial (JPEG do Recorte): 57,5 KB, cantos não brancos 0,0%.",
+          "Qualidade 5: 10,3 KB (a tela estimava 58 KB → 10 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 47,2%.",
+          "Qualidade 20: 15,3 KB (a tela estimava 58 KB → 15 KB), cantos não brancos 100,0% (pixel do canto rgb(253, 253, 253)), #ffffff exatos na imagem toda 0,4%.",
+          "Qualidade 35: 22,2 KB (a tela estimava 58 KB → 22 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 46,5%.",
+          "Qualidade 50: 25,9 KB (a tela estimava 58 KB → 26 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,7%.",
+          "Qualidade 80: 45,8 KB (a tela estimava 58 KB → 46 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,9%."
+        ],
+        "caveat": "Não é monótono: na qualidade 20 os cantos já não eram branco puro (rgb(253, 253, 253)) e nas qualidades 5 e 35 eram, então não há uma qualidade «segura» que eu possa recomendar com um único número: confira a sua. Este teste só cobre o fundo branco; não mede o enquadramento nem a proporção da cabeça, e meu retrato corta o tronco, então não é uma foto 3x4 de verdade."
+      }
+    }
   },
   "fotos-de-producto-amazon-etsy-shopify": {
     "date": "2026-10-06",
@@ -416,7 +594,41 @@
     "assets": [
       "/media/guias/pruebas/producto-sintetico.jpg"
     ],
-    "caveat": "La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. Con el preset de Amazon el modo «Transparente» salió opaco, porque el preset trae su propio fondo blanco: no hay forma de pedir PNG transparente a 2000 × 2000 con ese preset."
+    "caveat": "La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. Con el preset de Amazon el modo «Transparente» salió opaco, porque el preset trae su propio fondo blanco: no hay forma de pedir PNG transparente a 2000 × 2000 con ese preset.",
+    "i18n": {
+      "en": {
+        "title": "a synthetic mug at 2000 × 2000 px on white",
+        "tool": "Cutout → AI cutout, “Amazon 2000×2000” preset, Export → Color #ffffff",
+        "steps": [
+          "I loaded an image I drew myself (a blue mug with a shadow on a gradient gray) and applied “AI cutout”.",
+          "I chose the “Amazon 2000×2000” preset.",
+          "With “Transparent” + PNG I downloaded to see what the preset did with the transparency.",
+          "I chose “Color” mode #ffffff, JPEG format and downloaded; I measured the box of the pixels that aren't almost white."
+        ],
+        "findings": [
+          "AI cutout: 4.2 s on 1200 × 1200 px.",
+          "The preset produced a 2000 × 2000 px canvas. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.",
+          "JPEG on white: 90 KB, 40.3% of pixels exactly #ffffff, non-white corners 0.0%. The PNG requested as “Transparent” with the preset weighed 586 KB and came out with 0.0% transparent pixels."
+        ],
+        "caveat": "The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. With the Amazon preset the “Transparent” mode came out opaque, because the preset brings its own white background: there's no way to ask for a transparent PNG at 2000 × 2000 with that preset."
+      },
+      "pt": {
+        "title": "uma caneca sintética em 2000 × 2000 px sobre branco",
+        "tool": "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Cor #ffffff",
+        "steps": [
+          "Carreguei uma imagem desenhada por mim (uma caneca azul com sombra sobre um cinza degradê) e apliquei «Recorte IA».",
+          "Escolhi o preset «Amazon 2000×2000».",
+          "Com «Transparente» + PNG baixei para ver o que o preset fazia com a transparência.",
+          "Escolhi o modo «Cor» #ffffff, formato JPEG e baixei; medi a caixa dos pixels que não são quase brancos."
+        ],
+        "findings": [
+          "Recorte IA: 4,2 s sobre 1200 × 1200 px.",
+          "Com o preset saiu um quadro de 2000 × 2000 px. O produto (pixels que não são quase brancos) ocupa 89,3% da largura e 74,6% da altura do quadro.",
+          "JPEG sobre branco: 90 KB, 40,3% dos pixels #ffffff exatos, cantos não brancos 0,0%. O PNG pedido como «Transparente» com o preset pesou 586 KB e saiu com 0,0% de pixels transparentes."
+        ],
+        "caveat": "A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. Com o preset da Amazon o modo «Transparente» saiu opaco, porque o preset traz seu próprio fundo branco: não há como pedir PNG transparente em 2000 × 2000 com esse preset."
+      }
+    }
   },
   "logo-con-fondo-transparente": {
     "date": "2026-10-06",
@@ -478,7 +690,43 @@
     "assets": [
       "/media/guias/logo-antes.jpg"
     ],
-    "caveat": "Ni el Recorte IA ni el recorte automático conservaron la palabra del logo: solo quedó el emblema. La varita sí la conservó, pero dejó rellenos y opacos los huecos de letras como la de la A, porque no tocan el fondo, y el borde quedó con más semitransparencia. Con un logo sin texto la IA habría bastado; con texto, hubo que ir a la varita y repasar a mano los huecos."
+    "caveat": "Ni el Recorte IA ni el recorte automático conservaron la palabra del logo: solo quedó el emblema. La varita sí la conservó, pero dejó rellenos y opacos los huecos de letras como la de la A, porque no tocan el fondo, y el borde quedó con más semitransparencia. Con un logo sin texto la IA habría bastado; con texto, hubo que ir a la varita y repasar a mano los huecos.",
+    "i18n": {
+      "en": {
+        "title": "the same logo with the AI cutout, the auto cutout and the wand",
+        "tool": "Cutout → AI cutout / Auto cutout / Magic wand",
+        "steps": [
+          "I loaded the logo (JPG on a plain background), applied “AI cutout” and downloaded the PNG.",
+          "In a new tab I applied “Auto cutout” to the same file and downloaded.",
+          "In another one I chose “Magic wand” with the default tolerance, clicked once in the top-left corner (background) and downloaded.",
+          "On each PNG I measured the percentage of transparent and semi-transparent pixels."
+        ],
+        "findings": [
+          "AI cutout: 4.0 s, 89.4% transparent, 1.4% semi-transparent, 84 KB PNG.",
+          "Auto cutout: 1.45 s, 89.5% transparent, 1.2% semi-transparent, 81 KB.",
+          "Magic wand (one click): 0.16 s, 85.7% transparent, 3.6% semi-transparent, 117 KB.",
+          "The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 0.0% with the AI, 0.0% with the auto cutout and 15.4% with the wand."
+        ],
+        "caveat": "Neither the AI cutout nor the auto cutout kept the logo's wordmark: only the emblem survived. The wand did keep it, but it left letter holes like the one in the A filled in and opaque, because they don't touch the background, and the edge ended up with more semi-transparency. With a logo without text the AI would have been enough; with text, I had to go to the wand and touch up the holes by hand."
+      },
+      "pt": {
+        "title": "o mesmo logo com o Recorte IA, o recorte automático e a varinha",
+        "tool": "Recorte → Recorte IA / Recorte automático / Varinha mágica",
+        "steps": [
+          "Carreguei o logo (JPG sobre fundo liso), apliquei «Recorte IA» e baixei o PNG.",
+          "Em uma aba nova, apliquei «Recorte automático» ao mesmo arquivo e baixei.",
+          "Em outra, escolhi «Varinha mágica» com a tolerância padrão, dei um único clique no canto superior esquerdo (fundo) e baixei.",
+          "De cada PNG medi a porcentagem de pixels transparentes e semitransparentes."
+        ],
+        "findings": [
+          "Recorte IA: 4,0 s, 89,4% transparente, 1,4% semitransparente, PNG de 84 KB.",
+          "Recorte automático: 1,45 s, 89,5% transparente, 1,2% semitransparente, 81 KB.",
+          "Varinha mágica (um clique): 0,16 s, 85,7% transparente, 3,6% semitransparente, 117 KB.",
+          "O logo tem um emblema e, embaixo, a palavra da marca. Na faixa onde está o texto (entre 68% e 85% da altura) a parte que ficou opaca foi 0,0% com a IA, 0,0% com o recorte automático e 15,4% com a varinha."
+        ],
+        "caveat": "Nem o Recorte IA nem o recorte automático conservaram a palavra do logo: só sobrou o emblema. A varinha conservou, mas deixou preenchidos e opacos os buracos de letras como o do A, porque não tocam o fundo, e a borda ficou com mais semitransparência. Com um logo sem texto a IA teria bastado; com texto, precisei ir para a varinha e retocar os buracos à mão."
+      }
+    }
   },
   "quitar-fondo-a-una-firma": {
     "date": "2026-10-06",
@@ -531,7 +779,41 @@
     "assets": [
       "/media/guias/firma-antes.jpg"
     ],
-    "caveat": "El recorte automático tardó unos 20 s y dejó una mancha de papel claro alrededor de la firma (casi un 30 % de la imagen quedó opaco), mientras que la varita lo hizo en una fracción de segundo y limpio. La varita deja un halo claro y semitransparente alrededor del trazo. No pegué la firma sobre un PDF para ver cómo se ve ese halo."
+    "caveat": "El recorte automático tardó unos 20 s y dejó una mancha de papel claro alrededor de la firma (casi un 30 % de la imagen quedó opaco), mientras que la varita lo hizo en una fracción de segundo y limpio. La varita deja un halo claro y semitransparente alrededor del trazo. No pegué la firma sobre un PDF para ver cómo se ve ese halo.",
+    "i18n": {
+      "en": {
+        "title": "how much ink survives when the paper is removed",
+        "tool": "Cutout → Magic wand / Auto cutout",
+        "steps": [
+          "I loaded the photo of a signature on paper.",
+          "With “Magic wand” (default tolerance) I clicked once on the paper in the top-left corner and downloaded the PNG.",
+          "In another tab I used “Auto cutout” on the same file and downloaded.",
+          "I counted the dark pixels (luminance < 110 and opaque) in the original and in each PNG."
+        ],
+        "findings": [
+          "The original has 11416 ink (dark) pixels.",
+          "Magic wand: 0.11 s, 92.6% transparent, 92.4 KB PNG and 100.0% of the ink kept (11413 px).",
+          "Auto cutout: 20.01 s, 70.9% transparent, 116.0 KB and 100.0% of the ink kept (11416 px)."
+        ],
+        "caveat": "The auto cutout took about 20 s and left a patch of light paper around the signature (almost 30% of the image stayed opaque), while the wand did it in a fraction of a second and clean. The wand leaves a light, semi-transparent halo around the stroke. I didn't paste the signature onto a PDF to see how that halo looks."
+      },
+      "pt": {
+        "title": "quanta tinta sobrevive ao tirar o papel",
+        "tool": "Recorte → Varinha mágica / Recorte automático",
+        "steps": [
+          "Carreguei a foto de uma assinatura sobre papel.",
+          "Com «Varinha mágica» (tolerância padrão) dei um clique no papel do canto superior esquerdo e baixei o PNG.",
+          "Em outra aba usei «Recorte automático» no mesmo arquivo e baixei.",
+          "Contei os pixels escuros (luminância < 110 e opacos) no original e em cada PNG."
+        ],
+        "findings": [
+          "O original tem 11416 pixels de tinta (escuros).",
+          "Varinha mágica: 0,11 s, 92,6% transparente, PNG de 92,4 KB e 100,0% da tinta conservada (11413 px).",
+          "Recorte automático: 20,01 s, 70,9% transparente, 116,0 KB e 100,0% da tinta conservada (11416 px)."
+        ],
+        "caveat": "O recorte automático levou uns 20 s e deixou uma mancha de papel claro ao redor da assinatura (quase 30% da imagem ficou opaca), enquanto a varinha fez em uma fração de segundo e limpo. A varinha deixa um halo claro e semitransparente ao redor do traço. Não colei a assinatura sobre um PDF para ver como esse halo aparece."
+      }
+    }
   },
   "foto-de-perfil-redonda": {
     "date": "2026-10-06",
@@ -589,7 +871,41 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "El preset hace el recorte circular y la figura entra completa, pero no medí cómo cada red (WhatsApp, Instagram, Slack) enmascara el cuadrado: eso depende de la app. La coronilla quedó a un 10,5 % del borde de arriba con este retrato; con una cara más alta en el encuadre podría quedar más justa."
+    "caveat": "El preset hace el recorte circular y la figura entra completa, pero no medí cómo cada red (WhatsApp, Instagram, Slack) enmascara el cuadrado: eso depende de la app. La coronilla quedó a un 10,5 % del borde de arriba con este retrato; con una cara más alta en el encuadre podría quedar más justa.",
+    "i18n": {
+      "en": {
+        "title": "what ends up inside the circle of the “Circle avatar 512” preset",
+        "tool": "Cutout → AI cutout, “Circle avatar 512” preset",
+        "steps": [
+          "I loaded the portrait and applied “AI cutout”.",
+          "I chose the “Circle avatar 512” preset with “Transparent” and PNG, and downloaded.",
+          "In the PNG I measured the subject's box, the transparent pixels and the alpha of the corners."
+        ],
+        "findings": [
+          "It produced a 512 × 512 px, 161 KB PNG. The four corners have alpha 0, 0, 0, 0: the preset really crops to a circle, it doesn't just center.",
+          "72.0% of the image ended up transparent: 21.5% is the corners outside the circle and the rest is cut-out background inside it.",
+          "The figure sits 10.5% of the height from the top edge down to the crown of the head, and starts 24.0% of the width from the left edge (it takes up 51.8% of the width and 79.5% of the height).",
+          "AI cutout 4.0 s; the avatar download 0.1 s."
+        ],
+        "caveat": "The preset does the circular crop and the figure fits whole, but I didn't measure how each network (WhatsApp, Instagram, Slack) masks the square: that depends on the app. The crown of the head ended up 10.5% from the top edge with this portrait; with a higher face in the frame it could end up tighter."
+      },
+      "pt": {
+        "title": "o que fica dentro do círculo do preset «Avatar circular 512»",
+        "tool": "Recorte → Recorte IA, preset «Avatar circular 512»",
+        "steps": [
+          "Carreguei o retrato e apliquei «Recorte IA».",
+          "Escolhi o preset «Avatar circular 512» com «Transparente» e PNG, e baixei.",
+          "No PNG medi a caixa do sujeito, os pixels transparentes e o alfa dos cantos."
+        ],
+        "findings": [
+          "Saiu um PNG de 512 × 512 px e 161 KB. Os quatro cantos têm alfa 0, 0, 0, 0: o preset recorta em círculo de verdade, não só centraliza.",
+          "72,0% da imagem ficou transparente: 21,5% são os cantos fora do círculo e o resto é fundo recortado dentro dele.",
+          "A figura fica a 10,5% da altura desde a borda de cima até o topo da cabeça e começa a 24,0% da largura contando da borda esquerda (ocupa 51,8% da largura e 79,5% da altura).",
+          "Recorte IA 4,0 s; o download do avatar 0,1 s."
+        ],
+        "caveat": "O preset faz o recorte circular e a figura entra inteira, mas não medi como cada rede (WhatsApp, Instagram, Slack) mascara o quadrado: isso depende do app. O topo da cabeça ficou a 10,5% da borda de cima com este retrato; com um rosto mais alto no enquadramento poderia ficar mais apertado."
+      }
+    }
   },
   "foto-de-perfil-para-linkedin": {
     "date": "2026-10-06",
@@ -661,7 +977,43 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "No hay un preset de LinkedIn y los presets cuadrados ignoraron el color gris que pedí: todas las salidas tienen fondo #ffffff. Para un fondo de color hay que dejar el preset en «Original» y encuadrar aparte. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn."
+    "caveat": "No hay un preset de LinkedIn y los presets cuadrados ignoraron el color gris que pedí: todas las salidas tienen fondo #ffffff. Para un fondo de color hay que dejar el preset en «Original» y encuadrar aparte. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn.",
+    "i18n": {
+      "en": {
+        "title": "how much of the figure is lost when LinkedIn shows the circle",
+        "tool": "Cutout → AI cutout, square presets, Export → Color #c9ced6",
+        "steps": [
+          "I loaded the portrait and applied “AI cutout”.",
+          "In Export I chose “Color” #c9ced6 (a sober gray) and JPEG.",
+          "I downloaded with three square presets: Amazon 2000×2000, Shopify 2048×2048 and Instagram post 1080×1080 (there is no LinkedIn preset).",
+          "In each JPEG I calculated what percentage of the figure's pixels falls outside the circle inscribed in the square, which is what LinkedIn doesn't show."
+        ],
+        "findings": [
+          "AI cutout: 4.0 s.",
+          "Amazon 2000×2000 (5% margin): 2000 × 2000 px, 198 KB; 0.1% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.",
+          "Shopify 2048×2048 (6% margin): 2048 × 2048 px, 200 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.",
+          "Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 78 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for."
+        ],
+        "caveat": "There is no LinkedIn preset and the square presets ignored the gray I asked for: every output has a #ffffff background. For a colored background you have to leave the preset on “Original” and frame separately. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does."
+      },
+      "pt": {
+        "title": "quanto da figura se perde quando o LinkedIn mostra o círculo",
+        "tool": "Recorte → Recorte IA, presets quadrados, Exportar → Cor #c9ced6",
+        "steps": [
+          "Carreguei o retrato e apliquei «Recorte IA».",
+          "Em Exportar escolhi «Cor» #c9ced6 (um cinza sóbrio) e JPEG.",
+          "Baixei com três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn).",
+          "Em cada JPEG calculei que porcentagem dos pixels da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra."
+        ],
+        "findings": [
+          "Recorte IA: 4,0 s.",
+          "Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, 198 KB; 0,1% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.",
+          "Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, 200 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.",
+          "Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, 78 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido."
+        ],
+        "caveat": "Não existe preset do LinkedIn e os presets quadrados ignoraram a cor cinza que pedi: todas as saídas têm fundo #ffffff. Para um fundo colorido é preciso deixar o preset em «Original» e enquadrar à parte. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz."
+      }
+    }
   },
   "stickers-de-whatsapp-y-telegram": {
     "date": "2026-10-06",
@@ -721,7 +1073,39 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "La pestaña Stickers (con el destino «WhatsApp · WebP 512») está desactivada en esta versión de la web, así que no pude usarla: con lo que hay, el sticker sale a 720 × 900 px y hay que llevarlo a 512 de alto en Archivo. Un 512 × 512 exacto, que es lo que pide WhatsApp, no encontré cómo sacarlo de una foto vertical sin deformarla: Archivo solo escala y no probé encuadrar antes con «Recortar área». No armé el pack ni lo probé dentro de WhatsApp o Telegram."
+    "caveat": "La pestaña Stickers (con el destino «WhatsApp · WebP 512») está desactivada en esta versión de la web, así que no pude usarla: con lo que hay, el sticker sale a 720 × 900 px y hay que llevarlo a 512 de alto en Archivo. Un 512 × 512 exacto, que es lo que pide WhatsApp, no encontré cómo sacarlo de una foto vertical sin deformarla: Archivo solo escala y no probé encuadrar antes con «Recortar área». No armé el pack ni lo probé dentro de WhatsApp o Telegram.",
+    "i18n": {
+      "en": {
+        "title": "the sticker's weight against WhatsApp's 100 KB limit",
+        "tool": "Cutout → AI cutout + “Sticker (outline)”, and File → WebP",
+        "steps": [
+          "I loaded the portrait and applied “AI cutout”; I downloaded a transparent PNG with no outline as a reference.",
+          "I turned on “Sticker (outline)” with the default width (14 px) and downloaded as PNG and as WebP.",
+          "I opened the WebP in the “File” tab, took it to 512 px tall at quality 80 and downloaded."
+        ],
+        "findings": [
+          "Without outline, PNG: 720 × 900 px, 535 KB. With a 14 px white outline: PNG 720 × 900 px, 529 KB, and WebP 51 KB with 44.1% transparent pixels.",
+          "That WebP, taken in File to 410 × 512 px (quality 80): 15.0 KB and 43.5% transparent. WhatsApp's limit is 100 KB.",
+          "The editor let me set the height to 512 and the width adjusted itself to 410 px (the photo is vertical). A 512 × 512 square, which is what WhatsApp asks for, would have required stretching the image or cropping it first."
+        ],
+        "caveat": "The Stickers tab (with the “WhatsApp · WebP 512” destination) is disabled in this version of the site, so I couldn't use it: with what's there, the sticker comes out at 720 × 900 px and has to be taken to 512 tall in File. An exact 512 × 512, which is what WhatsApp asks for, I didn't find how to get from a vertical photo without stretching it: File only scales and I didn't try framing beforehand with “Crop area”. I didn't build the pack or test it inside WhatsApp or Telegram."
+      },
+      "pt": {
+        "title": "o peso da figurinha contra o limite de 100 KB do WhatsApp",
+        "tool": "Recorte → Recorte IA + «Sticker (contorno)», e Arquivo → WebP",
+        "steps": [
+          "Carreguei o retrato e apliquei «Recorte IA»; baixei um PNG transparente sem contorno como referência.",
+          "Ativei «Sticker (contorno)» com a espessura padrão (14 px) e baixei em PNG e em WebP.",
+          "Abri o WebP na aba «Arquivo», levei a 512 px de altura com qualidade 80 e baixei."
+        ],
+        "findings": [
+          "Sem contorno, PNG: 720 × 900 px, 535 KB. Com contorno branco de 14 px: PNG 720 × 900 px, 529 KB, e WebP 51 KB com 44,1% de pixels transparentes.",
+          "Esse WebP, levado em Arquivo a 410 × 512 px (qualidade 80): 15,0 KB e 43,5% transparente. O limite do WhatsApp é 100 KB.",
+          "O editor me deixou fixar a altura em 512 e a largura se ajustou sozinha a 410 px (a foto é vertical). Um quadrado de 512 × 512, que é o que o WhatsApp pede, teria exigido deformar a imagem ou recortá-la antes."
+        ],
+        "caveat": "A aba Stickers (com o destino «WhatsApp · WebP 512») está desativada nesta versão do site, então não pude usá-la: com o que há, a figurinha sai a 720 × 900 px e é preciso levá-la a 512 de altura em Arquivo. Um 512 × 512 exato, que é o que o WhatsApp pede, não encontrei como tirar de uma foto vertical sem deformá-la: Arquivo só escala e não testei enquadrar antes com «Recortar área». Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram."
+      }
+    }
   },
   "png-jpg-o-webp-cual-elegir": {
     "date": "2026-10-06",
@@ -813,7 +1197,39 @@
       "/media/guias/quitar-fondo-antes.jpg",
       "/media/guias/logo-despues.png"
     ],
-    "caveat": "El PNG de la foto pesó 12 veces el JPG original: PNG no es «mejor calidad» para fotos, solo sin pérdida. Al pasar el logo a JPG la transparencia se perdió (la esquina pasó a blanco). Medí solo pesos: JPG 80 y WebP 80 no son equivalentes en calidad visual y no los comparé a ojo."
+    "caveat": "El PNG de la foto pesó 12 veces el JPG original: PNG no es «mejor calidad» para fotos, solo sin pérdida. Al pasar el logo a JPG la transparencia se perdió (la esquina pasó a blanco). Medí solo pesos: JPG 80 y WebP 80 no son equivalentes en calidad visual y no los comparé a ojo.",
+    "i18n": {
+      "en": {
+        "title": "the same photo as PNG, JPG and WebP, and what happens to transparency",
+        "tool": "File → PNG / JPG / WebP with quality",
+        "steps": [
+          "I opened the photo in the “File” tab (original JPG) and converted it to PNG, JPG quality 80, WebP quality 80, JPG 60 and WebP 60, downloading each one.",
+          "I repeated with logo-despues.png (820 × 637 px, 32 KB, PNG with a transparent background) as PNG, JPG 80 and WebP 80.",
+          "I measured the real weight of each download and, for the logo ones, the percentage of transparent pixels."
+        ],
+        "findings": [
+          "78 KB photo: PNG 956 KB · JPG 80 80 KB · WebP 80 45 KB · JPG 60 60 KB · WebP 60 31 KB.",
+          "The File screen estimated “78 KB → 80 KB” for JPG 80 and the real download weighed 79.9 KB.",
+          "Logo with transparency (32 KB source): PNG 46 KB with 87.3% transparent; WebP 80 11 KB with 87.3% transparent; JPG 80 17 KB with 0.0% transparent (the corner turned rgb(255, 255, 255))."
+        ],
+        "caveat": "The photo's PNG weighed 12 times the original JPG: PNG isn't “better quality” for photos, just lossless. When I turned the logo into a JPG the transparency was lost (the corner turned white). I only measured weights: JPG 80 and WebP 80 aren't equivalent in visual quality and I didn't compare them by eye."
+      },
+      "pt": {
+        "title": "a mesma foto em PNG, JPG e WebP, e o que acontece com a transparência",
+        "tool": "Arquivo → PNG / JPG / WebP com qualidade",
+        "steps": [
+          "Abri a foto na aba «Arquivo» (JPG original) e a converti para PNG, JPG qualidade 80, WebP qualidade 80, JPG 60 e WebP 60, baixando cada uma.",
+          "Repeti com logo-despues.png (820 × 637 px, 32 KB, PNG com fundo transparente) em PNG, JPG 80 e WebP 80.",
+          "Medi o peso real de cada download e, nos do logo, a porcentagem de pixels transparentes."
+        ],
+        "findings": [
+          "Foto de 78 KB: PNG 956 KB · JPG 80 80 KB · WebP 80 45 KB · JPG 60 60 KB · WebP 60 31 KB.",
+          "A tela de Arquivo estimou «78 KB → 80 KB» para JPG 80 e o download real pesou 79,9 KB.",
+          "Logo com transparência (32 KB de origem): PNG 46 KB com 87,3% transparente; WebP 80 11 KB com 87,3% transparente; JPG 80 17 KB com 0,0% transparente (o canto virou rgb(255, 255, 255))."
+        ],
+        "caveat": "O PNG da foto pesou 12 vezes o JPG original: PNG não é «melhor qualidade» para fotos, só sem perda. Ao passar o logo para JPG a transparência se perdeu (o canto virou branco). Medi só pesos: JPG 80 e WebP 80 não são equivalentes em qualidade visual e não os comparei a olho."
+      }
+    }
   },
   "quitar-la-ubicacion-de-una-foto": {
     "date": "2026-10-06",
@@ -885,7 +1301,41 @@
     "assets": [
       "/media/guias/pruebas/gps-sintetica.jpg"
     ],
-    "caveat": "La foto es sintética y el GPS lo puse yo: no probé fotos reales de teléfono, ni formatos como HEIC, ni otros campos que pueden quedar (miniatura incrustada, notas del fabricante). La copia limpia se vuelve a comprimir (pesa más y los píxeles no son idénticos) y trae un perfil de color ICC que el original no tenía."
+    "caveat": "La foto es sintética y el GPS lo puse yo: no probé fotos reales de teléfono, ni formatos como HEIC, ni otros campos que pueden quedar (miniatura incrustada, notas del fabricante). La copia limpia se vuelve a comprimir (pesa más y los píxeles no son idénticos) y trae un perfil de color ICC que el original no tenía.",
+    "i18n": {
+      "en": {
+        "title": "which EXIF fields the panel shows and what stays in the clean copy",
+        "tool": "File → “Download without metadata”",
+        "steps": [
+          "With Pillow I generated a 1600 × 1200 px JPG with test EXIF: make, model, software, date and the GPS coordinates of a public monument.",
+          "I opened it in the “File” tab and read what the “Camera & capture (EXIF)” section shows.",
+          "I pressed “Download without metadata” and opened the result with Pillow to count the EXIF tags and the GPS block."
+        ],
+        "findings": [
+          "The original has 4 main EXIF fields (make, model, software, date), 1 in the capture block and 4 GPS fields.",
+          "What the panel showed (my session ran in the Spanish interface; here I give the labels the way the English interface names them): “Camera & capture (EXIF) Make PhotoCut Pruebas Model Camara Sintetica 1 Capture date 2026:10:06 12:00:00 Software gen-inputs.py ⚠ This photo includes your GPS location. Anyone with the file can see it. GPS -34.6037, -58.3816”.",
+          "The copy without metadata: 0 EXIF fields, 0 GPS fields, 1600 × 1200 px and 24.1 KB (the original weighed 21.0 KB). Download in 0.1 s. It does carry an ICC color profile that wasn't in the original.",
+          "The copy's pixels aren't identical to the original's: the file is re-encoded with loss (JPEG)."
+        ],
+        "caveat": "The photo is synthetic and I put the GPS in myself: I didn't test real phone photos, or formats such as HEIC, or other fields that can remain (embedded thumbnail, maker notes). The clean copy is recompressed (it weighs more and the pixels aren't identical) and carries an ICC color profile the original didn't have."
+      },
+      "pt": {
+        "title": "quais campos EXIF o painel mostra e o que fica na cópia limpa",
+        "tool": "Arquivo → «Baixar sem metadados»",
+        "steps": [
+          "Gerei com Pillow um JPG de 1600 × 1200 px com EXIF de teste: marca, modelo, software, data e coordenadas GPS de um monumento público.",
+          "Abri na aba «Arquivo» e li o que mostra a seção «Câmera e captura (EXIF)».",
+          "Apertei «Baixar sem metadados» e abri o resultado com Pillow para contar as etiquetas EXIF e o bloco GPS."
+        ],
+        "findings": [
+          "O original traz 4 campos EXIF principais (marca, modelo, software, data), 1 no bloco de captura e 4 campos GPS.",
+          "O que o painel mostrou (minha sessão rodou na interface em espanhol; aqui dou os rótulos como a interface em português os chama): «Câmera e captura (EXIF) Marca PhotoCut Pruebas Modelo Camara Sintetica 1 Data de captura 2026:10:06 12:00:00 Software gen-inputs.py ⚠ Esta foto inclui sua localização GPS. Qualquer um com o arquivo pode vê-la. GPS -34.6037, -58.3816».",
+          "A cópia sem metadados: 0 campos EXIF, 0 campos GPS, 1600 × 1200 px e 24,1 KB (o original pesava 21,0 KB). Download em 0,1 s. Isso sim: traz um perfil de cor ICC que não estava no original.",
+          "Os pixels da cópia não são idênticos aos do original: o arquivo é recodificado com perda (JPEG)."
+        ],
+        "caveat": "A foto é sintética e o GPS fui eu que coloquei: não testei fotos reais de celular, nem formatos como HEIC, nem outros campos que podem ficar (miniatura embutida, notas do fabricante). A cópia limpa é recomprimida (pesa mais e os pixels não são idênticos) e traz um perfil de cor ICC que o original não tinha."
+      }
+    }
   },
   "medidas-de-fotos-para-redes-sociales-2026": {
     "date": "2026-10-06",
@@ -937,7 +1387,37 @@
     "assets": [
       "/media/guias/pruebas/paisaje-sintetico.jpg"
     ],
-    "caveat": "El panel Archivo redimensiona pero no recorta a una proporción: para llevar una foto 4:3 a 1080 × 1350 solo pude estirarla (a un 60 % de su proporción), o dejarla en 1080 × 810 con el candado. Para respetar la proporción habría que encuadrar antes (no probé «Recortar área» para eso). La foto es sintética: no medí cuánto recomprime cada red."
+    "caveat": "El panel Archivo redimensiona pero no recorta a una proporción: para llevar una foto 4:3 a 1080 × 1350 solo pude estirarla (a un 60 % de su proporción), o dejarla en 1080 × 810 con el candado. Para respetar la proporción habría que encuadrar antes (no probé «Recortar área» para eso). La foto es sintética: no medí cuánto recomprime cada red.",
+    "i18n": {
+      "en": {
+        "title": "from 4000 × 3000 px to the size of a post",
+        "tool": "File → width and height with the lock",
+        "steps": [
+          "I opened paisaje-sintetico.jpg (4000 × 3000 px, a synthetic “phone” photo) and went to “File”.",
+          "With the aspect-ratio lock on I set the width to 1080, JPG quality 80, and downloaded.",
+          "I turned the lock off, set 1080 × 1350 (Instagram's vertical size) and downloaded again."
+        ],
+        "findings": [
+          "With the lock: width 1080 → height 810. It produced a 1080 × 810 px, 16 KB JPG (the original weighed 97 KB) in 0.3 s counting the download.",
+          "Without the lock, asking for 1080 × 1350 px, it produced a 1080 × 1350 px, 23 KB JPG. Since the photo is 4:3 and the requested size is 4:5, the image ended up stretched to 60% of its horizontal proportion."
+        ],
+        "caveat": "The File panel resizes but doesn't crop to an aspect ratio: to take a 4:3 photo to 1080 × 1350 I could only stretch it (to 60% of its proportion), or leave it at 1080 × 810 with the lock. To respect the proportion you would have to frame it first (I didn't try “Crop area” for that). The photo is synthetic: I didn't measure how much each network recompresses."
+      },
+      "pt": {
+        "title": "de 4000 × 3000 px às medidas de um post",
+        "tool": "Arquivo → largura e altura com o cadeado",
+        "steps": [
+          "Abri paisaje-sintetico.jpg (4000 × 3000 px, foto «de celular» sintética) e fui para «Arquivo».",
+          "Com o cadeado de proporção ativado coloquei largura 1080, JPG qualidade 80, e baixei.",
+          "Desliguei o cadeado, coloquei 1080 × 1350 (a medida vertical do Instagram) e baixei de novo."
+        ],
+        "findings": [
+          "Com o cadeado: largura 1080 → altura 810. Saiu um JPG de 1080 × 810 px e 16 KB (o original pesava 97 KB) em 0,3 s contando o download.",
+          "Sem o cadeado, pedindo 1080 × 1350 px, saiu um JPG de 1080 × 1350 px e 23 KB. Como a foto é 4:3 e a medida pedida 4:5, a imagem ficou esticada a 60% da sua proporção horizontal."
+        ],
+        "caveat": "O painel Arquivo redimensiona mas não recorta para uma proporção: para levar uma foto 4:3 a 1080 × 1350 só consegui esticá-la (a 60% da sua proporção), ou deixá-la em 1080 × 810 com o cadeado. Para respeitar a proporção seria preciso enquadrar antes (não testei «Recortar área» para isso). A foto é sintética: não medi quanto cada rede recomprime."
+      }
+    }
   },
   "medidas-de-iconos-de-app-ios-android-2026": {
     "date": "2026-10-06",
@@ -1013,7 +1493,41 @@
       "/media/guias/logo-despues.png"
     ],
     "_zip": "/tmp/pruebas-grow31/iconos.zip",
-    "caveat": "Solo conté archivos y tamaños del ZIP: no lo abrí en Xcode ni en Android Studio, así que no verifiqué que los nombres y carpetas los acepten. El logo que usé trae texto, que a tamaños chicos no se lee (ver la guía de favicons): para iconos conviene partir del emblema solo."
+    "caveat": "Solo conté archivos y tamaños del ZIP: no lo abrí en Xcode ni en Android Studio, así que no verifiqué que los nombres y carpetas los acepten. El logo que usé trae texto, que a tamaños chicos no se lee (ver la guía de favicons): para iconos conviene partir del emblema solo.",
+    "i18n": {
+      "en": {
+        "title": "a ZIP with every platform from a single PNG",
+        "tool": "Icon Studio → “Open PNG…” → “Download icon ZIP”",
+        "steps": [
+          "In Icon Studio I opened logo-despues.png (820 × 637 px, 32 KB, PNG with a transparent background).",
+          "I left the default settings (8% margin, all five platforms ticked) and pressed “Download icon ZIP”.",
+          "I opened the ZIP and counted files per folder."
+        ],
+        "findings": [
+          "The ZIP was generated and downloaded in 0.5 s and weighs 641 KB.",
+          "It has 60 files: LEEME.txt 1, ios 17, android 21, macos 10, windows 1, web 10.",
+          "The largest file is app-icons/ios/AppIcon.appiconset/icon-1024.png (67 KB).",
+          "Platforms ticked at the start: 5 of 5."
+        ],
+        "caveat": "I only counted files and sizes in the ZIP: I didn't open it in Xcode or Android Studio, so I didn't verify that they accept the names and folders. The logo I used has text, which can't be read at small sizes (see the favicons guide): for icons it's better to start from the emblem alone."
+      },
+      "pt": {
+        "title": "um ZIP com todas as plataformas a partir de um único PNG",
+        "tool": "Icon Studio → «Abrir PNG…» → «Baixar ZIP de ícones»",
+        "steps": [
+          "No Icon Studio abri logo-despues.png (820 × 637 px, 32 KB, PNG com fundo transparente).",
+          "Deixei os ajustes padrão (margem 8%, as cinco plataformas marcadas) e apertei «Baixar ZIP de ícones».",
+          "Abri o ZIP e contei os arquivos por pasta."
+        ],
+        "findings": [
+          "O ZIP foi gerado e baixado em 0,5 s e pesa 641 KB.",
+          "Traz 60 arquivos: LEEME.txt 1, ios 17, android 21, macos 10, windows 1, web 10.",
+          "O maior arquivo é app-icons/ios/AppIcon.appiconset/icon-1024.png (67 KB).",
+          "Plataformas marcadas no início: 5 de 5."
+        ],
+        "caveat": "Só contei arquivos e tamanhos do ZIP: não o abri no Xcode nem no Android Studio, então não verifiquei que eles aceitem os nomes e pastas. O logo que usei tem texto, que em tamanhos pequenos não se lê (veja o guia de favicons): para ícones convém partir só do emblema."
+      }
+    }
   },
   "favicons-medidas-y-html": {
     "date": "2026-10-06",
@@ -1113,7 +1627,41 @@
     ],
     "_html": "<link rel=\"icon\" href=\"/favicon.ico\" sizes=\"48x48\">\n<link rel=\"icon\" href=\"/favicon-32.png\" sizes=\"32x32\" type=\"image/png\">\n<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon-180.png\">\n<link rel=\"manifest\" href=\"/site.webmanifest\">\n<meta name=\"theme-color\" content=\"#111317\">",
     "_zip": "/tmp/pruebas-grow31/favicons.zip",
-    "caveat": "A 16 px la palabra del logo queda como una raya gris y solo el emblema se reconoce (lo miré yo, no lo medí con una métrica). Casi todo el cuadro de 16 px es transparente porque el emblema es chico dentro del logo: para un favicon conviene recortar el logo al emblema antes de generar el set."
+    "caveat": "A 16 px la palabra del logo queda como una raya gris y solo el emblema se reconoce (lo miré yo, no lo medí con una métrica). Casi todo el cuadro de 16 px es transparente porque el emblema es chico dentro del logo: para un favicon conviene recortar el logo al emblema antes de generar el set.",
+    "i18n": {
+      "en": {
+        "title": "the Web/PWA set and how the favicon looks at 16 px",
+        "tool": "Icon Studio → only “Web / PWA” → “Download icon ZIP” and “Copy favicon HTML”",
+        "steps": [
+          "In Icon Studio I opened logo-despues.png (820 × 637 px, transparent PNG).",
+          "I unticked iOS, Android, macOS and Windows; I left only “Web / PWA”.",
+          "I downloaded the ZIP and pressed “Copy favicon HTML” to read the clipboard.",
+          "I opened the 16 px PNG from the ZIP and measured how much of the square stays opaque."
+        ],
+        "findings": [
+          "59 KB ZIP with 11 files in 0.1 s: app-icons/LEEME.txt (0.9 KB), app-icons/web/favicon-16.png (0.4 KB), app-icons/web/favicon-32.png (0.7 KB), app-icons/web/favicon-48.png (1.1 KB), app-icons/web/apple-touch-icon-180.png (5.9 KB), app-icons/web/icon-192.png (6.6 KB), app-icons/web/icon-512.png (23.8 KB), app-icons/web/maskable-512.png (15.1 KB), app-icons/web/favicon.ico (2.2 KB), app-icons/web/site.webmanifest (0.4 KB), app-icons/web/snippet.html (0.3 KB).",
+          "The copied HTML has 5 <link>/<meta> lines.",
+          "The 16 × 16 px PNG: 1.6% of the pixels opaque, 20.3% semi-transparent and 78.1% transparent."
+        ],
+        "caveat": "At 16 px the logo's wordmark comes out as a gray streak and only the emblem is recognizable (I looked at it myself, I didn't measure it with a metric). Almost the whole 16 px square is transparent because the emblem is small inside the logo: for a favicon you should crop the logo to the emblem before generating the set."
+      },
+      "pt": {
+        "title": "o conjunto Web/PWA e como fica o favicon a 16 px",
+        "tool": "Icon Studio → só «Web / PWA» → «Baixar ZIP de ícones» e «Copiar HTML de favicons»",
+        "steps": [
+          "No Icon Studio abri logo-despues.png (820 × 637 px, PNG transparente).",
+          "Desmarquei iOS, Android, macOS e Windows; deixei só «Web / PWA».",
+          "Baixei o ZIP e apertei «Copiar HTML de favicons» para ler a área de transferência.",
+          "Abri o PNG de 16 px do ZIP e medi quanto do quadrado fica opaco."
+        ],
+        "findings": [
+          "ZIP de 59 KB com 11 arquivos em 0,1 s: app-icons/LEEME.txt (0,9 KB), app-icons/web/favicon-16.png (0,4 KB), app-icons/web/favicon-32.png (0,7 KB), app-icons/web/favicon-48.png (1,1 KB), app-icons/web/apple-touch-icon-180.png (5,9 KB), app-icons/web/icon-192.png (6,6 KB), app-icons/web/icon-512.png (23,8 KB), app-icons/web/maskable-512.png (15,1 KB), app-icons/web/favicon.ico (2,2 KB), app-icons/web/site.webmanifest (0,4 KB), app-icons/web/snippet.html (0,3 KB).",
+          "O HTML copiado tem 5 linhas <link>/<meta>.",
+          "O PNG de 16 × 16 px: 1,6% dos pixels opacos, 20,3% semitransparentes e 78,1% transparentes."
+        ],
+        "caveat": "A 16 px a palavra do logo vira um risco cinza e só o emblema se reconhece (olhei eu mesmo, não medi com uma métrica). Quase todo o quadrado de 16 px é transparente porque o emblema é pequeno dentro do logo: para um favicon convém recortar o logo no emblema antes de gerar o conjunto."
+      }
+    }
   },
   "poner-marca-de-agua-a-una-foto": {
     "date": "2026-10-06",
@@ -1164,7 +1712,39 @@
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "La salida siempre es PNG: una foto de 78 KB pasó a más de 1 MB. Con opacidad 28 la marca toca alrededor del 5 % de los píxeles. No medí qué tan difícil es borrarla con otras herramientas, así que no puedo confirmar que el mosaico sea «difícil de quitar»: solo medí cuánto cubre."
+    "caveat": "La salida siempre es PNG: una foto de 78 KB pasó a más de 1 MB. Con opacidad 28 la marca toca alrededor del 5 % de los píxeles. No medí qué tan difícil es borrarla con otras herramientas, así que no puedo confirmar que el mosaico sea «difícil de quitar»: solo medí cuánto cubre.",
+    "i18n": {
+      "en": {
+        "title": "how much of the photo the tiled watermark covers and how much the result weighs",
+        "tool": "Edit → Watermark",
+        "steps": [
+          "I opened the portrait, went to “Edit” → “Watermark” and typed “© Prueba PhotoCut”.",
+          "I left size 4, angle −30° and spacing 50 (the default values) and downloaded with opacity 28 and with 60.",
+          "I compared each PNG with the original pixel by pixel (difference > 8 levels in some channel)."
+        ],
+        "findings": [
+          "Opacity 28: 720 × 900 px, 1033 KB; 5.5% of the pixels changed (mean difference 3.06 levels).",
+          "Opacity 60: 1060 KB; 6.3% of the pixels changed (mean difference 6.11).",
+          "The original is a 78 KB JPG and the output is always PNG: it weighs 13.2 times more."
+        ],
+        "caveat": "The output is always PNG: a 78 KB photo became more than 1 MB. At opacity 28 the watermark touches around 5% of the pixels. I didn't measure how hard it is to remove with other tools, so I can't confirm that the tile pattern is “hard to remove”: I only measured how much it covers."
+      },
+      "pt": {
+        "title": "quanto da foto a marca em mosaico cobre e quanto pesa o resultado",
+        "tool": "Editar → Marca de água",
+        "steps": [
+          "Abri o retrato, fui em «Editar» → «Marca de água» e escrevi «© Prueba PhotoCut».",
+          "Deixei tamanho 4, ângulo −30° e espaçamento 50 (os valores padrão) e baixei com opacidade 28 e com 60.",
+          "Comparei cada PNG com o original pixel a pixel (diferença > 8 níveis em algum canal)."
+        ],
+        "findings": [
+          "Opacidade 28: 720 × 900 px, 1033 KB; 5,5% dos pixels mudaram (diferença média de 3,06 níveis).",
+          "Opacidade 60: 1060 KB; 6,3% dos pixels mudaram (diferença média de 6,11).",
+          "O original é um JPG de 78 KB e a saída é sempre PNG: pesa 13,2 vezes mais."
+        ],
+        "caveat": "A saída é sempre PNG: uma foto de 78 KB passou a mais de 1 MB. Com opacidade 28 a marca toca cerca de 5% dos pixels. Não medi o quanto é difícil apagá-la com outras ferramentas, então não posso confirmar que o mosaico seja «difícil de tirar»: só medi quanto ele cobre."
+      }
+    }
   },
   "accesibilidad-de-color-contraste-y-daltonismo": {
     "date": "2026-10-06",
@@ -1265,7 +1845,47 @@
       "No medí tiempos: es una cuenta aritmética que se actualiza al cambiar el color, y la latencia de mi herramienta de medición es mayor que la del cálculo."
     ],
     "assets": [],
-    "caveat": "El verificador compara dos colores planos: no mide texto sobre fotos ni sobre degradados. En esta prueba no usé la simulación de daltonismo ni medí tiempos. El caso límite es útil: #777777 sobre blanco (4,48:1) falla AA para texto normal y #767676 (4,54:1) pasa, por muy poco."
+    "caveat": "El verificador compara dos colores planos: no mide texto sobre fotos ni sobre degradados. En esta prueba no usé la simulación de daltonismo ni medí tiempos. El caso límite es útil: #777777 sobre blanco (4,48:1) falla AA para texto normal y #767676 (4,54:1) pasa, por muy poco.",
+    "i18n": {
+      "en": {
+        "title": "the contrast checker against my own WCAG arithmetic",
+        "tool": "Color Studio → Palette → Contrast (WCAG)",
+        "steps": [
+          "In Color Studio I entered five color pairs in “Text” and “Background” with the color picker (without loading any image).",
+          "I noted the ratio and the four badges (AA normal, AA large, AAA normal, AAA large) that it shows.",
+          "I calculated each ratio separately with the WCAG 2.x relative luminance formula and compared them."
+        ],
+        "findings": [
+          "#1f2937 on #d6f64b: 11.98:1 → ✓ AA · normal, ✓ AA · large, ✓ AAA · normal, ✓ AAA · large.",
+          "#777777 on #ffffff: 4.48:1 → ✕ AA · normal, ✓ AA · large, ✕ AAA · normal, ✕ AAA · large.",
+          "#767676 on #ffffff: 4.54:1 → ✓ AA · normal, ✓ AA · large, ✕ AAA · normal, ✓ AAA · large.",
+          "#2563eb on #ffffff: 5.17:1 → ✓ AA · normal, ✓ AA · large, ✕ AAA · normal, ✓ AAA · large.",
+          "#ffffff on #d6f64b: 1.22:1 → ✕ AA · normal, ✕ AA · large, ✕ AAA · normal, ✕ AAA · large.",
+          "My separate calculation matched the one the app shows, to two decimals, in 5 of 5 pairs.",
+          "I didn't measure times: it's an arithmetic calculation that updates when the color changes, and the latency of my measuring tool is greater than that of the calculation."
+        ],
+        "caveat": "The checker compares two flat colors: it doesn't measure text over photos or over gradients. In this test I didn't use the color-blindness simulation or measure times. The edge case is useful: #777777 on white (4.48:1) fails AA for normal text and #767676 (4.54:1) passes, by a very small margin."
+      },
+      "pt": {
+        "title": "o verificador de contraste contra a minha própria conta de WCAG",
+        "tool": "Color Studio → Paleta → Contraste (WCAG)",
+        "steps": [
+          "No Color Studio coloquei cinco pares de cores em «Texto» e «Fundo» com o seletor de cor (sem carregar nenhuma imagem).",
+          "Anotei a proporção e os quatro selos (AA normal, AA grande, AAA normal, AAA grande) que ele mostra.",
+          "Calculei cada proporção à parte com a fórmula de luminância relativa do WCAG 2.x e as comparei."
+        ],
+        "findings": [
+          "#1f2937 sobre #d6f64b: 11.98:1 → ✓ AA · normal, ✓ AA · grande, ✓ AAA · normal, ✓ AAA · grande.",
+          "#777777 sobre #ffffff: 4.48:1 → ✕ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✕ AAA · grande.",
+          "#767676 sobre #ffffff: 4.54:1 → ✓ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✓ AAA · grande.",
+          "#2563eb sobre #ffffff: 5.17:1 → ✓ AA · normal, ✓ AA · grande, ✕ AAA · normal, ✓ AAA · grande.",
+          "#ffffff sobre #d6f64b: 1.22:1 → ✕ AA · normal, ✕ AA · grande, ✕ AAA · normal, ✕ AAA · grande.",
+          "Meu cálculo à parte coincidiu com o que o app mostra, com duas casas decimais, em 5 de 5 pares.",
+          "Não medi tempos: é uma conta aritmética que se atualiza ao mudar a cor, e a latência da minha ferramenta de medição é maior que a do cálculo."
+        ],
+        "caveat": "O verificador compara duas cores chapadas: não mede texto sobre fotos nem sobre degradês. Neste teste não usei a simulação de daltonismo nem medi tempos. O caso limite é útil: #777777 sobre branco (4,48:1) falha no AA para texto normal e #767676 (4,54:1) passa, por muito pouco."
+      }
+    }
   },
   "como-elegir-una-paleta-de-colores": {
     "date": "2026-10-06",
@@ -1370,7 +1990,41 @@
       "/media/guias/quitar-fondo-antes.jpg",
       "/media/guias/pruebas/captura-ui-clara.png"
     ],
-    "caveat": "Las paletas de 3 y de 6 colores no son una subparte de la otra (el primer color de 3 no está entre los de 6): cambiar la cantidad vuelve a calcular y puede cambiar colores. El cuentagotas lo comprobé solo sobre colores planos; en una foto con ruido depende del píxel exacto donde cae el clic."
+    "caveat": "Las paletas de 3 y de 6 colores no son una subparte de la otra (el primer color de 3 no está entre los de 6): cambiar la cantidad vuelve a calcular y puede cambiar colores. El cuentagotas lo comprobé solo sobre colores planos; en una foto con ruido depende del píxel exacto donde cae el clic.",
+    "i18n": {
+      "en": {
+        "title": "from a photo to 6 HEX values, to CSS variables, and the eyedropper against known colors",
+        "tool": "Color Studio → Palette",
+        "steps": [
+          "I loaded the portrait with “Open photo” and went to “Color Studio” (6-color palette by default).",
+          "I moved “Number of colors” to 3, to 12 and back to 6; I pressed “Copy CSS variables” and “Copy JSON” and read the clipboard.",
+          "I loaded captura-ui-clara.png (1280 × 720 px, 41 KB), a screenshot I drew myself with known flat colors, and pinned the eyedropper with a click on four areas."
+        ],
+        "findings": [
+          "On entering Color Studio the 6-color palette appeared in 0.47 s. Changing to 3 colors took 170 ms and to 12, 183 ms.",
+          "6-color palette: #0d121f, #34212b, #66423a, #a95444, #807c87, #d3b5a8. With 3: #211925, #874b3f, #aa9898.",
+          "“Copy CSS variables” left 8 lines in the clipboard (first: “:root {”). “Copy JSON” is valid JSON.",
+          "Eyedropper on known flat colors: 4 of 4 HEX values matched exactly (#F5F7FA → #f5f7fa; #2563EB → #2563eb; #DC2626 → #dc2626; #16A34A → #16a34a)."
+        ],
+        "caveat": "The 3-color and 6-color palettes aren't a subset of each other (the first color of the 3 isn't among the 6): changing the number recalculates and can change colors. I only checked the eyedropper on flat colors; on a noisy photo it depends on the exact pixel where the click lands."
+      },
+      "pt": {
+        "title": "de uma foto a 6 HEX, a variáveis CSS, e o conta-gotas contra cores conhecidas",
+        "tool": "Color Studio → Paleta",
+        "steps": [
+          "Carreguei o retrato com «Abrir foto» e fui ao «Color Studio» (paleta de 6 cores por padrão).",
+          "Movi «Quantidade de cores» para 3, para 12 e de volta para 6; apertei «Copiar variáveis CSS» e «Copiar JSON» e li a área de transferência.",
+          "Carreguei captura-ui-clara.png (1280 × 720 px, 41 KB), uma captura desenhada por mim com cores chapadas conhecidas, e fixei com clique o conta-gotas sobre quatro zonas."
+        ],
+        "findings": [
+          "Ao entrar no Color Studio a paleta de 6 apareceu em 0,47 s. Mudar para 3 cores levou 170 ms e para 12, 183 ms.",
+          "Paleta de 6: #0d121f, #34212b, #66423a, #a95444, #807c87, #d3b5a8. Com 3: #211925, #874b3f, #aa9898.",
+          "«Copiar variáveis CSS» deixou 8 linhas na área de transferência (a primeira: «:root {»). «Copiar JSON» é um JSON válido.",
+          "Conta-gotas sobre cores chapadas conhecidas: 4 de 4 HEX coincidiram exatamente (#F5F7FA → #f5f7fa; #2563EB → #2563eb; #DC2626 → #dc2626; #16A34A → #16a34a)."
+        ],
+        "caveat": "As paletas de 3 e de 6 cores não são uma subparte da outra (a primeira cor das 3 não está entre as 6): mudar a quantidade recalcula e pode mudar cores. O conta-gotas só verifiquei sobre cores chapadas; numa foto com ruído depende do pixel exato onde cai o clique."
+      }
+    }
   },
   "generar-modo-oscuro-desde-una-captura": {
     "date": "2026-10-06",
@@ -1459,6 +2113,52 @@
     "assets": [
       "/media/guias/pruebas/captura-ui-clara.png"
     ],
-    "caveat": "Con la intensidad en 100 el fondo de página y el de las tarjetas pasaron los dos a #000000: el contraste entre ellos cayó a 1,00:1 y las tarjetas dejan de distinguirse. Con la intensidad en 70 sigue siendo casi invisible. Los acentos se oscurecen si no marco «Mantener colores de acento». Es una captura sintética, simple: no probé una captura real con fotos."
+    "caveat": "Con la intensidad en 100 el fondo de página y el de las tarjetas pasaron los dos a #000000: el contraste entre ellos cayó a 1,00:1 y las tarjetas dejan de distinguirse. Con la intensidad en 70 sigue siendo casi invisible. Los acentos se oscurecen si no marco «Mantener colores de acento». Es una captura sintética, simple: no probé una captura real con fotos.",
+    "i18n": {
+      "en": {
+        "title": "a light screenshot turned dark and what really changes",
+        "tool": "Color Studio → Theme → “→ Dark”",
+        "steps": [
+          "I loaded captura-ui-clara.png (1280 × 720 px, 41 KB), a screenshot of an app in light mode that I drew myself.",
+          "In Color Studio → “Theme” I left “→ Dark” at intensity 100 and downloaded the image.",
+          "I ticked “Keep accent colors”, downloaded again and read five reference pixels in the three versions.",
+          "I pressed “Copy CSS” on the color scheme and read the clipboard."
+        ],
+        "findings": [
+          "Mean luminance went from 245 to 4 (on a 0 to 255 scale). Dark mode was drawn in 14 ms and the download took 78 ms.",
+          "page background: #f5f7fa → #000000 (with accents: #000000).",
+          "card background: #ffffff → #000000 (with accents: #000000).",
+          "blue button: #2563eb → #0744cb (with accents: #2563eb).",
+          "red badge: #dc2626 → #a40000 (with accents: #dc2626).",
+          "green badge: #16a34a → #005600 (with accents: #16a34a).",
+          "The contrast between the page background and the card background went from 1.07:1 to 1.00:1.",
+          "With the intensity at 70 the page background is #2f3033 and the card #2e2e2e: contrast 1.03:1.",
+          "The copied color scheme has 87 lines."
+        ],
+        "caveat": "At intensity 100 the page background and the card background both became #000000: the contrast between them fell to 1.00:1 and the cards can no longer be told apart. At intensity 70 it is still almost invisible. The accents get darker if I don't tick “Keep accent colors”. It's a simple, synthetic screenshot: I didn't test a real screenshot with photos."
+      },
+      "pt": {
+        "title": "uma captura clara passada para escuro e o que muda de verdade",
+        "tool": "Color Studio → Tema → «→ Escuro»",
+        "steps": [
+          "Carreguei captura-ui-clara.png (1280 × 720 px, 41 KB), uma captura de um app em modo claro desenhada por mim.",
+          "No Color Studio → «Tema» deixei «→ Escuro» com intensidade 100 e baixei a imagem.",
+          "Marquei «Manter cores de destaque», baixei de novo e li cinco pixels de referência nas três versões.",
+          "Apertei «Copiar CSS» do esquema de cor e li a área de transferência."
+        ],
+        "findings": [
+          "A luminância média passou de 245 para 4 (de 0 a 255). O modo escuro foi desenhado em 14 ms e o download levou 78 ms.",
+          "fundo da página: #f5f7fa → #000000 (com destaques: #000000).",
+          "fundo do cartão: #ffffff → #000000 (com destaques: #000000).",
+          "botão azul: #2563eb → #0744cb (com destaques: #2563eb).",
+          "selo vermelho: #dc2626 → #a40000 (com destaques: #dc2626).",
+          "selo verde: #16a34a → #005600 (com destaques: #16a34a).",
+          "O contraste entre o fundo da página e o do cartão passou de 1,07:1 para 1,00:1.",
+          "Com a intensidade em 70 o fundo da página fica #2f3033 e o cartão #2e2e2e: contraste 1,03:1.",
+          "O esquema CSS copiado tem 87 linhas."
+        ],
+        "caveat": "Com a intensidade em 100 o fundo da página e o dos cartões viraram os dois #000000: o contraste entre eles caiu para 1,00:1 e os cartões deixam de se distinguir. Com a intensidade em 70 continua quase invisível. Os destaques escurecem se eu não marcar «Manter cores de destaque». É uma captura sintética, simples: não testei uma captura real com fotos."
+      }
+    }
   }
 }
