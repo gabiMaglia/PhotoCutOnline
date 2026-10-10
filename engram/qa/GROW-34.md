@@ -25,7 +25,8 @@ O2 y O3 están resueltas, y todo lo verifiqué con salida real.
   «até caber»; ahora dice que avisa cuánto pesa.
 - **Alcance:** src/, test/, scripts/ y 12 guías (las 9 de antes más el avatar ×3); pruebas.json
   sin cambios desde el intento 1. Merge-tree contra main (2c1b8eb) limpio.
-- Sigue abierto, sin bloquear: D-obs-1 (no existe `nerv-gate.sh`; la prueba de rojo fue manual)
+- **Corrección de D-obs-1:** `nerv-gate.sh` SÍ existe (`/Users/gabrielsk/Documents/NERV/bin/nerv-gate.sh`); no se ejecutó porque exige `--handoff` (el return handoff P-1 del dev) y QA no lo tiene. Según P-18 no hay veredicto sin gate: el APROBADO queda condicionado a que el orquestador corra el gate y dé PASS. Mientras tanto, la prueba de rojo se hizo a mano con mutaciones.
+- Sigue abierto, sin bloquear:
   y D-obs-4 (el cableado de lockedFormat lo cubren Chrome y el arnés, no jest). Los Deducidos
   del §GAP van al PO.
 
@@ -93,3 +94,9 @@ del JSON (restaurado después), greps de borrado y de contenido, alcance y merge
 Reproducibilidad (3 slugs): dimensiones, HEX, alpha, KB y % idénticos al JSON; tiempos Δ ≤ 5,1 %.
 Builds 767d6da / e3d95d0: ancestros de HEAD, fuera de main, con stickerWhatsapp, paintBackground y
 la precarga, y src/ idéntico a HEAD.
+
+## Gate (P-18) — corrido por el orquestador post-merge, 2026-10-10
+`nerv-gate.sh --ticket GROW-34 --level S --attempt 2` en un clon temporal con el estado pre-merge (rama en 9d80d21, main en 2c1b8eb):
+- files match declaration (41 files) · return handoff con los 4 campos P-1
+- **REJECTED LEVEL_UNDERSTATED**: nivel computado X (reintento #2 tras rechazo) > declarado S; falta §CÓMO y §QUÉ estampados en engram/plans/GROW-34.md (P-19.3).
+- El código ya estaba mergeado y desplegado (bc88b8e) cuando se corrió: desvío del orquestador. No se estampa un plan retroactivo.
