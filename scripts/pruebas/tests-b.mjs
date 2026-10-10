@@ -68,34 +68,44 @@ TESTS["fotos-de-producto-amazon-etsy-shopify"] = async ({ browser }) => {
   const page = await L.openEditor(ctx);
   await L.loadImage(page, file);
   const ai = await runAI(page);
+  // GROW-34: el preset precarga su fondo (Amazon → Color #ffffff) y después manda el selector
   await choosePreset(page, /Amazon/);
-  await radio(page, "Transparente");
-  await radio(page, "PNG");
-  const dt = await dl(page);
-  const t = await L.analyze(ctx, dt.buf, "image/png");
-  await radio(page, "Color");
-  await L.setColor(page, /Color de fondo/, "#ffffff");
+  const preload = {
+    colorChecked: (await page.getByRole("radio", { name: "Color", exact: true }).getAttribute("aria-checked")) === "true",
+    hex: (await page.locator(".color-export-hex").textContent()).trim(),
+  };
+  // 1) sin tocar el fondo: JPEG
   await radio(page, "JPEG");
   const dj = await dl(page);
   const j = await L.analyze(ctx, dj.buf, "image/jpeg");
   const nw = j.nonWhite.bbox;
+  // 2) mismo preset con «Transparente» + PNG
+  await radio(page, "Transparente");
+  await radio(page, "PNG");
+  const dt = await dl(page);
+  const t = await L.analyze(ctx, dt.buf, "image/png");
   await ctx.close();
   return {
     title: "una taza sintética a 2000 × 2000 px sobre blanco",
     image,
-    tool: "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff",
+    tool: "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff y Transparente",
     steps: [
       "Cargué una imagen dibujada por mí (una taza azul con sombra sobre un gris degradado) y apliqué «Recorte IA».",
-      "Elegí el preset «Amazon 2000×2000».",
-      "Con «Transparente» + PNG descargué para ver qué hacía el preset con la transparencia.",
-      "Elegí modo «Color» #ffffff, formato JPEG y descargué; medí la caja de los píxeles que no son casi blancos.",
+      "Elegí el preset «Amazon 2000×2000» y miré qué fondo dejaba elegido en Exportar.",
+      "Sin tocar el fondo elegí JPEG y descargué; medí el blanco y la caja de los píxeles que no son casi blancos.",
+      "Con el mismo preset cambié a «Transparente» + PNG y descargué para ver si respetaba la transparencia.",
     ],
-    timing: { recorteIaMs: ai, descargaPngMs: dt.ms, descargaJpegMs: dj.ms },
-    result: { png: { w: t.w, h: t.h, kb: t.kb, transparentPct: t.transparentPct, opaquePct: t.opaquePct }, productBox: nw, jpeg: { w: j.w, h: j.h, kb: j.kb, whitePct: j.whitePct, cornerNonWhitePct: j.cornerNonWhitePct } },
+    timing: { recorteIaMs: ai, descargaJpegMs: dj.ms, descargaPngMs: dt.ms },
+    result: {
+      preload,
+      jpeg: { w: j.w, h: j.h, kb: j.kb, whitePct: j.whitePct, cornerNonWhitePct: j.cornerNonWhitePct, corners: j.corners.map((c) => c.slice(0, 3)) },
+      productBox: nw,
+      png: { w: t.w, h: t.h, kb: t.kb, transparentPct: t.transparentPct, opaquePct: t.opaquePct, cornersAlpha: t.corners.map((c) => c[3]) },
+    },
     findings: [
       `Recorte IA: ${f(ai / 1000, 1)} s sobre ${image.w} × ${image.h} px.`,
-      `Con el preset salió un cuadro de ${j.w} × ${j.h} px. El producto (píxeles no casi blancos) ocupa ${f(nw.wPct, 1)} % del ancho y ${f(nw.hPct, 1)} % del alto del cuadro.`,
-      `JPEG sobre blanco: ${f(j.kb, 0)} KB, ${pctS(j.whitePct)} de píxeles #ffffff exactos, esquinas no blancas ${pctS(j.cornerNonWhitePct)}. El PNG pedido como «Transparente» con el preset pesó ${f(t.kb, 0)} KB y salió con ${pctS(t.transparentPct)} de píxeles transparentes.`,
+      `Al elegir el preset, Exportar quedó en «Color» ${preload.hex}. Sin tocarlo, el JPEG salió de ${j.w} × ${j.h} px y ${f(j.kb, 0)} KB, con ${pctS(j.whitePct)} de píxeles #ffffff exactos y esquinas no blancas ${pctS(j.cornerNonWhitePct)}. El producto (píxeles no casi blancos) ocupa ${f(nw.wPct, 1)} % del ancho y ${f(nw.hPct, 1)} % del alto del cuadro.`,
+      `Con el mismo preset y «Transparente» + PNG: ${t.w} × ${t.h} px, ${f(t.kb, 0)} KB, ${pctS(t.transparentPct)} de píxeles transparentes y alfa ${t.corners.map((c) => c[3]).join(", ")} en las cuatro esquinas.`,
     ],
     assets: [pub(file)],
   };
