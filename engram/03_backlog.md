@@ -4,6 +4,12 @@
 > Solo nerv-qa escribe "Done". Mapear SIEMPRE el ID externo si existe.
 > Niv (P-11, nivel de revisión QA): A=Advisory (default) · S=Strong · X=Adversarial.
 
+## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — EN CURSO (PO aprobó 2026-10-10)
+
+| ID | Título | Estado | Criterios de aceptación |
+|---|---|---|---|
+| GROW-34 | **Presets respetan el color elegido + presets de sticker + limpieza de Sticker Studio** | 📋 | **(a) BUG-01:** al elegir un preset, su `bg` se PRECARGA en el selector de fondo del panel (Amazon → #ffffff); la exportación usa SIEMPRE el valor actual del selector (color o transparente), nunca el `bg` del preset. Tests: preset Amazon + color #2563eb → píxel de esquina azul; preset Amazon + transparente → alpha 0 en la esquina; preset sin tocar → blanco (regresión). **(b) BUG-06:** dos presets nuevos en `src/lib/presets.js`: "Sticker WhatsApp" (WebP 512×512, fondo transparente, relleno a cuadrado SIN deformar, margen ~8 %, ≤100 KB) y "Sticker Telegram" (PNG 512×512, transparente, lado mayor 512 sin deformar); ambos en es/en/pt; test: salida 512×512 exacto, proporción del sujeto preservada (bbox opaco mantiene w/h ratio ±1 %), alpha en esquinas 0, WebP ≤100 KB con el retrato de prueba. **(c)** borrar `src/features/stickerStudio/` y su hook/tests, `STICKERS_ENABLED` en config.js, y toda referencia en App.jsx/Topbar.jsx/i18n (claves huérfanas) y tests; `grep -rni "stickerStudio\|STICKERS_ENABLED"` src test = 0. **(d)** Guía de stickers ES/EN/PT: el flujo pasa a "Recorte IA → Exportar → preset Sticker WhatsApp/Telegram"; re-ejecutar `npm run pruebas stickers-de-whatsapp-y-telegram` (arnés) para que el bloque "Lo probamos" mida el preset nuevo (512×512 exacto, KB) y traducir en el JSON (i18n en/pt); HowTo JSON-LD coherente; `npm run pruebas:render`. **(e)** `npm test` + `npm run test:web` verdes; `npm run lastmod` + json con [lastmod-skip]. |
+
 ## Sprint 7 — Fase B auditoría 2026-10 (contenido: menos y mejor) — ✅ CERRADO 2026-10-06 (GROW-30/31/32 Done con QA Strong; GROW-33 bloqueado por input PO)
 > Origen: engram/10 §4 Fase B + §6 línea base (86 visitantes/mes; guías top: recortar-persona 14, quitar-fondo 10, foto-carnet 9). Principio: fusionar solo donde la INTENCIÓN de búsqueda es la misma; las guías con intención propia y tráfico se conservan y se profundizan. No se agregan guías.
 
