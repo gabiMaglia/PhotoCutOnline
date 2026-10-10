@@ -21,6 +21,7 @@ export default function ExportPanel({
   setExportMode,
   format,
   setFormat,
+  lockedFormat = null,
   bgColor,
   setBgColor,
   bgImage,
@@ -146,7 +147,8 @@ export default function ExportPanel({
           options={["png", "webp", "jpeg"].map((f) => ({
             value: f,
             label: f.toUpperCase(),
-            disabled: f === "jpeg" && exportMode === "transparent",
+            // un preset de sticker fija el formato que exige la app
+            disabled: lockedFormat ? f !== lockedFormat : f === "jpeg" && exportMode === "transparent",
           }))}
         />
       )}

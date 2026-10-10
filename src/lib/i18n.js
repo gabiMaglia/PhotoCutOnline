@@ -446,6 +446,10 @@ const DICT = {
     "preset.igPost": "Instagram post 1080×1080",
     "preset.igStory": "Instagram story 1080×1920",
     "preset.avatar": "Avatar circular 512",
+    "preset.stickerWhatsapp": "Sticker WhatsApp 512 (WebP)",
+    "preset.stickerTelegram": "Sticker Telegram 512 (PNG)",
+    "export.qualityReduced": "Bajé la calidad a {q} % para que pese {kb} KB (límite {max} KB)",
+    "export.overLimit": "Pesa {kb} KB: no entra en el límite de {max} KB ni con la calidad mínima",
 
     "dl.aria": "Descargar la app de escritorio",
     "dl.title": "App de escritorio",
@@ -898,6 +902,10 @@ const DICT = {
     "preset.igPost": "Instagram post 1080×1080",
     "preset.igStory": "Instagram story 1080×1920",
     "preset.avatar": "Circle avatar 512",
+    "preset.stickerWhatsapp": "WhatsApp sticker 512 (WebP)",
+    "preset.stickerTelegram": "Telegram sticker 512 (PNG)",
+    "export.qualityReduced": "Quality lowered to {q}% so it weighs {kb} KB (limit {max} KB)",
+    "export.overLimit": "It weighs {kb} KB: it doesn't fit the {max} KB limit even at minimum quality",
 
     "dl.aria": "Download the desktop app",
     "dl.title": "Desktop app",
@@ -1350,6 +1358,10 @@ const DICT = {
     "preset.igPost": "Instagram post 1080×1080",
     "preset.igStory": "Instagram story 1080×1920",
     "preset.avatar": "Avatar circular 512",
+    "preset.stickerWhatsapp": "Figurinha WhatsApp 512 (WebP)",
+    "preset.stickerTelegram": "Figurinha Telegram 512 (PNG)",
+    "export.qualityReduced": "Baixei a qualidade para {q}% para pesar {kb} KB (limite {max} KB)",
+    "export.overLimit": "Pesa {kb} KB: não cabe no limite de {max} KB nem com a qualidade mínima",
 
     "dl.aria": "Baixar o app para desktop",
     "dl.title": "App para desktop",

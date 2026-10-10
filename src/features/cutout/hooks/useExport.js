@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { backend } from "../../../lib/backend.js";
-import { EXPORT_PRESETS } from "../../../lib/presets.js";
+import { EXPORT_PRESETS, fitWithinBytes } from "../../../lib/presets.js";
 import { t } from "../../../lib/i18n.js";
 import { hexToRgba } from "../../../utils/color.js";
 import { fileToDataUrl, bgWithOpacity } from "../../../utils/image.js";
@@ -29,6 +29,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     setPresetIdRaw(id);
     const preset = EXPORT_PRESETS.find((p) => p.id === id)?.preset;
     if (!preset) return;
+    if (preset.format) setFormat(preset.format);
     if (preset.bg) {
       setBgColor(preset.bg);
       setExportMode("solid");
@@ -36,6 +37,10 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
       setExportMode("transparent");
     }
   }, []);
+
+  const activePreset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
+  // los stickers exigen un formato concreto: la UI lo muestra fijo
+  const lockedFormat = activePreset?.format ?? null;
 
   const rotateBy = useCallback(
     (deg) => setResultRotation((r) => (((r + deg + 180) % 360) + 360) % 360 - 180),
@@ -46,25 +51,48 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     async (kind, arg) => {
       setBusy(true);
       try {
-        const preset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
-        // JPEG no tiene alfa: el modo transparente cae a PNG
-        const effFormat = kind === "transparent" && format === "jpeg" ? "png" : format;
+        // el desenfocado no usa presets (exporta a tamaño original)
+        const preset = kind === "blur" ? null : activePreset;
+        // el formato del preset manda; si no, JPEG no tiene alfa y el modo
+        // transparente cae a PNG
+        const effFormat =
+          preset?.format || (kind === "transparent" && format === "jpeg" ? "png" : format);
         // encuadre: solo se manda si no es identidad (evita recomponer en vano)
         const transform =
           resultScale !== 100 || resultRotation !== 0
             ? { scale: resultScale / 100, rotation: resultRotation }
             : null;
-        const opts = {
-          format: effFormat,
-          quality: 0.92,
-          ...(preset ? { preset } : {}),
-          ...(transform ? { transform } : {}),
+        const run = (quality) => {
+          const opts = {
+            format: effFormat,
+            quality,
+            ...(preset ? { preset } : {}),
+            ...(transform ? { transform } : {}),
+          };
+          if (kind === "transparent") return backend.exportTransparent(opts);
+          if (kind === "solid") return backend.exportSolid(arg, opts);
+          if (kind === "image") return backend.exportImageBg(arg, opts);
+          return backend.exportBlurBg(arg, opts);
         };
         let url;
-        if (kind === "transparent") url = await backend.exportTransparent(opts);
-        else if (kind === "solid") url = await backend.exportSolid(arg, opts);
-        else if (kind === "image") url = await backend.exportImageBg(arg, opts);
-        else if (kind === "blur") url = await backend.exportBlurBg(arg, opts);
+        let notice = null;
+        if (preset?.maxBytes) {
+          const fit = await fitWithinBytes(
+            async (q) => {
+              const u = await run(q);
+              return { url: u, bytes: (await (await fetch(u)).blob()).size };
+            },
+            { maxBytes: preset.maxBytes }
+          );
+          url = fit.url;
+          const kb = Math.round(fit.bytes / 1024);
+          const max = Math.round(preset.maxBytes / 1024);
+          if (!fit.fits) notice = [t("export.overLimit", { kb, max }), "error"];
+          else if (fit.reduced)
+            notice = [t("export.qualityReduced", { q: Math.round(fit.quality * 100), kb, max }), "ok"];
+        } else {
+          url = await run(0.92);
+        }
         const ext = effFormat === "jpeg" ? "jpg" : effFormat;
         const name = `photocut-${kind}.${ext}`;
         if (backend.isDesktop) {
@@ -75,14 +103,15 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
           downloadDataUrl(url, name);
         }
         trackEvent("export", { kind, format: effFormat });
-        toast(t(backend.isDesktop ? "toast.saved" : "toast.exported"), "ok");
+        if (notice) toast(...notice);
+        else toast(t(backend.isDesktop ? "toast.saved" : "toast.exported"), "ok");
       } catch (e) {
         toast(String(e), "error");
       } finally {
         setBusy(false);
       }
     },
-    [format, presetId, resultScale, resultRotation, setBusy, toast]
+    [format, activePreset, resultScale, resultRotation, setBusy, toast]
   );
 
   // descarga según el modo de fondo elegido (selector único)
@@ -132,6 +161,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     setExportMode,
     presetId,
     setPresetId,
+    lockedFormat,
     bgColor,
     setBgColor,
     bgImage,
