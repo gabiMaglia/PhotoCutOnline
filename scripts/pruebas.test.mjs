@@ -194,6 +194,35 @@ test("EN/PT dicen lo mismo que ES en lo que cambió fuera del bloque", () => {
   }
 });
 
+// GROW-34: la guía de stickers enseña el flujo real (presets de Exportar) y su
+// «Lo probamos» mide esos presets, no el rodeo viejo por Archivo.
+test("stickers (ES, EN, PT): el flujo es Recorte IA → Exportar → preset Sticker, y el JSON mide el preset", () => {
+  const LABEL = {
+    es: ["Sticker WhatsApp 512 (WebP)", "Sticker Telegram 512 (PNG)"],
+    en: ["WhatsApp sticker 512 (WebP)", "Telegram sticker 512 (PNG)"],
+    pt: ["Figurinha WhatsApp 512 (WebP)", "Figurinha Telegram 512 (PNG)"],
+  };
+  for (const lang of LANGS) {
+    const h = html("stickers-de-whatsapp-y-telegram", lang);
+    const howto = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+      .map((m) => JSON.parse(m[1]))
+      .find((b) => b["@type"] === "HowTo");
+    const steps = howto.step.map((s) => s.text).join(" ");
+    for (const label of LABEL[lang]) {
+      assert.ok(h.includes(label), `${lang}: la guía no nombra el preset «${label}»`);
+      assert.ok(steps.includes(label), `${lang}: el HowTo no nombra el preset «${label}»`);
+    }
+    // el rodeo viejo (Archivo para llegar a 512) ya no es el camino
+    assert.doesNotMatch(steps, /Archivo|File|Arquivo/, `${lang}: el HowTo sigue mandando a Archivo`);
+  }
+  const r = db["stickers-de-whatsapp-y-telegram"].result;
+  assert.deepEqual([r.whatsapp?.w, r.whatsapp?.h, r.whatsapp?.format], [512, 512, "webp"]);
+  assert.deepEqual([r.telegram?.w, r.telegram?.h, r.telegram?.format], [512, 512, "png"]);
+  assert.ok(r.whatsapp.kb <= 100, `WhatsApp ${r.whatsapp.kb} KB`);
+  assert.deepEqual(r.whatsapp.cornersAlpha, [0, 0, 0, 0]);
+  assert.deepEqual(r.telegram.cornersAlpha, [0, 0, 0, 0]);
+});
+
 test("tildes en las guías de medidas (ES)", () => {
   for (const slug of ["medidas-de-fotos-para-redes-sociales-2026", "medidas-de-iconos-de-app-ios-android-2026"]) {
     const t = html(slug).replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ");

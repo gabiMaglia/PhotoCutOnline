@@ -1016,11 +1016,11 @@
     }
   },
   "stickers-de-whatsapp-y-telegram": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-10",
+    "browser": "Chrome 154.0.8037.99",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
-    "title": "el peso del sticker contra el límite de 100 KB de WhatsApp",
+    "build": "767d6da",
+    "title": "los presets «Sticker WhatsApp» y «Sticker Telegram» contra lo que piden las apps",
     "image": {
       "name": "quitar-fondo-antes.jpg",
       "src": "/media/guias/quitar-fondo-antes.jpg",
@@ -1028,82 +1028,121 @@
       "h": 900,
       "kb": 78.4
     },
-    "tool": "Recorte → Recorte IA + «Sticker (contorno)», y Archivo → WebP",
+    "tool": "Recorte → Recorte IA + «Sticker (contorno)», Exportar → presets «Sticker WhatsApp 512 (WebP)» y «Sticker Telegram 512 (PNG)»",
     "steps": [
-      "Cargué el retrato y apliqué «Recorte IA»; descargué un PNG transparente sin contorno como referencia.",
-      "Activé «Sticker (contorno)» con el grosor por defecto (14 px) y descargué en PNG y en WebP.",
-      "Abrí el WebP en la pestaña «Archivo», lo llevé a 512 px de alto con calidad 80 y descargué."
+      "Cargué el retrato, apliqué «Recorte IA» y activé «Sticker (contorno)» con el grosor por defecto (14 px).",
+      "Descargué un PNG transparente sin preset como referencia de la proporción de la figura.",
+      "En Exportar elegí el preset «Sticker WhatsApp 512 (WebP)» y descargué; después el preset «Sticker Telegram 512 (PNG)» y descargué.",
+      "En cada archivo medí tamaño, peso, formato real (cabecera del archivo), alfa de las cuatro esquinas y la caja de la figura."
     ],
     "timing": {
-      "recorteIaMs": 3957,
-      "archivoMs": 238
+      "recorteIaMs": 4045,
+      "whatsappMs": 176,
+      "telegramMs": 154
     },
     "result": {
-      "sinContorno": {
-        "kb": 535.1,
+      "referencia": {
         "w": 720,
-        "h": 900
-      },
-      "contornoPng": {
+        "h": 900,
         "kb": 529,
-        "w": 720,
-        "h": 900,
-        "transparentPct": 44.14
+        "subjectRatio": 0.6715
       },
-      "contornoWebp": {
-        "kb": 51.4,
-        "w": 720,
-        "h": 900,
-        "transparentPct": 44.14
-      },
-      "a512": {
-        "kb": 15,
-        "w": 410,
+      "whatsapp": {
+        "file": "photocut-transparent.webp",
+        "format": "webp",
+        "w": 512,
         "h": 512,
-        "transparentPct": 43.54,
-        "estimadoEnPantalla": null,
-        "anchoMostrado": "410"
+        "kb": 20.2,
+        "transparentPct": 67.79,
+        "cornersAlpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "subjectRatio": 0.6698,
+        "subjectLongPx": 430,
+        "marginPct": 8,
+        "formatsEnabled": {
+          "PNG": false,
+          "WEBP": true,
+          "JPEG": false
+        },
+        "toasts": [
+          "Exportado ✓"
+        ],
+        "ms": 176,
+        "ratioDevPct": 0.25
+      },
+      "telegram": {
+        "file": "photocut-transparent.png",
+        "format": "png",
+        "w": 512,
+        "h": 512,
+        "kb": 199.3,
+        "transparentPct": 61.31,
+        "cornersAlpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "subjectRatio": 0.6695,
+        "subjectLongPx": 472,
+        "marginPct": 3.9,
+        "formatsEnabled": {
+          "PNG": true,
+          "WEBP": false,
+          "JPEG": false
+        },
+        "toasts": [
+          "Exportado ✓"
+        ],
+        "ms": 154,
+        "ratioDevPct": 0.3
       }
     },
     "findings": [
-      "Sin contorno, PNG: 720 × 900 px, 535 KB. Con contorno blanco de 14 px: PNG 720 × 900 px, 529 KB, y WebP 51 KB con 44,1 % de píxeles transparentes.",
-      "Ese WebP, llevado en Archivo a 410 × 512 px (calidad 80): 15,0 KB y 43,5 % transparente. El límite de WhatsApp es 100 KB.",
-      "El editor me dejó fijar el alto en 512 y el ancho se ajustó solo a 410 px (la foto es vertical). Un cuadrado de 512 × 512, que es lo que pide WhatsApp, habría exigido deformar la imagen o recortarla antes."
+      "Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,8 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.",
+      "Sticker Telegram: PNG de 512 × 512 px y 199,3 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.",
+      "La foto es vertical (720 × 900) y el preset no la deforma: la figura mide 0,671 de ancho por cada 1 de alto en la referencia, 0,670 en el de WhatsApp y 0,669 en el de Telegram. El lado más largo de la figura ocupa 430 px en WhatsApp (margen de 8,0 % por lado) y 472 px en Telegram."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "La pestaña Stickers (con el destino «WhatsApp · WebP 512») está desactivada en esta versión de la web, así que no pude usarla: con lo que hay, el sticker sale a 720 × 900 px y hay que llevarlo a 512 de alto en Archivo. Un 512 × 512 exacto, que es lo que pide WhatsApp, no encontré cómo sacarlo de una foto vertical sin deformarla: Archivo solo escala y no probé encuadrar antes con «Recortar área». No armé el pack ni lo probé dentro de WhatsApp o Telegram.",
+    "caveat": "Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP pesó 20,2 KB: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.",
     "i18n": {
       "en": {
-        "title": "the sticker's weight against WhatsApp's 100 KB limit",
-        "tool": "Cutout → AI cutout + “Sticker (outline)”, and File → WebP",
+        "title": "the “WhatsApp sticker” and “Telegram sticker” presets against what the apps ask for",
+        "tool": "Cutout → AI cutout + “Sticker (outline)”, Export → “WhatsApp sticker 512 (WebP)” and “Telegram sticker 512 (PNG)” presets",
         "steps": [
-          "I loaded the portrait and applied “AI cutout”; I downloaded a transparent PNG with no outline as a reference.",
-          "I turned on “Sticker (outline)” with the default width (14 px) and downloaded as PNG and as WebP.",
-          "I opened the WebP in the “File” tab, took it to 512 px tall at quality 80 and downloaded."
+          "I loaded the portrait, applied “AI cutout” and turned on “Sticker (outline)” with the default width (14 px).",
+          "I downloaded a transparent PNG with no preset as a reference for the figure's proportions.",
+          "In Export I chose the “WhatsApp sticker 512 (WebP)” preset and downloaded; then the “Telegram sticker 512 (PNG)” preset and downloaded.",
+          "In each file I measured size, weight, real format (file header), alpha of the four corners and the figure's box."
         ],
         "findings": [
-          "Without outline, PNG: 720 × 900 px, 535 KB. With a 14 px white outline: PNG 720 × 900 px, 529 KB, and WebP 51 KB with 44.1% transparent pixels.",
-          "That WebP, taken in File to 410 × 512 px (quality 80): 15.0 KB and 43.5% transparent. WhatsApp's limit is 100 KB.",
-          "The editor let me set the height to 512 and the width adjusted itself to 410 px (the photo is vertical). A 512 × 512 square, which is what WhatsApp asks for, would have required stretching the image or cropping it first."
+          "WhatsApp sticker: WebP of 512 × 512 px and 20.2 KB (WhatsApp's limit is 100 KB), 67.8% transparent pixels and alpha 0, 0, 0, 0 in the four corners. With the preset chosen, the panel only let me pick the WEBP format.",
+          "Telegram sticker: PNG of 512 × 512 px and 199.3 KB, alpha 0, 0, 0, 0 in the corners; format enabled: PNG.",
+          "The photo is vertical (720 × 900) and the preset doesn't stretch it: the figure is 0.671 wide for every 1 tall in the reference, 0.670 in the WhatsApp one and 0.669 in the Telegram one. The figure's longest side takes 430 px in WhatsApp (an 8.0% margin per side) and 472 px in Telegram."
         ],
-        "caveat": "The Stickers tab (with the “WhatsApp · WebP 512” destination) is disabled in this version of the site, so I couldn't use it: with what's there, the sticker comes out at 720 × 900 px and has to be taken to 512 tall in File. An exact 512 × 512, which is what WhatsApp asks for, I didn't find how to get from a vertical photo without stretching it: File only scales and I didn't try framing beforehand with “Crop area”. I didn't build the pack or test it inside WhatsApp or Telegram."
+        "caveat": "Both presets gave the exact square without stretching the figure, but with this portrait the WebP weighed 20.2 KB: I didn't see the case where it goes over 100 KB and the editor lowers the quality by itself, so I didn't test that with a real photo. The preset locks the format (with the WhatsApp one only WEBP is left) and there's no preset for the 96 × 96 tray icon that a WhatsApp pack needs. I didn't build the pack or test it inside WhatsApp or Telegram."
       },
       "pt": {
-        "title": "o peso da figurinha contra o limite de 100 KB do WhatsApp",
-        "tool": "Recorte → Recorte IA + «Sticker (contorno)», e Arquivo → WebP",
+        "title": "os presets «Figurinha WhatsApp» e «Figurinha Telegram» contra o que os apps pedem",
+        "tool": "Recorte → Recorte IA + «Sticker (contorno)», Exportar → presets «Figurinha WhatsApp 512 (WebP)» e «Figurinha Telegram 512 (PNG)»",
         "steps": [
-          "Carreguei o retrato e apliquei «Recorte IA»; baixei um PNG transparente sem contorno como referência.",
-          "Ativei «Sticker (contorno)» com a espessura padrão (14 px) e baixei em PNG e em WebP.",
-          "Abri o WebP na aba «Arquivo», levei a 512 px de altura com qualidade 80 e baixei."
+          "Carreguei o retrato, apliquei «Recorte IA» e ativei «Sticker (contorno)» com a espessura padrão (14 px).",
+          "Baixei um PNG transparente sem preset como referência da proporção da figura.",
+          "Em Exportar escolhi o preset «Figurinha WhatsApp 512 (WebP)» e baixei; depois o preset «Figurinha Telegram 512 (PNG)» e baixei.",
+          "Em cada arquivo medi tamanho, peso, formato real (cabeçalho do arquivo), alfa dos quatro cantos e a caixa da figura."
         ],
         "findings": [
-          "Sem contorno, PNG: 720 × 900 px, 535 KB. Com contorno branco de 14 px: PNG 720 × 900 px, 529 KB, e WebP 51 KB com 44,1% de pixels transparentes.",
-          "Esse WebP, levado em Arquivo a 410 × 512 px (qualidade 80): 15,0 KB e 43,5% transparente. O limite do WhatsApp é 100 KB.",
-          "O editor me deixou fixar a altura em 512 e a largura se ajustou sozinha a 410 px (a foto é vertical). Um quadrado de 512 × 512, que é o que o WhatsApp pede, teria exigido deformar a imagem ou recortá-la antes."
+          "Figurinha WhatsApp: WebP de 512 × 512 px e 20,2 KB (o limite do WhatsApp é 100 KB), 67,8% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos. Com o preset escolhido, o painel só me deixou mexer no formato WEBP.",
+          "Figurinha Telegram: PNG de 512 × 512 px e 199,3 KB, alfa 0, 0, 0, 0 nos cantos; formato habilitado: PNG.",
+          "A foto é vertical (720 × 900) e o preset não a deforma: a figura mede 0,671 de largura para cada 1 de altura na referência, 0,670 na do WhatsApp e 0,669 na do Telegram. O lado mais longo da figura ocupa 430 px no WhatsApp (margem de 8,0% por lado) e 472 px no Telegram."
         ],
-        "caveat": "A aba Stickers (com o destino «WhatsApp · WebP 512») está desativada nesta versão do site, então não pude usá-la: com o que há, a figurinha sai a 720 × 900 px e é preciso levá-la a 512 de altura em Arquivo. Um 512 × 512 exato, que é o que o WhatsApp pede, não encontrei como tirar de uma foto vertical sem deformá-la: Arquivo só escala e não testei enquadrar antes com «Recortar área». Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram."
+        "caveat": "Os dois presets deram o quadrado exato sem deformar a figura, mas com este retrato o WebP pesou 20,2 KB: não vi o caso em que passa de 100 KB e o editor baixa a qualidade sozinho, então isso eu não testei com uma foto real. O preset fixa o formato (com o do WhatsApp só sobra WEBP) e não há um preset para o ícone de capa de 96 × 96 que o pacote do WhatsApp pede. Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram."
       }
     }
   },
