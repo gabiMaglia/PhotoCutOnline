@@ -592,14 +592,7 @@ export class CutoutSession {
     const out = createCanvas(art.width, art.height);
     const ctx = out.getContext("2d");
 
-    if (opts.type === "solid") {
-      const [r, g, b, a] = opts.color;
-      ctx.fillStyle = `rgba(${r},${g},${b},${(a ?? 255) / 255})`;
-      ctx.fillRect(0, 0, out.width, out.height);
-    } else if (opts.type === "image") {
-      const img = await decodeImage(opts.bgDataUrl);
-      drawCover(ctx, img, out.width, out.height);
-    }
+    await paintBackground(ctx, opts, out.width, out.height);
     ctx.drawImage(art, 0, 0);
 
     const format = opts.format || "png";
@@ -633,11 +626,14 @@ export class CutoutSession {
 
   /**
    * Exportación con preset de marketplace/social:
-   * preset: { w, h, padding=0.06, bg=null|"#hex", circle=false }
+   * preset: { w, h, padding=0.06, circle=false }
    * Recorta al bounding box del sujeto (incluido el acabado) y lo encaja.
+   * El fondo sale de opts.type/color/bgDataUrl (lo que el usuario tiene en el
+   * selector); preset.bg es solo el valor que la UI precarga, nunca se pinta
+   * acá — si no, el color elegido se perdía (BUG-01).
    */
-  compositePreset(art, opts) {
-    const { w: pw, h: ph, padding = 0.06, bg = null, circle = false } = opts.preset;
+  async compositePreset(art, opts) {
+    const { w: pw, h: ph, padding = 0.06, circle = false } = opts.preset;
     const box = alphaBBox(art);
     const out = createCanvas(pw, ph);
     const ctx = out.getContext("2d");
@@ -646,10 +642,7 @@ export class CutoutSession {
       ctx.arc(pw / 2, ph / 2, Math.min(pw, ph) / 2, 0, Math.PI * 2);
       ctx.clip();
     }
-    if (bg) {
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, pw, ph);
-    }
+    await paintBackground(ctx, opts, pw, ph);
     const availW = pw * (1 - padding * 2);
     const availH = ph * (1 - padding * 2);
     const s = Math.min(availW / box.w, availH / box.h);
@@ -1007,6 +1000,17 @@ export function canvasToBlob(canvas, type = "image/png", quality) {
 export async function decodeImage(src) {
   const blob = typeof src === "string" ? await (await fetch(src)).blob() : src;
   return createImageBitmap(blob);
+}
+
+/** Fondo de la exportación según el modo elegido; "transparent" no pinta nada. */
+async function paintBackground(ctx, opts, w, h) {
+  if (opts.type === "solid") {
+    const [r, g, b, a] = opts.color;
+    ctx.fillStyle = `rgba(${r},${g},${b},${(a ?? 255) / 255})`;
+    ctx.fillRect(0, 0, w, h);
+  } else if (opts.type === "image") {
+    drawCover(ctx, await decodeImage(opts.bgDataUrl), w, h);
+  }
 }
 
 function drawCover(ctx, img, w, h) {

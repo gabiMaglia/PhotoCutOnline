@@ -3,6 +3,7 @@
 // Se ejecuta en Chrome headless; escribe PASS/FAIL en #out.
 
 import { CutoutSession } from "../src/lib/jsEngine.js";
+import { EXPORT_PRESETS } from "../src/lib/presets.js";
 import wasmInit, { WasmCut } from "../src/lib/wasm/photocut_wasm.js";
 
 const out = [];
@@ -199,15 +200,26 @@ async function main() {
   assert(avImg.width === 512 && avImg.height === 512, "preset: lienzo 512×512");
   assert(px(avImg, 3, 3)[3] === 0, "preset circular: esquina transparente");
   assert(px(avImg, 256, 256)[3] > 0, "preset circular: centro con contenido");
-  const amz = await s2.composite({
-    type: "transparent",
-    preset: { w: 2000, h: 2000, padding: 0.05, bg: "#ffffff" },
-  });
-  const amzImg = await blobToImageData(amz);
-  const corner = px(amzImg, 5, 5);
+  // BUG-01: el fondo lo decide el selector (type/color), nunca preset.bg.
+  // Se usa el preset real de Amazon (trae bg "#ffffff") para probar que se ignora.
+  const AMZ = EXPORT_PRESETS.find((p) => p.id === "amazon").preset;
+  const amzBlue = await blobToImageData(
+    await s2.composite({ type: "solid", color: [37, 99, 235, 255], preset: AMZ })
+  );
+  const cBlue = px(amzBlue, 5, 5);
   assert(
-    amzImg.width === 2000 && corner[0] === 255 && corner[3] === 255,
-    "preset amazon: 2000² con fondo blanco"
+    amzBlue.width === 2000 && cBlue[0] === 37 && cBlue[1] === 99 && cBlue[2] === 235 && cBlue[3] === 255,
+    `preset amazon + #2563eb: esquina azul (rgba ${cBlue.join(",")})`
+  );
+  const amzT = await blobToImageData(await s2.composite({ type: "transparent", preset: AMZ }));
+  assert(px(amzT, 5, 5)[3] === 0, `preset amazon + transparente: esquina alpha 0 (a=${px(amzT, 5, 5)[3]})`);
+  const amzW = await blobToImageData(
+    await s2.composite({ type: "solid", color: [255, 255, 255, 255], preset: AMZ })
+  );
+  const cW = px(amzW, 5, 5);
+  assert(
+    cW[0] === 255 && cW[1] === 255 && cW[2] === 255 && cW[3] === 255,
+    "preset amazon sin tocar (blanco precargado): esquina blanca"
   );
 
   // 9. motor WASM (GrabCut real): misma API, precisión igual o mejor.

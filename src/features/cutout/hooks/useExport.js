@@ -13,7 +13,7 @@ import { trackEvent } from "../../../services/analytics.js";
 export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   const [format, setFormat] = useState("png");
   const [exportMode, setExportMode] = useState("transparent"); // transparent | solid | image
-  const [presetId, setPresetId] = useState("original");
+  const [presetId, setPresetIdRaw] = useState("original");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [bgImage, setBgImage] = useState(null); // dataURL del fondo "imagen"
   const [bgOpacity, setBgOpacity] = useState(100);
@@ -21,6 +21,21 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   const [resultScale, setResultScale] = useState(100); // %
   const [resultRotation, setResultRotation] = useState(0); // grados, -180..180
   const [blurAmount, setBlurAmount] = useState(16); // radio del fondo desenfocado
+
+  // Elegir un preset precarga su fondo en el selector (Amazon → blanco, avatar →
+  // transparente). Después manda el selector: el usuario puede cambiarlo y eso
+  // es lo que se exporta (BUG-01). "Original" no trae fondo y no toca nada.
+  const setPresetId = useCallback((id) => {
+    setPresetIdRaw(id);
+    const preset = EXPORT_PRESETS.find((p) => p.id === id)?.preset;
+    if (!preset) return;
+    if (preset.bg) {
+      setBgColor(preset.bg);
+      setExportMode("solid");
+    } else {
+      setExportMode("transparent");
+    }
+  }, []);
 
   const rotateBy = useCallback(
     (deg) => setResultRotation((r) => (((r + deg + 180) % 360) + 360) % 360 - 180),
