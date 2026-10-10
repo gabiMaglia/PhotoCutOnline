@@ -164,8 +164,8 @@
       <ol>
         <li>Open the product photo in <a href="/editor/">PhotoCut Studio</a> (drag the file in or paste with <code>Ctrl/Cmd+V</code>).</li>
         <li>Remove the background: try the <strong>AI Cutout</strong>; if the product has complex edges, adjust with the keep/remove brushes.</li>
-        <li>In <strong>Export</strong>, choose the <strong>Color</strong> background mode and set white (<code>#ffffff</code>).</li>
         <li>Pick your platform's <strong>size preset</strong> (Amazon 2000×2000, Etsy 2700×2025, Shopify 2048×2048, Instagram 1080×1080): the preset crops to the product, centers it and adds margin automatically.</li>
+        <li>In <strong>Export</strong>, check that the <strong>Color</strong> background mode is set to white (<code>#ffffff</code>): the preset already selects it. If you want another background, change it after the preset, because choosing a preset sets the background back to white.</li>
         <li>Download. Repeat the same cutout for each platform by changing only the preset.</li>
       </ol>
 
@@ -201,22 +201,22 @@
       <div class="tried">
         <h3>We tested it: a synthetic mug at 2000 × 2000 px on white</h3>
         <p><strong>Image:</strong> <a href="/media/guias/pruebas/producto-sintetico.jpg"><code>producto-sintetico.jpg</code></a>, 1200 × 1200 px, 29.1 KB (synthetic image I drew with Pillow).</p>
-        <p><strong>Tool:</strong> Cutout → AI cutout, “Amazon 2000×2000” preset, Export → Color #ffffff.</p>
+        <p><strong>Tool:</strong> Cutout → AI cutout, “Amazon 2000×2000” preset, Export → Color #ffffff and Transparent.</p>
         <p><strong>What I did:</strong></p>
         <ol>
           <li>I loaded an image I drew myself (a blue mug with a shadow on a gradient gray) and applied “AI cutout”.</li>
-          <li>I chose the “Amazon 2000×2000” preset.</li>
-          <li>With “Transparent” + PNG I downloaded to see what the preset did with the transparency.</li>
-          <li>I chose “Color” mode #ffffff, JPEG format and downloaded; I measured the box of the pixels that aren't almost white.</li>
+          <li>I chose the “Amazon 2000×2000” preset and looked at which background it left selected in Export.</li>
+          <li>Without touching the background I chose JPEG and downloaded; I measured the white and the box of the pixels that aren't almost white.</li>
+          <li>With the same preset I switched to “Transparent” + PNG and downloaded to see whether it kept the transparency.</li>
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout: 4.2 s on 1200 × 1200 px.</li>
-          <li>The preset produced a 2000 × 2000 px canvas. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.</li>
-          <li>JPEG on white: 90 KB, 40.3% of pixels exactly #ffffff, non-white corners 0.0%. The PNG requested as “Transparent” with the preset weighed 586 KB and came out with 0.0% transparent pixels.</li>
+          <li>AI cutout: 4.3 s on 1200 × 1200 px.</li>
+          <li>When I chose the preset, Export was left on “Color” #ffffff. Without touching it, the JPEG came out at 2000 × 2000 px and 90 KB, with 40.3% of pixels exactly #ffffff and 0.0% non-white corners. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.</li>
+          <li>With the same preset and “Transparent” + PNG: 2000 × 2000 px, 669 KB, 40.3% transparent pixels and alpha 0, 0, 0, 0 in the four corners.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. With the Amazon preset the “Transparent” mode came out opaque, because the preset brings its own white background: there's no way to ask for a transparent PNG at 2000 × 2000 with that preset.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. The transparent PNG at 2000 × 2000 weighs 669 KB against 90 KB for the JPEG on white, and I didn't upload either one to Amazon to see whether it's accepted.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-10">2026-10-10</time> with PhotoCut (web) in Chrome 154.0.8037.99 · macOS 14.8.8 · PhotoCut version: commit e3d95d0.</p>
       </div>
       <!-- pruebas:end -->
 

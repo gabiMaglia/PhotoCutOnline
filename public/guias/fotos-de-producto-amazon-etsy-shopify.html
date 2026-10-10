@@ -47,8 +47,8 @@
       "step": [
         { "@type": "HowToStep", "position": 1, "name": "Abrir la foto del producto", "text": "Abrí la foto del producto en PhotoCut Studio (arrastrá el archivo o pegá con Ctrl/⌘+V)." },
         { "@type": "HowToStep", "position": 2, "name": "Quitar el fondo", "text": "Quitá el fondo: probá el Recorte IA; si el producto tiene bordes complejos, ajustá con los pinceles mantener/quitar." },
-        { "@type": "HowToStep", "position": 3, "name": "Poner fondo blanco", "text": "En Exportar, elegí el modo de fondo Color y poné blanco (#ffffff)." },
-        { "@type": "HowToStep", "position": 4, "name": "Elegir el preset de tamaño", "text": "Elegí el preset de tamaño de tu plataforma (Amazon 2000×2000, Etsy 2700×2025, Shopify 2048×2048, Instagram 1080×1080): el preset recorta al producto, lo centra y le deja margen automáticamente." },
+        { "@type": "HowToStep", "position": 3, "name": "Elegir el preset de tamaño", "text": "Elegí el preset de tamaño de tu plataforma (Amazon 2000×2000, Etsy 2700×2025, Shopify 2048×2048, Instagram 1080×1080): el preset recorta al producto, lo centra y le deja margen automáticamente." },
+        { "@type": "HowToStep", "position": 4, "name": "Poner fondo blanco", "text": "En Exportar, comprobá que quede el modo de fondo Color con blanco (#ffffff): el preset ya lo deja elegido. Si querés otro fondo, cambialo después del preset, porque al elegir un preset el fondo vuelve a blanco." },
         { "@type": "HowToStep", "position": 5, "name": "Descargar", "text": "Descargá. Repetí el mismo recorte para cada plataforma cambiando solo el preset." }
       ]
     }
@@ -184,8 +184,8 @@
       <ol>
         <li>Abrí la foto del producto en <a href="/">PhotoCut Studio</a> (arrastrá el archivo o pegá con <code>Ctrl/⌘+V</code>).</li>
         <li>Quitá el fondo: probá el <strong>Recorte IA</strong>; si el producto tiene bordes complejos, ajustá con los pinceles mantener/quitar.</li>
-        <li>En <strong>Exportar</strong>, elegí el modo de fondo <strong>Color</strong> y poné blanco (<code>#ffffff</code>).</li>
         <li>Elegí el <strong>preset de tamaño</strong> de tu plataforma (Amazon 2000×2000, Etsy 2700×2025, Shopify 2048×2048, Instagram 1080×1080): el preset recorta al producto, lo centra y le deja margen automáticamente.</li>
+        <li>En <strong>Exportar</strong>, comprobá que quede el modo de fondo <strong>Color</strong> con blanco (<code>#ffffff</code>): el preset ya lo deja elegido. Si querés otro fondo, cambialo después del preset, porque al elegir un preset el fondo vuelve a blanco.</li>
         <li>Descargá. Repetí el mismo recorte para cada plataforma cambiando solo el preset.</li>
       </ol>
 
@@ -260,22 +260,22 @@
       <div class="tried">
         <h3>Lo probamos: una taza sintética a 2000 × 2000 px sobre blanco</h3>
         <p><strong>Imagen:</strong> <a href="/media/guias/pruebas/producto-sintetico.jpg"><code>producto-sintetico.jpg</code></a>, 1200 × 1200 px, 29,1 KB (imagen sintética que dibujé con Pillow).</p>
-        <p><strong>Herramienta:</strong> Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff.</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff y Transparente.</p>
         <p><strong>Qué hice:</strong></p>
         <ol>
           <li>Cargué una imagen dibujada por mí (una taza azul con sombra sobre un gris degradado) y apliqué «Recorte IA».</li>
-          <li>Elegí el preset «Amazon 2000×2000».</li>
-          <li>Con «Transparente» + PNG descargué para ver qué hacía el preset con la transparencia.</li>
-          <li>Elegí modo «Color» #ffffff, formato JPEG y descargué; medí la caja de los píxeles que no son casi blancos.</li>
+          <li>Elegí el preset «Amazon 2000×2000» y miré qué fondo dejaba elegido en Exportar.</li>
+          <li>Sin tocar el fondo elegí JPEG y descargué; medí el blanco y la caja de los píxeles que no son casi blancos.</li>
+          <li>Con el mismo preset cambié a «Transparente» + PNG y descargué para ver si respetaba la transparencia.</li>
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Recorte IA: 4,2 s sobre 1200 × 1200 px.</li>
-          <li>Con el preset salió un cuadro de 2000 × 2000 px. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.</li>
-          <li>JPEG sobre blanco: 90 KB, 40,3 % de píxeles #ffffff exactos, esquinas no blancas 0,0 %. El PNG pedido como «Transparente» con el preset pesó 586 KB y salió con 0,0 % de píxeles transparentes.</li>
+          <li>Recorte IA: 4,3 s sobre 1200 × 1200 px.</li>
+          <li>Al elegir el preset, Exportar quedó en «Color» #ffffff. Sin tocarlo, el JPEG salió de 2000 × 2000 px y 90 KB, con 40,3 % de píxeles #ffffff exactos y esquinas no blancas 0,0 %. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.</li>
+          <li>Con el mismo preset y «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. Con el preset de Amazon el modo «Transparente» salió opaco, porque el preset trae su propio fondo blanco: no hay forma de pedir PNG transparente a 2000 × 2000 con ese preset.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. El PNG transparente a 2000 × 2000 pesa 669 KB contra 90 KB del JPEG sobre blanco, y no subí ninguno de los dos a Amazon para ver si lo acepta.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-10">2026-10-10</time> con PhotoCut (web) en Chrome 154.0.8037.99 · macOS 14.8.8 · versión de PhotoCut: commit e3d95d0.</p>
       </div>
       <!-- pruebas:end -->
 

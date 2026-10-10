@@ -50,8 +50,8 @@
       "step": [
         { "@type": "HowToStep", "position": 1, "name": "Elegir una buena foto", "text": "Elegí una foto de frente, de los hombros para arriba, con buena luz y expresión cordial." },
         { "@type": "HowToStep", "position": 2, "name": "Recortar el sujeto", "text": "En PhotoCut Studio, usá el Recorte IA para separarte del fondo original; repasá el pelo con los pinceles." },
-        { "@type": "HowToStep", "position": 3, "name": "Elegir un fondo profesional", "text": "Poné un fondo de color liso y neutro, o una imagen sobria, con el modo Color o Imagen del panel de exportación." },
-        { "@type": "HowToStep", "position": 4, "name": "Encuadrar cuadrado", "text": "Encuadrá cuadrado con la cara ligeramente por encima del centro y aire sobre la cabeza; LinkedIn muestra la foto en círculo." },
+        { "@type": "HowToStep", "position": 3, "name": "Encuadrar cuadrado", "text": "Encuadrá cuadrado con la cara ligeramente por encima del centro y aire sobre la cabeza; LinkedIn muestra la foto en círculo. Si usás un preset cuadrado de Exportar, elegilo en este paso." },
+        { "@type": "HowToStep", "position": 4, "name": "Elegir un fondo profesional", "text": "Después poné un fondo de color liso y neutro, o una imagen sobria, con el modo Color o Imagen del panel de exportación. El fondo va después del preset: al elegir un preset el fondo vuelve a blanco." },
         { "@type": "HowToStep", "position": 5, "name": "Exportar grande", "text": "Exportá cuadrada y grande (por ejemplo 800×800) en JPG o PNG para que se vea nítida en todos los tamaños." }
       ]
     }
@@ -187,8 +187,8 @@
       <ol>
         <li>Elegí una foto de frente, de los hombros para arriba, con buena luz y expresión cordial.</li>
         <li>En <a href="/">PhotoCut Studio</a>, usá el <strong>Recorte IA</strong> para separarte del fondo original; repasá el pelo con los <strong>pinceles</strong>.</li>
-        <li>Poné un <strong>fondo profesional</strong>: un color liso neutro (modo Color) o una imagen sobria (modo Imagen), bajando la opacidad si hace falta.</li>
-        <li>Encuadrá <strong>cuadrado</strong> con la cara ligeramente por encima del centro y aire sobre la cabeza.</li>
+        <li>Encuadrá <strong>cuadrado</strong> con la cara ligeramente por encima del centro y aire sobre la cabeza. Si usás un preset cuadrado de Exportar, elegilo en este paso.</li>
+        <li>Después poné un <strong>fondo profesional</strong>: un color liso neutro (modo Color) o una imagen sobria (modo Imagen), bajando la opacidad si hace falta. El fondo va después del preset: al elegir un preset el fondo vuelve a blanco y habría que volver a poner tu color.</li>
         <li>Exportá cuadrada y grande (por ejemplo 800×800) en <strong>JPG</strong> o <strong>PNG</strong>.</li>
       </ol>
 
@@ -233,19 +233,19 @@
         <p><strong>Qué hice:</strong></p>
         <ol>
           <li>Cargué el retrato y apliqué «Recorte IA».</li>
-          <li>En Exportar elegí «Color» #c9ced6 (un gris sobrio) y JPEG.</li>
-          <li>Descargué con tres presets cuadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (no hay un preset de LinkedIn).</li>
-          <li>En cada JPEG calculé qué porcentaje de los píxeles de la figura cae fuera del círculo inscrito en el cuadrado, que es lo que LinkedIn no muestra.</li>
+          <li>Elegí uno por uno tres presets cuadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (no hay un preset de LinkedIn), y anoté qué fondo dejaba elegido cada uno.</li>
+          <li>Con cada preset descargué un PNG transparente para medir qué porcentaje de la figura cae fuera del círculo inscrito en el cuadrado, que es lo que LinkedIn no muestra.</li>
+          <li>Después puse «Color» #c9ced6 (un gris sobrio), descargué en PNG y en JPEG, y leí el color de las cuatro esquinas.</li>
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Recorte IA: 4,0 s.</li>
-          <li>Amazon 2000×2000 (margen 5 %): 2000 × 2000 px, 198 KB; 0,1 % de la figura queda fuera del círculo; la esquina salió rgb(255, 255, 255), no el gris pedido.</li>
-          <li>Shopify 2048×2048 (margen 6 %): 2048 × 2048 px, 200 KB; 0,0 % de la figura queda fuera del círculo; la esquina salió rgb(255, 255, 255), no el gris pedido.</li>
-          <li>Instagram post 1080×1080 (margen 8 %): 1080 × 1080 px, 78 KB; 0,0 % de la figura queda fuera del círculo; la esquina salió rgb(255, 255, 255), no el gris pedido.</li>
+          <li>Recorte IA: 4,1 s.</li>
+          <li>Amazon 2000×2000 (margen 5 %): 2000 × 2000 px, JPEG de 196 KB; 0,1 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.</li>
+          <li>Shopify 2048×2048 (margen 6 %): 2048 × 2048 px, JPEG de 198 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.</li>
+          <li>Instagram post 1080×1080 (margen 8 %): 1080 × 1080 px, JPEG de 77 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> No hay un preset de LinkedIn y los presets cuadrados ignoraron el color gris que pedí: todas las salidas tienen fondo #ffffff. Para un fondo de color hay que dejar el preset en «Original» y encuadrar aparte. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> No hay un preset de LinkedIn. Cada preset, al elegirlo, vuelve a dejar el fondo en #ffffff y tuve que poner el gris de nuevo; con el gris puesto, el PNG sale con #c9ced6 exacto y el JPEG lo corre apenas, a #c9cdd6, por la compresión. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-10">2026-10-10</time> con PhotoCut (web) en Chrome 154.0.8037.99 · macOS 14.8.8 · versión de PhotoCut: commit e3d95d0.</p>
       </div>
       <!-- pruebas:end -->
 

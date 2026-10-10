@@ -158,8 +158,8 @@
       <ol>
         <li>Choose a front-facing photo, from the shoulders up, with good light and a friendly expression.</li>
         <li>In <a href="/editor/">PhotoCut Studio</a>, use the <strong>AI Cutout</strong> to separate yourself from the original background; touch up the hair with the <strong>brushes</strong>.</li>
-        <li>Add a <strong>professional background</strong>: a flat neutral color (Color mode) or a sober image (Image mode), lowering the opacity if needed.</li>
-        <li>Frame it <strong>square</strong> with the face slightly above center and air above the head.</li>
+        <li>Frame it <strong>square</strong> with the face slightly above center and air above the head. If you use a square preset in Export, pick it in this step.</li>
+        <li>Then add a <strong>professional background</strong>: a flat neutral color (Color mode) or a sober image (Image mode), lowering the opacity if needed. The background goes after the preset: choosing a preset sets the background back to white and you'd have to set your color again.</li>
         <li>Export square and large (for example 800×800) as <strong>JPG</strong> or <strong>PNG</strong>.</li>
       </ol>
 
@@ -197,19 +197,19 @@
         <p><strong>What I did:</strong></p>
         <ol>
           <li>I loaded the portrait and applied “AI cutout”.</li>
-          <li>In Export I chose “Color” #c9ced6 (a sober gray) and JPEG.</li>
-          <li>I downloaded with three square presets: Amazon 2000×2000, Shopify 2048×2048 and Instagram post 1080×1080 (there is no LinkedIn preset).</li>
-          <li>In each JPEG I calculated what percentage of the figure's pixels falls outside the circle inscribed in the square, which is what LinkedIn doesn't show.</li>
+          <li>I chose three square presets one by one: Amazon 2000×2000, Shopify 2048×2048 and Instagram post 1080×1080 (there is no LinkedIn preset), and noted which background each one left selected.</li>
+          <li>With each preset I downloaded a transparent PNG to measure what percentage of the figure falls outside the circle inscribed in the square, which is what LinkedIn doesn't show.</li>
+          <li>Then I set “Color” #c9ced6 (a sober gray), downloaded as PNG and as JPEG, and read the color of the four corners.</li>
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout: 4.0 s.</li>
-          <li>Amazon 2000×2000 (5% margin): 2000 × 2000 px, 198 KB; 0.1% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.</li>
-          <li>Shopify 2048×2048 (6% margin): 2048 × 2048 px, 200 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.</li>
-          <li>Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 78 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.</li>
+          <li>AI cutout: 4.1 s.</li>
+          <li>Amazon 2000×2000 (5% margin): 2000 × 2000 px, 196 KB JPEG; 0.1% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
+          <li>Shopify 2048×2048 (6% margin): 2048 × 2048 px, 198 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
+          <li>Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 77 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> There is no LinkedIn preset and the square presets ignored the gray I asked for: every output has a #ffffff background. For a colored background you have to leave the preset on “Original” and frame separately. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> There is no LinkedIn preset. Each preset, when chosen, sets the background back to #ffffff and I had to set the gray again; with the gray set, the PNG comes out with exactly #c9ced6 and the JPEG shifts it slightly, to #c9cdd6, because of compression. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-10">2026-10-10</time> with PhotoCut (web) in Chrome 154.0.8037.99 · macOS 14.8.8 · PhotoCut version: commit e3d95d0.</p>
       </div>
       <!-- pruebas:end -->
 

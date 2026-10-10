@@ -23,8 +23,11 @@ export function macVersion() {
   return execFileSync("sw_vers", ["-productVersion"]).toString().trim();
 }
 
+// El commit que se está midiendo (HEAD): el merge-base con main firmaba con un
+// commit que no tenía el cambio probado. PRUEBAS_BUILD lo fija a mano si hace falta.
 export function commit() {
-  return execFileSync("git", ["merge-base", "HEAD", "main"], { cwd: ROOT }).toString().trim().slice(0, 7);
+  if (process.env.PRUEBAS_BUILD) return process.env.PRUEBAS_BUILD.slice(0, 7);
+  return execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { cwd: ROOT }).toString().trim();
 }
 
 // Abre el editor en ES, sin onboarding, con un observador de toasts con marca de tiempo.

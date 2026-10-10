@@ -151,22 +151,6 @@ const DICT = {
     "icon.note":
       "Vista pixel-perfect — así se verá el icono en el dock, la barra de pestañas y la home screen.",
 
-    "tab.stickers": "Stickers",
-    "sticker.look": "Look del sticker",
-    "sticker.outline": "Contorno",
-    "sticker.outlineColor": "Color del contorno",
-    "sticker.outlineWidth": "Grosor del contorno — {n}px",
-    "sticker.shadow": "Sombra",
-    "sticker.export": "Exportar",
-    "sticker.whatsapp": "WhatsApp · WebP 512",
-    "sticker.telegram": "Telegram · PNG 512",
-    "sticker.png": "PNG transparente 512",
-    "sticker.help":
-      "WhatsApp usa WebP de 512×512; Telegram, PNG de 512. El contorno hace que el sticker resalte sobre cualquier chat.",
-    "sticker.emptyBody":
-      "Usá el recorte actual o abrí un PNG transparente. Le agregamos contorno y sombra y lo exportamos listo para WhatsApp y Telegram.",
-    "sticker.note": "Así se verá tu sticker a 512×512 — el tamaño que usan WhatsApp y Telegram.",
-    "sticker.exported": "Sticker {target} descargado ✓",
 
     "tab.colors": "Color Studio",
     "color.source": "Imagen",
@@ -446,6 +430,13 @@ const DICT = {
     "preset.igPost": "Instagram post 1080×1080",
     "preset.igStory": "Instagram story 1080×1920",
     "preset.avatar": "Avatar circular 512",
+    "preset.stickerWhatsapp": "Sticker WhatsApp 512 (WebP)",
+    "preset.stickerTelegram": "Sticker Telegram 512 (PNG)",
+    "export.qualityReduced": "Bajé la calidad a {q} % para que pese {kb} KB (límite {max} KB)",
+    "export.overLimit": "Pesa {kb} KB: no entra en el límite de {max} KB ni con la calidad mínima",
+    "export.presetBgWhite": "El preset puso fondo blanco; podés cambiarlo",
+    "export.presetBgColor": "El preset puso fondo {color}; podés cambiarlo",
+    "export.presetBgTransparent": "El preset puso fondo transparente; podés cambiarlo",
 
     "dl.aria": "Descargar la app de escritorio",
     "dl.title": "App de escritorio",
@@ -603,22 +594,6 @@ const DICT = {
     "icon.note":
       "Pixel-perfect preview — exactly how the icon will look in the dock, tab bar and home screen.",
 
-    "tab.stickers": "Stickers",
-    "sticker.look": "Sticker look",
-    "sticker.outline": "Outline",
-    "sticker.outlineColor": "Outline color",
-    "sticker.outlineWidth": "Outline width — {n}px",
-    "sticker.shadow": "Shadow",
-    "sticker.export": "Export",
-    "sticker.whatsapp": "WhatsApp · WebP 512",
-    "sticker.telegram": "Telegram · PNG 512",
-    "sticker.png": "Transparent PNG 512",
-    "sticker.help":
-      "WhatsApp uses 512×512 WebP; Telegram, 512 PNG. The outline makes the sticker pop on any chat.",
-    "sticker.emptyBody":
-      "Use the current cutout or open a transparent PNG. We add outline and shadow and export it ready for WhatsApp and Telegram.",
-    "sticker.note": "This is how your sticker looks at 512×512 — the size WhatsApp and Telegram use.",
-    "sticker.exported": "{target} sticker downloaded ✓",
 
     "tab.colors": "Color Studio",
     "color.source": "Image",
@@ -898,6 +873,13 @@ const DICT = {
     "preset.igPost": "Instagram post 1080×1080",
     "preset.igStory": "Instagram story 1080×1920",
     "preset.avatar": "Circle avatar 512",
+    "preset.stickerWhatsapp": "WhatsApp sticker 512 (WebP)",
+    "preset.stickerTelegram": "Telegram sticker 512 (PNG)",
+    "export.qualityReduced": "Quality lowered to {q}% so it weighs {kb} KB (limit {max} KB)",
+    "export.overLimit": "It weighs {kb} KB: it doesn't fit the {max} KB limit even at minimum quality",
+    "export.presetBgWhite": "The preset set a white background; you can change it",
+    "export.presetBgColor": "The preset set a {color} background; you can change it",
+    "export.presetBgTransparent": "The preset set a transparent background; you can change it",
 
     "dl.aria": "Download the desktop app",
     "dl.title": "Desktop app",
@@ -1055,22 +1037,6 @@ const DICT = {
     "icon.note":
       "Visualização pixel-perfect — é assim que o ícone vai aparecer no dock, na barra de abas e na home screen.",
 
-    "tab.stickers": "Stickers",
-    "sticker.look": "Estilo do sticker",
-    "sticker.outline": "Contorno",
-    "sticker.outlineColor": "Cor do contorno",
-    "sticker.outlineWidth": "Espessura do contorno — {n}px",
-    "sticker.shadow": "Sombra",
-    "sticker.export": "Exportar",
-    "sticker.whatsapp": "WhatsApp · WebP 512",
-    "sticker.telegram": "Telegram · PNG 512",
-    "sticker.png": "PNG transparente 512",
-    "sticker.help":
-      "O WhatsApp usa WebP de 512×512; o Telegram, PNG de 512. O contorno faz o sticker se destacar em qualquer conversa.",
-    "sticker.emptyBody":
-      "Use o recorte atual ou abra um PNG transparente. Adicionamos contorno e sombra e exportamos pronto para WhatsApp e Telegram.",
-    "sticker.note": "É assim que seu sticker fica em 512×512 — o tamanho usado por WhatsApp e Telegram.",
-    "sticker.exported": "Sticker {target} baixado ✓",
 
     "tab.colors": "Color Studio",
     "color.source": "Imagem",
@@ -1350,6 +1316,13 @@ const DICT = {
     "preset.igPost": "Instagram post 1080×1080",
     "preset.igStory": "Instagram story 1080×1920",
     "preset.avatar": "Avatar circular 512",
+    "preset.stickerWhatsapp": "Figurinha WhatsApp 512 (WebP)",
+    "preset.stickerTelegram": "Figurinha Telegram 512 (PNG)",
+    "export.qualityReduced": "Baixei a qualidade para {q}% para pesar {kb} KB (limite {max} KB)",
+    "export.overLimit": "Pesa {kb} KB: não cabe no limite de {max} KB nem com a qualidade mínima",
+    "export.presetBgWhite": "O preset colocou fundo branco; você pode mudar",
+    "export.presetBgColor": "O preset colocou fundo {color}; você pode mudar",
+    "export.presetBgTransparent": "O preset colocou fundo transparente; você pode mudar",
 
     "dl.aria": "Baixar o app para desktop",
     "dl.title": "App para desktop",

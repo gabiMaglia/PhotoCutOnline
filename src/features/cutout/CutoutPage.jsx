@@ -97,6 +97,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
             setExportMode={exporter.setExportMode}
             format={exporter.format}
             setFormat={exporter.setFormat}
+            lockedFormat={exporter.lockedFormat}
             bgColor={exporter.bgColor}
             setBgColor={exporter.setBgColor}
             bgImage={exporter.bgImage}

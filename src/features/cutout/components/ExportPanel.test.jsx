@@ -59,4 +59,19 @@ describe("ExportPanel", () => {
     const { container } = setup({ exportMode: "solid" });
     expect(container.querySelector('input[type="color"]')).toBeInTheDocument();
   });
+
+  it("con un formato impuesto por el preset deshabilita los demás formatos", () => {
+    setup({ format: "webp", lockedFormat: "webp" });
+    expect(screen.getByRole("radio", { name: "WEBP" })).not.toBeDisabled();
+    expect(screen.getByRole("radio", { name: "PNG" })).toBeDisabled();
+    expect(screen.getByRole("radio", { name: "JPEG" })).toBeDisabled();
+  });
+
+  it("ofrece los presets de sticker", async () => {
+    const { setPresetId } = setup();
+    await userEvent.click(screen.getByRole("button", { name: /preset/i }));
+    expect(screen.getByRole("option", { name: /telegram/i })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("option", { name: /whatsapp/i }));
+    expect(setPresetId).toHaveBeenCalledWith("sticker-whatsapp");
+  });
 });

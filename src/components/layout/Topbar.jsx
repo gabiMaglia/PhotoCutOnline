@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { backend } from "../../lib/backend.js";
 import { t } from "../../lib/i18n.js";
 import { DONATE_URL } from "../../services/ads.js";
-import { STICKERS_ENABLED } from "../../config.js";
 import FileButton from "../ui/FileButton.jsx";
 import IconButton from "../ui/IconButton.jsx";
 import LangSwitch from "./LangSwitch.jsx";
@@ -53,14 +52,13 @@ export default function Topbar({ tab, onTab, onFileInput, onOpenAbout, onOpenDow
         {[
           // Orden = flujo natural: recortás → editás encima → lote → iconos → color → archivo.
           // "Editar" (id interno "text" para no romper los deep-links ?tab=text) es el
-          // hub de edición sobre la foto: texto, censurar caras, stickers, etc.
+          // hub de edición sobre la foto: texto, censurar caras, etc.
           { id: "cut", label: t("tab.cut") },
           { id: "text", label: t("tab.text") },
           { id: "batch", label: t("tab.batch") },
           { id: "icons", label: "Icon Studio" },
           { id: "colors", label: t("tab.colors") },
           { id: "meta", label: t("tab.meta") },
-          ...(STICKERS_ENABLED ? [{ id: "stickers", label: t("tab.stickers") }] : []),
         ].map((it) => (
           <button
             key={it.id}

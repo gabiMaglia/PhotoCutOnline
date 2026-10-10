@@ -9,7 +9,6 @@ import CutoutPage from "./features/cutout/CutoutPage.jsx";
 // usa el recorte). Su chunk no entra al bundle inicial hasta abrir la pestaña.
 const IconStudioPage = lazy(() => import("./features/iconStudio/IconStudioPage.jsx"));
 const BatchPage = lazy(() => import("./features/batch/BatchPage.jsx"));
-const StickerStudioPage = lazy(() => import("./features/stickerStudio/StickerStudioPage.jsx"));
 const ColorToolsPage = lazy(() => import("./features/colorTools/ColorToolsPage.jsx"));
 const MetadataPage = lazy(() => import("./features/metadata/MetadataPage.jsx"));
 const EditPage = lazy(() => import("./features/textTool/EditPage.jsx"));
@@ -20,7 +19,6 @@ import AboutModal from "./modals/AboutModal.jsx";
 import DownloadModal from "./modals/DownloadModal.jsx";
 import HelpModal from "./modals/HelpModal.jsx";
 import Onboarding from "./modals/Onboarding.jsx";
-import { STICKERS_ENABLED } from "./config.js";
 
 // Shell de la app: idioma, pestaña activa, notificaciones y modales. Toda la
 // funcionalidad de recorte vive en CutoutProvider; cada página tiene su hook.
@@ -76,14 +74,12 @@ function AppShell({ tab, setTab, toasts, toast }) {
   // chunk no se descarga hasta que el usuario realmente entra a la pestaña.
   const [iconsSeen, setIconsSeen] = useState(false);
   const [batchSeen, setBatchSeen] = useState(false);
-  const [stickersSeen, setStickersSeen] = useState(false);
   const [colorsSeen, setColorsSeen] = useState(tab === "colors");
   const [metaSeen, setMetaSeen] = useState(tab === "meta");
   const [textSeen, setTextSeen] = useState(tab === "text");
   useEffect(() => {
     if (tab === "icons") setIconsSeen(true);
     if (tab === "batch") setBatchSeen(true);
-    if (tab === "stickers") setStickersSeen(true);
     if (tab === "colors") setColorsSeen(true);
     if (tab === "meta") setMetaSeen(true);
     if (tab === "text") setTextSeen(true);
@@ -123,12 +119,6 @@ function AppShell({ tab, setTab, toasts, toast }) {
       {batchSeen && (
         <Suspense fallback={null}>
           <BatchPage active={tab === "batch"} onToast={toast} />
-        </Suspense>
-      )}
-
-      {STICKERS_ENABLED && stickersSeen && (
-        <Suspense fallback={null}>
-          <StickerStudioPage active={tab === "stickers"} onToast={toast} onOpenDownload={openDownload} />
         </Suspense>
       )}
 

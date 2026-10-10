@@ -60,19 +60,19 @@
           "@type": "HowToStep",
           "position": 3,
           "name": "Adicionar contorno",
-          "text": "Ative o contorno (opcional, mas recomendado) e enquadre o sujeito com uma margem uniforme."
+          "text": "Ative «Sticker (contorno)» em Acabamento (opcional, mas recomendado). A margem fica por conta do preset de figurinha."
         },
         {
           "@type": "HowToStep",
           "position": 4,
           "name": "Exportar para o WhatsApp",
-          "text": "Em Exportar escolha Transparente e WEBP e baixe; depois, na aba Arquivo, leve a figurinha a 512 px em WebP e confira que pese menos de 100 KB. Use em um app de pacotes de figurinhas."
+          "text": "Em Exportar, em «Preset de tamanho», escolha «Figurinha WhatsApp 512 (WebP)» e baixe: sai um WebP de 512×512 com fundo transparente e a figura sem deformar. Use em um app de pacotes de figurinhas."
         },
         {
           "@type": "HowToStep",
           "position": 5,
           "name": "Exportar para o Telegram",
-          "text": "Em Exportar escolha o modo Transparente e PNG, baixe e, na aba Arquivo, deixe o lado maior em 512 px. Envie com o bot @Stickers."
+          "text": "Em Exportar, em «Preset de tamanho», escolha «Figurinha Telegram 512 (PNG)» e baixe: sai um PNG de 512×512 com fundo transparente. Envie com o bot @Stickers."
         }
       ]
     }
@@ -185,22 +185,24 @@
       <ol>
         <li>Abra sua foto no <a href="/editor/">PhotoCut Studio</a> (arraste ou cole com <code>Ctrl/Cmd+V</code>).</li>
         <li>Remova o fundo com o <strong>Recorte IA</strong> e refine as bordas com os <strong>pincéis</strong> se precisar.</li>
-        <li>Ative o <strong>contorno</strong> (opcional, mas recomendado) para o efeito clássico de figurinha recortada.</li>
-        <li>Enquadre o sujeito com uma margem uniforme: ele não deve encostar nas bordas do quadro.</li>
-        <li>Exporte conforme o destino, como explicado a seguir.</li>
+        <li>Ative <strong>«Sticker (contorno)»</strong> em Acabamento (opcional, mas recomendado) para o efeito clássico de figurinha recortada.</li>
+        <li>Em <strong>Exportar</strong>, abra <strong>«Preset de tamanho»</strong> e escolha o preset do destino: <strong>«Figurinha WhatsApp 512 (WebP)»</strong> ou <strong>«Figurinha Telegram 512 (PNG)»</strong>. O preset faz o quadrado de 512×512, centraliza a figura com margem sem deformá-la e fixa o formato.</li>
+        <li>Baixe e envie conforme o app, como explicado a seguir.</li>
       </ol>
 
       <h2>Para o WhatsApp: WebP de 512×512 e menos de 100 KB</h2>
       <p>
-        Em <strong>Exportar</strong> escolha <strong>Transparente</strong> e o
-        formato <strong>WEBP</strong>, baixe e leve o resultado a
-        512&nbsp;px na aba <strong>Arquivo</strong> (WebP, com a qualidade
-        necessária para ficar abaixo de 100&nbsp;KB). O WhatsApp pede
-        512×512&nbsp;px exatos: o painel Arquivo só escala, então enquadre
-        quadrado antes. O WebP comprime
-        melhor que o PNG mantendo a transparência, e por isso cumprir o limite de
-        peso é muito mais fácil do que com um PNG do mesmo tamanho. Além da
-        figurinha, o pacote pede:
+        Em <strong>Exportar</strong> escolha o preset
+        <strong>«Figurinha WhatsApp 512 (WebP)»</strong> e baixe. Sai um WebP de
+        512×512&nbsp;px exatos com fundo transparente, mesmo que a foto seja
+        vertical ou horizontal: a figura é encaixada no quadrado com uma margem
+        em volta e sem esticar. Enquanto o preset está escolhido, o painel só
+        deixa o formato WEBP. Se com a sua foto o arquivo passasse de
+        100&nbsp;KB, o editor baixa a qualidade aos poucos e avisa; se nem com a
+        qualidade mínima couber, avisa quanto pesa. O WebP
+        comprime melhor que o PNG mantendo a transparência, e por isso cumprir o
+        limite de peso é muito mais fácil do que com um PNG do mesmo tamanho.
+        Além da figurinha, o pacote pede:
       </p>
       <ul>
         <li><strong>Ícone de capa (tray):</strong> 96 × 96 px, WebP, com menos de 50 KB.</li>
@@ -214,10 +216,10 @@
 
       <h2>Para o Telegram: PNG transparente de 512 px e o bot @Stickers</h2>
       <p>
-        Em <strong>Exportar</strong> escolha o modo <strong>Transparente</strong>
-        e <strong>PNG</strong> (JPG não serve: preenche o fundo), baixe e, na aba
-        <strong>Arquivo</strong>, deixe o lado maior em
-        <strong>512&nbsp;px</strong>.
+        Em <strong>Exportar</strong> escolha o preset
+        <strong>«Figurinha Telegram 512 (PNG)»</strong> e baixe: sai um PNG
+        transparente de 512×512&nbsp;px com a figura sem deformar (JPG não serve
+        porque preenche o fundo, e com este preset o painel não o oferece).
         Para enviar, o Telegram não usa apps de terceiros, e sim um bot próprio:
       </p>
       <ol>
@@ -259,30 +261,31 @@
         mesmo fluxo de recorte e exportação em cada uma, com o mesmo estilo de
         contorno, para o pacote ficar coerente. No Telegram o bot monta o pacote
         conforme você envia os PNG. E como o recorte já está pronto, você pode
-        exportar o mesmo sujeito nas duas versões: WebP para o WhatsApp e PNG para
-        o Telegram.
+        exportar o mesmo sujeito nas duas versões sem refazer nada: troque o
+        preset em Exportar e baixe de novo.
       </p>
 
 
       <!-- pruebas:start -->
       <div class="tried">
-        <h3>Nós testamos: o peso da figurinha contra o limite de 100 KB do WhatsApp</h3>
+        <h3>Nós testamos: os presets «Figurinha WhatsApp» e «Figurinha Telegram» contra o que os apps pedem</h3>
         <p><strong>Imagem:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de domínio público).</p>
-        <p><strong>Ferramenta:</strong> Recorte → Recorte IA + «Sticker (contorno)», e Arquivo → WebP.</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA + «Sticker (contorno)», Exportar → presets «Figurinha WhatsApp 512 (WebP)» e «Figurinha Telegram 512 (PNG)».</p>
         <p><strong>O que eu fiz:</strong></p>
         <ol>
-          <li>Carreguei o retrato e apliquei «Recorte IA»; baixei um PNG transparente sem contorno como referência.</li>
-          <li>Ativei «Sticker (contorno)» com a espessura padrão (14 px) e baixei em PNG e em WebP.</li>
-          <li>Abri o WebP na aba «Arquivo», levei a 512 px de altura com qualidade 80 e baixei.</li>
+          <li>Carreguei o retrato, apliquei «Recorte IA» e ativei «Sticker (contorno)» com a espessura padrão (14 px).</li>
+          <li>Baixei um PNG transparente sem preset como referência da proporção da figura.</li>
+          <li>Em Exportar escolhi o preset «Figurinha WhatsApp 512 (WebP)» e baixei; depois o preset «Figurinha Telegram 512 (PNG)» e baixei.</li>
+          <li>Em cada arquivo medi tamanho, peso, formato real (cabeçalho do arquivo), alfa dos quatro cantos e a caixa da figura.</li>
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Sem contorno, PNG: 720 × 900 px, 535 KB. Com contorno branco de 14 px: PNG 720 × 900 px, 529 KB, e WebP 51 KB com 44,1% de pixels transparentes.</li>
-          <li>Esse WebP, levado em Arquivo a 410 × 512 px (qualidade 80): 15,0 KB e 43,5% transparente. O limite do WhatsApp é 100 KB.</li>
-          <li>O editor me deixou fixar a altura em 512 e a largura se ajustou sozinha a 410 px (a foto é vertical). Um quadrado de 512 × 512, que é o que o WhatsApp pede, teria exigido deformar a imagem ou recortá-la antes.</li>
+          <li>Figurinha WhatsApp: WebP de 512 × 512 px e 20,2 KB (o limite do WhatsApp é 100 KB), 67,8% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos. Com o preset escolhido, o painel só me deixou mexer no formato WEBP.</li>
+          <li>Figurinha Telegram: PNG de 512 × 512 px e 199,3 KB, alfa 0, 0, 0, 0 nos cantos; formato habilitado: PNG.</li>
+          <li>A foto é vertical (720 × 900) e o preset não a deforma: a figura mede 0,671 de largura para cada 1 de altura na referência, 0,670 na do WhatsApp e 0,669 na do Telegram. O lado mais longo da figura ocupa 430 px no WhatsApp (margem de 8,0% por lado) e 472 px no Telegram.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A aba Stickers (com o destino «WhatsApp · WebP 512») está desativada nesta versão do site, então não pude usá-la: com o que há, a figurinha sai a 720 × 900 px e é preciso levá-la a 512 de altura em Arquivo. Um 512 × 512 exato, que é o que o WhatsApp pede, não encontrei como tirar de uma foto vertical sem deformá-la: Arquivo só escala e não testei enquadrar antes com «Recortar área». Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Os dois presets deram o quadrado exato sem deformar a figura, mas com este retrato o WebP pesou 20,2 KB: não vi o caso em que passa de 100 KB e o editor baixa a qualidade sozinho, então isso eu não testei com uma foto real. O preset fixa o formato (com o do WhatsApp só sobra WEBP) e não há um preset para o ícone de capa de 96 × 96 que o pacote do WhatsApp pede. Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-10">2026-10-10</time> com PhotoCut (web) no Chrome 154.0.8037.99 · macOS 14.8.8 · versão do PhotoCut: commit 767d6da.</p>
       </div>
       <!-- pruebas:end -->
 

@@ -72,19 +72,19 @@
           "@type": "HowToStep",
           "position": 3,
           "name": "Agregar contorno",
-          "text": "Activá el contorno (opcional pero recomendado) y encuadrá el sujeto con un margen parejo."
+          "text": "Activá «Sticker (contorno)» en Acabado (opcional pero recomendado). El margen lo pone el preset de sticker."
         },
         {
           "@type": "HowToStep",
           "position": 4,
           "name": "Exportar para WhatsApp",
-          "text": "En Exportar elegí Transparente y WEBP y descargá; después, en la pestaña Archivo, llevá el sticker a 512 px en WebP y comprobá que pese menos de 100 KB. Usalo en una app de packs de stickers."
+          "text": "En Exportar, en «Preset de tamaño», elegí «Sticker WhatsApp 512 (WebP)» y descargá: sale un WebP de 512×512 con fondo transparente y la figura sin deformar. Usalo en una app de packs de stickers."
         },
         {
           "@type": "HowToStep",
           "position": 5,
           "name": "Exportar para Telegram",
-          "text": "En Exportar elegí modo Transparente y PNG, descargá y, en la pestaña Archivo, dejá el lado más largo en 512 px. Subilo con el bot @Stickers."
+          "text": "En Exportar, en «Preset de tamaño», elegí «Sticker Telegram 512 (PNG)» y descargá: sale un PNG de 512×512 con fondo transparente. Subilo con el bot @Stickers."
         }
       ]
     }
@@ -198,22 +198,24 @@
       <ol>
         <li>Abrí tu foto en <a href="/">PhotoCut Studio</a> (arrastrala o pegala con <code>Ctrl/⌘+V</code>).</li>
         <li>Quitá el fondo con el <strong>Recorte IA</strong> y refiná los bordes con los <strong>pinceles</strong> si hace falta.</li>
-        <li>Activá el <strong>contorno</strong> (opcional pero recomendado) para el efecto clásico de sticker recortado.</li>
-        <li>Encuadrá el sujeto con un margen parejo: que no toque los bordes del cuadro.</li>
-        <li>Exportá según el destino, como se explica a continuación.</li>
+        <li>Activá <strong>«Sticker (contorno)»</strong> en Acabado (opcional pero recomendado) para el efecto clásico de sticker recortado.</li>
+        <li>En <strong>Exportar</strong>, abrí <strong>«Preset de tamaño»</strong> y elegí el preset del destino: <strong>«Sticker WhatsApp 512 (WebP)»</strong> o <strong>«Sticker Telegram 512 (PNG)»</strong>. El preset deja el cuadrado de 512×512, centra la figura con margen sin deformarla y fija el formato.</li>
+        <li>Descargá y subilo según la app, como se explica a continuación.</li>
       </ol>
 
       <h2>Para WhatsApp: WebP de 512×512 y menos de 100 KB</h2>
       <p>
-        En <strong>Exportar</strong> elegí <strong>Transparente</strong> y el
-        formato <strong>WEBP</strong>, descargá y llevá el resultado a
-        512&nbsp;px en la pestaña <strong>Archivo</strong> (WebP, con la
-        calidad que haga falta para quedar bajo 100&nbsp;KB). WhatsApp pide
-        512×512&nbsp;px exactos: el panel Archivo solo escala, así que
-        encuadrá cuadrado antes. WebP comprime mejor que
-        PNG manteniendo la transparencia, y por eso cumplir el límite de peso es
-        mucho más fácil que con un PNG del mismo tamaño. Además del sticker, el
-        pack pide:
+        En <strong>Exportar</strong> elegí el preset
+        <strong>«Sticker WhatsApp 512 (WebP)»</strong> y descargá. Sale un
+        WebP de 512×512&nbsp;px exactos con fondo transparente, aunque la foto
+        sea vertical u horizontal: la figura se encaja en el cuadrado con un
+        margen alrededor y sin estirarse. Mientras el preset está elegido, el
+        panel solo deja el formato WEBP. Si con tu foto el archivo pasara de
+        100&nbsp;KB, el editor baja la calidad de a poco y te avisa; si ni con la
+        calidad mínima entra, te avisa cuánto pesa.
+        WebP comprime mejor que PNG manteniendo la transparencia, y por eso
+        cumplir el límite de peso es mucho más fácil que con un PNG del mismo
+        tamaño. Además del sticker, el pack pide:
       </p>
       <ul>
         <li><strong>Ícono de portada (tray):</strong> 96 × 96 px, WebP, de menos de 50 KB.</li>
@@ -227,10 +229,10 @@
 
       <h2>Para Telegram: PNG transparente de 512 px y el bot @Stickers</h2>
       <p>
-        En <strong>Exportar</strong> elegí modo <strong>Transparente</strong>
-        y <strong>PNG</strong> (JPG no sirve: rellena el fondo), descargá y, en
-        la pestaña <strong>Archivo</strong>, dejá el lado más largo en
-        <strong>512&nbsp;px</strong>.
+        En <strong>Exportar</strong> elegí el preset
+        <strong>«Sticker Telegram 512 (PNG)»</strong> y descargá: sale un PNG
+        transparente de 512×512&nbsp;px con la figura sin deformar (JPG no
+        sirve porque rellena el fondo, y con este preset el panel no lo ofrece).
         Para subirlo, Telegram no usa apps de terceros sino un bot propio:
       </p>
       <ol>
@@ -273,7 +275,8 @@
         con el mismo estilo de contorno, para que el pack se vea coherente. En
         Telegram el bot arma el pack a medida que le mandás los PNG. Y como el
         recorte ya está hecho, podés exportar el mismo sujeto en las dos
-        versiones: WebP para WhatsApp y PNG para Telegram.
+        versiones sin repetir nada: cambiás de preset en Exportar y descargás
+        de nuevo.
       </p>
 
 
@@ -281,23 +284,24 @@
 
       <!-- pruebas:start -->
       <div class="tried">
-        <h3>Lo probamos: el peso del sticker contra el límite de 100 KB de WhatsApp</h3>
+        <h3>Lo probamos: los presets «Sticker WhatsApp» y «Sticker Telegram» contra lo que piden las apps</h3>
         <p><strong>Imagen:</strong> <a href="/media/guias/quitar-fondo-antes.jpg"><code>quitar-fondo-antes.jpg</code></a>, 720 × 900 px, 78,4 KB (retrato de dominio público).</p>
-        <p><strong>Herramienta:</strong> Recorte → Recorte IA + «Sticker (contorno)», y Archivo → WebP.</p>
+        <p><strong>Herramienta:</strong> Recorte → Recorte IA + «Sticker (contorno)», Exportar → presets «Sticker WhatsApp 512 (WebP)» y «Sticker Telegram 512 (PNG)».</p>
         <p><strong>Qué hice:</strong></p>
         <ol>
-          <li>Cargué el retrato y apliqué «Recorte IA»; descargué un PNG transparente sin contorno como referencia.</li>
-          <li>Activé «Sticker (contorno)» con el grosor por defecto (14 px) y descargué en PNG y en WebP.</li>
-          <li>Abrí el WebP en la pestaña «Archivo», lo llevé a 512 px de alto con calidad 80 y descargué.</li>
+          <li>Cargué el retrato, apliqué «Recorte IA» y activé «Sticker (contorno)» con el grosor por defecto (14 px).</li>
+          <li>Descargué un PNG transparente sin preset como referencia de la proporción de la figura.</li>
+          <li>En Exportar elegí el preset «Sticker WhatsApp 512 (WebP)» y descargué; después el preset «Sticker Telegram 512 (PNG)» y descargué.</li>
+          <li>En cada archivo medí tamaño, peso, formato real (cabecera del archivo), alfa de las cuatro esquinas y la caja de la figura.</li>
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Sin contorno, PNG: 720 × 900 px, 535 KB. Con contorno blanco de 14 px: PNG 720 × 900 px, 529 KB, y WebP 51 KB con 44,1 % de píxeles transparentes.</li>
-          <li>Ese WebP, llevado en Archivo a 410 × 512 px (calidad 80): 15,0 KB y 43,5 % transparente. El límite de WhatsApp es 100 KB.</li>
-          <li>El editor me dejó fijar el alto en 512 y el ancho se ajustó solo a 410 px (la foto es vertical). Un cuadrado de 512 × 512, que es lo que pide WhatsApp, habría exigido deformar la imagen o recortarla antes.</li>
+          <li>Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,8 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.</li>
+          <li>Sticker Telegram: PNG de 512 × 512 px y 199,3 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.</li>
+          <li>La foto es vertical (720 × 900) y el preset no la deforma: la figura mide 0,671 de ancho por cada 1 de alto en la referencia, 0,670 en el de WhatsApp y 0,669 en el de Telegram. El lado más largo de la figura ocupa 430 px en WhatsApp (margen de 8,0 % por lado) y 472 px en Telegram.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La pestaña Stickers (con el destino «WhatsApp · WebP 512») está desactivada en esta versión de la web, así que no pude usarla: con lo que hay, el sticker sale a 720 × 900 px y hay que llevarlo a 512 de alto en Archivo. Un 512 × 512 exacto, que es lo que pide WhatsApp, no encontré cómo sacarlo de una foto vertical sin deformarla: Archivo solo escala y no probé encuadrar antes con «Recortar área». No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP pesó 20,2 KB: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-10">2026-10-10</time> con PhotoCut (web) en Chrome 154.0.8037.99 · macOS 14.8.8 · versión de PhotoCut: commit 767d6da.</p>
       </div>
       <!-- pruebas:end -->
 
