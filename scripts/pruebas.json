@@ -538,10 +538,10 @@
     }
   },
   "fotos-de-producto-amazon-etsy-shopify": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-10",
+    "browser": "Chrome 154.0.8037.99",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "e3d95d0",
     "title": "una taza sintética a 2000 × 2000 px sobre blanco",
     "image": {
       "name": "producto-sintetico.jpg",
@@ -550,25 +550,51 @@
       "h": 1200,
       "kb": 29.1
     },
-    "tool": "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff",
+    "tool": "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Color #ffffff y Transparente",
     "steps": [
       "Cargué una imagen dibujada por mí (una taza azul con sombra sobre un gris degradado) y apliqué «Recorte IA».",
-      "Elegí el preset «Amazon 2000×2000».",
-      "Con «Transparente» + PNG descargué para ver qué hacía el preset con la transparencia.",
-      "Elegí modo «Color» #ffffff, formato JPEG y descargué; medí la caja de los píxeles que no son casi blancos."
+      "Elegí el preset «Amazon 2000×2000» y miré qué fondo dejaba elegido en Exportar.",
+      "Sin tocar el fondo elegí JPEG y descargué; medí el blanco y la caja de los píxeles que no son casi blancos.",
+      "Con el mismo preset cambié a «Transparente» + PNG y descargué para ver si respetaba la transparencia."
     ],
     "timing": {
-      "recorteIaMs": 4151,
-      "descargaPngMs": 286,
-      "descargaJpegMs": 248
+      "recorteIaMs": 4348,
+      "descargaJpegMs": 311,
+      "descargaPngMs": 264
     },
     "result": {
-      "png": {
+      "preload": {
+        "colorChecked": true,
+        "hex": "#ffffff"
+      },
+      "jpeg": {
         "w": 2000,
         "h": 2000,
-        "kb": 586.4,
-        "transparentPct": 0,
-        "opaquePct": 100
+        "kb": 89.7,
+        "whitePct": 40.33,
+        "cornerNonWhitePct": 0,
+        "corners": [
+          [
+            255,
+            255,
+            255
+          ],
+          [
+            255,
+            255,
+            255
+          ],
+          [
+            255,
+            255,
+            255
+          ],
+          [
+            255,
+            255,
+            255
+          ]
+        ]
       },
       "productBox": {
         "x0": 106,
@@ -578,55 +604,61 @@
         "wPct": 89.35,
         "hPct": 74.6
       },
-      "jpeg": {
+      "png": {
         "w": 2000,
         "h": 2000,
-        "kb": 89.7,
-        "whitePct": 40.33,
-        "cornerNonWhitePct": 0
+        "kb": 669.1,
+        "transparentPct": 40.3,
+        "opaquePct": 55.73,
+        "cornersAlpha": [
+          0,
+          0,
+          0,
+          0
+        ]
       }
     },
     "findings": [
-      "Recorte IA: 4,2 s sobre 1200 × 1200 px.",
-      "Con el preset salió un cuadro de 2000 × 2000 px. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.",
-      "JPEG sobre blanco: 90 KB, 40,3 % de píxeles #ffffff exactos, esquinas no blancas 0,0 %. El PNG pedido como «Transparente» con el preset pesó 586 KB y salió con 0,0 % de píxeles transparentes."
+      "Recorte IA: 4,3 s sobre 1200 × 1200 px.",
+      "Al elegir el preset, Exportar quedó en «Color» #ffffff. Sin tocarlo, el JPEG salió de 2000 × 2000 px y 90 KB, con 40,3 % de píxeles #ffffff exactos y esquinas no blancas 0,0 %. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.",
+      "Con el mismo preset y «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas."
     ],
     "assets": [
       "/media/guias/pruebas/producto-sintetico.jpg"
     ],
-    "caveat": "La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. Con el preset de Amazon el modo «Transparente» salió opaco, porque el preset trae su propio fondo blanco: no hay forma de pedir PNG transparente a 2000 × 2000 con ese preset.",
+    "caveat": "La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. El PNG transparente a 2000 × 2000 pesa 669 KB contra 90 KB del JPEG sobre blanco, y no subí ninguno de los dos a Amazon para ver si lo acepta.",
     "i18n": {
       "en": {
         "title": "a synthetic mug at 2000 × 2000 px on white",
-        "tool": "Cutout → AI cutout, “Amazon 2000×2000” preset, Export → Color #ffffff",
+        "tool": "Cutout → AI cutout, “Amazon 2000×2000” preset, Export → Color #ffffff and Transparent",
         "steps": [
           "I loaded an image I drew myself (a blue mug with a shadow on a gradient gray) and applied “AI cutout”.",
-          "I chose the “Amazon 2000×2000” preset.",
-          "With “Transparent” + PNG I downloaded to see what the preset did with the transparency.",
-          "I chose “Color” mode #ffffff, JPEG format and downloaded; I measured the box of the pixels that aren't almost white."
+          "I chose the “Amazon 2000×2000” preset and looked at which background it left selected in Export.",
+          "Without touching the background I chose JPEG and downloaded; I measured the white and the box of the pixels that aren't almost white.",
+          "With the same preset I switched to “Transparent” + PNG and downloaded to see whether it kept the transparency."
         ],
         "findings": [
-          "AI cutout: 4.2 s on 1200 × 1200 px.",
-          "The preset produced a 2000 × 2000 px canvas. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.",
-          "JPEG on white: 90 KB, 40.3% of pixels exactly #ffffff, non-white corners 0.0%. The PNG requested as “Transparent” with the preset weighed 586 KB and came out with 0.0% transparent pixels."
+          "AI cutout: 4.3 s on 1200 × 1200 px.",
+          "When I chose the preset, Export was left on “Color” #ffffff. Without touching it, the JPEG came out at 2000 × 2000 px and 90 KB, with 40.3% of pixels exactly #ffffff and 0.0% non-white corners. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.",
+          "With the same preset and “Transparent” + PNG: 2000 × 2000 px, 669 KB, 40.3% transparent pixels and alpha 0, 0, 0, 0 in the four corners."
         ],
-        "caveat": "The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. With the Amazon preset the “Transparent” mode came out opaque, because the preset brings its own white background: there's no way to ask for a transparent PNG at 2000 × 2000 with that preset."
+        "caveat": "The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. The transparent PNG at 2000 × 2000 weighs 669 KB against 90 KB for the JPEG on white, and I didn't upload either one to Amazon to see whether it's accepted."
       },
       "pt": {
         "title": "uma caneca sintética em 2000 × 2000 px sobre branco",
-        "tool": "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Cor #ffffff",
+        "tool": "Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Cor #ffffff e Transparente",
         "steps": [
           "Carreguei uma imagem desenhada por mim (uma caneca azul com sombra sobre um cinza degradê) e apliquei «Recorte IA».",
-          "Escolhi o preset «Amazon 2000×2000».",
-          "Com «Transparente» + PNG baixei para ver o que o preset fazia com a transparência.",
-          "Escolhi o modo «Cor» #ffffff, formato JPEG e baixei; medi a caixa dos pixels que não são quase brancos."
+          "Escolhi o preset «Amazon 2000×2000» e olhei qual fundo ele deixava escolhido em Exportar.",
+          "Sem mexer no fundo escolhi JPEG e baixei; medi o branco e a caixa dos pixels que não são quase brancos.",
+          "Com o mesmo preset troquei para «Transparente» + PNG e baixei para ver se ele respeitava a transparência."
         ],
         "findings": [
-          "Recorte IA: 4,2 s sobre 1200 × 1200 px.",
-          "Com o preset saiu um quadro de 2000 × 2000 px. O produto (pixels que não são quase brancos) ocupa 89,3% da largura e 74,6% da altura do quadro.",
-          "JPEG sobre branco: 90 KB, 40,3% dos pixels #ffffff exatos, cantos não brancos 0,0%. O PNG pedido como «Transparente» com o preset pesou 586 KB e saiu com 0,0% de pixels transparentes."
+          "Recorte IA: 4,3 s sobre 1200 × 1200 px.",
+          "Ao escolher o preset, Exportar ficou em «Cor» #ffffff. Sem mexer, o JPEG saiu com 2000 × 2000 px e 90 KB, com 40,3% dos pixels #ffffff exatos e cantos não brancos 0,0%. O produto (pixels que não são quase brancos) ocupa 89,3% da largura e 74,6% da altura do quadro.",
+          "Com o mesmo preset e «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos."
         ],
-        "caveat": "A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. Com o preset da Amazon o modo «Transparente» saiu opaco, porque o preset traz seu próprio fundo branco: não há como pedir PNG transparente em 2000 × 2000 com esse preset."
+        "caveat": "A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. O PNG transparente em 2000 × 2000 pesa 669 KB contra 90 KB do JPEG sobre branco, e não enviei nenhum dos dois à Amazon para ver se é aceito."
       }
     }
   },
@@ -908,10 +940,10 @@
     }
   },
   "foto-de-perfil-para-linkedin": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-10",
+    "browser": "Chrome 154.0.8037.99",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "e3d95d0",
     "title": "cuánta figura se pierde cuando LinkedIn muestra el círculo",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -923,95 +955,101 @@
     "tool": "Recorte → Recorte IA, presets cuadrados, Exportar → Color #c9ced6",
     "steps": [
       "Cargué el retrato y apliqué «Recorte IA».",
-      "En Exportar elegí «Color» #c9ced6 (un gris sobrio) y JPEG.",
-      "Descargué con tres presets cuadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (no hay un preset de LinkedIn).",
-      "En cada JPEG calculé qué porcentaje de los píxeles de la figura cae fuera del círculo inscrito en el cuadrado, que es lo que LinkedIn no muestra."
+      "Elegí uno por uno tres presets cuadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (no hay un preset de LinkedIn), y anoté qué fondo dejaba elegido cada uno.",
+      "Con cada preset descargué un PNG transparente para medir qué porcentaje de la figura cae fuera del círculo inscrito en el cuadrado, que es lo que LinkedIn no muestra.",
+      "Después puse «Color» #c9ced6 (un gris sobrio), descargué en PNG y en JPEG, y leí el color de las cuatro esquinas."
     ],
     "timing": {
-      "recorteIaMs": 4037
+      "recorteIaMs": 4072
     },
     "result": {
       "amazon": {
         "name": "Amazon 2000×2000 (margen 5 %)",
         "w": 2000,
         "h": 2000,
-        "kb": 198.1,
-        "outsideCirclePct": 0.06,
-        "corner": [
-          255,
-          255,
-          255
+        "kb": 195.8,
+        "preloaded": "#ffffff",
+        "outsideCirclePct": 0.05,
+        "pngCorners": [
+          "#c9ced6"
+        ],
+        "jpegCorners": [
+          "#c9cdd6"
         ]
       },
       "shopify": {
         "name": "Shopify 2048×2048 (margen 6 %)",
         "w": 2048,
         "h": 2048,
-        "kb": 200.1,
+        "kb": 197.7,
+        "preloaded": "#ffffff",
         "outsideCirclePct": 0,
-        "corner": [
-          255,
-          255,
-          255
+        "pngCorners": [
+          "#c9ced6"
+        ],
+        "jpegCorners": [
+          "#c9cdd6"
         ]
       },
       "ig": {
         "name": "Instagram post 1080×1080 (margen 8 %)",
         "w": 1080,
         "h": 1080,
-        "kb": 77.8,
+        "kb": 76.8,
+        "preloaded": "#ffffff",
         "outsideCirclePct": 0,
-        "corner": [
-          255,
-          255,
-          255
+        "pngCorners": [
+          "#c9ced6"
+        ],
+        "jpegCorners": [
+          "#c9cdd6"
         ]
       }
     },
     "findings": [
-      "Recorte IA: 4,0 s.",
-      "Amazon 2000×2000 (margen 5 %): 2000 × 2000 px, 198 KB; 0,1 % de la figura queda fuera del círculo; la esquina salió rgb(255, 255, 255), no el gris pedido.",
-      "Shopify 2048×2048 (margen 6 %): 2048 × 2048 px, 200 KB; 0,0 % de la figura queda fuera del círculo; la esquina salió rgb(255, 255, 255), no el gris pedido.",
-      "Instagram post 1080×1080 (margen 8 %): 1080 × 1080 px, 78 KB; 0,0 % de la figura queda fuera del círculo; la esquina salió rgb(255, 255, 255), no el gris pedido."
+      "Recorte IA: 4,1 s.",
+      "Amazon 2000×2000 (margen 5 %): 2000 × 2000 px, JPEG de 196 KB; 0,1 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.",
+      "Shopify 2048×2048 (margen 6 %): 2048 × 2048 px, JPEG de 198 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.",
+      "Instagram post 1080×1080 (margen 8 %): 1080 × 1080 px, JPEG de 77 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "No hay un preset de LinkedIn y los presets cuadrados ignoraron el color gris que pedí: todas las salidas tienen fondo #ffffff. Para un fondo de color hay que dejar el preset en «Original» y encuadrar aparte. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn.",
+    "caveat": "No hay un preset de LinkedIn. Cada preset, al elegirlo, vuelve a dejar el fondo en #ffffff y tuve que poner el gris de nuevo; con el gris puesto, el PNG sale con #c9ced6 exacto y el JPEG lo corre apenas, a #c9cdd6, por la compresión. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn.",
     "i18n": {
       "en": {
         "title": "how much of the figure is lost when LinkedIn shows the circle",
         "tool": "Cutout → AI cutout, square presets, Export → Color #c9ced6",
         "steps": [
           "I loaded the portrait and applied “AI cutout”.",
-          "In Export I chose “Color” #c9ced6 (a sober gray) and JPEG.",
-          "I downloaded with three square presets: Amazon 2000×2000, Shopify 2048×2048 and Instagram post 1080×1080 (there is no LinkedIn preset).",
-          "In each JPEG I calculated what percentage of the figure's pixels falls outside the circle inscribed in the square, which is what LinkedIn doesn't show."
+          "I chose three square presets one by one: Amazon 2000×2000, Shopify 2048×2048 and Instagram post 1080×1080 (there is no LinkedIn preset), and noted which background each one left selected.",
+          "With each preset I downloaded a transparent PNG to measure what percentage of the figure falls outside the circle inscribed in the square, which is what LinkedIn doesn't show.",
+          "Then I set “Color” #c9ced6 (a sober gray), downloaded as PNG and as JPEG, and read the color of the four corners."
         ],
         "findings": [
-          "AI cutout: 4.0 s.",
-          "Amazon 2000×2000 (5% margin): 2000 × 2000 px, 198 KB; 0.1% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.",
-          "Shopify 2048×2048 (6% margin): 2048 × 2048 px, 200 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for.",
-          "Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 78 KB; 0.0% of the figure falls outside the circle; the corner came out rgb(255, 255, 255), not the gray I asked for."
+          "AI cutout: 4.1 s.",
+          "Amazon 2000×2000 (5% margin): 2000 × 2000 px, 196 KB JPEG; 0.1% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.",
+          "Shopify 2048×2048 (6% margin): 2048 × 2048 px, 198 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.",
+          "Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 77 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG."
         ],
-        "caveat": "There is no LinkedIn preset and the square presets ignored the gray I asked for: every output has a #ffffff background. For a colored background you have to leave the preset on “Original” and frame separately. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does."
+        "caveat": "There is no LinkedIn preset. Each preset, when chosen, sets the background back to #ffffff and I had to set the gray again; with the gray set, the PNG comes out with exactly #c9ced6 and the JPEG shifts it slightly, to #c9cdd6, because of compression. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does."
       },
       "pt": {
         "title": "quanto da figura se perde quando o LinkedIn mostra o círculo",
         "tool": "Recorte → Recorte IA, presets quadrados, Exportar → Cor #c9ced6",
         "steps": [
           "Carreguei o retrato e apliquei «Recorte IA».",
-          "Em Exportar escolhi «Cor» #c9ced6 (um cinza sóbrio) e JPEG.",
-          "Baixei com três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn).",
-          "Em cada JPEG calculei que porcentagem dos pixels da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra."
+          "Escolhi um por um três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn), e anotei qual fundo cada um deixava escolhido.",
+          "Com cada preset baixei um PNG transparente para medir que porcentagem da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra.",
+          "Depois coloquei «Cor» #c9ced6 (um cinza sóbrio), baixei em PNG e em JPEG, e li a cor dos quatro cantos."
         ],
         "findings": [
-          "Recorte IA: 4,0 s.",
-          "Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, 198 KB; 0,1% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.",
-          "Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, 200 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.",
-          "Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, 78 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido."
+          "Recorte IA: 4,1 s.",
+          "Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, JPEG de 196 KB; 0,1% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.",
+          "Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, JPEG de 198 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.",
+          "Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, JPEG de 77 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG."
         ],
-        "caveat": "Não existe preset do LinkedIn e os presets quadrados ignoraram a cor cinza que pedi: todas as saídas têm fundo #ffffff. Para um fundo colorido é preciso deixar o preset em «Original» e enquadrar à parte. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz."
+        "caveat": "Não existe preset do LinkedIn. Cada preset, ao ser escolhido, volta a deixar o fundo em #ffffff e tive que colocar o cinza de novo; com o cinza colocado, o PNG sai com #c9ced6 exato e o JPEG o desloca um pouco, para #c9cdd6, pela compressão. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz."
       }
     }
   },

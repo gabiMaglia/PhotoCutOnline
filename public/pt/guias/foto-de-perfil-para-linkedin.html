@@ -159,7 +159,7 @@
         <li>Escolha uma foto de frente, dos ombros para cima, com boa luz e expressão cordial.</li>
         <li>No <a href="/editor/">PhotoCut Studio</a>, use o <strong>Recorte IA</strong> para se separar do fundo original; ajuste o cabelo com os <strong>pincéis</strong>.</li>
         <li>Coloque um <strong>fundo profissional</strong>: uma cor lisa neutra (modo Cor) ou uma imagem discreta (modo Imagem), baixando a opacidade se preciso.</li>
-        <li>Enquadre <strong>quadrado</strong> com o rosto levemente acima do centro e ar sobre a cabeça.</li>
+        <li>Enquadre <strong>quadrado</strong> com o rosto levemente acima do centro e ar sobre a cabeça. Se usar um preset quadrado de Exportar, escolha-o antes da cor: ao escolher um preset o fundo volta a branco e é preciso colocar sua cor de novo.</li>
         <li>Exporte quadrada e grande (por exemplo 800×800) em <strong>JPG</strong> ou <strong>PNG</strong>.</li>
       </ol>
 
@@ -197,19 +197,19 @@
         <p><strong>O que eu fiz:</strong></p>
         <ol>
           <li>Carreguei o retrato e apliquei «Recorte IA».</li>
-          <li>Em Exportar escolhi «Cor» #c9ced6 (um cinza sóbrio) e JPEG.</li>
-          <li>Baixei com três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn).</li>
-          <li>Em cada JPEG calculei que porcentagem dos pixels da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra.</li>
+          <li>Escolhi um por um três presets quadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (não existe preset do LinkedIn), e anotei qual fundo cada um deixava escolhido.</li>
+          <li>Com cada preset baixei um PNG transparente para medir que porcentagem da figura cai fora do círculo inscrito no quadrado, que é o que o LinkedIn não mostra.</li>
+          <li>Depois coloquei «Cor» #c9ced6 (um cinza sóbrio), baixei em PNG e em JPEG, e li a cor dos quatro cantos.</li>
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Recorte IA: 4,0 s.</li>
-          <li>Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, 198 KB; 0,1% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
-          <li>Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, 200 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
-          <li>Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, 78 KB; 0,0% da figura fica fora do círculo; o canto saiu rgb(255, 255, 255), não o cinza pedido.</li>
+          <li>Recorte IA: 4,1 s.</li>
+          <li>Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, JPEG de 196 KB; 0,1% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.</li>
+          <li>Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, JPEG de 198 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.</li>
+          <li>Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, JPEG de 77 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não existe preset do LinkedIn e os presets quadrados ignoraram a cor cinza que pedi: todas as saídas têm fundo #ffffff. Para um fundo colorido é preciso deixar o preset em «Original» e enquadrar à parte. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não existe preset do LinkedIn. Cada preset, ao ser escolhido, volta a deixar o fundo em #ffffff e tive que colocar o cinza de novo; com o cinza colocado, o PNG sai com #c9ced6 exato e o JPEG o desloca um pouco, para #c9cdd6, pela compressão. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-10">2026-10-10</time> com PhotoCut (web) no Chrome 154.0.8037.99 · macOS 14.8.8 · versão do PhotoCut: commit e3d95d0.</p>
       </div>
       <!-- pruebas:end -->
 

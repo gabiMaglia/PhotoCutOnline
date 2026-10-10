@@ -201,22 +201,22 @@
       <div class="tried">
         <h3>Nós testamos: uma caneca sintética em 2000 × 2000 px sobre branco</h3>
         <p><strong>Imagem:</strong> <a href="/media/guias/pruebas/producto-sintetico.jpg"><code>producto-sintetico.jpg</code></a>, 1200 × 1200 px, 29,1 KB (imagem sintética que desenhei com o Pillow).</p>
-        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Cor #ffffff.</p>
+        <p><strong>Ferramenta:</strong> Recorte → Recorte IA, preset «Amazon 2000×2000», Exportar → Cor #ffffff e Transparente.</p>
         <p><strong>O que eu fiz:</strong></p>
         <ol>
           <li>Carreguei uma imagem desenhada por mim (uma caneca azul com sombra sobre um cinza degradê) e apliquei «Recorte IA».</li>
-          <li>Escolhi o preset «Amazon 2000×2000».</li>
-          <li>Com «Transparente» + PNG baixei para ver o que o preset fazia com a transparência.</li>
-          <li>Escolhi o modo «Cor» #ffffff, formato JPEG e baixei; medi a caixa dos pixels que não são quase brancos.</li>
+          <li>Escolhi o preset «Amazon 2000×2000» e olhei qual fundo ele deixava escolhido em Exportar.</li>
+          <li>Sem mexer no fundo escolhi JPEG e baixei; medi o branco e a caixa dos pixels que não são quase brancos.</li>
+          <li>Com o mesmo preset troquei para «Transparente» + PNG e baixei para ver se ele respeitava a transparência.</li>
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Recorte IA: 4,2 s sobre 1200 × 1200 px.</li>
-          <li>Com o preset saiu um quadro de 2000 × 2000 px. O produto (pixels que não são quase brancos) ocupa 89,3% da largura e 74,6% da altura do quadro.</li>
-          <li>JPEG sobre branco: 90 KB, 40,3% dos pixels #ffffff exatos, cantos não brancos 0,0%. O PNG pedido como «Transparente» com o preset pesou 586 KB e saiu com 0,0% de pixels transparentes.</li>
+          <li>Recorte IA: 4,3 s sobre 1200 × 1200 px.</li>
+          <li>Ao escolher o preset, Exportar ficou em «Cor» #ffffff. Sem mexer, o JPEG saiu com 2000 × 2000 px e 90 KB, com 40,3% dos pixels #ffffff exatos e cantos não brancos 0,0%. O produto (pixels que não são quase brancos) ocupa 89,3% da largura e 74,6% da altura do quadro.</li>
+          <li>Com o mesmo preset e «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. Com o preset da Amazon o modo «Transparente» saiu opaco, porque o preset traz seu próprio fundo branco: não há como pedir PNG transparente em 2000 × 2000 com esse preset.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. O PNG transparente em 2000 × 2000 pesa 669 KB contra 90 KB do JPEG sobre branco, e não enviei nenhum dos dois à Amazon para ver se é aceito.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-10">2026-10-10</time> com PhotoCut (web) no Chrome 154.0.8037.99 · macOS 14.8.8 · versão do PhotoCut: commit e3d95d0.</p>
       </div>
       <!-- pruebas:end -->
 
