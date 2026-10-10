@@ -31,12 +31,21 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
     if (!preset) return;
     if (preset.format) setFormat(preset.format);
     if (preset.bg) {
+      // avisar solo si de verdad cambió lo que el usuario tenía elegido
+      if (exportMode !== "solid" || bgColor.toLowerCase() !== preset.bg.toLowerCase())
+        toast(
+          preset.bg.toLowerCase() === "#ffffff"
+            ? t("export.presetBgWhite")
+            : t("export.presetBgColor", { color: preset.bg }),
+          "ok"
+        );
       setBgColor(preset.bg);
       setExportMode("solid");
     } else {
+      if (exportMode !== "transparent") toast(t("export.presetBgTransparent"), "ok");
       setExportMode("transparent");
     }
-  }, []);
+  }, [exportMode, bgColor, toast]);
 
   const activePreset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
   // los stickers exigen un formato concreto: la UI lo muestra fijo

@@ -434,6 +434,9 @@ const DICT = {
     "preset.stickerTelegram": "Sticker Telegram 512 (PNG)",
     "export.qualityReduced": "Bajé la calidad a {q} % para que pese {kb} KB (límite {max} KB)",
     "export.overLimit": "Pesa {kb} KB: no entra en el límite de {max} KB ni con la calidad mínima",
+    "export.presetBgWhite": "El preset puso fondo blanco; podés cambiarlo",
+    "export.presetBgColor": "El preset puso fondo {color}; podés cambiarlo",
+    "export.presetBgTransparent": "El preset puso fondo transparente; podés cambiarlo",
 
     "dl.aria": "Descargar la app de escritorio",
     "dl.title": "App de escritorio",
@@ -874,6 +877,9 @@ const DICT = {
     "preset.stickerTelegram": "Telegram sticker 512 (PNG)",
     "export.qualityReduced": "Quality lowered to {q}% so it weighs {kb} KB (limit {max} KB)",
     "export.overLimit": "It weighs {kb} KB: it doesn't fit the {max} KB limit even at minimum quality",
+    "export.presetBgWhite": "The preset set a white background; you can change it",
+    "export.presetBgColor": "The preset set a {color} background; you can change it",
+    "export.presetBgTransparent": "The preset set a transparent background; you can change it",
 
     "dl.aria": "Download the desktop app",
     "dl.title": "Desktop app",
@@ -1314,6 +1320,9 @@ const DICT = {
     "preset.stickerTelegram": "Figurinha Telegram 512 (PNG)",
     "export.qualityReduced": "Baixei a qualidade para {q}% para pesar {kb} KB (limite {max} KB)",
     "export.overLimit": "Pesa {kb} KB: não cabe no limite de {max} KB nem com a qualidade mínima",
+    "export.presetBgWhite": "O preset colocou fundo branco; você pode mudar",
+    "export.presetBgColor": "O preset colocou fundo {color}; você pode mudar",
+    "export.presetBgTransparent": "O preset colocou fundo transparente; você pode mudar",
 
     "dl.aria": "Baixar o app para desktop",
     "dl.title": "App para desktop",

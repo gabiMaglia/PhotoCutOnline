@@ -105,6 +105,35 @@ describe("useExport — presets y fondo elegido", () => {
   });
 });
 
+// QA O3: si el preset cambió el fondo que había, se avisa (y solo entonces)
+describe("useExport — aviso cuando el preset cambia el fondo", () => {
+  it("avisa al pasar de un color a Amazon (fondo blanco)", () => {
+    const { result, toast } = setup();
+    act(() => result.current.setExportMode("solid"));
+    act(() => result.current.setBgColor("#2563eb"));
+    act(() => result.current.setPresetId("amazon"));
+    expect(toast).toHaveBeenCalledTimes(1);
+    expect(toast.mock.calls[0][0]).toMatch(/white|blanco|branco/i);
+  });
+
+  it("avisa al pasar de un color al avatar (transparente)", () => {
+    const { result, toast } = setup();
+    act(() => result.current.setExportMode("solid"));
+    act(() => result.current.setPresetId("avatar"));
+    expect(toast).toHaveBeenCalledTimes(1);
+    expect(toast.mock.calls[0][0]).toMatch(/transparen/i);
+  });
+
+  it("no avisa si el fondo ya era el del preset", () => {
+    const { result, toast } = setup();
+    act(() => result.current.setPresetId("avatar")); // ya estaba en transparente
+    act(() => result.current.setPresetId("amazon")); // transparente → blanco: avisa una vez
+    act(() => result.current.setPresetId("shopify")); // blanco → blanco: no avisa
+    act(() => result.current.setPresetId("original")); // no trae fondo
+    expect(toast).toHaveBeenCalledTimes(1);
+  });
+});
+
 // BUG-06: presets de sticker con formato impuesto y tope de peso (WhatsApp)
 describe("useExport — presets de sticker", () => {
   beforeEach(() => {
