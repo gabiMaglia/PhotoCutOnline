@@ -200,6 +200,15 @@ async function main() {
   assert(avImg.width === 512 && avImg.height === 512, "preset: lienzo 512×512");
   assert(px(avImg, 3, 3)[3] === 0, "preset circular: esquina transparente");
   assert(px(avImg, 256, 256)[3] > 0, "preset circular: centro con contenido");
+  // el avatar circular también toma el color elegido (las guías prometen «el fondo que quieras»)
+  const AV = EXPORT_PRESETS.find((p) => p.id === "avatar").preset;
+  const avRed = await blobToImageData(await s2.composite({ type: "solid", color: [255, 0, 0, 255], preset: AV }));
+  const rim = px(avRed, 256, 4); // dentro del círculo, en el margen sin sujeto
+  assert(
+    rim[0] === 255 && rim[1] === 0 && rim[2] === 0 && rim[3] === 255 && px(avRed, 3, 3)[3] === 0,
+    `preset avatar + rojo: círculo rojo y esquina transparente (rgba ${rim.join(",")})`
+  );
+
   // BUG-01: el fondo lo decide el selector (type/color), nunca preset.bg.
   // Se usa el preset real de Amazon (trae bg "#ffffff") para probar que se ignora.
   const AMZ = EXPORT_PRESETS.find((p) => p.id === "amazon").preset;
