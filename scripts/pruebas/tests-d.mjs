@@ -50,36 +50,43 @@ TESTS["foto-de-perfil-para-linkedin"] = async ({ browser }) => {
   await L.loadImage(page, file);
   const ai = await runAI(page);
   const GRAY = "#c9ced6";
+  const hex = (c) => "#" + c.slice(0, 3).map((v) => v.toString(16).padStart(2, "0")).join("");
   const rows = {};
   for (const [id, re, name] of [["amazon", /Amazon/, "Amazon 2000×2000 (margen 5 %)"], ["shopify", /Shopify/, "Shopify 2048×2048 (margen 6 %)"], ["ig", /Instagram post/, "Instagram post 1080×1080 (margen 8 %)"]]) {
     await choosePreset(page, re);
-    // GROW-34: cada preset precarga su fondo; anoto cuál y vuelvo a poner el gris
+    // GROW-34: cada preset precarga su fondo; anoto cuál y después pongo el gris
     const preloaded = (await page.locator(".color-export-hex").textContent()).trim();
+    // la figura contra el círculo se mide en transparente: con fondo gris todo el
+    // cuadro deja de ser «blanco» y la medida por color no sirve
+    await radio(page, "Transparente");
+    await radio(page, "PNG");
+    const shape = await L.analyze(ctx, (await dl(page)).buf, "image/png");
     await radio(page, "Color");
     await L.setColor(page, /Color de fondo/, GRAY);
+    const png = await L.analyze(ctx, (await dl(page)).buf, "image/png");
     await radio(page, "JPEG");
-    const d = await dl(page);
-    const a = await L.analyze(ctx, d.buf, "image/jpeg");
-    rows[id] = { name, w: a.w, h: a.h, kb: a.kb, preloaded, outsideCirclePct: a.nonWhite ? a.nonWhite.outsideCirclePct : null, corners: a.corners.map((c) => c.slice(0, 3)) };
+    const jpg = await L.analyze(ctx, (await dl(page)).buf, "image/jpeg");
+    rows[id] = {
+      name, w: jpg.w, h: jpg.h, kb: jpg.kb, preloaded, outsideCirclePct: shape.outsideCirclePct,
+      pngCorners: [...new Set(png.corners.map(hex))], jpegCorners: [...new Set(jpg.corners.map(hex))],
+    };
   }
   await ctx.close();
-  const hex = (c) => "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("");
-  const exact = Object.values(rows).every((r) => r.corners.every((c) => hex(c) === GRAY));
   return {
     title: "cuánta figura se pierde cuando LinkedIn muestra el círculo",
     image,
     tool: `Recorte → Recorte IA, presets cuadrados, Exportar → Color ${GRAY}`,
     steps: [
       "Cargué el retrato y apliqué «Recorte IA».",
-      "Elegí uno por uno tres presets cuadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (no hay un preset de LinkedIn).",
-      `Después de cada preset puse «Color» ${GRAY} (un gris sobrio) y JPEG, y descargué.`,
-      "En cada JPEG leí el color de las cuatro esquinas y calculé qué porcentaje de los píxeles de la figura cae fuera del círculo inscrito en el cuadrado, que es lo que LinkedIn no muestra.",
+      "Elegí uno por uno tres presets cuadrados: Amazon 2000×2000, Shopify 2048×2048 e Instagram post 1080×1080 (no hay un preset de LinkedIn), y anoté qué fondo dejaba elegido cada uno.",
+      "Con cada preset descargué un PNG transparente para medir qué porcentaje de la figura cae fuera del círculo inscrito en el cuadrado, que es lo que LinkedIn no muestra.",
+      `Después puse «Color» ${GRAY} (un gris sobrio), descargué en PNG y en JPEG, y leí el color de las cuatro esquinas.`,
     ],
     timing: { recorteIaMs: ai },
-    result: { ...rows, cornersExactGray: exact },
+    result: rows,
     findings: [
       `Recorte IA: ${f(ai / 1000, 1)} s.`,
-      ...Object.values(rows).map((r) => `${r.name}: ${r.w} × ${r.h} px, ${f(r.kb, 0)} KB; ${r.outsideCirclePct == null ? "no pude medir la figura" : `${pctS(r.outsideCirclePct)} de la figura queda fuera del círculo`}; las cuatro esquinas salieron ${[...new Set(r.corners.map(hex))].join(", ")}.`),
+      ...Object.values(rows).map((r) => `${r.name}: ${r.w} × ${r.h} px, JPEG de ${f(r.kb, 0)} KB; ${pctS(r.outsideCirclePct)} de la figura queda fuera del círculo; esquinas ${r.pngCorners.join(", ")} en PNG y ${r.jpegCorners.join(", ")} en JPEG.`),
     ],
     assets: [pub(file)],
   };
