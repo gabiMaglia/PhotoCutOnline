@@ -76,6 +76,25 @@ describe("useExport — presets y fondo elegido", () => {
     expect(result.current.exportMode).toBe("transparent");
   });
 
+  // los dos casos parten de un fondo distinto al del preset: sin la precarga
+  // el estado quedaría igual y el test lo detecta (el default ya es #ffffff)
+  it("con #2563eb elegido, elegir Amazon precarga Color #ffffff", () => {
+    const { result } = setup();
+    act(() => result.current.setExportMode("solid"));
+    act(() => result.current.setBgColor("#2563eb"));
+    act(() => result.current.setPresetId("amazon"));
+    expect(result.current.exportMode).toBe("solid");
+    expect(result.current.bgColor).toBe("#ffffff");
+  });
+
+  it("con rojo elegido, elegir el avatar precarga transparente", () => {
+    const { result } = setup();
+    act(() => result.current.setExportMode("solid"));
+    act(() => result.current.setBgColor("#ff0000"));
+    act(() => result.current.setPresetId("avatar"));
+    expect(result.current.exportMode).toBe("transparent");
+  });
+
   it("volver a Original no pisa el fondo elegido", () => {
     const { result } = setup();
     act(() => result.current.setPresetId("amazon"));
