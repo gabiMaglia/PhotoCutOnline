@@ -9,3 +9,15 @@
   - Camino inline (Safari < 16.4, sin OffscreenCanvas): la composición sigue en el hilo principal (solo el encode va al worker), y en Safari < 15 (sin module workers) WebP da el aviso de error en vez del archivo.
   - Medido en WebKit de Playwright (macOS), no en Safari ni iPhone reales. El CI de Linux usa el WebKit de Playwright para Linux, donde la ruta WASM puede no ejercitarse (el chequeo `ruta=wasm` es solo darwin).
   - A5 escritorio: NO VERIFICADO: el smoke de la Task 13 exige manejar a mano la ventana de `npm run tauri dev` (diálogos nativos de abrir/guardar, cortar la red) y la sesión de implementación fue no interactiva. Toolchain presente (cargo 1.98.1) y CSP de tauri.conf.json revisada en estático (`'wasm-unsafe-eval'`, `worker-src 'self' blob:`, `connect-src 'self'`). Pendiente: correr el smoke de la Task 13 y pegar los `xxd -l 16` de a/b/c.webp.
+- **GROW-35 — desvíos de implementación respecto del plan** (QA H-01; transcriptos del handoff de nerv-web):
+  - Intento 1:
+    - (a) La rama se llama `feat/GROW-35-webp-real` (como pidió el handoff) y no `feat/grow-35-webp` (como decía el plan).
+    - (b) Task 2, paso 5: el build no emite el worker anidado hasta que algo importa `webpEncoder`, cosa que pasa recién en la Task 3. El chequeo se corrió después de la Task 3.
+    - (c) `metadata.test.js`: se agregó `mockClear` en el `beforeEach`, porque el historial de los mocks de módulo se filtraba entre tests. No cambió ninguna aserción.
+    - (d) Task 8, paso 4: el implementador no corrió el harness contra c13458a, porque el auto-mode denegó `git checkout c13458a -- src` y `git archive`. Lo cubrieron el gate y las mutaciones de QA.
+    - (e) Task 12: `scripts/pruebas/common.mjs` da los permisos de portapapeles solo en Chromium, porque WebKit rechaza `clipboard-write`. El regex de `browser` en `pruebas.test.mjs` acepta « + WebKit X.Y». `run.mjs` no conserva `i18n` al regenerar; se restauró desde HEAD y se amplió. Esto último sigue siendo deuda: `run.mjs` debería conservar `i18n` igual que conserva `caveat`.
+    - (f) `npm run licenses` sumó `@tauri-apps/plugin-opener` y `onnxruntime-web`, que faltaban en el JSON commiteado.
+  - Intento 2:
+    - D2: el encoder se codifica en un worker dedicado también desde `cutoutWorker` (Safari ≥ 16.4 anida workers, según BCD), y el worker se descarta tras un fallo de carga. Si un navegador no tiene `Worker` dentro de un worker, codifica directo y el reintento de carga puede no recuperarse (riesgo bajo: ese caso no entra en `WORKER_OK`).
+    - D3: solo `too_large` lleva la marca en el mensaje del error; `failed` conserva el formato `WEBP_ENCODE_FAILED: load|encode: …`, del que depende la detección de fallo de carga.
+    - `test:web` es sensible a la carga de la máquina: con load average de 60 a 280 (procesos ajenos a la sesión), `webp-test` y `ai-test` superaron los 120 s del runner aun con el código idéntico al de una corrida verde. Corrido aparte, el mismo test terminó en 49 s.
