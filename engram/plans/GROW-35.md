@@ -2316,8 +2316,10 @@ código de producto. Rama `feat/GROW-35-webp-real`, con main mergeado (c2324e5).
 #### R1 (D-i2-1). El timeout del runner es el configurado, por motor, y no los 30 s de Playwright
 - **Test en rojo primero:** `test/runner-timeout-test.{html,js}` es una página trivial que escribe
   `ALL_DONE` a los 35 s.
-  - No corre por defecto. Con `RUNNER_SELFTEST=1`, el runner corre SOLO esa página: en Chrome por
-    `runSuite` y en WebKit por `runSuite` + `runRetry`, con `waitForFunction` contra la misma página.
+  - No corre por defecto. Con `RUNNER_SELFTEST=1`, el runner corre SOLO esa página, por `runSuite`, en
+    Chrome y en WebKit. `runRetry` no entra porque está atado a `webp-retry-test` (route, `PHASE1_DONE` y
+    exige requests bloqueados); ya usaba la firma correcta y solo pasa a `TIMEOUT_MS.webkit`, lo que se
+    verifica por grep.
   - Contra el runner actual tiene que dar `TIMEOUT` en Chrome, porque `{timeout}` viaja como `arg` y el
     límite real son 30 s. Se pega esa salida.
 - **Arreglo en `test/run-tests.mjs`:**
