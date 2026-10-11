@@ -1,9 +1,15 @@
 // API pública del WebP: ¿el canvas de ESTE contexto codifica WebP?, y si no,
 // el encoder propio. Ventana y workers cargan cada uno su copia del módulo,
 // así que el memo es por contexto (A3): no se pasa lo de uno al otro.
-import { encodeWebPDirect, isWebpEncodeError, WebpEncodeError, WEBP_ERROR } from "./webpWasm.js";
+import { encodeWebPDirect, isWebpEncodeError, webpErrorKind, WebpEncodeError, WEBP_ERROR } from "./webpWasm.js";
 
-export { isWebpEncodeError };
+export { isWebpEncodeError, webpErrorKind };
+
+/** Clave i18n del aviso para un error del encoder, o null si el error es otro. */
+export function webpErrorKey(e) {
+  const kind = webpErrorKind(e);
+  return kind === "too_large" ? "export.webpTooLarge" : kind ? "export.webpFailed" : null;
+}
 
 let nativeProbe = null;
 

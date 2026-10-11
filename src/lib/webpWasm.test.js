@@ -5,7 +5,7 @@ jest.mock("@jsquash/webp/encode.js", () => ({
 }));
 import * as jsq from "@jsquash/webp/encode.js";
 import {
-  encodeWebPDirect, toWebpQuality, isWebpEncodeError, WEBP_MAX_DIM, _resetWasmForTests,
+  encodeWebPDirect, toWebpQuality, isWebpEncodeError, webpErrorKind, WEBP_MAX_DIM, _resetWasmForTests,
 } from "./webpWasm.js";
 
 const img = (w = 4, h = 4) => ({ width: w, height: h, data: new Uint8ClampedArray(w * h * 4) });
@@ -68,5 +68,23 @@ describe("isWebpEncodeError (el error cruza el worker como texto)", () => {
     expect(isWebpEncodeError("Error: WEBP_ENCODE_FAILED: load")).toBe(true);
     expect(isWebpEncodeError(new Error("No hay recorte para exportar"))).toBe(false);
     expect(isWebpEncodeError(undefined)).toBe(false);
+  });
+});
+
+// GROW-35 D3: el tamaño no se arregla reconectándose; el aviso tiene que decirlo
+describe("webpErrorKind (el motivo cruza el worker como texto)", () => {
+  it(">16383 px es too_large; OOM e init fallido son failed", async () => {
+    const big = await failure(encodeWebPDirect({ width: WEBP_MAX_DIM + 1, height: 900, data: new Uint8ClampedArray(0) }, 0.9));
+    expect(webpErrorKind(big)).toBe("too_large");
+    expect(webpErrorKind(String(big))).toBe("too_large");
+    jsq.default.mockRejectedValueOnce(new Error("RuntimeError: memory access out of bounds"));
+    expect(webpErrorKind(await failure(encodeWebPDirect(img(), 0.9)))).toBe("failed");
+    _resetWasmForTests();
+    jsq.init.mockRejectedValueOnce(new Error("Failed to fetch"));
+    expect(webpErrorKind(await failure(encodeWebPDirect(img(), 0.9)))).toBe("failed");
+  });
+  it("lo que no es del encoder no tiene tipo", () => {
+    expect(webpErrorKind(new Error("No hay recorte para exportar"))).toBeNull();
+    expect(webpErrorKind(undefined)).toBeNull();
   });
 });

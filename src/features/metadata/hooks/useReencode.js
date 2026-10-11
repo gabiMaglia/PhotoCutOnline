@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { reencodeToBlob, hasTransparency, fitSize, OUTPUT_FORMATS, formatFromMime } from "../../../lib/metadata.js";
 import { createLatestRunner } from "../../../lib/latestRunner.js";
 import { t } from "../../../lib/i18n.js";
-import { isWebpEncodeError } from "../../../lib/webpEncoder.js";
+import { webpErrorKey } from "../../../lib/webpEncoder.js";
 
 // T-014/T-015: convertir, comprimir y redimensionar. El estimado se recalcula
 // cuando cambian formato, calidad o tamaño; re-encodear es sincrónico y en
@@ -74,7 +74,10 @@ export function useReencode({ imgRef, info, onToast }) {
   }, [srcW, srcH]);
 
   const reportFailure = useCallback(
-    (e) => onToast?.(isWebpEncodeError(e) ? t("export.webpFailed") : String(e), "error"),
+    (e) => {
+      const key = webpErrorKey(e);
+      onToast?.(key ? t(key) : String(e), "error");
+    },
     [onToast]
   );
 

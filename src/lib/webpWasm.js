@@ -6,9 +6,13 @@
 export const WEBP_MAX_DIM = 16383; // máximo del formato por lado
 export const WEBP_ERROR = "WEBP_ENCODE_FAILED";
 
+const TOO_LARGE = "too_large";
+
+// kind "failed" (red, memoria, init) deja el mensaje como estaba; "too_large"
+// lo marca, porque reconectarse no lo arregla y el aviso tiene que decirlo (D3)
 export class WebpEncodeError extends Error {
-  constructor(reason) {
-    super(`${WEBP_ERROR}: ${reason}`);
+  constructor(reason, kind = "failed") {
+    super(`${WEBP_ERROR}: ${kind === TOO_LARGE ? `${TOO_LARGE}: ` : ""}${reason}`);
     this.name = "WebpEncodeError";
   }
 }
@@ -16,6 +20,12 @@ export class WebpEncodeError extends Error {
 // El error cruza workers como texto (postMessage), así que se reconoce por la marca.
 export function isWebpEncodeError(e) {
   return String(e?.message ?? e ?? "").includes(WEBP_ERROR);
+}
+
+/** "too_large" | "failed" para un error del encoder (Error o texto), null si no es uno. */
+export function webpErrorKind(e) {
+  if (!isWebpEncodeError(e)) return null;
+  return String(e?.message ?? e).includes(`${WEBP_ERROR}: ${TOO_LARGE}:`) ? TOO_LARGE : "failed";
 }
 
 export function toWebpQuality(q01 = 0.92) {
@@ -43,7 +53,7 @@ function loadEncoder() {
 export async function encodeWebPDirect(imageData, quality01) {
   const { width, height } = imageData;
   if (width > WEBP_MAX_DIM || height > WEBP_MAX_DIM)
-    throw new WebpEncodeError(`${width}×${height} supera ${WEBP_MAX_DIM} px`);
+    throw new WebpEncodeError(`${width}×${height} supera ${WEBP_MAX_DIM} px`, TOO_LARGE);
   let encode;
   try {
     encode = await loadEncoder();

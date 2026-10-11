@@ -6,6 +6,7 @@ jest.mock("../../../lib/metadata.js", () => ({
 import { renderHook, act } from "@testing-library/react";
 import { reencodeToBlob } from "../../../lib/metadata.js";
 import { t } from "../../../lib/i18n.js";
+import { WebpEncodeError } from "../../../lib/webpWasm.js";
 import { useReencode } from "./useReencode.js";
 
 const INFO = { name: "foto.png", type: "image/png", width: 40, height: 30, bytes: 5000 };
@@ -80,6 +81,16 @@ describe("useReencode — si el encoder WebP falla (A4)", () => {
     await act(() => result.current.download());
     expect(clicked).toEqual([]);
     expect(onToast).toHaveBeenCalledWith(t("export.webpFailed"), "error");
+  });
+
+  it("más de 16383 px al descargar: aviso de tamaño, no de conexión (D3)", async () => {
+    reencodeToBlob.mockRejectedValue(new WebpEncodeError("20000×900 supera 16383 px", "too_large"));
+    const { result, onToast } = setup();
+    act(() => result.current.setFormat("webp"));
+    await act(() => result.current.download());
+    expect(clicked).toEqual([]);
+    expect(onToast).toHaveBeenCalledWith(t("export.webpTooLarge"), "error");
+    expect(onToast).not.toHaveBeenCalledWith(t("export.webpFailed"), "error");
   });
 
   it("al estimar: sin estimado, sin spinner colgado y con aviso", async () => {

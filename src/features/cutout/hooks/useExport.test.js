@@ -22,6 +22,7 @@ global.fetch = jest.fn(async (url) => ({
   blob: async () => ({ size: sizes[url] ?? 1000, type: types[url] ?? "" }),
 }));
 import { t, setLang } from "../../../lib/i18n.js";
+import { WebpEncodeError } from "../../../lib/webpWasm.js";
 import { EXPORT_PRESETS } from "../../../lib/presets.js";
 import { useExport } from "./useExport.js";
 
@@ -277,14 +278,16 @@ describe("useExport — si el encoder WebP falla (GROW-35, A4)", () => {
     expect(result.current.exportMode).toBe("transparent");
   });
 
-  it("una imagen de más de 16383 px tampoco cae a PNG: mismo aviso, sin archivo", async () => {
-    backend.exportTransparent.mockRejectedValue(new Error("WEBP_ENCODE_FAILED: 16384×900 supera 16383 px"));
+  // GROW-35 D3: el aviso nombra la causa (tamaño), no «reintentá con conexión»
+  it("una imagen de más de 16383 px tampoco cae a PNG: aviso de tamaño, sin archivo", async () => {
+    backend.exportTransparent.mockRejectedValue(new WebpEncodeError("16384×900 supera 16383 px", "too_large"));
     const { result, toast } = setup();
     act(() => result.current.setFormat("webp"));
     await act(() => result.current.handleDownload());
     const { downloadDataUrl } = require("../../../utils/dom.js");
     expect(downloadDataUrl).not.toHaveBeenCalled();
-    expect(toast).toHaveBeenLastCalledWith(t("export.webpFailed"), "error");
+    expect(toast).toHaveBeenLastCalledWith(t("export.webpTooLarge"), "error");
+    expect(t("export.webpTooLarge")).not.toBe("export.webpTooLarge");
   });
 });
 
