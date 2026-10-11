@@ -56,6 +56,44 @@ const checkWebkit = (name, reqs, txt) => {
   return msgs;
 };
 
+// GROW-35 D2: el encoder no carga (sin red) y después sí. Contexto propio: con el
+// service worker activo, ctx.route no ve lo que pide el SW (QA H-03).
+const ENCODER_ROUTE = /@jsquash\/webp\/|\/encode-[^/]*\.js|webp_enc/;
+async function runRetry(browser) {
+  const name = "webp-retry-test";
+  process.stdout.write(`\n■ ${name} [webkit]\n`);
+  const ctx = await browser.newContext({ serviceWorkers: "block" });
+  const blocked = [];
+  await ctx.route(ENCODER_ROUTE, (route) => {
+    blocked.push(route.request().url());
+    return route.abort();
+  });
+  const page = await ctx.newPage();
+  page.on("pageerror", (e) => console.error("  [webkit pageerror]", e.message));
+  const settled = (re) =>
+    page.waitForFunction((src) => new RegExp(src).test(document.getElementById("out")?.textContent || ""), re, {
+      timeout: 120000,
+    });
+  let bad = 0;
+  try {
+    await page.goto(`${ORIGIN}/test/${name}.html`);
+    await settled("PHASE1_DONE|ERROR");
+    await ctx.unroute(ENCODER_ROUTE);
+    await page.evaluate(() => window.__unblock?.());
+    await settled("ALL_DONE|ERROR");
+  } catch {
+    console.error("  TIMEOUT esperando PHASE1_DONE/ALL_DONE");
+    bad++;
+  }
+  const txt = (await page.textContent("#out")) || "";
+  for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
+  // si no se bloqueó nada, la fase 1 no probó el camino de error
+  if (!blocked.length) console.log("  FAIL: no se bloqueó ningún request del encoder");
+  if (/FAIL|ERROR/.test(txt) || !blocked.length) bad++;
+  await ctx.close();
+  return bad ? 1 : 0;
+}
+
 async function runSuite(browser, names, tag, check) {
   let bad = 0;
   const ctx = await browser.newContext();
@@ -134,6 +172,7 @@ try {
   if (wk) {
     try {
       failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
+      failed += await runRetry(wk);
     } finally {
       await wk.close();
     }

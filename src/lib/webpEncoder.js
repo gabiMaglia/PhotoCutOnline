@@ -1,7 +1,7 @@
 // API pública del WebP: ¿el canvas de ESTE contexto codifica WebP?, y si no,
 // el encoder propio. Ventana y workers cargan cada uno su copia del módulo,
 // así que el memo es por contexto (A3): no se pasa lo de uno al otro.
-import { encodeWebPDirect, isWebpEncodeError, WebpEncodeError } from "./webpWasm.js";
+import { encodeWebPDirect, isWebpEncodeError, WebpEncodeError, WEBP_ERROR } from "./webpWasm.js";
 
 export { isWebpEncodeError };
 
@@ -41,21 +41,32 @@ function getWorker() {
     if (!p) return;
     pending.delete(id);
     if (ok) p.resolve(new Blob([buffer], { type: "image/webp" }));
-    else p.reject(isWebpEncodeError(error) ? new Error(error) : new WebpEncodeError(error));
+    else {
+      p.reject(isWebpEncodeError(error) ? new Error(error) : new WebpEncodeError(error));
+      // WebKit guarda el import() fallido en el module map de ese worker y no
+      // lo vuelve a pedir: tras un fallo de carga solo sirve un contexto nuevo
+      if (String(error).includes(`${WEBP_ERROR}: load:`)) dropWorker();
+    }
   };
   worker.onerror = (e) => {
     // p. ej. el chunk del worker no bajó: se rechaza todo y el próximo intento crea otro
     for (const p of pending.values()) p.reject(new WebpEncodeError(`worker: ${e?.message || "error"}`));
     pending.clear();
-    worker = null;
+    dropWorker();
   };
   return worker;
 }
 
+function dropWorker() {
+  worker?.terminate?.();
+  worker = null;
+}
+
 /** Codifica a WebP con el encoder propio. Transfiere (consume) el buffer de `imageData`. */
 export function encodeWebP(imageData, quality01 = 0.92) {
-  // sin document estamos en un worker (cutoutWorker): no se anida otro
-  if (typeof document === "undefined") return encodeWebPDirect(imageData, quality01);
+  // También desde cutoutWorker (Safari ≥ 16.4 anida workers): es el único
+  // contexto descartable si falla la carga. Sin Worker, directo.
+  if (typeof Worker === "undefined") return encodeWebPDirect(imageData, quality01);
   return new Promise((resolve, reject) => {
     let w;
     try {

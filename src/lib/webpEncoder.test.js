@@ -120,4 +120,27 @@ describe("encodeWebP en la ventana: worker dedicado y perezoso (A1)", () => {
     };
     expect(isWebpEncodeError(await encodeWebP(img(), 0.8).catch((e) => e))).toBe(true);
   });
+
+  // GROW-35 D2: WebKit cachea el import() fallido en el module map del worker;
+  // solo un contexto nuevo vuelve a pedir el chunk
+  it("un fallo de CARGA descarta el worker (terminate) y el próximo encode crea otro", async () => {
+    FakeWorker.prototype.terminate = jest.fn();
+    const p = encodeWebP(img(), 0.8);
+    const w = FakeWorker.instances[0];
+    w.reply(0, { ok: false, error: "Error: WEBP_ENCODE_FAILED: load: Importing a module script failed." });
+    expect(isWebpEncodeError(await p.catch((e) => e))).toBe(true);
+    expect(w.terminate).toHaveBeenCalled();
+    encodeWebP(img(), 0.8);
+    expect(FakeWorker.instances).toHaveLength(2);
+  });
+
+  it("un fallo de ENCODE (no de carga) conserva el worker", async () => {
+    FakeWorker.prototype.terminate = jest.fn();
+    const p = encodeWebP(img(), 0.8);
+    FakeWorker.instances[0].reply(0, { ok: false, error: "WEBP_ENCODE_FAILED: encode: OOM" });
+    await p.catch(() => {});
+    encodeWebP(img(), 0.8);
+    expect(FakeWorker.instances).toHaveLength(1);
+    expect(FakeWorker.instances[0].terminate).not.toHaveBeenCalled();
+  });
 });

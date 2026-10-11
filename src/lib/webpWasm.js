@@ -31,7 +31,10 @@ function loadEncoder() {
       return m.default;
     })
     .catch((e) => {
-      encoderLoad = null; // sin red la primera vez: el reintento vuelve a pedirlo
+      // Se olvida la promesa para que init() (y el .wasm) se reintente. Si lo que
+      // falló fue el import(), WebKit lo deja cacheado en este contexto: lo
+      // recupera webpEncoder descartando el worker (GROW-35 D2).
+      encoderLoad = null;
       throw e;
     });
   return encoderLoad;
