@@ -22,8 +22,7 @@
 >   Vars de build documentadas en `.env.example`.
 > - **Varita mágica por color** (flood-fill, multi-selección con shift) — nuevo
 >   modo de marcado junto a recuadro/IA/pinceles.
-> - **Sticker Studio** construido (WhatsApp/Telegram) pero **oculto tras flag**
->   `STICKERS_ENABLED=false` (decisión: revisitar más adelante).
+> - **Sticker Studio** retirado en GROW-34: los stickers salen de los presets «Sticker WhatsApp/Telegram 512» de Exportar.
 > - **Monetización**: Google Analytics 4 **gateado por banner de consentimiento**
 >   (GDPR); SEO publicado: **5 guías** + `sitemap.xml` + `canonical` + robots
 >   (build desde `VITE_SITE_URL`). Ads multi-proveedor y donaciones ya estaban.
@@ -114,8 +113,7 @@ rápido).*
 
 ## ALGÚN DÍA / apuestas
 
-- **Sticker Studio** (ya construido, oculto tras `STICKERS_ENABLED`): reactivar
-  + pack de varios stickers en ZIP e ícono de bandeja 96 para WhatsApp
+- **Pack de stickers**: varios stickers en ZIP + ícono de bandeja 96 para WhatsApp (los presets de 512 ya existen)
 - **API/MCP de pago por consulta** (ver [MCP-API.md](MCP-API.md)): npm local
   primero, lambda Rust + Stripe después
 - **Magic eraser** (inpainting local de objetos) — L/XL, segundo titular IA
