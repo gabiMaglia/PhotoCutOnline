@@ -89,7 +89,8 @@ async function runRetry(browser) {
   for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
   // si no se bloqueó nada, la fase 1 no probó el camino de error
   if (!blocked.length) console.log("  FAIL: no se bloqueó ningún request del encoder");
-  if (/FAIL|ERROR/.test(txt) || !blocked.length) bad++;
+  // anclado al inicio de línea: los PASS de la fase 1 citan «WEBP_ENCODE_FAILED»
+  if (/^(FAIL|ERROR):/m.test(txt) || !blocked.length) bad++;
   await ctx.close();
   return bad ? 1 : 0;
 }
