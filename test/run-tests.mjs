@@ -37,6 +37,12 @@ const DESKTOP = { width: 1280, height: 800 };
 // GROW-35: lo que depende del códec corre también en WebKit (el motor de Safari
 // no codifica WebP en canvas). Es la corrida que le faltó a GROW-34.
 const WEBKIT_TESTS = ["webp-test", "reencode-test"];
+
+// Autoprueba del runner (GROW-35 D-i2-1), solo a pedido: una página que tarda
+// 35 s tiene que pasar en los dos motores. No corre por defecto.
+const SELFTEST = process.env.RUNNER_SELFTEST === "1";
+const SELFTEST_SUITE = ["runner-timeout-test"];
+const noCheck = () => [];
 const ORIGIN = `http://localhost:${PORT}`;
 const ENCODER_WASM = /webp_enc[^/]*\.wasm/;
 
@@ -156,7 +162,7 @@ try {
     // en CI (contenedores/runners) el sandbox de Chrome suele no estar disponible
     args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
   });
-  failed += await runSuite(browser, TESTS, "chrome", checkChrome);
+  failed += await runSuite(browser, SELFTEST ? SELFTEST_SUITE : TESTS, "chrome", SELFTEST ? noCheck : checkChrome);
 
   let wk = null;
   try {
@@ -172,8 +178,11 @@ try {
   }
   if (wk) {
     try {
-      failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
-      failed += await runRetry(wk);
+      if (SELFTEST) failed += await runSuite(wk, SELFTEST_SUITE, "webkit", noCheck);
+      else {
+        failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
+        failed += await runRetry(wk);
+      }
     } finally {
       await wk.close();
     }
