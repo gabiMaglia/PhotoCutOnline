@@ -3,6 +3,7 @@ import { backend } from "../../../lib/backend.js";
 import { EXPORT_PRESETS, fitWithinBytes } from "../../../lib/presets.js";
 import { t } from "../../../lib/i18n.js";
 import { OUTPUT_FORMATS, formatFromMime } from "../../../lib/metadata.js";
+import { isWebpEncodeError } from "../../../lib/webpEncoder.js";
 import { hexToRgba } from "../../../utils/color.js";
 import { fileToDataUrl, bgWithOpacity } from "../../../utils/image.js";
 import { downloadDataUrl } from "../../../utils/dom.js";
@@ -127,7 +128,9 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         if (notice) toast(...notice);
         else toast(t(backend.isDesktop ? "toast.saved" : "toast.exported"), "ok");
       } catch (e) {
-        toast(String(e), "error");
+        // el encoder WebP no pudo (sin red la 1ª vez, >16383 px, sin memoria):
+        // no se descarga nada, nunca un PNG disfrazado
+        toast(isWebpEncodeError(e) ? t("export.webpFailed") : String(e), "error");
       } finally {
         setBusy(false);
       }

@@ -21,7 +21,7 @@ const types = {};
 global.fetch = jest.fn(async (url) => ({
   blob: async () => ({ size: sizes[url] ?? 1000, type: types[url] ?? "" }),
 }));
-import { t } from "../../../lib/i18n.js";
+import { t, setLang } from "../../../lib/i18n.js";
 import { EXPORT_PRESETS } from "../../../lib/presets.js";
 import { useExport } from "./useExport.js";
 
@@ -254,5 +254,36 @@ describe("useExport — el archivo se nombra por lo que ES (GROW-35)", () => {
     } finally {
       backend.isDesktop = false;
     }
+  });
+});
+
+describe("useExport — si el encoder WebP falla (GROW-35, A4)", () => {
+  afterEach(() => {
+    backend.exportTransparent.mockImplementation(async () => "blob:t");
+    setLang("es");
+  });
+
+  it("no descarga nada, avisa en el idioma de la UI y el panel queda igual", async () => {
+    backend.exportTransparent.mockRejectedValue(new Error("WEBP_ENCODE_FAILED: load: Failed to fetch"));
+    const { result, toast } = setup();
+    act(() => setLang("en"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    await act(() => result.current.handleDownload());
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    expect(downloadDataUrl).not.toHaveBeenCalled();
+    expect(toast).toHaveBeenLastCalledWith("Couldn't prepare the WebP. Try again with a connection or choose PNG", "error");
+    expect(result.current.presetId).toBe("sticker-whatsapp");
+    expect(result.current.format).toBe("webp");
+    expect(result.current.exportMode).toBe("transparent");
+  });
+
+  it("una imagen de más de 16383 px tampoco cae a PNG: mismo aviso, sin archivo", async () => {
+    backend.exportTransparent.mockRejectedValue(new Error("WEBP_ENCODE_FAILED: 16384×900 supera 16383 px"));
+    const { result, toast } = setup();
+    act(() => result.current.setFormat("webp"));
+    await act(() => result.current.handleDownload());
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    expect(downloadDataUrl).not.toHaveBeenCalled();
+    expect(toast).toHaveBeenLastCalledWith(t("export.webpFailed"), "error");
   });
 });

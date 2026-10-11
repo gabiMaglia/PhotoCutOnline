@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { reencodeToBlob, hasTransparency, fitSize, OUTPUT_FORMATS, formatFromMime } from "../../../lib/metadata.js";
 import { createLatestRunner } from "../../../lib/latestRunner.js";
 import { t } from "../../../lib/i18n.js";
+import { isWebpEncodeError } from "../../../lib/webpEncoder.js";
 
 // T-014/T-015: convertir, comprimir y redimensionar. El estimado se recalcula
 // cuando cambian formato, calidad o tamaño; re-encodear es sincrónico y en
@@ -72,7 +73,10 @@ export function useReencode({ imgRef, info, onToast }) {
     setHeight(srcH || null);
   }, [srcW, srcH]);
 
-  const reportFailure = useCallback((e) => onToast?.(String(e), "error"), [onToast]);
+  const reportFailure = useCallback(
+    (e) => onToast?.(isWebpEncodeError(e) ? t("export.webpFailed") : String(e), "error"),
+    [onToast]
+  );
 
   useEffect(() => {
     const img = imgRef.current;
@@ -119,12 +123,18 @@ export function useReencode({ imgRef, info, onToast }) {
   const download = useCallback(async () => {
     const img = imgRef.current;
     if (!img) return;
-    const blob = await reencodeToBlob(img, {
-      format,
-      quality: quality / 100,
-      width: width || undefined,
-      height: height || undefined,
-    });
+    let blob;
+    try {
+      blob = await reencodeToBlob(img, {
+        format,
+        quality: quality / 100,
+        width: width || undefined,
+        height: height || undefined,
+      });
+    } catch (e) {
+      reportFailure(e);
+      return;
+    }
     if (!blob) return;
     // se nombra por lo que ES (GROW-35): nunca un .webp con PNG adentro
     const real = formatFromMime(blob.type) || format;
@@ -136,7 +146,7 @@ export function useReencode({ imgRef, info, onToast }) {
     a.download = `${base}.${OUTPUT_FORMATS[real].ext}`;
     a.click();
     URL.revokeObjectURL(a.href);
-  }, [imgRef, info, format, quality, width, height, onToast]);
+  }, [imgRef, info, format, quality, width, height, onToast, reportFailure]);
 
   const fmt = OUTPUT_FORMATS[format];
   const origFormat = formatFromMime(info?.type);

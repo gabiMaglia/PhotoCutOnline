@@ -71,3 +71,24 @@ describe("useReencode — estimación sin apilar codificaciones (A1)", () => {
     expect(reencodeToBlob.mock.calls[1][1].quality).toBe(0.5);
   });
 });
+
+describe("useReencode — si el encoder WebP falla (A4)", () => {
+  it("al descargar: no baja nada y avisa", async () => {
+    reencodeToBlob.mockRejectedValue(new Error("WEBP_ENCODE_FAILED: encode: memory access out of bounds"));
+    const { result, onToast } = setup();
+    act(() => result.current.setFormat("webp"));
+    await act(() => result.current.download());
+    expect(clicked).toEqual([]);
+    expect(onToast).toHaveBeenCalledWith(t("export.webpFailed"), "error");
+  });
+
+  it("al estimar: sin estimado, sin spinner colgado y con aviso", async () => {
+    jest.useFakeTimers();
+    reencodeToBlob.mockRejectedValue(new Error("WEBP_ENCODE_FAILED: load: offline"));
+    const { result, onToast } = setup();
+    await act(async () => jest.advanceTimersByTime(250));
+    expect(result.current.estimate).toBeNull();
+    expect(result.current.estimating).toBe(false);
+    expect(onToast).toHaveBeenCalledWith(t("export.webpFailed"), "error");
+  });
+});
