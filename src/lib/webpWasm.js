@@ -1,0 +1,60 @@
+// Codificador WebP propio (GROW-35). WebKit devuelve PNG cuando se le pide
+// WebP al canvas, así que en ese caso los bytes los produce libwebp en WASM.
+// Es el único módulo que toca jSquash, y solo su encoder: el decoder trae
+// la superficie de CVE-2023-4863 y no lo necesitamos.
+
+export const WEBP_MAX_DIM = 16383; // máximo del formato por lado
+export const WEBP_ERROR = "WEBP_ENCODE_FAILED";
+
+export class WebpEncodeError extends Error {
+  constructor(reason) {
+    super(`${WEBP_ERROR}: ${reason}`);
+    this.name = "WebpEncodeError";
+  }
+}
+
+// El error cruza workers como texto (postMessage), así que se reconoce por la marca.
+export function isWebpEncodeError(e) {
+  return String(e?.message ?? e ?? "").includes(WEBP_ERROR);
+}
+
+export function toWebpQuality(q01 = 0.92) {
+  const q = Number.isFinite(q01) ? q01 : 0.92;
+  return Math.round(Math.min(1, Math.max(0, q)) * 100);
+}
+
+let encoderLoad = null;
+function loadEncoder() {
+  encoderLoad ??= import("@jsquash/webp/encode.js")
+    .then(async (m) => {
+      await m.init();
+      return m.default;
+    })
+    .catch((e) => {
+      encoderLoad = null; // sin red la primera vez: el reintento vuelve a pedirlo
+      throw e;
+    });
+  return encoderLoad;
+}
+
+export async function encodeWebPDirect(imageData, quality01) {
+  const { width, height } = imageData;
+  if (width > WEBP_MAX_DIM || height > WEBP_MAX_DIM)
+    throw new WebpEncodeError(`${width}×${height} supera ${WEBP_MAX_DIM} px`);
+  let encode;
+  try {
+    encode = await loadEncoder();
+  } catch (e) {
+    throw new WebpEncodeError(`load: ${e?.message || e}`);
+  }
+  try {
+    const buf = await encode(imageData, { quality: toWebpQuality(quality01) });
+    return new Blob([buf], { type: "image/webp" });
+  } catch (e) {
+    throw new WebpEncodeError(`encode: ${e?.message || e}`);
+  }
+}
+
+export function _resetWasmForTests() {
+  encoderLoad = null;
+}
