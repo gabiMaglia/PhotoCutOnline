@@ -38,6 +38,11 @@ const DESKTOP = { width: 1280, height: 800 };
 // no codifica WebP en canvas). Es la corrida que le faltó a GROW-34.
 const WEBKIT_TESTS = ["webp-test", "reencode-test"];
 
+// Límite de espera por motor, explícito. WebKit es más lento (autoCut ronda los
+// 28 s en un Mac cargado y puede multiplicarse en un runner de 2 vCPU); uno
+// único alto taparía cuelgues en Chrome, cuyas suites son rápidas.
+const TIMEOUT_MS = { chrome: 120_000, webkit: 240_000 };
+
 // Autoprueba del runner (GROW-35 D-i2-1), solo a pedido: una página que tarda
 // 35 s tiene que pasar en los dos motores. No corre por defecto.
 const SELFTEST = process.env.RUNNER_SELFTEST === "1";
@@ -78,7 +83,7 @@ async function runRetry(browser) {
   page.on("pageerror", (e) => console.error("  [webkit pageerror]", e.message));
   const settled = (re) =>
     page.waitForFunction((src) => new RegExp(src).test(document.getElementById("out")?.textContent || ""), re, {
-      timeout: 120000,
+      timeout: TIMEOUT_MS.webkit,
     });
   let bad = 0;
   try {
@@ -88,7 +93,7 @@ async function runRetry(browser) {
     await page.evaluate(() => window.__unblock?.());
     await settled("ALL_DONE|ERROR");
   } catch {
-    console.error("  TIMEOUT esperando PHASE1_DONE/ALL_DONE");
+    console.error(`  TIMEOUT esperando PHASE1_DONE/ALL_DONE (${TIMEOUT_MS.webkit} ms)`);
     bad++;
   }
   const txt = (await page.textContent("#out")) || "";
@@ -112,19 +117,25 @@ async function runSuite(browser, names, tag, check) {
     process.stdout.write(`\n■ ${name}${tag === "chrome" ? "" : ` [${tag}]`}\n`);
     reqs.length = 0;
     await page.setViewportSize(VIEWPORTS[name] || DESKTOP);
+    const t0 = Date.now();
     await page.goto(`${ORIGIN}/test/${name}.html`);
     try {
+      // la firma es (fn, arg, options): sin el null, {timeout} viajaba como arg y
+      // mandaba el default de 30 s de Playwright (GROW-35 D-i2-1)
       await page.waitForFunction(
         () => /ALL_DONE|ERROR/.test(document.getElementById("out")?.textContent || ""),
-        { timeout: 120000 }
+        null,
+        { timeout: TIMEOUT_MS[tag] }
       );
     } catch {
-      console.error("  TIMEOUT esperando ALL_DONE");
+      console.error(`  TIMEOUT esperando ALL_DONE (${TIMEOUT_MS[tag]} ms)`);
       bad++;
       continue;
     }
     const txt = await page.textContent("#out");
     for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
+    // la duración queda en el log de CI para ver cuánto margen hay contra el límite
+    console.log(`  (${((Date.now() - t0) / 1000).toFixed(1)} s de ${TIMEOUT_MS[tag] / 1000} s)`);
     const extra = check(name, reqs, txt);
     for (const m of extra) console.log(`  FAIL: ${m}`);
     if (/FAIL|ERROR/.test(txt) || extra.length) bad++;
