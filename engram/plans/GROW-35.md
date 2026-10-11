@@ -2123,3 +2123,121 @@ Vite con jSquash en WebKit (Task 8), WebKit de Playwright en Linux/CI (ruta nati
 reales y Tauri (Task 13).
 
 **Aprobado por:** nerv-web · tech lead web · 2026-10-10
+
+### Correcciones — intento 2 (rechazo nerv-verifier 2026-10-11)
+
+Fuente: `engram/qa/GROW-35-verifier.md` (D1, D2 y D3) y `engram/qa/GROW-35.md` (H-01, H-02 y H-05). Rama
+`feat/GROW-35-webp-real`, con `main` mergeado (2be4567). Valen las mismas restricciones globales: TDD con
+el test en rojo antes del código, un commit por tarea con `Co-Authored-By`, y `npm test` y
+`npm run test:web` (Chrome + WebKit) en verde al cerrar. Nada de esto toca `backend.export*` ni los
+bytes del camino nativo de Chrome (G6).
+
+**Verificado antes de planear (P-1.6):** según BCD oficial (`api/Worker.json`, `worker_support`), los
+workers dedicados pueden crear workers desde Safari 16.4, la misma versión que pide `WORKER_OK`
+(OffscreenCanvas). Dentro de `cutoutWorker` siempre hay `Worker`. El bundle de `cutoutWorker` ya emite
+`webpWorker-*.js` (verificado en la Task 3).
+
+#### C1 (D2). Un fallo de carga del encoder no deja WebP roto toda la sesión
+Causa: WebKit guarda en el module map del contexto el `import()` que falló. Reintentar en ese mismo
+contexto no vuelve a pedir el chunk (lo midió el verificador: 3 reintentos y ningún request). La
+solución es descartar el contexto.
+- `src/lib/webpEncoder.js`:
+  - `encodeWebP` usa el worker dedicado siempre que el contexto tenga `Worker`, ventana o worker. Si no
+    tiene `Worker`, codifica directo.
+  - Cuando el worker contesta un error de CARGA (`WEBP_ENCODE_FAILED: load:`), se hace `terminate()` y
+    `worker = null`, así el próximo encode crea un contexto nuevo, con su module map vacío.
+  - `onerror` también hace `terminate()`.
+- `src/lib/webpWasm.js:34`: el comentario pasa a decir la verdad (se reintenta `init()`; si falló el
+  `import()`, el que se recupera es el worker descartado).
+- Tests en rojo primero:
+  - `webpEncoder.test.js`: «un fallo de carga descarta el worker y el próximo encode crea otro (y
+    termina el viejo)»; con un error de encode, en cambio, el worker se reutiliza.
+  - `webpEncoder.node.test.js`: el test «dentro de un worker codifica directo, sin crear otro worker»
+    se REEMPLAZA, porque el §QUÉ corregido cambia esa decisión. Quedan dos:
+    - «dentro de un worker con `Worker` (Safari ≥ 16.4) codifica en el worker dedicado»;
+    - «sin `Worker` en el contexto codifica directo».
+  - Harness `test/webp-retry-test.{html,js}`, solo en WebKit. El runner lo corre en un contexto propio
+    con `serviceWorkers:"block"` y `ctx.route` bloqueando el wrapper, el glue y el `.wasm` del encoder
+    (`/@jsquash\/webp\/|encode-[^/]*\.js|webp_enc/`).
+    - Fase 1, con el bloqueo: export del editor (pasa por `cutoutWorker`) y `reencodeToBlob` (pasa por
+      Archivo). Los dos tienen que rechazar con `isWebpEncodeError`. Después el test escribe `PHASE1_DONE`.
+    - Entre fases, el runner hace `unroute` y llama a `window.__unblock()`.
+    - Fase 2: el mismo export y el mismo reencode tienen que dar bytes WebP reales.
+    - Contra el código del intento 1, la fase 2 del editor falla en WebKit.
+- Commit: `fix(webp): un fallo de carga del encoder descarta su worker y el reintento vuelve a pedirlo (GROW-35 D2)`.
+
+#### C2 (D3). Más de 16383 px da un aviso de tamaño, no «reintentá con conexión»
+- `src/lib/webpWasm.js`:
+  - `WebpEncodeError(reason, kind = "failed")`. El mensaje queda `WEBP_ENCODE_FAILED: <kind>: <motivo>`
+    y viaja como texto entre workers.
+  - El límite lanza con `kind = "too_large"`.
+  - `webpErrorKind(e)` devuelve `"too_large" | "failed" | null`, y `webpEncoder.js` lo re-exporta.
+  - `isWebpEncodeError` no cambia.
+- `useExport` y `useReencode` pasan del error a la clave: `too_large` → `export.webpTooLarge`; `failed`
+  → `export.webpFailed`; si no, `String(e)`.
+- i18n:
+  - es: «WebP admite hasta 16383 px por lado y esta imagen es más grande. Elegí PNG o JPEG, o achicala»
+  - en: «WebP allows up to 16383 px per side and this image is larger. Choose PNG or JPEG, or make it smaller»
+  - pt: «O WebP aceita até 16383 px por lado e esta imagem é maior. Escolha PNG ou JPEG, ou diminua-a»
+- Tests en rojo primero:
+  - `webpWasm.test.js`: 16384 da `webpErrorKind === "too_large"`; OOM e init fallido dan `"failed"`.
+  - `useExport.test.js`: el caso «más de 16383 px» pasa a esperar `export.webpTooLarge` (el defecto D3
+    cambia la expectativa) con el mensaje real del módulo.
+  - `useReencode.test.js`: lo mismo, al descargar.
+- Commit: `fix(webp): aviso específico cuando la imagen supera 16383 px (GROW-35 D3)`.
+
+#### C3 (D1). Salir de un preset de sticker restaura formato Y fondo, y el aviso dice lo que se descarga
+- `src/features/cutout/hooks/useExport.js`:
+  - El preset que impone formato guarda una sola vez `{ format, exportMode, bgColor }` del usuario.
+  - Al salir a «Original» (preset sin regla de fondo) se restauran los tres.
+  - Al salir a un preset con regla de fondo (Amazon, Avatar…) manda la precarga de GROW-34 (BUG-01) y
+    solo se restaura el formato.
+  - El aviso nombra el formato EFECTIVO: Transparente + JPEG cae a PNG, igual que en `exportAs`. Si
+    además volvió el fondo, un solo aviso lo dice: `export.settingsRestored` con `{bg, fmt}`, donde `bg`
+    es `t("export.mode.<modo>")`.
+- i18n:
+  - es: «Volvió tu fondo ({bg}) y tu formato: {fmt}»
+  - en: «Your background ({bg}) and format are back: {fmt}»
+  - pt: «Seu fundo ({bg}) e seu formato voltaram: {fmt}»
+- Tests en rojo primero, en `useExport.test.js`:
+  - Color `#2563eb` + JPEG → Sticker WhatsApp → Original. Queda modo `solid`, color `#2563eb` y formato
+    `jpeg`. Al descargar se llama `exportSolid([37,99,235,255], {format:"jpeg"})`, baja
+    `photocut-solid.jpg` y el último aviso antes de descargar es `settingsRestored {bg:"Color", fmt:"JPEG"}`.
+  - Color + JPEG → Sticker WhatsApp → Avatar. Queda transparente (regla del preset), el aviso dice PNG y
+    baja `.png`.
+  - El test D2 del intento 1 «Sticker WhatsApp → Original…» arrancaba en Transparente + JPEG, o sea un
+    PNG efectivo: es justo la premisa del defecto. Pasa a arrancar en Color + JPEG y se conservan sus
+    aserciones.
+- Verificación E2E (evidencia, sin commit): un script de Playwright en el scratchpad contra
+  `vite preview`, en Chrome y en WebKit, hace Color + JPEG → Sticker WhatsApp → Original → Descargar y
+  comprueba el magic JPEG, el nombre `.jpg`, que el píxel de la esquina sea el color elegido y el texto
+  del toast.
+- Commit: `fix(export): salir del sticker restaura formato y fondo previos; el aviso dice lo que baja (GROW-35 D1)`.
+
+#### C4 (H-02). Guarda de carga diferida que mata las mutaciones M-c1 y M-c4
+- `webpEncoder.test.js`: «importar el módulo no crea ningún Worker». Usa `jest.isolateModules` con
+  `global.Worker = jest.fn()` y mata a M-c1.
+- `scripts/lib/webp-lazy.test.mjs`:
+  - Sigue el grafo ESTÁTICO desde cada HTML: `script src`, `modulepreload` y, por cada chunk,
+    `import … from "./x.js"` e `import "./x.js"`, pero no `import()`.
+  - Falla si algún chunk de ese grafo contiene `target_PSNR` (las opciones del wrapper de jSquash) o
+    `@jsquash`. Esto mata a M-c4.
+- Prueba por mutación, documentada en el handoff:
+  - M-c1, worker ansioso: se aplica, el test queda en rojo y se revierte.
+  - M-c4, `import` estático del encoder en `webpWasm.js`: se aplica, `npm run build`, la guarda queda en
+    rojo; se revierte, se reconstruye y queda en verde.
+- Commit: `test(webp): guarda de carga diferida sobre el grafo estático y sin Worker al importar (GROW-35 H-02)`.
+
+#### C5 (H-01, H-05). Docs
+- `engram/qa/_debt.md`: transcribir los desvíos a–f del intento 1 y los de este intento.
+- `engram/01_requirements.md:15`: F-07 Sticker Studio queda «Retirado en GROW-34 (presets de sticker en
+  Exportar)».
+- Verificación: `grep -n "Oculto tras feature flag" engram/01_requirements.md` sin salida.
+- Commit: `docs(engram): desvíos de GROW-35 a deuda y F-07 retirado (GROW-35 H-01/H-05)`.
+
+#### C6. Cierre
+- `npm run build && npm test && npm run test:web`: verde, con `webp-retry-test [webkit]` incluido.
+- Si cambian páginas públicas (no está previsto), `npm run lastmod` y un commit `[lastmod-skip]`.
+- Se reescribe el handoff de retorno. No hay push ni merge.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-11
