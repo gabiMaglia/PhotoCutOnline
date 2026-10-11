@@ -1,6 +1,6 @@
 // Utilidades compartidas por las pruebas de "Lo probamos" (GROW-31).
 // Todas las mediciones salen de Chrome real contra `npm run build` + `vite preview`.
-import { chromium } from "playwright-core";
+import { chromium, webkit } from "playwright-core";
 import { execFileSync } from "node:child_process";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -13,6 +13,11 @@ mkdirSync(TMP, { recursive: true });
 
 export async function launch() {
   return chromium.launch({ channel: "chrome", headless: true });
+}
+
+// El motor de Safari (GROW-35): no codifica WebP en canvas, así que mide la otra ruta.
+export async function launchWebKit() {
+  return webkit.launch({ headless: true });
 }
 
 export function chromeVersion(browser) {
