@@ -153,6 +153,68 @@ mismo flujo de sticker, pero en el §CÓMO va como paso **independiente** (paral
 serial `webpEncoder` (primitiva compartida) → `canvasToBlob`/`reencodeToBlob` → `useExport`/`useReencode`.
 Si D2 retrasa la cadena WebP, se parte a ticket propio sin reabrir este §QUÉ.
 
+### Revisión del arquitecto — tras 2 rechazos (2026-10-11)
+
+**Aprobado por:** nerv-arquitecto · arquitecto · 2026-10-11
+
+**1. Diagnóstico (P-2): defectos puntuales; no hay problema de diseño ni de alcance, así que no vuelve al PO.**
+Los dos rechazos no comparten causa y ninguno contradice el §QUÉ:
+- Intento 1 (verifier): D1, D2 y D3 fueron bordes de implementación dentro de decisiones ya escritas. D1 era
+  restaurar el estado al salir del sticker. D2 era la promesa del import/worker sin descartar tras un fallo,
+  que contradecía «reintentá con conexión» de §Errores. D3 era el límite de A4 sin mensaje propio. Se
+  corrigieron sin tocar el diseño.
+- Intento 2 (QA): D-i2-1 es un bug del arnés de pruebas que ya estaba en `main` (c13458a:73-76). La suite
+  WebKit que exige C7 lo dejó a la vista. El producto quedó aprobado por el verifier y QA lo verificó con
+  mutación.
+- Patrón real: el código WebP cumple. Lo que falla son los bordes del flujo y la infraestructura de prueba
+  en el motor nuevo, que es justo la superficie que GROW-34 nunca había ejercitado. Para eso se corrige la
+  herramienta; no se reabre el §QUÉ. *Descartado:* volver al PO. Ni el costo, ni el plazo, ni la UX
+  acordada cambian.
+
+**2. Alcance del intento 3: cerrado. Solo lo que sigue; cualquier otro cambio de código queda fuera.**
+- **D-i2-1, en todo el runner.** `test/run-tests.mjs` tiene dos `waitForFunction`. El de `runRetry` (:74) ya
+  usa la firma correcta `(fn, arg, options)`. El de `runSuite` (:111-114) pasa a `(fn, null, { timeout })`.
+- **Timeout explícito por motor, en vez de uno global.** Se agrega un mapa `TIMEOUT_MS = { chrome: 120_000,
+  webkit: 240_000 }` y `runSuite`/`runRetry` toman el de su `tag`.
+  - Motivo: autoCut en WebKit ya ronda los 28 s en un Mac cargado; en un runner Linux de 2 vCPU puede
+    multiplicarse.
+  - Un único valor alto también taparía cuelgues en Chrome, cuyas suites son rápidas.
+  - *Descartado:* `ctx.setDefaultTimeout` como único mecanismo, porque deja el valor implícito. Puede sumarse
+    como red de seguridad, con el mismo valor por motor.
+- **Prueba de rojo del arreglo.** Hay que mostrar que el timeout efectivo es el configurado y no 30 s, con
+  una página de prueba o un `waitForFunction` que tarde más de 30 s y menos que el límite. Si no se puede
+  automatizar barato, se entrega una corrida con carga alta (load ≥ 30) en verde y se pega la salida.
+- **`_debt.md`:** transcribir los 3 cambios de aserciones (P-18.5) tal como figuran en «Correcciones —
+  intento 2».
+- **O1 y O2 van a deuda, no al intento 3.** Ambos son de severidad baja, el aviso es veraz respecto del
+  archivo que baja, no hay pérdida de datos y cualquier cambio reabriría `useExport`, que hoy está aprobado
+  y blindado con mutación.
+  - O1 («Volvió tu formato: PNG» con JPEG marcado y deshabilitado) pasa a deuda de UX: unificar el texto
+    y el estado del chip cuando el modo transparente fuerza PNG.
+  - O2 (Original restaura el fondo previo al sticker aunque se haya cambiado dentro) es una decisión de UX
+    para el PO, que debe quedar registrada como pregunta en `_debt.md`. Hoy el comportamiento es coherente
+    con D1 y avisa con toast.
+  - Meter cualquiera de los dos en el intento 3 suma riesgo de regresión a un ticket que ya está en su
+    tercer intento.
+
+**3. Riesgo de CI y qué se exige antes del merge.**
+- `.github/workflows/ci.yml` ya ejecuta `npx playwright-core install --with-deps webkit`, así que WebKit
+  queda instalado.
+- `checkWebkit` exige `ruta=wasm` solo en darwin. En Linux, el WebKit de Playwright (port GTK/WPE) puede
+  codificar WebP nativo; si lo hace, la ruta WASM **no se ejercita en CI**.
+- Esto es aceptable en este ticket, porque la ruta WASM queda cubierta por jest con detección mockeada, por
+  la corrida local en macOS y por las mutaciones de QA. Tiene que quedar a la vista y no darse por supuesto.
+- Requisitos para el merge:
+  - (a) Pushear la rama y abrir el PR. El job `web` tiene que salir **verde en GitHub Actions** sobre el HEAD
+    del intento 3 antes de mergear. Una corrida local no lo reemplaza.
+  - (b) QA copia de ese log la línea `ruta=` de `webp-test [webkit]`, con la duración de la suite, y la
+    cita en su veredicto.
+  - (c) Si la línea dice `ruta=nativa`, se abre deuda para forzar la ruta WASM en CI con un flag de prueba
+    que haga `canEncodeWebP()` falso solo en el harness. No bloquea este merge.
+  - (d) Si el job WebKit sale rojo por tiempo incluso con 240 s, el merge queda bloqueado y vuelve a esta
+    revisión. No se permite `SKIP_WEBKIT=1` en CI.
+- Memoria del proyecto: después del merge hay que mirar el CI de `main`, que no está protegida.
+
 ## CÓMO — plan de implementación
 
 **Plan de implementación GROW-35 — WebP real en todos los navegadores**
@@ -2242,5 +2304,48 @@ solución es descartar el contexto.
 - `npm run build && npm test && npm run test:web`: verde, con `webp-retry-test [webkit]` incluido.
 - Si cambian páginas públicas (no está previsto), `npm run lastmod` y un commit `[lastmod-skip]`.
 - Se reescribe el handoff de retorno. No hay push ni merge.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-11
+
+### Correcciones — intento 3 (rechazo nerv-qa 2026-10-11)
+
+Fuente: `engram/qa/GROW-35.md` «Intento 2» (D-i2-1) y, en el §QUÉ, la «Revisión del arquitecto — tras 2
+rechazos», que es el contrato de este intento. El alcance está cerrado: el runner y `_debt.md`, nada de
+código de producto. Rama `feat/GROW-35-webp-real`, con main mergeado (c2324e5).
+
+#### R1 (D-i2-1). El timeout del runner es el configurado, por motor, y no los 30 s de Playwright
+- **Test en rojo primero:** `test/runner-timeout-test.{html,js}` es una página trivial que escribe
+  `ALL_DONE` a los 35 s.
+  - No corre por defecto. Con `RUNNER_SELFTEST=1`, el runner corre SOLO esa página: en Chrome por
+    `runSuite` y en WebKit por `runSuite` + `runRetry`, con `waitForFunction` contra la misma página.
+  - Contra el runner actual tiene que dar `TIMEOUT` en Chrome, porque `{timeout}` viaja como `arg` y el
+    límite real son 30 s. Se pega esa salida.
+- **Arreglo en `test/run-tests.mjs`:**
+  - `TIMEOUT_MS = { chrome: 120_000, webkit: 240_000 }`.
+  - `runSuite` usa `page.waitForFunction(fn, null, { timeout: TIMEOUT_MS[tag] })`.
+  - `runRetry` usa `TIMEOUT_MS.webkit` en sus dos esperas.
+  - El mensaje de `TIMEOUT` incluye el límite en ms.
+  - No hay otros `waitForFunction` en el runner; se verifica con grep.
+- **Verde:** `RUNNER_SELFTEST=1 npm run test:web` deja la página en `ALL_DONE` a los ~35 s en los dos
+  motores. Después, `npm run test:web` normal da «✓ todo verde».
+- Commits:
+  - test (el rojo): `test(runner): autoprueba opcional de timeout >30 s (GROW-35 D-i2-1)`
+  - fix: `fix(runner): waitForFunction con (fn, null, {timeout}) y límite por motor (GROW-35 D-i2-1)`
+
+#### R2. Deuda
+- `engram/qa/_debt.md`:
+  - Los 3 cambios de aserciones del intento 2 (P-18.5), tal como figuran en «Correcciones — intento 2».
+  - O1 como deuda de UX: unificar el texto y el estado del chip cuando el modo transparente fuerza PNG.
+  - O2 como pregunta abierta para el PO: ¿«Original» restaura el fondo previo al sticker aunque se haya
+    cambiado dentro?
+  - El riesgo de CI del arquitecto: si `ruta=nativa` aparece en Linux, se abre deuda para un flag de
+    prueba que fuerce WASM.
+- Commit: `docs(engram): deuda GROW-35 intento 3 — aserciones cambiadas, O1/O2 y riesgo de CI`.
+
+#### R3. Cierre
+- `npm test` y `npm run test:web` en verde, con la línea `ruta=` y la duración de `webp-test [webkit]`.
+- El handoff se reescribe con `Files touched` = `git diff --name-only main`.
+- Sin push: la rama la pushea el orquestador y el PR tiene que salir verde en GitHub Actions antes del
+  merge, como exige el arquitecto.
 
 **Aprobado por:** nerv-web · tech lead web · 2026-10-11
