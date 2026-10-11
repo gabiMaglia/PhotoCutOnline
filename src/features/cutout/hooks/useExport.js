@@ -27,22 +27,34 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   // Elegir un preset precarga su fondo en el selector (Amazon → blanco, avatar →
   // transparente). Después manda el selector: el usuario puede cambiarlo y eso
   // es lo que se exporta (BUG-01). "Original" no trae fondo y no toca nada.
-  const formatBeforePreset = useRef(null); // formato del usuario antes del 1er preset que lo impuso
+  // formato y fondo del usuario antes del 1er preset que impuso formato
+  const beforePreset = useRef(null);
   const setPresetId = useCallback((id) => {
     setPresetIdRaw(id);
     const preset = EXPORT_PRESETS.find((p) => p.id === id)?.preset;
     if (preset?.format) {
-      // se guarda el del usuario una sola vez: WhatsApp → Telegram no lo pisa
-      if (formatBeforePreset.current == null) formatBeforePreset.current = format;
+      // se guarda una sola vez: WhatsApp → Telegram no lo pisa
+      beforePreset.current ??= { format, exportMode, bgColor };
       if (preset.format !== format)
         toast(t("export.presetFormat", { fmt: preset.format.toUpperCase() }), "ok");
       setFormat(preset.format);
-    } else if (formatBeforePreset.current != null) {
-      // salir del preset que imponía formato devuelve el que tenía el usuario (D2)
-      const prev = formatBeforePreset.current;
-      formatBeforePreset.current = null;
-      if (prev !== format) toast(t("export.formatRestored", { fmt: prev.toUpperCase() }), "ok");
-      setFormat(prev);
+    } else if (beforePreset.current != null) {
+      // Salir del preset devuelve lo del usuario (GROW-35 D1). «Original» devuelve
+      // también el fondo; un preset con fondo propio lo precarga (BUG-01).
+      const prev = beforePreset.current;
+      beforePreset.current = null;
+      const mode = preset ? (preset.bg ? "solid" : "transparent") : prev.exportMode;
+      // el aviso nombra lo que va a bajar: Transparente + JPEG sale PNG (como exportAs)
+      const fmt = (mode === "transparent" && prev.format === "jpeg" ? "png" : prev.format).toUpperCase();
+      const bgBack = !preset && (prev.exportMode !== exportMode || prev.bgColor !== bgColor);
+      if (bgBack) {
+        setExportMode(prev.exportMode);
+        setBgColor(prev.bgColor);
+        toast(t("export.settingsRestored", { bg: t(`export.mode.${prev.exportMode}`), fmt }), "ok");
+      } else if (fmt !== format.toUpperCase()) {
+        toast(t("export.formatRestored", { fmt }), "ok");
+      }
+      setFormat(prev.format);
     }
     if (!preset) return;
     if (preset.bg) {

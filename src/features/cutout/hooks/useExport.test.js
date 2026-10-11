@@ -294,13 +294,70 @@ describe("useExport — si el encoder WebP falla (GROW-35, A4)", () => {
 describe("useExport — D2: el formato que impone un sticker no queda pegado", () => {
   it("Sticker WhatsApp → Original vuelve al formato previo y avisa en los dos cambios", () => {
     const { result, toast } = setup();
+    act(() => result.current.setExportMode("solid"));
     act(() => result.current.setFormat("jpeg"));
     act(() => result.current.setPresetId("sticker-whatsapp"));
     expect(result.current.format).toBe("webp");
     expect(toast).toHaveBeenCalledWith(t("export.presetFormat", { fmt: "WEBP" }), "ok");
     act(() => result.current.setPresetId("original"));
     expect(result.current.format).toBe("jpeg");
-    expect(toast).toHaveBeenLastCalledWith(t("export.formatRestored", { fmt: "JPEG" }), "ok");
+    expect(toast).toHaveBeenLastCalledWith(
+      t("export.settingsRestored", { bg: t("export.mode.solid"), fmt: "JPEG" }),
+      "ok"
+    );
+  });
+
+  // GROW-35 D1 (verifier): volvía el formato pero no el fondo, y Transparente +
+  // JPEG bajaba PNG mientras el aviso decía JPEG
+  it("Color + JPEG → Sticker WhatsApp → Original: baja JPEG con el color previo y el aviso lo dice", async () => {
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    types["blob:s"] = "image/jpeg";
+    const { result, toast } = setup();
+    act(() => result.current.setExportMode("solid"));
+    act(() => result.current.setBgColor("#2563eb"));
+    act(() => result.current.setFormat("jpeg"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    expect(result.current.exportMode).toBe("transparent");
+    act(() => result.current.setPresetId("original"));
+    expect(result.current.exportMode).toBe("solid");
+    expect(result.current.bgColor).toBe("#2563eb");
+    expect(result.current.format).toBe("jpeg");
+    expect(toast).toHaveBeenLastCalledWith(
+      t("export.settingsRestored", { bg: t("export.mode.solid"), fmt: "JPEG" }),
+      "ok"
+    );
+    await act(() => result.current.handleDownload());
+    expect(backend.exportSolid).toHaveBeenLastCalledWith(
+      [37, 99, 235, 255],
+      expect.objectContaining({ format: "jpeg" })
+    );
+    expect(downloadDataUrl).toHaveBeenLastCalledWith("blob:s", "photocut-solid.jpg");
+    delete types["blob:s"];
+  });
+
+  it("Color + JPEG → Sticker WhatsApp → Avatar: manda el fondo del preset y el aviso dice PNG, que es lo que baja", async () => {
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    types["blob:t"] = "image/png";
+    const { result, toast } = setup();
+    act(() => result.current.setExportMode("solid"));
+    act(() => result.current.setFormat("jpeg"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    act(() => result.current.setPresetId("avatar"));
+    expect(result.current.exportMode).toBe("transparent");
+    expect(toast).toHaveBeenCalledWith(t("export.formatRestored", { fmt: "PNG" }), "ok");
+    expect(toast).not.toHaveBeenCalledWith(t("export.formatRestored", { fmt: "JPEG" }), "ok");
+    await act(() => result.current.handleDownload());
+    expect(backend.exportTransparent).toHaveBeenLastCalledWith(expect.objectContaining({ format: "png" }));
+    expect(downloadDataUrl).toHaveBeenLastCalledWith("blob:t", "photocut-transparent.png");
+    delete types["blob:t"];
+  });
+
+  it("Transparente + JPEG → Sticker WhatsApp → Original: el aviso dice PNG (lo efectivo), no JPEG", () => {
+    const { result, toast } = setup();
+    act(() => result.current.setFormat("jpeg"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    act(() => result.current.setPresetId("original"));
+    expect(toast).toHaveBeenLastCalledWith(t("export.formatRestored", { fmt: "PNG" }), "ok");
   });
 
   it("WhatsApp → Telegram → Original vuelve al formato de ANTES del primer sticker", () => {
