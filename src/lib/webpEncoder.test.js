@@ -144,3 +144,24 @@ describe("encodeWebP en la ventana: worker dedicado y perezoso (A1)", () => {
     expect(FakeWorker.instances[0].terminate).not.toHaveBeenCalled();
   });
 });
+
+// GROW-35 H-02: el worker del encoder es perezoso. Si se creara al importar el
+// módulo, cada carga del editor pagaría un worker (y su chunk) que casi nadie usa.
+describe("carga diferida", () => {
+  it("importar el módulo no crea ningún Worker", () => {
+    const made = jest.fn();
+    global.Worker = class {
+      constructor(...a) {
+        made(...a);
+      }
+    };
+    try {
+      jest.isolateModules(() => {
+        require("./webpEncoder.js");
+      });
+      expect(made).not.toHaveBeenCalled();
+    } finally {
+      delete global.Worker;
+    }
+  });
+});
