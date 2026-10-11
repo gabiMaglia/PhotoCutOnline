@@ -1,6 +1,12 @@
 {
-  "generated": "2026-06-11",
+  "generated": "2026-10-11",
   "entries": [
+    {
+      "name": "@jsquash/webp",
+      "version": "1.5.0",
+      "license": "Apache-2.0",
+      "source": "npm"
+    },
     {
       "name": "@tauri-apps/api",
       "version": "2.11.0",
@@ -20,16 +26,34 @@
       "source": "npm"
     },
     {
+      "name": "@tauri-apps/plugin-opener",
+      "version": "2.5.4",
+      "license": "MIT OR Apache-2.0",
+      "source": "npm"
+    },
+    {
       "name": "image",
       "version": "0.25",
       "license": "MIT OR Apache-2.0",
       "source": "crates.io"
     },
     {
+      "name": "libwebp (en @jsquash/webp)",
+      "version": "1.1.0",
+      "license": "BSD-3-Clause (texto: /licenses/libwebp-COPYING.txt)",
+      "source": "embebido"
+    },
+    {
       "name": "nalgebra",
       "version": "0.33",
       "license": "Apache-2.0",
       "source": "crates.io"
+    },
+    {
+      "name": "onnxruntime-web",
+      "version": "1.26.0",
+      "license": "MIT",
+      "source": "npm"
     },
     {
       "name": "react",
@@ -48,6 +72,12 @@
       "version": "2",
       "license": "MIT OR Apache-2.0",
       "source": "crates.io"
+    },
+    {
+      "name": "wasm-feature-detect",
+      "version": "1.9.0",
+      "license": "Apache-2.0",
+      "source": "npm"
     }
   ]
 }
