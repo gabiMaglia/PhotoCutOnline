@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { backend } from "../../../lib/backend.js";
 import { EXPORT_PRESETS, fitWithinBytes } from "../../../lib/presets.js";
 import { t } from "../../../lib/i18n.js";
+import { OUTPUT_FORMATS, formatFromMime } from "../../../lib/metadata.js";
 import { hexToRgba } from "../../../utils/color.js";
 import { fileToDataUrl, bgWithOpacity } from "../../../utils/image.js";
 import { downloadDataUrl } from "../../../utils/dom.js";
@@ -84,16 +85,19 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
           return backend.exportBlurBg(arg, opts);
         };
         let url;
+        let realType;
         let notice = null;
         if (preset?.maxBytes) {
           const fit = await fitWithinBytes(
             async (q) => {
               const u = await run(q);
-              return { url: u, bytes: (await (await fetch(u)).blob()).size };
+              const b = await (await fetch(u)).blob();
+              return { url: u, bytes: b.size, type: b.type };
             },
             { maxBytes: preset.maxBytes }
           );
           url = fit.url;
+          realType = fit.type;
           const kb = Math.round(fit.bytes / 1024);
           const max = Math.round(preset.maxBytes / 1024);
           if (!fit.fits) notice = [t("export.overLimit", { kb, max }), "error"];
@@ -101,9 +105,17 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
             notice = [t("export.qualityReduced", { q: Math.round(fit.quality * 100), kb, max }), "ok"];
         } else {
           url = await run(0.92);
+          realType = (await (await fetch(url)).blob()).type;
         }
-        const ext = effFormat === "jpeg" ? "jpg" : effFormat;
-        const name = `photocut-${kind}.${ext}`;
+        // el archivo se nombra por lo que ES, no por lo que se pidió (GROW-35);
+        // si el motor dio otro formato, ese aviso pesa más que el del peso
+        const realFormat = formatFromMime(realType) || effFormat;
+        if (realFormat !== effFormat)
+          notice = [
+            t("export.formatFallback", { want: effFormat.toUpperCase(), got: realFormat.toUpperCase() }),
+            "error",
+          ];
+        const name = `photocut-${kind}.${OUTPUT_FORMATS[realFormat].ext}`;
         if (backend.isDesktop) {
           // diálogo nativo "Guardar como"
           const saved = await saveExport(url, name);
@@ -111,7 +123,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         } else {
           downloadDataUrl(url, name);
         }
-        trackEvent("export", { kind, format: effFormat });
+        trackEvent("export", { kind, format: realFormat });
         if (notice) toast(...notice);
         else toast(t(backend.isDesktop ? "toast.saved" : "toast.exported"), "ok");
       } catch (e) {

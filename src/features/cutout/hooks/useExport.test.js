@@ -11,12 +11,17 @@ jest.mock("../../../lib/backend.js", () => ({
 }));
 jest.mock("../../../utils/dom.js", () => ({ downloadDataUrl: jest.fn() }));
 jest.mock("../../../services/analytics.js", () => ({ trackEvent: jest.fn() }));
+jest.mock("../../../utils/save.js", () => ({ saveExport: jest.fn(async () => true) }));
 
 import { backend } from "../../../lib/backend.js";
 
-// el hook mide el peso de lo exportado leyendo la URL: en jsdom no hay fetch
+// el hook mide el peso y el tipo real de lo exportado leyendo la URL: en jsdom no hay fetch
 const sizes = {};
-global.fetch = jest.fn(async (url) => ({ blob: async () => ({ size: sizes[url] ?? 1000 }) }));
+const types = {};
+global.fetch = jest.fn(async (url) => ({
+  blob: async () => ({ size: sizes[url] ?? 1000, type: types[url] ?? "" }),
+}));
+import { t } from "../../../lib/i18n.js";
 import { EXPORT_PRESETS } from "../../../lib/presets.js";
 import { useExport } from "./useExport.js";
 
@@ -185,5 +190,69 @@ describe("useExport — presets de sticker", () => {
     act(() => result.current.setPresetId("sticker-whatsapp"));
     act(() => result.current.setPresetId("original"));
     expect(result.current.lockedFormat).toBeNull();
+  });
+});
+
+describe("useExport — el archivo se nombra por lo que ES (GROW-35)", () => {
+  const MIME = { png: "image/png", jpeg: "image/jpeg", webp: "image/webp" };
+  const EXT = { png: "png", jpeg: "jpg", webp: "webp" };
+  beforeEach(() => {
+    for (const k of Object.keys(types)) delete types[k];
+    for (const k of Object.keys(sizes)) delete sizes[k];
+  });
+  afterEach(() => backend.exportTransparent.mockImplementation(async () => "blob:t"));
+
+  it("el nombre siempre coincide con el contenido, pida lo que pida", async () => {
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    const { result } = setup();
+    act(() => result.current.setExportMode("solid"));
+    for (const asked of ["png", "jpeg", "webp"])
+      for (const got of ["png", "jpeg", "webp"]) {
+        types["blob:s"] = MIME[got];
+        act(() => result.current.setFormat(asked));
+        await act(() => result.current.handleDownload());
+        expect(downloadDataUrl).toHaveBeenLastCalledWith("blob:s", `photocut-solid.${EXT[got]}`);
+      }
+  });
+
+  it("pedí WebP y el navegador dio PNG: baja .png, avisa y la analítica cuenta PNG", async () => {
+    types["blob:t"] = "image/png";
+    const { result, toast } = setup();
+    act(() => result.current.setFormat("webp"));
+    await act(() => result.current.handleDownload());
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    const { trackEvent } = require("../../../services/analytics.js");
+    expect(downloadDataUrl).toHaveBeenCalledWith("blob:t", "photocut-transparent.png");
+    expect(toast).toHaveBeenCalledWith(t("export.formatFallback", { want: "WEBP", got: "PNG" }), "error");
+    expect(trackEvent).toHaveBeenCalledWith("export", { kind: "transparent", format: "png" });
+  });
+
+  it("sticker WhatsApp en un motor que da PNG: .png y aviso de formato, no de peso", async () => {
+    backend.exportTransparent.mockImplementation(async (o) => `blob:q${o.quality.toFixed(2)}`);
+    for (const q of ["0.92", "0.82", "0.72", "0.62", "0.52", "0.42", "0.32"]) {
+      sizes[`blob:q${q}`] = 164 * 1024;
+      types[`blob:q${q}`] = "image/png";
+    }
+    const { result, toast } = setup();
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    await act(() => result.current.handleDownload());
+    const { downloadDataUrl } = require("../../../utils/dom.js");
+    expect(downloadDataUrl).toHaveBeenCalledWith(expect.any(String), "photocut-transparent.png");
+    expect(toast).toHaveBeenCalledWith(t("export.formatFallback", { want: "WEBP", got: "PNG" }), "error");
+    expect(toast).not.toHaveBeenCalledWith(expect.stringMatching(/164 KB/), "error");
+  });
+
+  it("en escritorio el nombre (y con él el filtro del diálogo) sale del tipo real", async () => {
+    const { saveExport } = require("../../../utils/save.js");
+    backend.isDesktop = true;
+    try {
+      types["blob:t"] = "image/png";
+      const { result } = setup();
+      act(() => result.current.setFormat("webp"));
+      await act(() => result.current.handleDownload());
+      expect(saveExport).toHaveBeenCalledWith("blob:t", "photocut-transparent.png");
+    } finally {
+      backend.isDesktop = false;
+    }
   });
 });
