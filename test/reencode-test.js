@@ -75,12 +75,11 @@ async function main() {
 
   // 3. WebP también conserva alfa
   const webp = await reencodeToBlob(src, { format: "webp", quality: 0.9 });
-  if (webp && webp.type === "image/webp") {
+  assert(webp && webp.type === "image/webp", `webp: el resultado ES WebP (${webp?.type})`);
+  {
     const { ctx } = await decode(webp);
     const a = px(ctx, 5, 20)[3];
     assert(a < 128, `webp: conserva la transparencia (alpha=${a})`);
-  } else {
-    log("SKIP: este navegador no exporta WebP");
   }
 
   // 4. background explícito: transparente → JPG con fondo elegido
