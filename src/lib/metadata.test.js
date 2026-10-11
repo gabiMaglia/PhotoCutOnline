@@ -1,4 +1,15 @@
-import { basicInfo, orientationLabel, parseExif, reencodeToBlob, stripToBlob, fitSize, OUTPUT_FORMATS } from "./metadata.js";
+jest.mock("./webpEncoder.js", () => ({ canEncodeWebP: jest.fn(async () => true), encodeWebP: jest.fn() }));
+import { canEncodeWebP, encodeWebP } from "./webpEncoder.js";
+import {
+  basicInfo,
+  orientationLabel,
+  parseExif,
+  reencodeToBlob,
+  stripToBlob,
+  fitSize,
+  OUTPUT_FORMATS,
+  formatFromMime,
+} from "./metadata.js";
 
 describe("basicInfo", () => {
   it("formatea peso en KB o MB según el tamaño", () => {
@@ -58,6 +69,11 @@ describe("reencodeToBlob / OUTPUT_FORMATS", () => {
   const img = { naturalWidth: 40, naturalHeight: 30 };
 
   beforeEach(() => {
+    // restoreAllMocks no borra el historial de los mocks de módulo: sin esto
+    // las llamadas de un test se filtran al siguiente
+    canEncodeWebP.mockClear();
+    encodeWebP.mockClear();
+    canEncodeWebP.mockResolvedValue(true);
     calls = { toBlob: [], ops: [], fillStyle: null };
     jest.spyOn(document, "createElement").mockImplementation((tag) => {
       if (tag !== "canvas") return {};
@@ -73,7 +89,10 @@ describe("reencodeToBlob / OUTPUT_FORMATS", () => {
           },
           fillRect: (...a) => calls.ops.push(["fillRect", ...a]),
           drawImage: (...a) => calls.ops.push(["drawImage", a.length]),
-          getImageData: () => ({ data: new Uint8ClampedArray(40 * 30 * 4).fill(255) }),
+          getImageData: (...a) => {
+            calls.ops.push(["getImageData", ...a]);
+            return { width: a[2], height: a[3], data: new Uint8ClampedArray(40 * 30 * 4).fill(255) };
+          },
         }),
         toBlob: (cb, mime, q) => {
           calls.toBlob.push({ mime, q });
@@ -129,6 +148,30 @@ describe("reencodeToBlob / OUTPUT_FORMATS", () => {
     expect(OUTPUT_FORMATS.png).toMatchObject({ lossy: false, alpha: true });
     expect(OUTPUT_FORMATS.jpeg).toMatchObject({ lossy: true, alpha: false });
     expect(OUTPUT_FORMATS.webp).toMatchObject({ lossy: true, alpha: true });
+  });
+
+  it("webp sin soporte nativo: no usa toBlob y codifica los píxeles al tamaño pedido", async () => {
+    canEncodeWebP.mockResolvedValue(false);
+    encodeWebP.mockResolvedValue(new Blob([], { type: "image/webp" }));
+    const b = await reencodeToBlob(img, { format: "webp", quality: 0.4, width: 20, height: 15 });
+    expect(calls.toBlob).toHaveLength(0);
+    expect(calls.ops).toContainEqual(["getImageData", 0, 0, 20, 15]);
+    expect(encodeWebP).toHaveBeenCalledWith(expect.objectContaining({ width: 20, height: 15 }), 0.4);
+    expect(b.type).toBe("image/webp");
+  });
+
+  it("png y jpeg ni consultan el detector de WebP", async () => {
+    await reencodeToBlob(img, { format: "png" });
+    await reencodeToBlob(img, { format: "jpeg", quality: 0.5 });
+    expect(canEncodeWebP).not.toHaveBeenCalled();
+  });
+
+  it("formatFromMime traduce el tipo real a la clave de formato", () => {
+    expect(formatFromMime("image/webp")).toBe("webp");
+    expect(formatFromMime("image/png")).toBe("png");
+    expect(formatFromMime("image/jpeg")).toBe("jpeg");
+    expect(formatFromMime("image/gif")).toBeNull();
+    expect(formatFromMime("")).toBeNull();
   });
 });
 

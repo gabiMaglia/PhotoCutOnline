@@ -7,6 +7,8 @@
 // - stripToBlob(): re-codifica la imagen en un canvas, lo que descarta todos
 //   los metadatos (EXIF/GPS) — la base de "descargar sin metadatos".
 
+import { canEncodeWebP, encodeWebP } from "./webpEncoder.js";
+
 export function basicInfo(file, img) {
   const kb = file.size / 1024;
   return {
@@ -150,6 +152,11 @@ export const OUTPUT_FORMATS = {
   webp: { mime: "image/webp", ext: "webp", lossy: true, alpha: true },
 };
 
+/** Clave de OUTPUT_FORMATS para un MIME real (el de un Blob), o null si no es uno nuestro. */
+export function formatFromMime(mime) {
+  return Object.keys(OUTPUT_FORMATS).find((k) => OUTPUT_FORMATS[k].mime === mime) || null;
+}
+
 /**
  * ¿La imagen tiene algún píxel no opaco? Decide si convertir a un formato sin
  * alfa (JPG) destruye información y hay que avisar. Submuestrea: con encontrar
@@ -194,7 +201,7 @@ export function hasTransparency(img) {
  * y convertir en la misma pasada evita re-codificar dos veces (perder calidad
  * dos veces en los formatos con pérdida).
  */
-export function reencodeToBlob(img, opts = {}) {
+export async function reencodeToBlob(img, opts = {}) {
   const { format = "jpeg", quality = 0.92, background = "#ffffff", width, height } = opts;
   const fmt = OUTPUT_FORMATS[format] || OUTPUT_FORMATS.jpeg;
   const srcW = img.naturalWidth || img.width;
@@ -211,6 +218,11 @@ export function reencodeToBlob(img, opts = {}) {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  // WebKit devuelve PNG cuando se le pide WebP: ahí codifica el encoder propio,
+  // en su worker para no congelar la UI con fotos grandes (GROW-35, A1)
+  if (fmt.mime === "image/webp" && !(await canEncodeWebP())) {
+    return encodeWebP(ctx.getImageData(0, 0, canvas.width, canvas.height), quality);
+  }
   return new Promise((resolve) =>
     // en PNG el 3er argumento se ignora; se pasa igual sin efecto
     canvas.toBlob(resolve, fmt.mime, fmt.lossy ? quality : undefined)
@@ -236,6 +248,6 @@ export function fitSize(srcW, srcH, { width, height, lock = true }) {
 
 /** Copia sin metadatos, en el formato original si se puede. */
 export function stripToBlob(img, mime = "image/jpeg", quality = 0.92) {
-  const format = Object.keys(OUTPUT_FORMATS).find((k) => OUTPUT_FORMATS[k].mime === mime) || "jpeg";
+  const format = formatFromMime(mime) || "jpeg";
   return reencodeToBlob(img, { format, quality });
 }
