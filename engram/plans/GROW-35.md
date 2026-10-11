@@ -2206,8 +2206,11 @@ solución es descartar el contexto.
   - Color + JPEG → Sticker WhatsApp → Avatar. Queda transparente (regla del preset), el aviso dice PNG y
     baja `.png`.
   - El test D2 del intento 1 «Sticker WhatsApp → Original…» arrancaba en Transparente + JPEG, o sea un
-    PNG efectivo: es justo la premisa del defecto. Pasa a arrancar en Color + JPEG y se conservan sus
-    aserciones.
+    PNG efectivo: es justo la premisa del defecto. Pasa a arrancar en Color + JPEG. Siguen el formato
+    `jpeg` y el aviso `presetFormat`. El último aviso pasa a ser `settingsRestored {bg:"Color",
+    fmt:"JPEG"}`, porque también vuelve el fondo.
+  - Transparente + JPEG → Sticker WhatsApp → Original: el aviso dice `formatRestored {fmt:"PNG"}`, que es
+    lo que baja (antes decía JPEG).
 - Verificación E2E (evidencia, sin commit): un script de Playwright en el scratchpad contra
   `vite preview`, en Chrome y en WebKit, hace Color + JPEG → Sticker WhatsApp → Original → Descargar y
   comprueba el magic JPEG, el nombre `.jpg`, que el píxel de la esquina sea el color elegido y el texto
