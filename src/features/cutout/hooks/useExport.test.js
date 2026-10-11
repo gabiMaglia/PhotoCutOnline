@@ -287,3 +287,44 @@ describe("useExport — si el encoder WebP falla (GROW-35, A4)", () => {
     expect(toast).toHaveBeenLastCalledWith(t("export.webpFailed"), "error");
   });
 });
+
+describe("useExport — D2: el formato que impone un sticker no queda pegado", () => {
+  it("Sticker WhatsApp → Original vuelve al formato previo y avisa en los dos cambios", () => {
+    const { result, toast } = setup();
+    act(() => result.current.setFormat("jpeg"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    expect(result.current.format).toBe("webp");
+    expect(toast).toHaveBeenCalledWith(t("export.presetFormat", { fmt: "WEBP" }), "ok");
+    act(() => result.current.setPresetId("original"));
+    expect(result.current.format).toBe("jpeg");
+    expect(toast).toHaveBeenLastCalledWith(t("export.formatRestored", { fmt: "JPEG" }), "ok");
+  });
+
+  it("WhatsApp → Telegram → Original vuelve al formato de ANTES del primer sticker", () => {
+    const { result } = setup();
+    act(() => result.current.setFormat("jpeg"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    act(() => result.current.setPresetId("sticker-telegram"));
+    expect(result.current.format).toBe("png");
+    act(() => result.current.setPresetId("original"));
+    expect(result.current.format).toBe("jpeg");
+  });
+
+  it("pasar de un sticker a un preset sin formato (Amazon) también lo devuelve", () => {
+    const { result } = setup();
+    act(() => result.current.setFormat("jpeg"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    act(() => result.current.setPresetId("amazon"));
+    expect(result.current.format).toBe("jpeg");
+  });
+
+  it("si el formato previo ya era el del preset, no hay aviso de formato", () => {
+    const { result, toast } = setup();
+    act(() => result.current.setFormat("webp"));
+    act(() => result.current.setPresetId("sticker-whatsapp"));
+    act(() => result.current.setPresetId("original"));
+    expect(toast).not.toHaveBeenCalledWith(t("export.presetFormat", { fmt: "WEBP" }), "ok");
+    expect(toast).not.toHaveBeenCalledWith(t("export.formatRestored", { fmt: "WEBP" }), "ok");
+    expect(result.current.format).toBe("webp");
+  });
+});

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { backend } from "../../../lib/backend.js";
 import { EXPORT_PRESETS, fitWithinBytes } from "../../../lib/presets.js";
 import { t } from "../../../lib/i18n.js";
@@ -27,11 +27,24 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   // Elegir un preset precarga su fondo en el selector (Amazon → blanco, avatar →
   // transparente). Después manda el selector: el usuario puede cambiarlo y eso
   // es lo que se exporta (BUG-01). "Original" no trae fondo y no toca nada.
+  const formatBeforePreset = useRef(null); // formato del usuario antes del 1er preset que lo impuso
   const setPresetId = useCallback((id) => {
     setPresetIdRaw(id);
     const preset = EXPORT_PRESETS.find((p) => p.id === id)?.preset;
+    if (preset?.format) {
+      // se guarda el del usuario una sola vez: WhatsApp → Telegram no lo pisa
+      if (formatBeforePreset.current == null) formatBeforePreset.current = format;
+      if (preset.format !== format)
+        toast(t("export.presetFormat", { fmt: preset.format.toUpperCase() }), "ok");
+      setFormat(preset.format);
+    } else if (formatBeforePreset.current != null) {
+      // salir del preset que imponía formato devuelve el que tenía el usuario (D2)
+      const prev = formatBeforePreset.current;
+      formatBeforePreset.current = null;
+      if (prev !== format) toast(t("export.formatRestored", { fmt: prev.toUpperCase() }), "ok");
+      setFormat(prev);
+    }
     if (!preset) return;
-    if (preset.format) setFormat(preset.format);
     if (preset.bg) {
       // avisar solo si de verdad cambió lo que el usuario tenía elegido
       if (exportMode !== "solid" || bgColor.toLowerCase() !== preset.bg.toLowerCase())
@@ -47,7 +60,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
       if (exportMode !== "transparent") toast(t("export.presetBgTransparent"), "ok");
       setExportMode("transparent");
     }
-  }, [exportMode, bgColor, toast]);
+  }, [exportMode, bgColor, format, toast]);
 
   const activePreset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
   // los stickers exigen un formato concreto: la UI lo muestra fijo
