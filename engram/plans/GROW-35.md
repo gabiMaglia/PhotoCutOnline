@@ -2351,3 +2351,50 @@ código de producto. Rama `feat/GROW-35-webp-real`, con main mergeado (c2324e5).
   merge, como exige el arquitecto.
 
 **Aprobado por:** nerv-web · tech lead web · 2026-10-11
+
+### Correcciones — intento 3b (CI Linux: ruta nativa en WebKit)
+
+Fuente: run 38329483132 del PR #4 (job Web). En Linux, el WebKit de Playwright codifica WebP nativo
+(`webp-test [webkit]` muestra `ruta=nativa` y todo PASS), así que el encoder nunca se pide.
+`webp-retry-test` daba por hecha la ruta WASM y fallaba con «editor sin encoder: error WebP (null)» y
+«no se bloqueó ningún request del encoder». Aplica la «Revisión del arquitecto — tras 2 rechazos», punto
+3c: deuda, sin bloquear el merge y sin `SKIP_WEBKIT=1`. En macOS no se afloja nada.
+
+#### R4. `webp-retry-test` salta solo donde la ruta es nativa, y en darwin no puede saltar
+- **`test/webp-retry-test.js`:**
+  - Arranca con `canEncodeWebP()`, igual que `webp-test`.
+  - Si da `true`, imprime `SKIP: ruta=nativa — el reintento del encoder WASM no se ejercita en este motor
+    (deuda GROW-35)` y escribe `ALL_DONE` sin pasar por la fase 1. El runner no espera `PHASE1_DONE` si
+    la página ya terminó.
+  - Si da `false`, imprime `ruta=wasm` y corre todo como hoy.
+- **`test/run-tests.mjs`:** el veredicto de `runRetry` sale de una función pura exportable,
+  `retryVerdict(txt, blockedCount, platform)`, que devuelve la lista de fallos:
+  - Una línea `FAIL:` o `ERROR:` es fallo en cualquier plataforma.
+  - Si el texto trae `SKIP: ruta=nativa`: en `darwin` es fallo («en macOS se esperaba la ruta WASM»); en
+    otra plataforma es pase, y no se exige ningún request bloqueado.
+  - Si no hay SKIP, siguen las exigencias de hoy: haber bloqueado algún request y llegar a `ALL_DONE`.
+  - Para que el test unitario pueda importar el módulo sin levantar Vite, la ejecución del runner pasa a
+    un `main()` que solo corre cuando el archivo es el punto de entrada.
+- **Test en rojo primero:** `scripts/lib/run-tests-retry.test.mjs` (`node --test`) importa
+  `retryVerdict` y verifica:
+  - SKIP en darwin ⇒ fallo;
+  - SKIP en linux ⇒ pase, aun con 0 bloqueados;
+  - sin SKIP y 0 bloqueados ⇒ fallo, en cualquier plataforma;
+  - `FAIL:` ⇒ fallo;
+  - la salida real de macOS (`ruta=wasm`, fases y `ALL_DONE`, con bloqueados) ⇒ pase;
+  - una línea PASS que cita `WEBP_ENCODE_FAILED` no cuenta como fallo.
+
+  Contra el runner actual falla porque `retryVerdict` no existe.
+- **Verificación:**
+  - macOS: `npm run test:web` en verde, con `ruta=wasm` en `webp-test [webkit]` y `webp-retry-test
+    [webkit]` corriendo las dos fases.
+  - Linux: lo verifica el CI del PR #4 en el push. Se espera la línea SKIP y el job en verde.
+- `engram/qa/_debt.md`: «CI Linux no ejercita la ruta WASM (WebKit Linux codifica WebP nativo);
+  webp-retry-test salta ahí; forzar ruta WASM con flag del harness = deuda».
+- Commits:
+  - test: `test(runner): veredicto de webp-retry-test por plataforma (GROW-35 3b)`
+  - fix: `fix(test): webp-retry-test salta con ruta nativa fuera de macOS (GROW-35 3b)`
+  - docs: `docs(engram): deuda — CI Linux no ejercita la ruta WASM (GROW-35 3b)`
+- Después de los commits: `git push` de la rama para que corra el CI del PR #4. Sin merge.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-12
