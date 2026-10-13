@@ -1,5 +1,44 @@
 # GROW-35 — Verificación ciega (P-11/P-12, Adversarial)
 
+## Intento 2 — HEAD 1f5c1fc (incluye f9c4950, b3bff1f, 090d7e3, 0e54453, 8f1b405, d8561b8)
+
+**Veredicto: APROBADO.** Todo lo afirmado está anclado. Ninguna suposición sostiene el veredicto.
+
+Método: copia refrescada en el scratchpad (`verifier35/new`), `npm run build` + `vite preview`; base c13458a en `verifier35/base`. Motores: Chrome 154.0.8037.99 y Playwright WebKit 26.4. Jest en la copia: 50 suites, 303 tests verdes. No leí §CÓMO, handoffs ni informes de QA.
+
+### Re-prueba de los defectos del intento 1
+| Defecto | Estado | Evidencia |
+|---|---|---|
+| D1 (G7) | CERRADO | WebKit, es/en/pt: Color #ff00aa + JPEG → WhatsApp → Original. El toast dice «Volvió tu fondo (Color) y tu formato: JPEG» (en: «Your background (Color) and format are back: JPEG»; pt: «Seu fundo (Cor) e seu formato voltaram: JPEG»). El color vuelve a #ff00aa, el chip JPEG queda activo y baja `photocut-solid.jpg` con bytes JPEG. Lógica en `useExport.js:37,41-56`. |
+| D2 (G3) | CERRADO | WebKit, editor, bloqueando por turno `encode-*.js`, `webp_enc*.wasm`, `webpWorker-*.js` o los tres. Mientras está bloqueado: dos intentos sin descarga, cada uno con el toast `export.webpFailed`. Al desbloquear, el primer reintento sin recargar baja WebP real con alfa (sha 5aa83db6…, el mismo que sin bloqueo), y después también el sticker de WhatsApp. Se ve un request nuevo del recurso que había fallado. El worker se descarta en `webpEncoder.js:54,61,66`. Archivo también se recupera. |
+| D3 (G3) | CERRADO | WebKit, imágenes de 16384×600 (JPG y PNG transparente): estimado, descarga de Archivo, chip WebP y desenfoque WebP no descargan nada y muestran «WebP admite hasta 16383 px por lado y esta imagen es más grande. Elegí PNG o JPEG, o achicala». El sticker de WhatsApp, que sale a 512 px, sí da WebP real. Origen en `webpWasm.js:56` → `webpErrorKey`; las claves en/pt existen en `i18n.js`. |
+
+### Tabla por garantía (intento 2)
+| G | Estado | Evidencia |
+|---|---|---|
+| G1 | CUMPLE | WebKit: chip, WhatsApp, color y desenfoque dan `RIFF…WEBP`. La transparencia decodifica con esquinas α=0: WhatsApp 512×512, 56 % transparente. Archivo con alpha.png da WebP RGBA, esquinas α=0 en los dos motores. |
+| G2 | CUMPLE | Matriz de 10 exportaciones en Chrome y en WebKit, Archivo, cadenas de presets y fallos: el nombre siempre coincide con los bytes, y cuando falla no se descarga nada. |
+| G3 | CUMPLE | Ver D2 y D3. Probado en es/en/pt con el .wasm bloqueado: editor (chip y WhatsApp) y Archivo (estimado y descarga). Nunca se descarga un archivo. |
+| G4 | CUMPLE | Ventanas de export (chip, WhatsApp, desenfoque, Archivo): 0 requests fuera del origen en los dos motores. Chrome no pide ningún recurso del encoder en toda la sesión. WebKit pide solo `webpWorker/encode/webp_enc_simd` del propio origen. |
+| G5 | CUMPLE | WebKit, JPG de 4000×3000, 40 cambios de calidad: un solo hueco de 472–511 ms (el JPEG nativo da 338 ms) y se asienta en ~6,3 s. El estimado (2,02 MB) coincide con la descarga (2 123 054 B a calidad 12, el último valor). No se congela. |
+| G6 | CUMPLE (Chrome) | Los 10 sha de exportación de rama y base son idénticos (b1d9b77c…, bb8c9995…, c58b0e33…, cd250210…, 900627bb…, 263b42f9…, 8582ea5c…, 5bfbdfd3…, 55bda630…, f199a973…). También Archivo JPG (4b906dfd…) y WebP (7d7fb20e…), el ZIP de Icon Studio (8a0be867…) y el ZIP de Lote (6da31900…). |
+| G7 | CUMPLE | D1 cerrado. Cadenas probadas en es/en/pt: WhatsApp→Telegram→Amazon (vuelve JPEG con fondo blanco del preset, baja .jpg); →Original (sin cambios ocultos, .jpg); WhatsApp→Avatar (aviso «PNG» y baja PNG); cambiar a Color dentro del sticker →Original (vuelve Transparente + WEBP con aviso, baja .webp); WhatsApp → deshacer → Original (vuelve PNG con aviso). En todos los casos el aviso nombra lo que baja. |
+| G8 | CUMPLE | Las guías no cambiaron desde el intento 1 (`git diff 3759539..HEAD -- public scripts/pruebas.json` vacío). Lo re-medí: Chrome WhatsApp 20,2 KB, 67,79 %, esquinas 0; Telegram 199,3 KB; WebKit WhatsApp 19,9 KB. Coincide con lo publicado. |
+| Escritorio (Tauri) | ABSTENCIÓN | No lo ejecuté. |
+
+### Regresiones buscadas (sin hallazgos bloqueantes)
+- **Worker anidado y fugas:** 12 exportaciones WebP seguidas en WebKit (chip, WhatsApp, desenfoque), más 10 cambios de calidad y 3 descargas en Archivo: todo WebP real. Workers creados: un `cutoutWorker` y un `webpWorker`. En toda la sesión hubo solo 2 requests de `webpWorker` y 2 del `.wasm`: uno anidado y uno de la ventana. No se crea un worker por export.
+- **Desenfoque con WebP:** WebP real en WebKit (VP8, opaco). En Chrome, mismo sha que la base.
+
+### Observaciones (no bloqueantes)
+- O1 (Baja): Color+JPEG → WhatsApp → Avatar. El aviso dice «Volvió tu formato: PNG», pero el usuario tenía JPEG; el chip JPEG queda marcado y deshabilitado. El archivo (PNG) sí coincide con el aviso.
+- O2 (Baja): si el usuario cambia el fondo dentro del sticker, «Original» lo devuelve al de antes del sticker. Lo avisa con toast.
+- Ya estaba en la base: Chrome recorta en silencio a 16383 px de ancho las exportaciones WebP de 16384 px.
+
+---
+
+## Intento 1 (histórico)
+
 - Rama: `feat/GROW-35-webp-real` @ 3759539 (base c13458a). Worktree sin tocar; copias en scratchpad (`verifier35/new`, `verifier35/base` vía `git archive`).
 - Entorno: macOS 14.8.8 · Chrome 154.0.8037.99 · Playwright WebKit 26.4 · `npm run build` + `vite preview` (4791 rama, 4792 base) · service worker bloqueado salvo en el test de caché.
 - No leí §CÓMO, handoffs ni informes de QA/implementador. Jest en la copia de la rama: 50 suites / 293 tests verdes.

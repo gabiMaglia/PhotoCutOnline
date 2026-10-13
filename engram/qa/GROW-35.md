@@ -1,6 +1,140 @@
 # QA GROW-35 — WebP real en todos los navegadores (nerv-qa, 2026-10-11)
 
-## Veredicto: **APROBADO (Strong)** · rama `feat/GROW-35-webp-real` HEAD 3759539 (base c13458a)
+## Intento 4 — **APROBADO (Strong)** · HEAD c79292c (nivel X, gate PASS)
+
+D-i3-1 está corregido. El CI del PR #4 corrió sobre este mismo HEAD (c79292c) y salió **verde**: run
+38330079824, con Web y Rust en success. No quedan defectos abiertos. Lo que no está cubierto ya está
+anotado como deuda en `_debt.md`: el flag `forceWasm` para CI, O1, O2, A5 (escritorio) y Safari/iOS
+reales.
+
+- **`retryVerdict` y `scripts/lib/run-tests-retry.test.mjs`:** los 6 casos pasan (6/6). Probé dos
+  mutaciones y restauré el archivo después de cada una.
+  - **(a)** Hice que el SKIP también contara como pase en darwin: falla «SKIP por ruta nativa en macOS es un fallo».
+  - **(b)** Hice que pasara sin SKIP y sin requests bloqueados: falla «sin SKIP y sin requests bloqueados falla en cualquier plataforma».
+- **En macOS el SKIP no se cuela:** corrí `npm run test:web` en local (load de 6,8 al empezar y 4,6 al terminar) y salió «✓ todo verde», EXIT 0.
+  - `webp-retry-test [webkit]` imprimió `ruta=wasm`, los 4 PASS y PHASE1_DONE/ALL_DONE, en 27,0 s de 240. No hubo SKIP.
+  - `webp-test [webkit]` tardó 27,6 s de 240.
+- **Log de CI** (`gh run view 38330079824 --log`, headSha c79292c):
+  - Dentro de `test:web`, la línea `SKIP: ruta=nativa — …` aparece una sola vez, en `webp-retry-test [webkit]`. Los otros «SKIP» del log son solo nombres de tests de `npm test`.
+  - `webp-test [webkit]`: `ruta=nativa`, 14 PASS y 0 FAIL/ERROR, en 6,2 s de 240.
+  - El log termina con «✓ todo verde».
+  - La ruta WASM no se ejercita en CI Linux; eso es deuda registrada.
+- **Refactor a `main()`:** el runner arranca solo cuando se lo ejecuta (guarda `import.meta.url === pathToFileURL(argv[1])`), así que el test de node puede importar `retryVerdict` sin lanzar navegadores.
+  - `npm run test:web`: verde.
+  - `RUNNER_SELFTEST=1 npm run test:web`: espera 35,2 s de 120 en Chrome y 35,1 s de 240 en WebKit, y sale verde.
+- **`_debt.md`:** tiene la entrada «intento 3b», con el flag del harness `?forceWasm=1` pendiente para que CI Linux ejercite la ruta WASM y el reintento.
+- **Alcance (`git diff b1743b2..HEAD --stat`):** `test/run-tests.mjs`, `test/webp-retry-test.js`,
+  `scripts/lib/run-tests-retry.test.mjs`, `engram/plans/GROW-35.md`, `engram/qa/_debt.md`, y
+  `engram/03_backlog.md` (este último vino del merge de main). Nada de `src/`.
+- Después del merge hay que mirar el CI de `main`, que no está protegida.
+
+---
+
+## Intento 3 — **RECHAZADO** · HEAD b1743b2 (nivel X, gate PASS)
+
+D-i2-1 está corregido y probado con mutación. Rechazo porque el CI del PR #4 sobre este mismo HEAD
+(b1743b2) sale **rojo**, y la revisión del arquitecto (§3 a y d) exige CI verde para mergear. La causa
+es determinista: no es la carga de la máquina.
+
+### Defectos
+1. **D-i3-1 · ALTA · `test/webp-retry-test.js` + `runRetry` en `test/run-tests.mjs`**
+   - **Dónde falló:** GitHub Actions run 38329483132, job «Web (build + tests en Chrome)», conclusión FAILURE.
+   - **Qué dice el log de CI:**
+     - `webp-test [webkit]`: «ruta=nativa», 9,5 s de 240 s, todo PASS. El WebKit de Playwright en Linux codifica WebP nativo, que es justo el escenario (c) del arquitecto.
+     - `webp-retry-test [webkit]`: «FAIL: editor sin encoder: error WebP (null)» y «FAIL: no se bloqueó ningún request del encoder». Termina en «✗ 1 suite(s) con fallos», exit code 1.
+   - **Causa:** el test de D2 da por hecho que corre por la ruta WASM. En un motor con WebP nativo el
+     export no pide el encoder, así que no hay nada que bloquear y no aparece el error que la fase 1 espera.
+     Va a fallar siempre en Linux.
+   - **Qué viola:** §3 (a)/(d) de la revisión del arquitecto (merge solo con CI verde) y C7 (`test:web` con la corrida WebKit).
+   - **Por qué no se vio antes:** en local (macOS, `ruta=wasm`) pasa. El riesgo (c) se anotó solo para
+     `webp-test`, no para `webp-retry-test`.
+   - **Cómo arreglarlo:** lo decide el arquitecto.
+     - **Preferible:** el flag de prueba que fuerza `canEncodeWebP()` falso solo en el harness (el que
+       §3 c deja como deuda), aplicado al menos a `webp-retry-test`. Así D2 se ejercita también en CI.
+     - **Alternativa:** que `webp-retry-test` y `runRetry` detecten la ruta nativa y la informen como
+       no aplicable, de forma explícita y visible en el log. En ese caso D2 queda sin cubrir en CI y
+       hay que anotarlo.
+
+### Verificado con salida real
+- **Plan contra lo implementado** (§QUÉ «Revisión del arquitecto tras 2 rechazos» y §CÓMO «Correcciones — intento 3» R1–R3): coincide.
+  - `TIMEOUT_MS = {chrome: 120 s, webkit: 240 s}`.
+  - `runSuite` llama `(fn, null, {timeout: TIMEOUT_MS[tag]})`; `runRetry` usa `TIMEOUT_MS.webkit`. Solo hay esos 2 `waitForFunction` (grep, líneas 85 y 125).
+  - El aviso de TIMEOUT muestra el límite y cada suite imprime su duración.
+  - El `ctx.setDefaultTimeout` opcional no se agregó; el plan lo dejaba a criterio.
+- **Prueba de rojo del runner:**
+  - `RUNNER_SELFTEST=1 npm run test:web` con load 18: verde. La espera fue de 35,1 s de 120 en Chrome y 35,4 s de 240 en WebKit.
+  - Mutación (saqué el `null` en runSuite): TIMEOUT en los dos motores y EXIT 1. Restauré el archivo.
+  - Detalle cosmético: con la mutación el mensaje dice «(120000 ms)» aunque el corte real es a los 30 s.
+  - La autoprueba no corre por defecto: solo con `RUNNER_SELFTEST === "1"`, que no aparece en `.github`, `package.json` ni `scripts`.
+- **`npm run test:web` completo en local** (load 5,2 al empezar, 8,5 al terminar): «✓ todo verde», EXIT 0.
+  - `webp-test`: `ruta=nativa`, 18,7 s de 120.
+  - `webp-test [webkit]`: `ruta=wasm`, **28,0 s de 240**.
+  - `reencode-test [webkit]` y `webp-retry-test [webkit]`: verdes.
+- **`_debt.md`:** tiene los 3 cambios de aserciones, O1, O2 (como pregunta para el PO) y el riesgo de
+  CI de `ruta=wasm` en Linux. Ese riesgo se cumplió y además rompió `webp-retry-test` (D-i3-1).
+- **Alcance (`git diff 1f5c1fc..HEAD --stat`):** `test/run-tests.mjs`, `test/runner-timeout-test.{html,js}`,
+  `engram/plans/GROW-35.md`, `engram/qa/_debt.md` y `engram/03_backlog.md` (este entra por el merge de
+  main). No hay nada de `src/`.
+
+---
+
+## Intento 2 — **RECHAZADO** · HEAD 1f5c1fc (nivel X computado por el gate, PASS)
+
+Las correcciones D1, D2 y D3 del verifier y los hallazgos H-01, H-02 y H-05 están bien hechos y probados con mutación. Rechazo por un solo defecto: `npm run test:web`, que es obligatorio y corre en CI, sale **rojo en 2 de 3 corridas**. La causa es determinista: el tiempo límite real del runner es de 30 s, no los 120 s que dice el código.
+
+### Defectos
+1. **D-i2-1 · MEDIA · `test/run-tests.mjs:111-114` (runSuite).**
+   - **Causa:** `page.waitForFunction(fn, { timeout: 120000 })` pasa `{timeout}` como **`arg`** y no como `options` (la firma es `(fn, arg, options)`). El tiempo límite efectivo queda en el default de Playwright: 30 s.
+   - **Por qué ahora:** `webp-test [webkit]` tarda entre 27,4 y 29,7 s (autoCut en WebKit) y queda pegado a ese límite. Es la corrida WebKit que agrega este ticket (criterio C7 del §QUÉ).
+   - **Corridas** (las tres con `npm run test:web`):
+
+     | # | Load al empezar | Resultado |
+     |---|---|---|
+     | 1 | 34 | `webp-test [webkit]` TIMEOUT, EXIT 1 |
+     | 2 | 20,6 | ídem, EXIT 1 (al terminar, 52) |
+     | 3 | 8,7 | «✓ todo verde», EXIT 0 |
+
+   - **Mensaje real**, capturado con una copia instrumentada del runner: `page.waitForFunction: Timeout 30000ms exceeded`, a los 30,0 s del arranque de la suite.
+   - **Prueba del arreglo:** en la misma copia, con `(fn, null, { timeout })` y load 32, todo verde (`webp-test [webkit]` ALL_DONE a los 28,4 s).
+   - El bug ya estaba en main (c13458a:73-76). En Chrome nunca se notó porque sus suites son rápidas.
+   - **Riesgo en CI:** en un runner Linux de 2 vCPU, autoCut en WebKit pasa con facilidad los 30 s, así que el CI quedaría rojo después del merge.
+   - El handoff atribuye los timeouts a «los 120 s del runner»; ese diagnóstico es incorrecto.
+   - **Qué arreglar:** pasar `null` como `arg` en runSuite, y en el mismo cambio revisar los otros `waitForFunction` del runner. `runRetry` ya lo hace bien.
+
+### Verificado con salida real (no se repite si se arregla solo D-i2-1)
+- **Suites:** `rm -rf dist && npm test` da jest 303/303 y node 68/68, EXIT 0. Con load 8,7, `test:web` sale verde: Chrome `ruta=nativa`; WebKit `ruta=wasm`, `reencode-test` y `webp-retry-test`.
+- **D1** (build + preview, Chrome y WebKit): Color #2563eb + JPEG → Sticker WhatsApp → Original.
+  - Toast «Volvió tu fondo (Color) y tu formato: JPEG».
+  - Color marcado y JPEG marcado y habilitado.
+  - Baja `photocut-solid.jpg`, JPEG real, con esquina [37,99,234,255], igual a la de antes del sticker.
+  - Mutaciones: quitar la restauración del fondo hace fallar 1 test; un aviso con el formato pedido en vez del efectivo hace fallar 2.
+- **D2** (WebKit, con `encode-*.js` bloqueado y SW bloqueado):
+  - 2 exportaciones sin descarga y con aviso.
+  - Al desbloquear, 2 reintentos dan `photocut-transparent.webp` real (65 828 B).
+  - Archivo: bloqueado no baja nada; el reintento da `.webp` real.
+  - Mutaciones: sin `dropWorker` fallan jest y `webp-retry-test [webkit]` («editor, reintento con red… load: Importing a module script failed»); con `typeof document` en lugar de `typeof Worker`, falla jest.
+- **D3** (WebKit, Archivo, PNG de 16384×96): no baja nada y sale el toast «WebP admite hasta 16383 px por lado…», sin aviso de conexión.
+  - Mutaciones: sin la marca `too_large` falla 1 test; con la clave colapsada a `webpFailed` fallan 2.
+  - En Chrome el WebP nativo baja recortado; según el verifier ya pasaba en la base y queda fuera de alcance.
+- **H-01:** `_debt.md` tiene los desvíos a–f y los del intento 2.
+- **H-02:** la mutación M-c1 (worker al importar) hace fallar «importar el módulo no crea ningún Worker». La M-c4 (import estático del wrapper) hace fallar la guarda: «editor-…js trae el wrapper de jSquash en la carga inicial». En el build real la guarda pasa 3/3, sin falso positivo.
+- **H-05:** F-07 figura como «Retirado en GROW-34».
+- **Aserciones cambiadas** (P-18.5): son 3 y las tres están estampadas en el plan, en «Correcciones — intento 2», antes del código. Ninguna afloja una aserción.
+  - **Test de nodo del worker:** el contrato cambia por D2. Se reemplaza por dos tests: uno con Worker (crea 1 anidado y no codifica directo) y otro sin Worker (codifica directo).
+  - **Más de 16383 px:** pasa de `webpFailed` a `webpTooLarge`, y además verifica que la clave exista. Es más estricto.
+  - **D2 del intento 1:** arranca en Color + JPEG y espera `settingsRestored`. El escenario Transparente + JPEG sigue cubierto en un test propio que espera PNG, lo que de verdad baja. Es más preciso.
+  - Observación: `_debt.md` no lista estos 3 cambios; sí están en el plan y en el handoff.
+- **Regresión:**
+  - G6 (Chrome, c13458a contra la rama): los 6 hashes son idénticos (50a8b5f7…, 2453ec3d…, 2cc4ff79…, 15cb58de…, 8b65c70b…, c25bb184…).
+  - Lote e Icon Studio: el diff contra c13458a no toca `src/features/batch`, `iconStudio` ni `backend.js`, e `icons-test` sale verde.
+  - Sticker WhatsApp en WebKit: `.webp` real con alfa, 25,2 KB, esquina 0.
+  - A1 con 4000×3000 en WebKit: 2 posts al worker y gana la última (0.15); peor bloqueo del hilo principal, 191 ms.
+- **merge-tree** contra main 7f038b4: limpio (8e65310), y main ya está contenido en HEAD.
+
+---
+
+## Intento 1 — APROBADO (Strong) · rama `feat/GROW-35-webp-real` HEAD 3759539 (base c13458a)
+(Después lo rechazó nerv-verifier: ver GROW-35-verifier.md.)
 
 Gate: el orquestador informó nerv-gate PASS (43 archivos = diff, plan estampado, prueba de rojo OK). Yo
 re-hice la prueba de rojo con mutaciones (§Casos M-a..M-c). Ningún criterio del §QUÉ falla. Los
