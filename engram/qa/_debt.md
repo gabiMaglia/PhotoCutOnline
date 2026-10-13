@@ -30,3 +30,8 @@
   - O2 (verifier, baja), pregunta abierta para el PO: si el usuario cambia el fondo DENTRO de un preset de sticker, ¿«Original» tiene que devolverle el fondo de antes del sticker (lo que pasa hoy, con aviso) o conservar el que eligió adentro?
   - Riesgo de CI (revisión del arquitecto): `checkWebkit` exige `ruta=wasm` solo en darwin. Si en el job de Linux `webp-test [webkit]` muestra `ruta=nativa`, la ruta WASM no se ejercita en CI; en ese caso hay que abrir deuda para un flag de prueba que fuerce `canEncodeWebP()` falso solo en el harness. No bloquea el merge.
   - Entorno de la corrida local del intento 3: el Mac entró en «Maintenance Sleep» varias veces, unos 17 min cada vez, según `pmset -g log` (por ejemplo 04:52:58 → 05:09:59). Toda espera con reloj de pared que caía en esa ventana expiraba. Las corridas válidas son las que no se cruzaron con un sleep; la que manda es la del CI de GitHub Actions.
+- **GROW-35 — intento 3b (2026-10-12): CI Linux no ejercita la ruta WASM (WebKit Linux codifica WebP nativo); webp-retry-test salta ahí; forzar ruta WASM con flag del harness = deuda.**
+  - Evidencia: el run 38329483132 del PR #4 muestra `webp-test [webkit]` con `ruta=nativa` y todo PASS.
+  - `webp-retry-test` imprime `SKIP: ruta=nativa — …` y termina. El runner (`retryVerdict`) acepta el salto solo fuera de darwin; en macOS lo trata como FAIL, y ahí se siguen exigiendo `ruta=wasm` y las dos fases.
+  - La ruta WASM queda cubierta por jest (detección mockeada), por la corrida local en macOS y por las mutaciones de QA.
+  - Pendiente: un flag del harness (p. ej. `?forceWasm=1`) que haga `canEncodeWebP()` falso solo en las páginas de test, para que CI Linux ejercite la ruta WASM y el reintento.
