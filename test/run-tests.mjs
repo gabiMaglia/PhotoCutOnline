@@ -8,6 +8,7 @@
 //   npm run test:web
 
 import { spawn } from "node:child_process";
+import { pathToFileURL } from "node:url";
 import { chromium, webkit } from "playwright-core";
 
 const PORT = 5187;
@@ -70,6 +71,24 @@ const checkWebkit = (name, reqs, txt) => {
 // GROW-35 D2: el encoder no carga (sin red) y después sí. Contexto propio: con el
 // service worker activo, ctx.route no ve lo que pide el SW (QA H-03).
 const ENCODER_ROUTE = /@jsquash\/webp\/|\/encode-[^/]*\.js|webp_enc/;
+// Veredicto de webp-retry-test (GROW-35 3b). En Linux el WebKit de Playwright
+// codifica WebP nativo y el encoder nunca se pide: ahí la página salta con
+// «SKIP: ruta=nativa» y es pase (deuda: forzar la ruta WASM con un flag). En
+// macOS es el único lugar donde el reintento se prueba de verdad: saltar es fallo.
+export function retryVerdict(txt, blockedCount, platform = process.platform) {
+  const msgs = [];
+  // anclado al inicio de línea: los PASS de la fase 1 citan «WEBP_ENCODE_FAILED»
+  if (/^(FAIL|ERROR):/m.test(txt)) msgs.push("la página reportó fallos");
+  if (/^SKIP: ruta=nativa/m.test(txt)) {
+    if (platform === "darwin") msgs.push("en macOS se esperaba la ruta WASM y la página saltó el reintento");
+    return msgs;
+  }
+  // si no se bloqueó nada, la fase 1 no probó el camino de error
+  if (!blockedCount) msgs.push("no se bloqueó ningún request del encoder");
+  if (!/^ALL_DONE$/m.test(txt)) msgs.push("la página no llegó a ALL_DONE");
+  return msgs;
+}
+
 async function runRetry(browser) {
   const name = "webp-retry-test";
   process.stdout.write(`\n■ ${name} [webkit]\n`);
@@ -85,25 +104,26 @@ async function runRetry(browser) {
     page.waitForFunction((src) => new RegExp(src).test(document.getElementById("out")?.textContent || ""), re, {
       timeout: TIMEOUT_MS.webkit,
     });
-  let bad = 0;
+  const t0 = Date.now();
   try {
     await page.goto(`${ORIGIN}/test/${name}.html`);
-    await settled("PHASE1_DONE|ERROR");
-    await ctx.unroute(ENCODER_ROUTE);
-    await page.evaluate(() => window.__unblock?.());
-    await settled("ALL_DONE|ERROR");
+    // con ruta nativa la página termina sin fase 1 (SKIP + ALL_DONE)
+    await settled("PHASE1_DONE|ALL_DONE|ERROR");
+    if (!/ALL_DONE/.test((await page.textContent("#out")) || "")) {
+      await ctx.unroute(ENCODER_ROUTE);
+      await page.evaluate(() => window.__unblock?.());
+      await settled("ALL_DONE|ERROR");
+    }
   } catch {
     console.error(`  TIMEOUT esperando PHASE1_DONE/ALL_DONE (${TIMEOUT_MS.webkit} ms)`);
-    bad++;
   }
   const txt = (await page.textContent("#out")) || "";
   for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
-  // si no se bloqueó nada, la fase 1 no probó el camino de error
-  if (!blocked.length) console.log("  FAIL: no se bloqueó ningún request del encoder");
-  // anclado al inicio de línea: los PASS de la fase 1 citan «WEBP_ENCODE_FAILED»
-  if (/^(FAIL|ERROR):/m.test(txt) || !blocked.length) bad++;
+  console.log(`  (${((Date.now() - t0) / 1000).toFixed(1)} s de ${TIMEOUT_MS.webkit / 1000} s)`);
+  const msgs = retryVerdict(txt, blocked.length);
+  for (const m of msgs) console.log(`  FAIL: ${m}`);
   await ctx.close();
-  return bad ? 1 : 0;
+  return msgs.length ? 1 : 0;
 }
 
 async function runSuite(browser, names, tag, check) {
@@ -158,50 +178,56 @@ async function waitForServer(url, ms = 15000) {
   throw new Error("Vite no arrancó");
 }
 
-const vite = spawn("npx", ["vite", "dev", "--port", String(PORT), "--strictPort"], {
-  stdio: "ignore",
-  detached: false,
-});
-
-let failed = 0;
-let browser;
-try {
-  await waitForServer(`http://localhost:${PORT}/`);
-  browser = await chromium.launch({
-    channel: process.env.CHROME_CHANNEL || "chrome",
-    headless: true,
-    // en CI (contenedores/runners) el sandbox de Chrome suele no estar disponible
-    args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
+// Solo corre como punto de entrada: el test unitario importa retryVerdict sin
+// levantar Vite ni navegadores.
+async function main() {
+  const vite = spawn("npx", ["vite", "dev", "--port", String(PORT), "--strictPort"], {
+    stdio: "ignore",
+    detached: false,
   });
-  failed += await runSuite(browser, SELFTEST ? SELFTEST_SUITE : TESTS, "chrome", SELFTEST ? noCheck : checkChrome);
 
-  let wk = null;
+  let failed = 0;
+  let browser;
   try {
-    wk = await webkit.launch({ headless: true });
-  } catch (e) {
-    if (process.env.SKIP_WEBKIT === "1")
-      console.warn("\n⚠ WebKit saltado a pedido (SKIP_WEBKIT=1): los casos WebP de Safari NO se probaron");
-    else {
-      console.error(`\n✗ No arrancó WebKit de Playwright: ${e.message.split("\n")[0]}`);
-      console.error("  Instalalo con: npx playwright-core install webkit");
-      failed++;
-    }
-  }
-  if (wk) {
+    await waitForServer(`http://localhost:${PORT}/`);
+    browser = await chromium.launch({
+      channel: process.env.CHROME_CHANNEL || "chrome",
+      headless: true,
+      // en CI (contenedores/runners) el sandbox de Chrome suele no estar disponible
+      args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
+    });
+    failed += await runSuite(browser, SELFTEST ? SELFTEST_SUITE : TESTS, "chrome", SELFTEST ? noCheck : checkChrome);
+
+    let wk = null;
     try {
-      if (SELFTEST) failed += await runSuite(wk, SELFTEST_SUITE, "webkit", noCheck);
+      wk = await webkit.launch({ headless: true });
+    } catch (e) {
+      if (process.env.SKIP_WEBKIT === "1")
+        console.warn("\n⚠ WebKit saltado a pedido (SKIP_WEBKIT=1): los casos WebP de Safari NO se probaron");
       else {
-        failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
-        failed += await runRetry(wk);
+        console.error(`\n✗ No arrancó WebKit de Playwright: ${e.message.split("\n")[0]}`);
+        console.error("  Instalalo con: npx playwright-core install webkit");
+        failed++;
       }
-    } finally {
-      await wk.close();
     }
+    if (wk) {
+      try {
+        if (SELFTEST) failed += await runSuite(wk, SELFTEST_SUITE, "webkit", noCheck);
+        else {
+          failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
+          failed += await runRetry(wk);
+        }
+      } finally {
+        await wk.close();
+      }
+    }
+  } finally {
+    await browser?.close();
+    vite.kill();
   }
-} finally {
-  await browser?.close();
-  vite.kill();
+
+  console.log(failed === 0 ? "\n✓ todo verde" : `\n✗ ${failed} suite(s) con fallos`);
+  process.exit(failed === 0 ? 0 : 1);
 }
 
-console.log(failed === 0 ? "\n✓ todo verde" : `\n✗ ${failed} suite(s) con fallos`);
-process.exit(failed === 0 ? 0 : 1);
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) await main();

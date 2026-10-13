@@ -5,7 +5,7 @@
 // encoder hasta PHASE1_DONE y después llama a window.__unblock().
 import { backend } from "../src/lib/backend.js";
 import { reencodeToBlob } from "../src/lib/metadata.js";
-import { isWebpEncodeError } from "../src/lib/webpEncoder.js";
+import { canEncodeWebP, isWebpEncodeError } from "../src/lib/webpEncoder.js";
 
 const out = [];
 const log = (s) => {
@@ -37,6 +37,14 @@ function source() {
 }
 
 async function main() {
+  // Con WebP nativo (WebKit de Linux en CI) el encoder no se pide nunca y no hay
+  // reintento que probar. El runner rechaza este salto en macOS (GROW-35 3b).
+  if (await canEncodeWebP()) {
+    log("SKIP: ruta=nativa — el reintento del encoder WASM no se ejercita en este motor (deuda GROW-35)");
+    log("ALL_DONE");
+    return;
+  }
+  log("ruta=wasm");
   const src = await blobOf("/media/guias/quitar-fondo-antes.jpg");
   const dataUrl = await new Promise((r) => {
     const fr = new FileReader();
