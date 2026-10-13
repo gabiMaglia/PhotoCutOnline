@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { reencodeToBlob, hasTransparency, fitSize, OUTPUT_FORMATS } from "../../../lib/metadata.js";
+import { reencodeToBlob, hasTransparency, fitSize, OUTPUT_FORMATS, formatFromMime } from "../../../lib/metadata.js";
+import { createLatestRunner } from "../../../lib/latestRunner.js";
+import { t } from "../../../lib/i18n.js";
+import { webpErrorKey } from "../../../lib/webpEncoder.js";
 
 // T-014/T-015: convertir, comprimir y redimensionar. El estimado se recalcula
 // cuando cambian formato, calidad o tamaño; re-encodear es sincrónico y en
@@ -7,7 +10,7 @@ import { reencodeToBlob, hasTransparency, fitSize, OUTPUT_FORMATS } from "../../
 // slider) y se descarta el resultado si llegó tarde.
 const DEBOUNCE_MS = 220;
 
-export function useReencode({ imgRef, info }) {
+export function useReencode({ imgRef, info, onToast }) {
   const [format, setFormat] = useState("jpeg");
   const [quality, setQuality] = useState(80); // 0–100 en la UI, 0–1 en el canvas
   const [estimate, setEstimate] = useState(null); // bytes del resultado
@@ -19,6 +22,8 @@ export function useReencode({ imgRef, info }) {
   const [width, setWidth] = useState(null);
   const [height, setHeight] = useState(null);
   const runId = useRef(0);
+  const runnerRef = useRef(null);
+  runnerRef.current ??= createLatestRunner();
 
   const srcW = info?.width || 0;
   const srcH = info?.height || 0;
@@ -34,7 +39,7 @@ export function useReencode({ imgRef, info }) {
   // no debería ser el default de quien sólo quiere comprimir) y en su tamaño.
   useEffect(() => {
     if (!info) return;
-    const match = Object.keys(OUTPUT_FORMATS).find((k) => OUTPUT_FORMATS[k].mime === info.type);
+    const match = formatFromMime(info.type);
     if (match) setFormat(match);
     setWidth(info.width || null);
     setHeight(info.height || null);
@@ -68,19 +73,39 @@ export function useReencode({ imgRef, info }) {
     setHeight(srcH || null);
   }, [srcW, srcH]);
 
+  const reportFailure = useCallback(
+    (e) => {
+      const key = webpErrorKey(e);
+      onToast?.(key ? t(key) : String(e), "error");
+    },
+    [onToast]
+  );
+
   useEffect(() => {
     const img = imgRef.current;
     if (!img || !info) return setEstimate(null);
     const id = ++runId.current;
     setEstimating(true);
     const timer = setTimeout(async () => {
-      const blob = await reencodeToBlob(img, {
-        format,
-        quality: quality / 100,
-        width: width || undefined,
-        height: height || undefined,
-      });
-      if (id !== runId.current) return; // llegó tarde: hay otro cambio en curso
+      let res;
+      try {
+        res = await runnerRef.current.run(() =>
+          reencodeToBlob(img, {
+            format,
+            quality: quality / 100,
+            width: width || undefined,
+            height: height || undefined,
+          })
+        );
+      } catch (e) {
+        if (id !== runId.current) return;
+        setEstimate(null);
+        setEstimating(false);
+        reportFailure(e);
+        return;
+      }
+      if (res.stale || id !== runId.current) return; // llegó tarde: hay otro cambio en curso
+      const blob = res.value;
       setEstimate(blob ? blob.size : null);
       // preview del resultado convertido (reusa el MISMO blob del estimado): se
       // revoca el object URL anterior para no acumular en memoria.
@@ -91,7 +116,7 @@ export function useReencode({ imgRef, info }) {
       setEstimating(false);
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [format, quality, width, height, info, imgRef]);
+  }, [format, quality, width, height, info, imgRef, reportFailure]);
 
   // liberar el último preview al desmontar
   useEffect(() => () => {
@@ -101,23 +126,33 @@ export function useReencode({ imgRef, info }) {
   const download = useCallback(async () => {
     const img = imgRef.current;
     if (!img) return;
-    const blob = await reencodeToBlob(img, {
-      format,
-      quality: quality / 100,
-      width: width || undefined,
-      height: height || undefined,
-    });
+    let blob;
+    try {
+      blob = await reencodeToBlob(img, {
+        format,
+        quality: quality / 100,
+        width: width || undefined,
+        height: height || undefined,
+      });
+    } catch (e) {
+      reportFailure(e);
+      return;
+    }
     if (!blob) return;
+    // se nombra por lo que ES (GROW-35): nunca un .webp con PNG adentro
+    const real = formatFromMime(blob.type) || format;
+    if (real !== format)
+      onToast?.(t("export.formatFallback", { want: format.toUpperCase(), got: real.toUpperCase() }), "error");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     const base = info?.name?.replace(/\.[^.]+$/, "") || "imagen";
-    a.download = `${base}.${OUTPUT_FORMATS[format].ext}`;
+    a.download = `${base}.${OUTPUT_FORMATS[real].ext}`;
     a.click();
     URL.revokeObjectURL(a.href);
-  }, [imgRef, info, format, quality, width, height]);
+  }, [imgRef, info, format, quality, width, height, onToast, reportFailure]);
 
   const fmt = OUTPUT_FORMATS[format];
-  const origFormat = Object.keys(OUTPUT_FORMATS).find((k) => OUTPUT_FORMATS[k].mime === info?.type);
+  const origFormat = formatFromMime(info?.type);
   const resized = !!(srcW && width && width !== srcW);
   return {
     format,

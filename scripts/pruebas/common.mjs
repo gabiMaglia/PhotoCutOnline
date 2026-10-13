@@ -28,7 +28,8 @@ export async function newCtx(browser, { block = true } = {}) {
   const ctx = await browser.newContext({
     acceptDownloads: true,
     viewport: { width: 1440, height: 900 },
-    permissions: ["clipboard-read", "clipboard-write"],
+    // WebKit de Playwright no conoce estos permisos y rechaza el contexto (GROW-35)
+    permissions: browser.browserType().name() === "chromium" ? ["clipboard-read", "clipboard-write"] : [],
   });
   const blocked = block ? await L.blockThirdParty(ctx) : [];
   return { ctx, blocked };

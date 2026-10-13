@@ -30,7 +30,7 @@ function Row({ label, value }) {
 export default function MetadataPage({ active, onToast, onOpenDownload }) {
   const { sharedImageUrl } = useCutoutContext();
   const m = useMetadata({ onToast });
-  const r = useReencode({ imgRef: m.imgRef, info: m.info });
+  const r = useReencode({ imgRef: m.imgRef, info: m.info, onToast });
 
   // Auto-carga la imagen compartida (la del navbar «Abrir foto») al entrar a la
   // pestaña o al cambiar de imagen. Sin botón de carga propio: una sola fuente.

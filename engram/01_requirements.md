@@ -12,7 +12,7 @@ Herramienta de remoción de fondo de fotos: un solo código React que se distrib
 | F-04 | Motor desktop GrabCut en Rust (photocut-core) | Must | Implementado |
 | F-05 | Motor web GrabCut-lite (jsEngine.js, client-side) | Must | Implementado |
 | F-06 | make_icons.py (CLI Python con Pillow, mismo pipeline de íconos) | Should | Implementado |
-| F-07 | Sticker Studio | Could | Oculto tras feature flag |
+| F-07 | Sticker Studio | Could | Retirado en GROW-34 (presets de sticker en Exportar) |
 | F-08 | WASM: compilar photocut-core a WebAssembly para paridad web↔desktop | Could | Scaffold (crates/photocut-wasm, build:wasm) |
 
 ## 3. Fuera de alcance (OUT)

@@ -204,6 +204,10 @@ export default defineConfig(({ mode }) => {
       // requiere workers en formato ES (soportado por toda nuestra matriz)
       format: "es",
     },
+    optimizeDeps: {
+      // el pre-bundle de Vite rompe la URL del .wasm de jSquash en dev (spike GROW-35)
+      exclude: ["@jsquash/webp"],
+    },
     server: {
       port: 5173,
       strictPort: true,

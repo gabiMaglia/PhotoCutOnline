@@ -198,7 +198,9 @@
         get a WebP of exactly 512×512&nbsp;px with a transparent background, even
         if the photo is vertical or horizontal: the figure is fitted into the
         square with a margin around it and isn't stretched. While the preset is
-        selected, the panel only offers the WEBP format. If with your photo the
+        selected, the panel only offers the WEBP format. You get a WebP in any
+        browser: if yours can't create one (Safari's engine can't), the editor
+        uses its own encoder, which downloads once and stays cached. If with your photo the
         file went over 100&nbsp;KB, the editor lowers the quality step by step and
         tells you; if it still doesn't fit at the minimum quality, it tells you
         how much it weighs. WebP compresses better than PNG while keeping
@@ -279,15 +281,17 @@
           <li>I downloaded a transparent PNG with no preset as a reference for the figure's proportions.</li>
           <li>In Export I chose the “WhatsApp sticker 512 (WebP)” preset and downloaded; then the “Telegram sticker 512 (PNG)” preset and downloaded.</li>
           <li>In each file I measured size, weight, real format (file header), alpha of the four corners and the figure's box.</li>
+          <li>I repeated everything in WebKit (Safari's engine) to check that the WebP comes out the same.</li>
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
           <li>WhatsApp sticker: WebP of 512 × 512 px and 20.2 KB (WhatsApp's limit is 100 KB), 67.8% transparent pixels and alpha 0, 0, 0, 0 in the four corners. With the preset chosen, the panel only let me pick the WEBP format.</li>
           <li>Telegram sticker: PNG of 512 × 512 px and 199.3 KB, alpha 0, 0, 0, 0 in the corners; format enabled: PNG.</li>
           <li>The photo is vertical (720 × 900) and the preset doesn't stretch it: the figure is 0.671 wide for every 1 tall in the reference, 0.670 in the WhatsApp one and 0.669 in the Telegram one. The figure's longest side takes 430 px in WhatsApp (an 8.0% margin per side) and 472 px in Telegram.</li>
+          <li>In WebKit 26.4 (Safari's engine): WhatsApp sticker WebP of 512 × 512 px and 19.9 KB, alpha 0, 0, 0, 0 in the corners; that engine doesn't create WebP on its own and the file was built by the editor's own encoder.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> Both presets gave the exact square without stretching the figure, but with this portrait the WebP weighed 20.2 KB: I didn't see the case where it goes over 100 KB and the editor lowers the quality by itself, so I didn't test that with a real photo. The preset locks the format (with the WhatsApp one only WEBP is left) and there's no preset for the 96 × 96 tray icon that a WhatsApp pack needs. I didn't build the pack or test it inside WhatsApp or Telegram.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-10">2026-10-10</time> with PhotoCut (web) in Chrome 154.0.8037.99 · macOS 14.8.8 · PhotoCut version: commit 767d6da.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> I measured in Chrome and in Playwright's WebKit on macOS, not on a real iPhone or in real Safari. The WebP's weight changes with the engine (20.2 KB in Chrome, 19.9 KB in WebKit) because it isn't the same encoder. Both presets gave the exact square without stretching the figure, but with this portrait the WebP stayed well under 100 KB in both engines: I didn't see the case where it goes over 100 KB and the editor lowers the quality by itself, so I didn't test that with a real photo. The preset locks the format (with the WhatsApp one only WEBP is left) and there's no preset for the 96 × 96 tray icon that a WhatsApp pack needs. I didn't build the pack or test it inside WhatsApp or Telegram.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-11">2026-10-11</time> with PhotoCut (web) in Chrome 154.0.8037.99 + WebKit 26.4 · macOS 14.8.8 · PhotoCut version: commit bf2fa08.</p>
       </div>
       <!-- pruebas:end -->
 

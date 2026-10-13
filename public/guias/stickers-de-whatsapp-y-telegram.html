@@ -210,7 +210,9 @@
         WebP de 512×512&nbsp;px exactos con fondo transparente, aunque la foto
         sea vertical u horizontal: la figura se encaja en el cuadrado con un
         margen alrededor y sin estirarse. Mientras el preset está elegido, el
-        panel solo deja el formato WEBP. Si con tu foto el archivo pasara de
+        panel solo deja el formato WEBP. Sale WebP en cualquier navegador: si
+        el tuyo no sabe crearlo (le pasa al motor de Safari), el editor usa su
+        propio codificador, que se descarga una vez y queda guardado. Si con tu foto el archivo pasara de
         100&nbsp;KB, el editor baja la calidad de a poco y te avisa; si ni con la
         calidad mínima entra, te avisa cuánto pesa.
         WebP comprime mejor que PNG manteniendo la transparencia, y por eso
@@ -293,15 +295,17 @@
           <li>Descargué un PNG transparente sin preset como referencia de la proporción de la figura.</li>
           <li>En Exportar elegí el preset «Sticker WhatsApp 512 (WebP)» y descargué; después el preset «Sticker Telegram 512 (PNG)» y descargué.</li>
           <li>En cada archivo medí tamaño, peso, formato real (cabecera del archivo), alfa de las cuatro esquinas y la caja de la figura.</li>
+          <li>Repetí todo en WebKit (el motor de Safari) para comprobar que el WebP sale igual.</li>
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
           <li>Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,8 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.</li>
           <li>Sticker Telegram: PNG de 512 × 512 px y 199,3 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.</li>
           <li>La foto es vertical (720 × 900) y el preset no la deforma: la figura mide 0,671 de ancho por cada 1 de alto en la referencia, 0,670 en el de WhatsApp y 0,669 en el de Telegram. El lado más largo de la figura ocupa 430 px en WhatsApp (margen de 8,0 % por lado) y 472 px en Telegram.</li>
+          <li>En WebKit 26.4 (el motor de Safari): Sticker WhatsApp WebP de 512 × 512 px y 19,9 KB, alfa 0, 0, 0, 0 en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP pesó 20,2 KB: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-10">2026-10-10</time> con PhotoCut (web) en Chrome 154.0.8037.99 · macOS 14.8.8 · versión de PhotoCut: commit 767d6da.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Medí en Chrome y en WebKit de Playwright sobre macOS, no en un iPhone ni en Safari reales. El peso del WebP cambia según el motor (20,2 KB en Chrome, 19,9 KB en WebKit) porque no es el mismo codificador. Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP quedó muy por debajo de 100 KB en los dos motores: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-11">2026-10-11</time> con PhotoCut (web) en Chrome 154.0.8037.99 + WebKit 26.4 · macOS 14.8.8 · versión de PhotoCut: commit bf2fa08.</p>
       </div>
       <!-- pruebas:end -->
 

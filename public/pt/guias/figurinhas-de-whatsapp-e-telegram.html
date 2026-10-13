@@ -197,7 +197,9 @@
         512×512&nbsp;px exatos com fundo transparente, mesmo que a foto seja
         vertical ou horizontal: a figura é encaixada no quadrado com uma margem
         em volta e sem esticar. Enquanto o preset está escolhido, o painel só
-        deixa o formato WEBP. Se com a sua foto o arquivo passasse de
+        deixa o formato WEBP. Sai WebP em qualquer navegador: se o seu não sabe
+        criá-lo (acontece com o motor do Safari), o editor usa o próprio
+        codificador, que é baixado uma vez e fica guardado. Se com a sua foto o arquivo passasse de
         100&nbsp;KB, o editor baixa a qualidade aos poucos e avisa; se nem com a
         qualidade mínima couber, avisa quanto pesa. O WebP
         comprime melhor que o PNG mantendo a transparência, e por isso cumprir o
@@ -277,15 +279,17 @@
           <li>Baixei um PNG transparente sem preset como referência da proporção da figura.</li>
           <li>Em Exportar escolhi o preset «Figurinha WhatsApp 512 (WebP)» e baixei; depois o preset «Figurinha Telegram 512 (PNG)» e baixei.</li>
           <li>Em cada arquivo medi tamanho, peso, formato real (cabeçalho do arquivo), alfa dos quatro cantos e a caixa da figura.</li>
+          <li>Repeti tudo no WebKit (o motor do Safari) para conferir que o WebP sai igual.</li>
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
           <li>Figurinha WhatsApp: WebP de 512 × 512 px e 20,2 KB (o limite do WhatsApp é 100 KB), 67,8% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos. Com o preset escolhido, o painel só me deixou mexer no formato WEBP.</li>
           <li>Figurinha Telegram: PNG de 512 × 512 px e 199,3 KB, alfa 0, 0, 0, 0 nos cantos; formato habilitado: PNG.</li>
           <li>A foto é vertical (720 × 900) e o preset não a deforma: a figura mede 0,671 de largura para cada 1 de altura na referência, 0,670 na do WhatsApp e 0,669 na do Telegram. O lado mais longo da figura ocupa 430 px no WhatsApp (margem de 8,0% por lado) e 472 px no Telegram.</li>
+          <li>No WebKit 26.4 (o motor do Safari): Figurinha WhatsApp WebP de 512 × 512 px e 19,9 KB, alfa 0, 0, 0, 0 nos cantos; esse motor não cria WebP sozinho e o arquivo foi montado pelo codificador próprio do editor.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Os dois presets deram o quadrado exato sem deformar a figura, mas com este retrato o WebP pesou 20,2 KB: não vi o caso em que passa de 100 KB e o editor baixa a qualidade sozinho, então isso eu não testei com uma foto real. O preset fixa o formato (com o do WhatsApp só sobra WEBP) e não há um preset para o ícone de capa de 96 × 96 que o pacote do WhatsApp pede. Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-10">2026-10-10</time> com PhotoCut (web) no Chrome 154.0.8037.99 · macOS 14.8.8 · versão do PhotoCut: commit 767d6da.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Medi no Chrome e no WebKit do Playwright no macOS, não num iPhone nem no Safari de verdade. O peso do WebP muda conforme o motor (20,2 KB no Chrome, 19,9 KB no WebKit) porque não é o mesmo codificador. Os dois presets deram o quadrado exato sem deformar a figura, mas com este retrato o WebP ficou bem abaixo de 100 KB nos dois motores: não vi o caso em que passa de 100 KB e o editor baixa a qualidade sozinho, então isso eu não testei com uma foto real. O preset fixa o formato (com o do WhatsApp só sobra WEBP) e não há um preset para o ícone de capa de 96 × 96 que o pacote do WhatsApp pede. Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-11">2026-10-11</time> com PhotoCut (web) no Chrome 154.0.8037.99 + WebKit 26.4 · macOS 14.8.8 · versão do PhotoCut: commit bf2fa08.</p>
       </div>
       <!-- pruebas:end -->
 

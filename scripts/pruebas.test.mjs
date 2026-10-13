@@ -51,7 +51,8 @@ test("pruebas.json: datos completos, honestos y distintos por guía", () => {
   const titles = new Set();
   for (const [slug, e] of Object.entries(db)) {
     assert.match(e.date, /^\d{4}-\d{2}-\d{2}$/, slug);
-    assert.match(e.browser, /^Chrome \d+\.\d+\.\d+\.\d+$/, slug);
+    // GROW-35: una prueba puede medirse además en WebKit («Chrome X + WebKit Y»)
+    assert.match(e.browser, /^Chrome \d+\.\d+\.\d+\.\d+( \+ WebKit \d+(\.\d+)*)?$/, slug);
     assert.match(e.os, /^macOS \d+/, slug);
     assert.match(e.build, /^[0-9a-f]{7}$/, slug);
     assert.ok(e.tool && e.steps.length >= 2 && e.findings.length >= 2, slug);
@@ -228,4 +229,14 @@ test("tildes en las guías de medidas (ES)", () => {
     const t = html(slug).replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<[^>]+>/g, " ");
     assert.doesNotMatch(t, /\b(pixeles|proporcion|version|sesion|exporta en JPG|tambien|ademas)\b/i, slug);
   }
+});
+
+// GROW-35: el motor de Safari no codifica WebP en canvas; la guía se mide también en WebKit
+test("stickers: medido también en WebKit y WebP real en los dos motores (GROW-35)", () => {
+  const e = db["stickers-de-whatsapp-y-telegram"];
+  assert.match(e.browser, /^Chrome .+ \+ WebKit /);
+  assert.equal(e.result.whatsapp.format, "webp");
+  assert.equal(e.result.webkit.whatsapp.format, "webp");
+  assert.ok(e.result.webkit.whatsapp.kb <= 100);
+  assert.deepEqual(e.result.webkit.whatsapp.cornersAlpha, [0, 0, 0, 0]);
 });

@@ -1,4 +1,4 @@
-# CI — en cada push/PR: build web + 7 suites en Chrome headless + motor Rust.
+# CI — en cada push/PR: build web + suites en Chrome headless y casos WebP en WebKit + motor Rust.
 # El runner de tests usa el Chrome preinstalado del runner de GitHub
 # (playwright-core channel "chrome"), sin descargar navegadores.
 
@@ -22,6 +22,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npx playwright-core install --with-deps webkit
       - run: npm test
       - run: npm run build
       - run: npm run test:web

@@ -153,6 +153,68 @@ mismo flujo de sticker, pero en el §CÓMO va como paso **independiente** (paral
 serial `webpEncoder` (primitiva compartida) → `canvasToBlob`/`reencodeToBlob` → `useExport`/`useReencode`.
 Si D2 retrasa la cadena WebP, se parte a ticket propio sin reabrir este §QUÉ.
 
+### Revisión del arquitecto — tras 2 rechazos (2026-10-11)
+
+**Aprobado por:** nerv-arquitecto · arquitecto · 2026-10-11
+
+**1. Diagnóstico (P-2): defectos puntuales; no hay problema de diseño ni de alcance, así que no vuelve al PO.**
+Los dos rechazos no comparten causa y ninguno contradice el §QUÉ:
+- Intento 1 (verifier): D1, D2 y D3 fueron bordes de implementación dentro de decisiones ya escritas. D1 era
+  restaurar el estado al salir del sticker. D2 era la promesa del import/worker sin descartar tras un fallo,
+  que contradecía «reintentá con conexión» de §Errores. D3 era el límite de A4 sin mensaje propio. Se
+  corrigieron sin tocar el diseño.
+- Intento 2 (QA): D-i2-1 es un bug del arnés de pruebas que ya estaba en `main` (c13458a:73-76). La suite
+  WebKit que exige C7 lo dejó a la vista. El producto quedó aprobado por el verifier y QA lo verificó con
+  mutación.
+- Patrón real: el código WebP cumple. Lo que falla son los bordes del flujo y la infraestructura de prueba
+  en el motor nuevo, que es justo la superficie que GROW-34 nunca había ejercitado. Para eso se corrige la
+  herramienta; no se reabre el §QUÉ. *Descartado:* volver al PO. Ni el costo, ni el plazo, ni la UX
+  acordada cambian.
+
+**2. Alcance del intento 3: cerrado. Solo lo que sigue; cualquier otro cambio de código queda fuera.**
+- **D-i2-1, en todo el runner.** `test/run-tests.mjs` tiene dos `waitForFunction`. El de `runRetry` (:74) ya
+  usa la firma correcta `(fn, arg, options)`. El de `runSuite` (:111-114) pasa a `(fn, null, { timeout })`.
+- **Timeout explícito por motor, en vez de uno global.** Se agrega un mapa `TIMEOUT_MS = { chrome: 120_000,
+  webkit: 240_000 }` y `runSuite`/`runRetry` toman el de su `tag`.
+  - Motivo: autoCut en WebKit ya ronda los 28 s en un Mac cargado; en un runner Linux de 2 vCPU puede
+    multiplicarse.
+  - Un único valor alto también taparía cuelgues en Chrome, cuyas suites son rápidas.
+  - *Descartado:* `ctx.setDefaultTimeout` como único mecanismo, porque deja el valor implícito. Puede sumarse
+    como red de seguridad, con el mismo valor por motor.
+- **Prueba de rojo del arreglo.** Hay que mostrar que el timeout efectivo es el configurado y no 30 s, con
+  una página de prueba o un `waitForFunction` que tarde más de 30 s y menos que el límite. Si no se puede
+  automatizar barato, se entrega una corrida con carga alta (load ≥ 30) en verde y se pega la salida.
+- **`_debt.md`:** transcribir los 3 cambios de aserciones (P-18.5) tal como figuran en «Correcciones —
+  intento 2».
+- **O1 y O2 van a deuda, no al intento 3.** Ambos son de severidad baja, el aviso es veraz respecto del
+  archivo que baja, no hay pérdida de datos y cualquier cambio reabriría `useExport`, que hoy está aprobado
+  y blindado con mutación.
+  - O1 («Volvió tu formato: PNG» con JPEG marcado y deshabilitado) pasa a deuda de UX: unificar el texto
+    y el estado del chip cuando el modo transparente fuerza PNG.
+  - O2 (Original restaura el fondo previo al sticker aunque se haya cambiado dentro) es una decisión de UX
+    para el PO, que debe quedar registrada como pregunta en `_debt.md`. Hoy el comportamiento es coherente
+    con D1 y avisa con toast.
+  - Meter cualquiera de los dos en el intento 3 suma riesgo de regresión a un ticket que ya está en su
+    tercer intento.
+
+**3. Riesgo de CI y qué se exige antes del merge.**
+- `.github/workflows/ci.yml` ya ejecuta `npx playwright-core install --with-deps webkit`, así que WebKit
+  queda instalado.
+- `checkWebkit` exige `ruta=wasm` solo en darwin. En Linux, el WebKit de Playwright (port GTK/WPE) puede
+  codificar WebP nativo; si lo hace, la ruta WASM **no se ejercita en CI**.
+- Esto es aceptable en este ticket, porque la ruta WASM queda cubierta por jest con detección mockeada, por
+  la corrida local en macOS y por las mutaciones de QA. Tiene que quedar a la vista y no darse por supuesto.
+- Requisitos para el merge:
+  - (a) Pushear la rama y abrir el PR. El job `web` tiene que salir **verde en GitHub Actions** sobre el HEAD
+    del intento 3 antes de mergear. Una corrida local no lo reemplaza.
+  - (b) QA copia de ese log la línea `ruta=` de `webp-test [webkit]`, con la duración de la suite, y la
+    cita en su veredicto.
+  - (c) Si la línea dice `ruta=nativa`, se abre deuda para forzar la ruta WASM en CI con un flag de prueba
+    que haga `canEncodeWebP()` falso solo en el harness. No bloquea este merge.
+  - (d) Si el job WebKit sale rojo por tiempo incluso con 240 s, el merge queda bloqueado y vuelve a esta
+    revisión. No se permite `SKIP_WEBKIT=1` en CI.
+- Memoria del proyecto: después del merge hay que mirar el CI de `main`, que no está protegida.
+
 ## CÓMO — plan de implementación
 
 **Plan de implementación GROW-35 — WebP real en todos los navegadores**
@@ -2123,3 +2185,216 @@ Vite con jSquash en WebKit (Task 8), WebKit de Playwright en Linux/CI (ruta nati
 reales y Tauri (Task 13).
 
 **Aprobado por:** nerv-web · tech lead web · 2026-10-10
+
+### Correcciones — intento 2 (rechazo nerv-verifier 2026-10-11)
+
+Fuente: `engram/qa/GROW-35-verifier.md` (D1, D2 y D3) y `engram/qa/GROW-35.md` (H-01, H-02 y H-05). Rama
+`feat/GROW-35-webp-real`, con `main` mergeado (2be4567). Valen las mismas restricciones globales: TDD con
+el test en rojo antes del código, un commit por tarea con `Co-Authored-By`, y `npm test` y
+`npm run test:web` (Chrome + WebKit) en verde al cerrar. Nada de esto toca `backend.export*` ni los
+bytes del camino nativo de Chrome (G6).
+
+**Verificado antes de planear (P-1.6):** según BCD oficial (`api/Worker.json`, `worker_support`), los
+workers dedicados pueden crear workers desde Safari 16.4, la misma versión que pide `WORKER_OK`
+(OffscreenCanvas). Dentro de `cutoutWorker` siempre hay `Worker`. El bundle de `cutoutWorker` ya emite
+`webpWorker-*.js` (verificado en la Task 3).
+
+#### C1 (D2). Un fallo de carga del encoder no deja WebP roto toda la sesión
+Causa: WebKit guarda en el module map del contexto el `import()` que falló. Reintentar en ese mismo
+contexto no vuelve a pedir el chunk (lo midió el verificador: 3 reintentos y ningún request). La
+solución es descartar el contexto.
+- `src/lib/webpEncoder.js`:
+  - `encodeWebP` usa el worker dedicado siempre que el contexto tenga `Worker`, ventana o worker. Si no
+    tiene `Worker`, codifica directo.
+  - Cuando el worker contesta un error de CARGA (`WEBP_ENCODE_FAILED: load:`), se hace `terminate()` y
+    `worker = null`, así el próximo encode crea un contexto nuevo, con su module map vacío.
+  - `onerror` también hace `terminate()`.
+- `src/lib/webpWasm.js:34`: el comentario pasa a decir la verdad (se reintenta `init()`; si falló el
+  `import()`, el que se recupera es el worker descartado).
+- Tests en rojo primero:
+  - `webpEncoder.test.js`: «un fallo de carga descarta el worker y el próximo encode crea otro (y
+    termina el viejo)»; con un error de encode, en cambio, el worker se reutiliza.
+  - `webpEncoder.node.test.js`: el test «dentro de un worker codifica directo, sin crear otro worker»
+    se REEMPLAZA, porque el §QUÉ corregido cambia esa decisión. Quedan dos:
+    - «dentro de un worker con `Worker` (Safari ≥ 16.4) codifica en el worker dedicado»;
+    - «sin `Worker` en el contexto codifica directo».
+  - Harness `test/webp-retry-test.{html,js}`, solo en WebKit. El runner lo corre en un contexto propio
+    con `serviceWorkers:"block"` y `ctx.route` bloqueando el wrapper, el glue y el `.wasm` del encoder
+    (`/@jsquash\/webp\/|encode-[^/]*\.js|webp_enc/`).
+    - Fase 1, con el bloqueo: export del editor (pasa por `cutoutWorker`) y `reencodeToBlob` (pasa por
+      Archivo). Los dos tienen que rechazar con `isWebpEncodeError`. Después el test escribe `PHASE1_DONE`.
+    - Entre fases, el runner hace `unroute` y llama a `window.__unblock()`.
+    - Fase 2: el mismo export y el mismo reencode tienen que dar bytes WebP reales.
+    - Contra el código del intento 1, la fase 2 del editor falla en WebKit.
+- Commit: `fix(webp): un fallo de carga del encoder descarta su worker y el reintento vuelve a pedirlo (GROW-35 D2)`.
+
+#### C2 (D3). Más de 16383 px da un aviso de tamaño, no «reintentá con conexión»
+- `src/lib/webpWasm.js`:
+  - `WebpEncodeError(reason, kind = "failed")`. El mensaje queda `WEBP_ENCODE_FAILED: <kind>: <motivo>`
+    y viaja como texto entre workers.
+  - El límite lanza con `kind = "too_large"`.
+  - `webpErrorKind(e)` devuelve `"too_large" | "failed" | null`, y `webpEncoder.js` lo re-exporta.
+  - `isWebpEncodeError` no cambia.
+- `useExport` y `useReencode` pasan del error a la clave: `too_large` → `export.webpTooLarge`; `failed`
+  → `export.webpFailed`; si no, `String(e)`.
+- i18n:
+  - es: «WebP admite hasta 16383 px por lado y esta imagen es más grande. Elegí PNG o JPEG, o achicala»
+  - en: «WebP allows up to 16383 px per side and this image is larger. Choose PNG or JPEG, or make it smaller»
+  - pt: «O WebP aceita até 16383 px por lado e esta imagem é maior. Escolha PNG ou JPEG, ou diminua-a»
+- Tests en rojo primero:
+  - `webpWasm.test.js`: 16384 da `webpErrorKind === "too_large"`; OOM e init fallido dan `"failed"`.
+  - `useExport.test.js`: el caso «más de 16383 px» pasa a esperar `export.webpTooLarge` (el defecto D3
+    cambia la expectativa) con el mensaje real del módulo.
+  - `useReencode.test.js`: lo mismo, al descargar.
+- Commit: `fix(webp): aviso específico cuando la imagen supera 16383 px (GROW-35 D3)`.
+
+#### C3 (D1). Salir de un preset de sticker restaura formato Y fondo, y el aviso dice lo que se descarga
+- `src/features/cutout/hooks/useExport.js`:
+  - El preset que impone formato guarda una sola vez `{ format, exportMode, bgColor }` del usuario.
+  - Al salir a «Original» (preset sin regla de fondo) se restauran los tres.
+  - Al salir a un preset con regla de fondo (Amazon, Avatar…) manda la precarga de GROW-34 (BUG-01) y
+    solo se restaura el formato.
+  - El aviso nombra el formato EFECTIVO: Transparente + JPEG cae a PNG, igual que en `exportAs`. Si
+    además volvió el fondo, un solo aviso lo dice: `export.settingsRestored` con `{bg, fmt}`, donde `bg`
+    es `t("export.mode.<modo>")`.
+- i18n:
+  - es: «Volvió tu fondo ({bg}) y tu formato: {fmt}»
+  - en: «Your background ({bg}) and format are back: {fmt}»
+  - pt: «Seu fundo ({bg}) e seu formato voltaram: {fmt}»
+- Tests en rojo primero, en `useExport.test.js`:
+  - Color `#2563eb` + JPEG → Sticker WhatsApp → Original. Queda modo `solid`, color `#2563eb` y formato
+    `jpeg`. Al descargar se llama `exportSolid([37,99,235,255], {format:"jpeg"})`, baja
+    `photocut-solid.jpg` y el último aviso antes de descargar es `settingsRestored {bg:"Color", fmt:"JPEG"}`.
+  - Color + JPEG → Sticker WhatsApp → Avatar. Queda transparente (regla del preset), el aviso dice PNG y
+    baja `.png`.
+  - El test D2 del intento 1 «Sticker WhatsApp → Original…» arrancaba en Transparente + JPEG, o sea un
+    PNG efectivo: es justo la premisa del defecto. Pasa a arrancar en Color + JPEG. Siguen el formato
+    `jpeg` y el aviso `presetFormat`. El último aviso pasa a ser `settingsRestored {bg:"Color",
+    fmt:"JPEG"}`, porque también vuelve el fondo.
+  - Transparente + JPEG → Sticker WhatsApp → Original: el aviso dice `formatRestored {fmt:"PNG"}`, que es
+    lo que baja (antes decía JPEG).
+- Verificación E2E (evidencia, sin commit): un script de Playwright en el scratchpad contra
+  `vite preview`, en Chrome y en WebKit, hace Color + JPEG → Sticker WhatsApp → Original → Descargar y
+  comprueba el magic JPEG, el nombre `.jpg`, que el píxel de la esquina sea el color elegido y el texto
+  del toast.
+- Commit: `fix(export): salir del sticker restaura formato y fondo previos; el aviso dice lo que baja (GROW-35 D1)`.
+
+#### C4 (H-02). Guarda de carga diferida que mata las mutaciones M-c1 y M-c4
+- `webpEncoder.test.js`: «importar el módulo no crea ningún Worker». Usa `jest.isolateModules` con
+  `global.Worker = jest.fn()` y mata a M-c1.
+- `scripts/lib/webp-lazy.test.mjs`:
+  - Sigue el grafo ESTÁTICO desde cada HTML: `script src`, `modulepreload` y, por cada chunk,
+    `import … from "./x.js"` e `import "./x.js"`, pero no `import()`.
+  - Falla si algún chunk de ese grafo contiene `target_PSNR` (las opciones del wrapper de jSquash) o
+    `@jsquash`. Esto mata a M-c4.
+- Prueba por mutación, documentada en el handoff:
+  - M-c1, worker ansioso: se aplica, el test queda en rojo y se revierte.
+  - M-c4, `import` estático del encoder en `webpWasm.js`: se aplica, `npm run build`, la guarda queda en
+    rojo; se revierte, se reconstruye y queda en verde.
+- Commit: `test(webp): guarda de carga diferida sobre el grafo estático y sin Worker al importar (GROW-35 H-02)`.
+
+#### C5 (H-01, H-05). Docs
+- `engram/qa/_debt.md`: transcribir los desvíos a–f del intento 1 y los de este intento.
+- `engram/01_requirements.md:15`: F-07 Sticker Studio queda «Retirado en GROW-34 (presets de sticker en
+  Exportar)».
+- Verificación: `grep -n "Oculto tras feature flag" engram/01_requirements.md` sin salida.
+- Commit: `docs(engram): desvíos de GROW-35 a deuda y F-07 retirado (GROW-35 H-01/H-05)`.
+
+#### C6. Cierre
+- `npm run build && npm test && npm run test:web`: verde, con `webp-retry-test [webkit]` incluido.
+- Si cambian páginas públicas (no está previsto), `npm run lastmod` y un commit `[lastmod-skip]`.
+- Se reescribe el handoff de retorno. No hay push ni merge.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-11
+
+### Correcciones — intento 3 (rechazo nerv-qa 2026-10-11)
+
+Fuente: `engram/qa/GROW-35.md` «Intento 2» (D-i2-1) y, en el §QUÉ, la «Revisión del arquitecto — tras 2
+rechazos», que es el contrato de este intento. El alcance está cerrado: el runner y `_debt.md`, nada de
+código de producto. Rama `feat/GROW-35-webp-real`, con main mergeado (c2324e5).
+
+#### R1 (D-i2-1). El timeout del runner es el configurado, por motor, y no los 30 s de Playwright
+- **Test en rojo primero:** `test/runner-timeout-test.{html,js}` es una página trivial que escribe
+  `ALL_DONE` a los 35 s.
+  - No corre por defecto. Con `RUNNER_SELFTEST=1`, el runner corre SOLO esa página, por `runSuite`, en
+    Chrome y en WebKit. `runRetry` no entra porque está atado a `webp-retry-test` (route, `PHASE1_DONE` y
+    exige requests bloqueados); ya usaba la firma correcta y solo pasa a `TIMEOUT_MS.webkit`, lo que se
+    verifica por grep.
+  - Contra el runner actual tiene que dar `TIMEOUT` en Chrome, porque `{timeout}` viaja como `arg` y el
+    límite real son 30 s. Se pega esa salida.
+- **Arreglo en `test/run-tests.mjs`:**
+  - `TIMEOUT_MS = { chrome: 120_000, webkit: 240_000 }`.
+  - `runSuite` usa `page.waitForFunction(fn, null, { timeout: TIMEOUT_MS[tag] })`.
+  - `runRetry` usa `TIMEOUT_MS.webkit` en sus dos esperas.
+  - El mensaje de `TIMEOUT` incluye el límite en ms.
+  - No hay otros `waitForFunction` en el runner; se verifica con grep.
+- **Verde:** `RUNNER_SELFTEST=1 npm run test:web` deja la página en `ALL_DONE` a los ~35 s en los dos
+  motores. Después, `npm run test:web` normal da «✓ todo verde».
+- Commits:
+  - test (el rojo): `test(runner): autoprueba opcional de timeout >30 s (GROW-35 D-i2-1)`
+  - fix: `fix(runner): waitForFunction con (fn, null, {timeout}) y límite por motor (GROW-35 D-i2-1)`
+
+#### R2. Deuda
+- `engram/qa/_debt.md`:
+  - Los 3 cambios de aserciones del intento 2 (P-18.5), tal como figuran en «Correcciones — intento 2».
+  - O1 como deuda de UX: unificar el texto y el estado del chip cuando el modo transparente fuerza PNG.
+  - O2 como pregunta abierta para el PO: ¿«Original» restaura el fondo previo al sticker aunque se haya
+    cambiado dentro?
+  - El riesgo de CI del arquitecto: si `ruta=nativa` aparece en Linux, se abre deuda para un flag de
+    prueba que fuerce WASM.
+- Commit: `docs(engram): deuda GROW-35 intento 3 — aserciones cambiadas, O1/O2 y riesgo de CI`.
+
+#### R3. Cierre
+- `npm test` y `npm run test:web` en verde, con la línea `ruta=` y la duración de `webp-test [webkit]`.
+- El handoff se reescribe con `Files touched` = `git diff --name-only main`.
+- Sin push: la rama la pushea el orquestador y el PR tiene que salir verde en GitHub Actions antes del
+  merge, como exige el arquitecto.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-11
+
+### Correcciones — intento 3b (CI Linux: ruta nativa en WebKit)
+
+Fuente: run 38329483132 del PR #4 (job Web). En Linux, el WebKit de Playwright codifica WebP nativo
+(`webp-test [webkit]` muestra `ruta=nativa` y todo PASS), así que el encoder nunca se pide.
+`webp-retry-test` daba por hecha la ruta WASM y fallaba con «editor sin encoder: error WebP (null)» y
+«no se bloqueó ningún request del encoder». Aplica la «Revisión del arquitecto — tras 2 rechazos», punto
+3c: deuda, sin bloquear el merge y sin `SKIP_WEBKIT=1`. En macOS no se afloja nada.
+
+#### R4. `webp-retry-test` salta solo donde la ruta es nativa, y en darwin no puede saltar
+- **`test/webp-retry-test.js`:**
+  - Arranca con `canEncodeWebP()`, igual que `webp-test`.
+  - Si da `true`, imprime `SKIP: ruta=nativa — el reintento del encoder WASM no se ejercita en este motor
+    (deuda GROW-35)` y escribe `ALL_DONE` sin pasar por la fase 1. El runner no espera `PHASE1_DONE` si
+    la página ya terminó.
+  - Si da `false`, imprime `ruta=wasm` y corre todo como hoy.
+- **`test/run-tests.mjs`:** el veredicto de `runRetry` sale de una función pura exportable,
+  `retryVerdict(txt, blockedCount, platform)`, que devuelve la lista de fallos:
+  - Una línea `FAIL:` o `ERROR:` es fallo en cualquier plataforma.
+  - Si el texto trae `SKIP: ruta=nativa`: en `darwin` es fallo («en macOS se esperaba la ruta WASM»); en
+    otra plataforma es pase, y no se exige ningún request bloqueado.
+  - Si no hay SKIP, siguen las exigencias de hoy: haber bloqueado algún request y llegar a `ALL_DONE`.
+  - Para que el test unitario pueda importar el módulo sin levantar Vite, la ejecución del runner pasa a
+    un `main()` que solo corre cuando el archivo es el punto de entrada.
+- **Test en rojo primero:** `scripts/lib/run-tests-retry.test.mjs` (`node --test`) importa
+  `retryVerdict` y verifica:
+  - SKIP en darwin ⇒ fallo;
+  - SKIP en linux ⇒ pase, aun con 0 bloqueados;
+  - sin SKIP y 0 bloqueados ⇒ fallo, en cualquier plataforma;
+  - `FAIL:` ⇒ fallo;
+  - la salida real de macOS (`ruta=wasm`, fases y `ALL_DONE`, con bloqueados) ⇒ pase;
+  - una línea PASS que cita `WEBP_ENCODE_FAILED` no cuenta como fallo.
+
+  Contra el runner actual falla porque `retryVerdict` no existe.
+- **Verificación:**
+  - macOS: `npm run test:web` en verde, con `ruta=wasm` en `webp-test [webkit]` y `webp-retry-test
+    [webkit]` corriendo las dos fases.
+  - Linux: lo verifica el CI del PR #4 en el push. Se espera la línea SKIP y el job en verde.
+- `engram/qa/_debt.md`: «CI Linux no ejercita la ruta WASM (WebKit Linux codifica WebP nativo);
+  webp-retry-test salta ahí; forzar ruta WASM con flag del harness = deuda».
+- Commits:
+  - test: `test(runner): veredicto de webp-retry-test por plataforma (GROW-35 3b)`
+  - fix: `fix(test): webp-retry-test salta con ruta nativa fuera de macOS (GROW-35 3b)`
+  - docs: `docs(engram): deuda — CI Linux no ejercita la ruta WASM (GROW-35 3b)`
+- Después de los commits: `git push` de la rama para que corra el CI del PR #4. Sin merge.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-12

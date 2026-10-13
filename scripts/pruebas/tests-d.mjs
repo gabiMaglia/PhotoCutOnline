@@ -93,9 +93,8 @@ TESTS["foto-de-perfil-para-linkedin"] = async ({ browser }) => {
 };
 
 // =====================================================================================
-TESTS["stickers-de-whatsapp-y-telegram"] = async ({ browser }) => {
-  const file = G("quitar-fondo-antes.jpg");
-  const image = imgMeta(file);
+// El mismo recorrido en cualquier motor: IA, contorno, referencia y los dos presets.
+async function measureStickers(browser, file) {
   const { ctx } = await newCtx(browser);
   const page = await L.openEditor(ctx);
   await L.loadImage(page, file);
@@ -132,7 +131,21 @@ TESTS["stickers-de-whatsapp-y-telegram"] = async ({ browser }) => {
   const wa = await measure(/Sticker WhatsApp/);
   const tg = await measure(/Sticker Telegram/);
   await ctx.close();
-  const refRatio = ratio(ref);
+  return { ai, ref, wa, tg, refRatio: ratio(ref) };
+}
+
+TESTS["stickers-de-whatsapp-y-telegram"] = async ({ browser }) => {
+  const file = G("quitar-fondo-antes.jpg");
+  const image = imgMeta(file);
+  const { ai, ref, wa, tg, refRatio } = await measureStickers(browser, file);
+  const wk = await L.launchWebKit();
+  const wkVersion = wk.version();
+  let sf;
+  try {
+    sf = await measureStickers(wk, file);
+  } finally {
+    await wk.close();
+  }
   const dev = (r) => +((100 * Math.abs(r / refRatio - 1))).toFixed(2);
   const onlyFormat = (fm) => Object.entries(fm).filter(([, on]) => on).map(([n]) => n).join(", ");
   return {
@@ -144,13 +157,21 @@ TESTS["stickers-de-whatsapp-y-telegram"] = async ({ browser }) => {
       "Descargué un PNG transparente sin preset como referencia de la proporción de la figura.",
       "En Exportar elegí el preset «Sticker WhatsApp 512 (WebP)» y descargué; después el preset «Sticker Telegram 512 (PNG)» y descargué.",
       "En cada archivo medí tamaño, peso, formato real (cabecera del archivo), alfa de las cuatro esquinas y la caja de la figura.",
+      "Repetí todo en WebKit (el motor de Safari) para comprobar que el WebP sale igual.",
     ],
+    browser: `Chrome ${browser.version()} + WebKit ${wkVersion}`,
     timing: { recorteIaMs: ai, whatsappMs: wa.ms, telegramMs: tg.ms },
-    result: { referencia: { w: ref.w, h: ref.h, kb: ref.kb, subjectRatio: refRatio }, whatsapp: { ...wa, ratioDevPct: dev(wa.subjectRatio) }, telegram: { ...tg, ratioDevPct: dev(tg.subjectRatio) } },
+    result: {
+      referencia: { w: ref.w, h: ref.h, kb: ref.kb, subjectRatio: refRatio },
+      whatsapp: { ...wa, ratioDevPct: dev(wa.subjectRatio) },
+      telegram: { ...tg, ratioDevPct: dev(tg.subjectRatio) },
+      webkit: { whatsapp: sf.wa, telegram: sf.tg },
+    },
     findings: [
       `Sticker WhatsApp: ${wa.format === "webp" ? "WebP" : wa.format} de ${wa.w} × ${wa.h} px y ${f(wa.kb, 1)} KB (el límite de WhatsApp es 100 KB), ${pctS(wa.transparentPct)} de píxeles transparentes y alfa ${wa.cornersAlpha.join(", ")} en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato ${onlyFormat(wa.formatsEnabled)}.`,
       `Sticker Telegram: ${tg.format === "png" ? "PNG" : tg.format} de ${tg.w} × ${tg.h} px y ${f(tg.kb, 1)} KB, alfa ${tg.cornersAlpha.join(", ")} en las esquinas; formato habilitado: ${onlyFormat(tg.formatsEnabled)}.`,
       `La foto es vertical (${image.w} × ${image.h}) y el preset no la deforma: la figura mide ${f(refRatio, 3)} de ancho por cada 1 de alto en la referencia, ${f(wa.subjectRatio, 3)} en el de WhatsApp y ${f(tg.subjectRatio, 3)} en el de Telegram. El lado más largo de la figura ocupa ${wa.subjectLongPx} px en WhatsApp (margen de ${f(wa.marginPct, 1)} % por lado) y ${tg.subjectLongPx} px en Telegram.`,
+      `En WebKit ${wkVersion} (el motor de Safari): Sticker WhatsApp ${sf.wa.format === "webp" ? "WebP" : sf.wa.format} de ${sf.wa.w} × ${sf.wa.h} px y ${f(sf.wa.kb, 1)} KB, alfa ${sf.wa.cornersAlpha.join(", ")} en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor.`,
     ],
     assets: [pub(file)],
   };

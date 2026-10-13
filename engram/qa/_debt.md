@@ -2,3 +2,36 @@
 
 - **GROW-34 (2026-10-10)** — mergeado y desplegado (bc88b8e) con QA Strong intento 2 APROBADO pero SIN nerv-gate. Corrido post-merge: REJECTED LEVEL_UNDERSTATED (computado X por reintento; faltó engram/plans/GROW-34.md §QUÉ+§CÓMO estampado antes del código). Causa: el orquestador asumió que el gate no existía (está en ~/Documents/NERV/bin, no en ~/.claude/nerv-bin ni bin/). Control compensatorio aprobado por el PO: nerv-verifier ciego (Opus) post-merge → resultado en qa/GROW-34-verifier.md. No se estampa plan retroactivo.
 - **Sprints 6-7 (2026-10-06)**: GROW-25..32 y D-06 tampoco pasaron por nerv-gate (misma causa). Sus veredictos QA Strong están en qa/<ID>.md; sin verificador ciego. Riesgo aceptado implícitamente: ya en producción, sin defectos reportados.
+- **GROW-35 (2026-10-10) — riesgos aceptados del encoder WebP propio** (revisión del arquitecto):
+  - libwebp 1.1.0 (dentro de @jsquash/webp 1.5.0, solo encoder; decoder CVE-2023-4863 excluido). La entrada son píxeles propios: superficie baja. Revisar CVEs del encoder al subir de versión.
+  - Alfa premultiplicado: getImageData des-premultiplica y pierde precisión RGB en bordes de alfa muy bajo. Igual que el camino nativo de Chromium; visualmente nulo.
+  - El peso del WebP difiere entre motores para la misma calidad: los criterios piden «≤100 KB», no bytes exactos, y la guía no cita KB de un motor como universales.
+  - Camino inline (Safari < 16.4, sin OffscreenCanvas): la composición sigue en el hilo principal (solo el encode va al worker), y en Safari < 15 (sin module workers) WebP da el aviso de error en vez del archivo.
+  - Medido en WebKit de Playwright (macOS), no en Safari ni iPhone reales. El CI de Linux usa el WebKit de Playwright para Linux, donde la ruta WASM puede no ejercitarse (el chequeo `ruta=wasm` es solo darwin).
+  - A5 escritorio: NO VERIFICADO: el smoke de la Task 13 exige manejar a mano la ventana de `npm run tauri dev` (diálogos nativos de abrir/guardar, cortar la red) y la sesión de implementación fue no interactiva. Toolchain presente (cargo 1.98.1) y CSP de tauri.conf.json revisada en estático (`'wasm-unsafe-eval'`, `worker-src 'self' blob:`, `connect-src 'self'`). Pendiente: correr el smoke de la Task 13 y pegar los `xxd -l 16` de a/b/c.webp.
+- **GROW-35 — desvíos de implementación respecto del plan** (QA H-01; transcriptos del handoff de nerv-web):
+  - Intento 1:
+    - (a) La rama se llama `feat/GROW-35-webp-real` (como pidió el handoff) y no `feat/grow-35-webp` (como decía el plan).
+    - (b) Task 2, paso 5: el build no emite el worker anidado hasta que algo importa `webpEncoder`, cosa que pasa recién en la Task 3. El chequeo se corrió después de la Task 3.
+    - (c) `metadata.test.js`: se agregó `mockClear` en el `beforeEach`, porque el historial de los mocks de módulo se filtraba entre tests. No cambió ninguna aserción.
+    - (d) Task 8, paso 4: el implementador no corrió el harness contra c13458a, porque el auto-mode denegó `git checkout c13458a -- src` y `git archive`. Lo cubrieron el gate y las mutaciones de QA.
+    - (e) Task 12: `scripts/pruebas/common.mjs` da los permisos de portapapeles solo en Chromium, porque WebKit rechaza `clipboard-write`. El regex de `browser` en `pruebas.test.mjs` acepta « + WebKit X.Y». `run.mjs` no conserva `i18n` al regenerar; se restauró desde HEAD y se amplió. Esto último sigue siendo deuda: `run.mjs` debería conservar `i18n` igual que conserva `caveat`.
+    - (f) `npm run licenses` sumó `@tauri-apps/plugin-opener` y `onnxruntime-web`, que faltaban en el JSON commiteado.
+  - Intento 2:
+    - D2: el encoder se codifica en un worker dedicado también desde `cutoutWorker` (Safari ≥ 16.4 anida workers, según BCD), y el worker se descarta tras un fallo de carga. Si un navegador no tiene `Worker` dentro de un worker, codifica directo y el reintento de carga puede no recuperarse (riesgo bajo: ese caso no entra en `WORKER_OK`).
+    - D3: solo `too_large` lleva la marca en el mensaje del error; `failed` conserva el formato `WEBP_ENCODE_FAILED: load|encode: …`, del que depende la detección de fallo de carga.
+    - ~~`test:web` es sensible a la carga… superaron los 120 s del runner~~ Diagnóstico equivocado; lo corrigió QA en el intento 2 (D-i2-1). El límite real era de 30 s, el default de Playwright, porque `runSuite` pasaba `{timeout}` como `arg` de `waitForFunction`. La carga solo acercaba `webp-test [webkit]` (27–30 s) a ese límite. Se arregló en el intento 3.
+- **GROW-35 — intento 3 (2026-10-11):**
+  - Cambios de aserciones del intento 2 (P-18.5), tal como figuran en «Correcciones — intento 2» del plan:
+    - (1) `webpEncoder.node.test.js`: el test «dentro de un worker codifica directo, sin crear otro worker» se reemplazó por dos, porque D2 cambió el contrato. Con `Worker` usa el worker dedicado anidado; sin `Worker` codifica directo.
+    - (2) `useExport.test.js`: el caso de más de 16383 px pasó de esperar `export.webpFailed` a esperar `export.webpTooLarge` (D3), y además verifica que la clave exista.
+    - (3) `useExport.test.js`: el test D2 «Sticker WhatsApp → Original…» arranca en Color + JPEG y su último aviso esperado es `settingsRestored` (D1). El escenario Transparente + JPEG tiene un test propio que espera PNG, que es lo que baja.
+  - O1 (verifier, baja), deuda de UX: Color + JPEG → Sticker WhatsApp → Avatar muestra «Volvió tu formato: PNG» con el chip JPEG marcado y deshabilitado. El aviso coincide con el archivo, pero el chip y el texto no se ven unificados cuando el modo transparente fuerza PNG.
+  - O2 (verifier, baja), pregunta abierta para el PO: si el usuario cambia el fondo DENTRO de un preset de sticker, ¿«Original» tiene que devolverle el fondo de antes del sticker (lo que pasa hoy, con aviso) o conservar el que eligió adentro?
+  - Riesgo de CI (revisión del arquitecto): `checkWebkit` exige `ruta=wasm` solo en darwin. Si en el job de Linux `webp-test [webkit]` muestra `ruta=nativa`, la ruta WASM no se ejercita en CI; en ese caso hay que abrir deuda para un flag de prueba que fuerce `canEncodeWebP()` falso solo en el harness. No bloquea el merge.
+  - Entorno de la corrida local del intento 3: el Mac entró en «Maintenance Sleep» varias veces, unos 17 min cada vez, según `pmset -g log` (por ejemplo 04:52:58 → 05:09:59). Toda espera con reloj de pared que caía en esa ventana expiraba. Las corridas válidas son las que no se cruzaron con un sleep; la que manda es la del CI de GitHub Actions.
+- **GROW-35 — intento 3b (2026-10-12): CI Linux no ejercita la ruta WASM (WebKit Linux codifica WebP nativo); webp-retry-test salta ahí; forzar ruta WASM con flag del harness = deuda.**
+  - Evidencia: el run 38329483132 del PR #4 muestra `webp-test [webkit]` con `ruta=nativa` y todo PASS.
+  - `webp-retry-test` imprime `SKIP: ruta=nativa — …` y termina. El runner (`retryVerdict`) acepta el salto solo fuera de darwin; en macOS lo trata como FAIL, y ahí se siguen exigiendo `ruta=wasm` y las dos fases.
+  - La ruta WASM queda cubierta por jest (detección mockeada), por la corrida local en macOS y por las mutaciones de QA.
+  - Pendiente: un flag del harness (p. ej. `?forceWasm=1`) que haga `canEncodeWebP()` falso solo en las páginas de test, para que CI Linux ejercite la ruta WASM y el reintento.

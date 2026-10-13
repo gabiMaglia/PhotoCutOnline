@@ -8,7 +8,8 @@
 //   npm run test:web
 
 import { spawn } from "node:child_process";
-import { chromium } from "playwright-core";
+import { pathToFileURL } from "node:url";
+import { chromium, webkit } from "playwright-core";
 
 const PORT = 5187;
 const TESTS = [
@@ -25,6 +26,7 @@ const TESTS = [
   "preview-test",
   "worker-test",
   "perf-test",
+  "webp-test",
 ];
 
 // viewport por suite (por defecto escritorio)
@@ -32,6 +34,135 @@ const VIEWPORTS = {
   "mobile-test": { width: 390, height: 844 }, // iPhone-ish
 };
 const DESKTOP = { width: 1280, height: 800 };
+
+// GROW-35: lo que depende del códec corre también en WebKit (el motor de Safari
+// no codifica WebP en canvas). Es la corrida que le faltó a GROW-34.
+const WEBKIT_TESTS = ["webp-test", "reencode-test"];
+
+// Límite de espera por motor, explícito. WebKit es más lento (autoCut ronda los
+// 28 s en un Mac cargado y puede multiplicarse en un runner de 2 vCPU); uno
+// único alto taparía cuelgues en Chrome, cuyas suites son rápidas.
+const TIMEOUT_MS = { chrome: 120_000, webkit: 240_000 };
+
+// Autoprueba del runner (GROW-35 D-i2-1), solo a pedido: una página que tarda
+// 35 s tiene que pasar en los dos motores. No corre por defecto.
+const SELFTEST = process.env.RUNNER_SELFTEST === "1";
+const SELFTEST_SUITE = ["runner-timeout-test"];
+const noCheck = () => [];
+const ORIGIN = `http://localhost:${PORT}`;
+const ENCODER_WASM = /webp_enc[^/]*\.wasm/;
+
+// Chrome tiene WebP nativo: si pide el encoder, se rompió la detección (y el peso).
+const checkChrome = (name, reqs) =>
+  name === "webp-test" && reqs.some((u) => ENCODER_WASM.test(u))
+    ? [`Chrome pidió el encoder WASM: ${reqs.filter((u) => ENCODER_WASM.test(u)).join(", ")}`]
+    : [];
+
+// WebKit: cero requests fuera del origen (privacidad) y, en macOS, la ruta WASM probada de verdad.
+const checkWebkit = (name, reqs, txt) => {
+  const msgs = [];
+  const foreign = reqs.filter((u) => !u.startsWith(ORIGIN) && !/^(blob|data):/.test(u));
+  if (foreign.length) msgs.push(`requests fuera del origen: ${foreign.join(", ")}`);
+  if (name === "webp-test" && process.platform === "darwin" && !txt.includes("ruta=wasm"))
+    msgs.push("en WebKit/macOS se esperaba la ruta WASM (¿la detección dio true?)");
+  return msgs;
+};
+
+// GROW-35 D2: el encoder no carga (sin red) y después sí. Contexto propio: con el
+// service worker activo, ctx.route no ve lo que pide el SW (QA H-03).
+const ENCODER_ROUTE = /@jsquash\/webp\/|\/encode-[^/]*\.js|webp_enc/;
+// Veredicto de webp-retry-test (GROW-35 3b). En Linux el WebKit de Playwright
+// codifica WebP nativo y el encoder nunca se pide: ahí la página salta con
+// «SKIP: ruta=nativa» y es pase (deuda: forzar la ruta WASM con un flag). En
+// macOS es el único lugar donde el reintento se prueba de verdad: saltar es fallo.
+export function retryVerdict(txt, blockedCount, platform = process.platform) {
+  const msgs = [];
+  // anclado al inicio de línea: los PASS de la fase 1 citan «WEBP_ENCODE_FAILED»
+  if (/^(FAIL|ERROR):/m.test(txt)) msgs.push("la página reportó fallos");
+  if (/^SKIP: ruta=nativa/m.test(txt)) {
+    if (platform === "darwin") msgs.push("en macOS se esperaba la ruta WASM y la página saltó el reintento");
+    return msgs;
+  }
+  // si no se bloqueó nada, la fase 1 no probó el camino de error
+  if (!blockedCount) msgs.push("no se bloqueó ningún request del encoder");
+  if (!/^ALL_DONE$/m.test(txt)) msgs.push("la página no llegó a ALL_DONE");
+  return msgs;
+}
+
+async function runRetry(browser) {
+  const name = "webp-retry-test";
+  process.stdout.write(`\n■ ${name} [webkit]\n`);
+  const ctx = await browser.newContext({ serviceWorkers: "block" });
+  const blocked = [];
+  await ctx.route(ENCODER_ROUTE, (route) => {
+    blocked.push(route.request().url());
+    return route.abort();
+  });
+  const page = await ctx.newPage();
+  page.on("pageerror", (e) => console.error("  [webkit pageerror]", e.message));
+  const settled = (re) =>
+    page.waitForFunction((src) => new RegExp(src).test(document.getElementById("out")?.textContent || ""), re, {
+      timeout: TIMEOUT_MS.webkit,
+    });
+  const t0 = Date.now();
+  try {
+    await page.goto(`${ORIGIN}/test/${name}.html`);
+    // con ruta nativa la página termina sin fase 1 (SKIP + ALL_DONE)
+    await settled("PHASE1_DONE|ALL_DONE|ERROR");
+    if (!/ALL_DONE/.test((await page.textContent("#out")) || "")) {
+      await ctx.unroute(ENCODER_ROUTE);
+      await page.evaluate(() => window.__unblock?.());
+      await settled("ALL_DONE|ERROR");
+    }
+  } catch {
+    console.error(`  TIMEOUT esperando PHASE1_DONE/ALL_DONE (${TIMEOUT_MS.webkit} ms)`);
+  }
+  const txt = (await page.textContent("#out")) || "";
+  for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
+  console.log(`  (${((Date.now() - t0) / 1000).toFixed(1)} s de ${TIMEOUT_MS.webkit / 1000} s)`);
+  const msgs = retryVerdict(txt, blocked.length);
+  for (const m of msgs) console.log(`  FAIL: ${m}`);
+  await ctx.close();
+  return msgs.length ? 1 : 0;
+}
+
+async function runSuite(browser, names, tag, check) {
+  let bad = 0;
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  const reqs = [];
+  ctx.on("request", (r) => reqs.push(r.url()));
+  page.on("pageerror", (e) => console.error(`  [${tag} pageerror]`, e.message));
+  for (const name of names) {
+    process.stdout.write(`\n■ ${name}${tag === "chrome" ? "" : ` [${tag}]`}\n`);
+    reqs.length = 0;
+    await page.setViewportSize(VIEWPORTS[name] || DESKTOP);
+    const t0 = Date.now();
+    await page.goto(`${ORIGIN}/test/${name}.html`);
+    try {
+      // la firma es (fn, arg, options): sin el null, {timeout} viajaba como arg y
+      // mandaba el default de 30 s de Playwright (GROW-35 D-i2-1)
+      await page.waitForFunction(
+        () => /ALL_DONE|ERROR/.test(document.getElementById("out")?.textContent || ""),
+        null,
+        { timeout: TIMEOUT_MS[tag] }
+      );
+    } catch {
+      console.error(`  TIMEOUT esperando ALL_DONE (${TIMEOUT_MS[tag]} ms)`);
+      bad++;
+      continue;
+    }
+    const txt = await page.textContent("#out");
+    for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
+    // la duración queda en el log de CI para ver cuánto margen hay contra el límite
+    console.log(`  (${((Date.now() - t0) / 1000).toFixed(1)} s de ${TIMEOUT_MS[tag] / 1000} s)`);
+    const extra = check(name, reqs, txt);
+    for (const m of extra) console.log(`  FAIL: ${m}`);
+    if (/FAIL|ERROR/.test(txt) || extra.length) bad++;
+  }
+  await ctx.close();
+  return bad;
+}
 
 async function waitForServer(url, ms = 15000) {
   const t0 = Date.now();
@@ -47,46 +178,56 @@ async function waitForServer(url, ms = 15000) {
   throw new Error("Vite no arrancó");
 }
 
-const vite = spawn("npx", ["vite", "dev", "--port", String(PORT), "--strictPort"], {
-  stdio: "ignore",
-  detached: false,
-});
-
-let failed = 0;
-let browser;
-try {
-  await waitForServer(`http://localhost:${PORT}/`);
-  browser = await chromium.launch({
-    channel: process.env.CHROME_CHANNEL || "chrome",
-    headless: true,
-    // en CI (contenedores/runners) el sandbox de Chrome suele no estar disponible
-    args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
+// Solo corre como punto de entrada: el test unitario importa retryVerdict sin
+// levantar Vite ni navegadores.
+async function main() {
+  const vite = spawn("npx", ["vite", "dev", "--port", String(PORT), "--strictPort"], {
+    stdio: "ignore",
+    detached: false,
   });
-  const page = await browser.newPage();
-  page.on("pageerror", (e) => console.error("  [pageerror]", e.message));
 
-  for (const name of TESTS) {
-    process.stdout.write(`\n■ ${name}\n`);
-    await page.setViewportSize(VIEWPORTS[name] || DESKTOP);
-    await page.goto(`http://localhost:${PORT}/test/${name}.html`);
+  let failed = 0;
+  let browser;
+  try {
+    await waitForServer(`http://localhost:${PORT}/`);
+    browser = await chromium.launch({
+      channel: process.env.CHROME_CHANNEL || "chrome",
+      headless: true,
+      // en CI (contenedores/runners) el sandbox de Chrome suele no estar disponible
+      args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
+    });
+    failed += await runSuite(browser, SELFTEST ? SELFTEST_SUITE : TESTS, "chrome", SELFTEST ? noCheck : checkChrome);
+
+    let wk = null;
     try {
-      await page.waitForFunction(
-        () => /ALL_DONE|ERROR/.test(document.getElementById("out")?.textContent || ""),
-        { timeout: 120000 }
-      );
-    } catch {
-      console.error("  TIMEOUT esperando ALL_DONE");
-      failed++;
-      continue;
+      wk = await webkit.launch({ headless: true });
+    } catch (e) {
+      if (process.env.SKIP_WEBKIT === "1")
+        console.warn("\n⚠ WebKit saltado a pedido (SKIP_WEBKIT=1): los casos WebP de Safari NO se probaron");
+      else {
+        console.error(`\n✗ No arrancó WebKit de Playwright: ${e.message.split("\n")[0]}`);
+        console.error("  Instalalo con: npx playwright-core install webkit");
+        failed++;
+      }
     }
-    const txt = await page.textContent("#out");
-    for (const line of txt.trim().split("\n")) console.log(`  ${line}`);
-    if (/FAIL|ERROR/.test(txt)) failed++;
+    if (wk) {
+      try {
+        if (SELFTEST) failed += await runSuite(wk, SELFTEST_SUITE, "webkit", noCheck);
+        else {
+          failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
+          failed += await runRetry(wk);
+        }
+      } finally {
+        await wk.close();
+      }
+    }
+  } finally {
+    await browser?.close();
+    vite.kill();
   }
-} finally {
-  await browser?.close();
-  vite.kill();
+
+  console.log(failed === 0 ? "\n✓ todo verde" : `\n✗ ${failed} suite(s) con fallos`);
+  process.exit(failed === 0 ? 0 : 1);
 }
 
-console.log(failed === 0 ? "\n✓ todo verde" : `\n✗ ${failed} suite(s) con fallos`);
-process.exit(failed === 0 ? 0 : 1);
+if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) await main();

@@ -16,6 +16,8 @@
 // Worker (usa OffscreenCanvas si no hay DOM). Los previews/exports se
 // devuelven como Blob para viajar baratos por postMessage.
 
+import { canEncodeWebP, encodeWebP } from "./webpEncoder.js";
+
 const WORK_MAX = 1400;
 // T-013 (perf): el maxflow del GrabCut (WASM y fallback JS) es O(píxeles). A
 // resolución de trabajo completa (hasta 1400px) autoCut() tardaba ~4.7s en una
@@ -983,7 +985,13 @@ function createCanvas(w, h) {
   return new OffscreenCanvas(w, h);
 }
 
-export function canvasToBlob(canvas, type = "image/png", quality) {
+export async function canvasToBlob(canvas, type = "image/png", quality) {
+  // WebKit devuelve PNG cuando se le pide WebP: ahí los bytes los pone el
+  // encoder propio. El tipo del blob es siempre el real (GROW-35).
+  if (type === "image/webp" && !(await canEncodeWebP())) {
+    const img = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+    return encodeWebP(img, quality ?? 0.92);
+  }
   if (canvas.convertToBlob) return canvas.convertToBlob({ type, quality }); // OffscreenCanvas
   // HTMLCanvas (fallback sin worker): síncrono vía dataURL — toBlob programa
   // el encode en otro hilo y su callback es frágil en headless/virtual-time.
@@ -993,7 +1001,7 @@ export function canvasToBlob(canvas, type = "image/png", quality) {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-  return Promise.resolve(new Blob([out], { type: mime }));
+  return new Blob([out], { type: mime });
 }
 
 /** Decodifica un dataURL/Blob a ImageBitmap (funciona en ventana y worker). */

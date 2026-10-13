@@ -1,7 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { backend } from "../../../lib/backend.js";
 import { EXPORT_PRESETS, fitWithinBytes } from "../../../lib/presets.js";
 import { t } from "../../../lib/i18n.js";
+import { OUTPUT_FORMATS, formatFromMime } from "../../../lib/metadata.js";
+import { webpErrorKey } from "../../../lib/webpEncoder.js";
 import { hexToRgba } from "../../../utils/color.js";
 import { fileToDataUrl, bgWithOpacity } from "../../../utils/image.js";
 import { downloadDataUrl } from "../../../utils/dom.js";
@@ -25,11 +27,36 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
   // Elegir un preset precarga su fondo en el selector (Amazon → blanco, avatar →
   // transparente). Después manda el selector: el usuario puede cambiarlo y eso
   // es lo que se exporta (BUG-01). "Original" no trae fondo y no toca nada.
+  // formato y fondo del usuario antes del 1er preset que impuso formato
+  const beforePreset = useRef(null);
   const setPresetId = useCallback((id) => {
     setPresetIdRaw(id);
     const preset = EXPORT_PRESETS.find((p) => p.id === id)?.preset;
+    if (preset?.format) {
+      // se guarda una sola vez: WhatsApp → Telegram no lo pisa
+      beforePreset.current ??= { format, exportMode, bgColor };
+      if (preset.format !== format)
+        toast(t("export.presetFormat", { fmt: preset.format.toUpperCase() }), "ok");
+      setFormat(preset.format);
+    } else if (beforePreset.current != null) {
+      // Salir del preset devuelve lo del usuario (GROW-35 D1). «Original» devuelve
+      // también el fondo; un preset con fondo propio lo precarga (BUG-01).
+      const prev = beforePreset.current;
+      beforePreset.current = null;
+      const mode = preset ? (preset.bg ? "solid" : "transparent") : prev.exportMode;
+      // el aviso nombra lo que va a bajar: Transparente + JPEG sale PNG (como exportAs)
+      const fmt = (mode === "transparent" && prev.format === "jpeg" ? "png" : prev.format).toUpperCase();
+      const bgBack = !preset && (prev.exportMode !== exportMode || prev.bgColor !== bgColor);
+      if (bgBack) {
+        setExportMode(prev.exportMode);
+        setBgColor(prev.bgColor);
+        toast(t("export.settingsRestored", { bg: t(`export.mode.${prev.exportMode}`), fmt }), "ok");
+      } else if (fmt !== format.toUpperCase()) {
+        toast(t("export.formatRestored", { fmt }), "ok");
+      }
+      setFormat(prev.format);
+    }
     if (!preset) return;
-    if (preset.format) setFormat(preset.format);
     if (preset.bg) {
       // avisar solo si de verdad cambió lo que el usuario tenía elegido
       if (exportMode !== "solid" || bgColor.toLowerCase() !== preset.bg.toLowerCase())
@@ -45,7 +72,7 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
       if (exportMode !== "transparent") toast(t("export.presetBgTransparent"), "ok");
       setExportMode("transparent");
     }
-  }, [exportMode, bgColor, toast]);
+  }, [exportMode, bgColor, format, toast]);
 
   const activePreset = EXPORT_PRESETS.find((p) => p.id === presetId)?.preset || null;
   // los stickers exigen un formato concreto: la UI lo muestra fijo
@@ -84,16 +111,19 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
           return backend.exportBlurBg(arg, opts);
         };
         let url;
+        let realType;
         let notice = null;
         if (preset?.maxBytes) {
           const fit = await fitWithinBytes(
             async (q) => {
               const u = await run(q);
-              return { url: u, bytes: (await (await fetch(u)).blob()).size };
+              const b = await (await fetch(u)).blob();
+              return { url: u, bytes: b.size, type: b.type };
             },
             { maxBytes: preset.maxBytes }
           );
           url = fit.url;
+          realType = fit.type;
           const kb = Math.round(fit.bytes / 1024);
           const max = Math.round(preset.maxBytes / 1024);
           if (!fit.fits) notice = [t("export.overLimit", { kb, max }), "error"];
@@ -101,9 +131,17 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
             notice = [t("export.qualityReduced", { q: Math.round(fit.quality * 100), kb, max }), "ok"];
         } else {
           url = await run(0.92);
+          realType = (await (await fetch(url)).blob()).type;
         }
-        const ext = effFormat === "jpeg" ? "jpg" : effFormat;
-        const name = `photocut-${kind}.${ext}`;
+        // el archivo se nombra por lo que ES, no por lo que se pidió (GROW-35);
+        // si el motor dio otro formato, ese aviso pesa más que el del peso
+        const realFormat = formatFromMime(realType) || effFormat;
+        if (realFormat !== effFormat)
+          notice = [
+            t("export.formatFallback", { want: effFormat.toUpperCase(), got: realFormat.toUpperCase() }),
+            "error",
+          ];
+        const name = `photocut-${kind}.${OUTPUT_FORMATS[realFormat].ext}`;
         if (backend.isDesktop) {
           // diálogo nativo "Guardar como"
           const saved = await saveExport(url, name);
@@ -111,11 +149,14 @@ export function useExport({ imageSize, setBusy, toast, onChooseBgImage }) {
         } else {
           downloadDataUrl(url, name);
         }
-        trackEvent("export", { kind, format: effFormat });
+        trackEvent("export", { kind, format: realFormat });
         if (notice) toast(...notice);
         else toast(t(backend.isDesktop ? "toast.saved" : "toast.exported"), "ok");
       } catch (e) {
-        toast(String(e), "error");
+        // el encoder WebP no pudo (sin red la 1ª vez, >16383 px, sin memoria):
+        // no se descarga nada, nunca un PNG disfrazado
+        const key = webpErrorKey(e);
+        toast(key ? t(key) : String(e), "error");
       } finally {
         setBusy(false);
       }

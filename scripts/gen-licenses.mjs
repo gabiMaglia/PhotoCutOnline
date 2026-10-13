@@ -28,6 +28,26 @@ for (const name of Object.keys(pkg.dependencies || {})) {
   }
 }
 
+// Lo que viaja DENTRO del bundle sin figurar en package.json (GROW-35): la
+// dependencia transitiva de @jsquash/webp y libwebp, compilada en su .wasm.
+// El aviso BSD de libwebp se publica completo en /licenses/.
+const depVersion = (name) => {
+  try {
+    return JSON.parse(readFileSync(join(root, "node_modules", name, "package.json"), "utf8")).version;
+  } catch {
+    return "?";
+  }
+};
+entries.push(
+  { name: "wasm-feature-detect", version: depVersion("wasm-feature-detect"), license: "Apache-2.0", source: "npm" },
+  {
+    name: "libwebp (en @jsquash/webp)",
+    version: "1.1.0",
+    license: "BSD-3-Clause (texto: /licenses/libwebp-COPYING.txt)",
+    source: "embebido",
+  }
+);
+
 // Crates del motor Rust (escritorio). Licencias declaradas en
 // crates/photocut-core/Cargo.toml; verificar con `cargo deny` / `cargo about`.
 const cargo = readFileSync(join(root, "crates/photocut-core/Cargo.toml"), "utf8");
