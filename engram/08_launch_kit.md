@@ -2,91 +2,220 @@
 
 > Todo esto lo publica **Gabriel como autor**, no el agente. Postear haciéndose
 > pasar por el fundador sería astroturfing (lo que HN/Reddit/Google castigan).
-> Estos son borradores listos para revisar y publicar.
+> Los textos van en bloques de código para copiar y pegar tal cual.
+> Actualizado 2026-10-14 con lo de Sprints 6–8 (mediciones reales, WebP en Safari).
 
 ## Antes de publicar (checklist)
-- [ ] El deploy con "cómo funciona", llms.txt y las tools nuevas ya está live.
+- [ ] **Probar en un iPhone/Safari real**: exportar "Sticker WhatsApp" y abrir el
+      archivo. Si falla, sacar la frase de Safari de los posts (solo está probado
+      en WebKit de Playwright, no en un iPhone).
+- [ ] Probar el editor en un navegador limpio (sin caché): que cargue y el recorte ande.
 - [ ] Correr `npm run indexnow` (empuja las URLs a Bing/Copilot).
-- [ ] Umami cargado (para medir el pico de tráfico del lanzamiento).
-- [ ] Probar el editor en un navegador limpio: que cargue rápido y el recorte ande.
+- [ ] Umami cargado (para medir el pico del lanzamiento).
+- [ ] Decidir si enlazás el repo (es público pero **no tiene licencia**: en HN te
+      van a preguntar "is it open source?". Respuesta honesta: "the source is
+      public, I haven't picked a license yet". O agregás una antes).
+- [ ] Bloquear 3–4 h después de cada post para responder todo.
+
+## Datos verificados para responder preguntas
+Salen de `scripts/pruebas.json` (medidos, Chrome 154, macOS). No inventar otros.
+- Primera vez: baja el modelo (u2netp, 4,6 MB) + el motor WebAssembly de ONNX
+  Runtime; comprimido son ~6,4 MB en total. Después queda en caché.
+- Recorte IA de una foto 720×900: 5,0 s la primera vez, 2,9 s la segunda, 3,6 s
+  tras recargar (una corrida cada uno, laptop, no es benchmark).
+- Red durante el recorte: 67 peticiones, **0 bytes enviados** con la foto.
+  **Ojo:** el sitio carga scripts de Google AdSense, que hacen sus propias
+  peticiones (sin la foto). Alguien en HN lo va a ver en la pestaña Network:
+  decirlo vos antes (está en el primer comentario).
+- Sticker WhatsApp: WebP 512×512, 20,2 KB en Chrome, 19,9 KB en WebKit.
+- Safari no genera WebP desde canvas (`toBlob('image/webp')` devuelve PNG): el
+  editor carga libwebp compilado a WebAssembly (~110 KB) solo en ese caso, en un
+  worker.
+- Cada guía tiene una sección "Lo probamos" con navegador, build y números,
+  incluido lo que no salió bien.
 
 ---
 
-## 1) Show HN (Hacker News) — la mayor palanca
+## 1) Show HN — la mayor palanca
 
-**Cuándo:** martes a jueves, ~8–10 AM ET (cuando HN está activo). Estar
-disponible las siguientes 3–4 h para responder TODOS los comentarios.
+**Cuándo:** martes a jueves, 8–10 AM ET = **9–11 h de Argentina** (hasta el 1/11;
+después del cambio de hora en EE.UU. es 10–12 h). No pidas votos ni lo compartas
+pidiendo que voten.
 
-**Título** (elegir uno; HN premia lo honesto y técnico, sin hype):
-- `Show HN: Background removal that runs 100% in your browser (WASM + ONNX)`
-- `Show HN: A private background remover – your photos never leave the browser`
+**Título** (elegir uno):
+```
+Show HN: Background remover that runs entirely in the browser (ONNX + Rust/WASM)
+```
+```
+Show HN: PhotoCut – a background remover where the photo never leaves your browser
+```
 
-**Texto del post:**
-> I got tired of background removers that make you upload your photo to their
-> server, then paywall the full-resolution download. So I built one that runs
-> entirely in the browser — the image never gets uploaded.
->
-> The cutout uses u2netp (a ~4.4 MB salient-object model) via onnxruntime-web,
-> compiled to WebAssembly, plus a GrabCut engine I wrote in Rust and compiled to
-> WASM for refining edges. First use downloads the model (~4.4 MB, then cached);
-> after that it works offline. You can watch the Network tab and see nothing
-> gets uploaded.
->
-> Trade-off is honest: a model small enough to run on your device won't beat a
-> big cloud model on the hardest cases (very fine hair, busy backgrounds), so I
-> added keep/erase brushes to fix those by hand.
->
-> It's free, no account, no watermark. There's also convert/compress/resize,
-> EXIF/GPS stripping, a color palette tool and app-icon generation — all
-> client-side for the same reason.
->
-> How it works, in more detail: https://www.photocutapp.com/en/how-it-works.html
-> Tool: https://www.photocutapp.com/editor/
->
-> Happy to answer questions about the WASM/ONNX side or the privacy model.
+**URL del post:** `https://www.photocutapp.com/editor/`
 
-**Primer comentario (opcional, apenas posteás)** — anticipá la pregunta obvia:
-> Author here. The most common question is "is it really not uploaded?" — yes,
-> open devtools → Network while you cut out an image, or just turn off wifi
-> after the page loads. The heavy part was getting onnxruntime-web + the Rust
-> GrabCut to play nicely at a usable speed on mid-range laptops; happy to go
-> into that.
+**Texto:**
+```
+I wanted a background remover that doesn't upload my photo to someone's server and doesn't paywall the full-resolution download, so I built one that runs entirely in the browser.
 
-**Reglas de oro en HN:**
-- Respondé todo, incluso lo crítico, sin ponerte a la defensiva.
-- No pidas upvotes (te penalizan). No lo compartas en redes pidiendo que voten.
-- Si te destrozan un punto, agradecé y anotalo — la audiencia lo valora.
+How it works:
+- The cutout uses u2netp (a small salient-object model, ~4.6 MB) through onnxruntime-web, in a Web Worker.
+- Edge refinement uses a GrabCut engine I wrote in Rust and compiled to WebAssembly.
+- First use downloads about 6 MB compressed (model + WASM runtime); after that it's cached and works offline.
+- Export to PNG/JPG/WebP. Safari can't encode WebP from a canvas (toBlob silently returns PNG), so in that case the editor lazy-loads libwebp compiled to WASM (~110 KB) in a worker.
 
----
+The honest trade-off: a model small enough to run on a laptop won't beat a big server model on the hard cases (fine hair, busy backgrounds). There are keep/erase brushes to fix those by hand.
 
-## 2) Comunidades de privacidad (el encaje más natural)
+Free, no account, no watermark. It also does compress/resize/convert, EXIF/GPS stripping, face blurring, color palettes and app-icon sets, all client-side for the same reason.
 
-**r/privacy, r/privacytoolsIO, PrivacyGuides forum.** Leé las reglas de
-autopromoción de cada una ANTES (varias piden flair o permiso de mods).
+Each guide on the site has a "we tested it" section with the browser, build and the numbers I measured, including what didn't work well.
 
-**Ángulo (NO "miren mi producto", sí "resolví esto sin subir nada"):**
-> Título: A background remover that runs locally in the browser — nothing gets
-> uploaded
->
-> Most "free" background removers upload your photo to their servers. I built
-> one where the AI runs in the browser (WASM + ONNX), so the image never leaves
-> your device — you can verify it in the Network tab or with wifi off. Free, no
-> account. Sharing in case it's useful here.
+Architecture details: https://www.photocutapp.com/en/how-it-works.html
+
+Happy to go into the WASM/ONNX side or the privacy model.
+```
+
+**Primer comentario (apenas publicás):**
+```
+Author here. Two things people usually ask:
+
+1. "Is the photo really not uploaded?" Open devtools → Network while you run the cutout, or turn off wifi after the model has loaded. In my measurement the session made 67 requests and none carried the image (0 request body bytes).
+
+2. You will see requests to Google domains: the site runs AdSense ads to pay for hosting. Those scripts make their own requests, but the photo never goes to them or to me. If that bothers you, a content blocker doesn't break the editor.
+
+On a mid-range laptop the cutout of a 720×900 photo took ~5 s the first time and ~3 s after. Speed on low-end phones is the part I'd most like feedback on.
+```
+> Verificá el punto 2 antes de postear: abrí el editor con uBlock y confirmá que
+> el recorte anda. Si no anda, borrá esa última frase.
+
+**Reglas de oro:** respondé todo, incluso lo crítico, sin defenderte; si te
+marcan un error, agradecé y anotalo (después va al backlog).
 
 ---
 
-## 3) Otras plataformas (menor esfuerzo, enlaces reales)
+## 2) r/privacy (y PrivacyGuides forum)
 
-- **r/webdev, r/SideProject** (el "I built" con el ángulo técnico — mismo que HN).
-- **r/InternetIsBeautiful** (regla estricta: título descriptivo, sin marca).
-- **Lobsters** (si conseguís invitación; audiencia técnica como HN).
-- **Directorios**: alta manual en directorios de herramientas gratis y de apps
-  con IA. Enlace permanente. (Estar LISTADO en un directorio "alternativas a X"
-  no viola la política — eso era sobre NUESTRAS páginas.)
+Leé las reglas de autopromoción antes (algunas piden flair o permiso de mods).
+Ángulo: "resolví esto sin subir nada", no "miren mi producto".
+
+**Título:**
+```
+I built a background remover that runs locally in the browser, so the photo is never uploaded
+```
+**Texto:**
+```
+Most free background removers upload your photo to their servers to process it. I wanted one that doesn't, so the AI model runs inside the browser (WebAssembly + ONNX). The image never leaves your device: you can check the Network tab, or turn off wifi once the page has loaded and it keeps working.
+
+It also strips EXIF/GPS metadata and can blur faces, same local approach.
+
+Full disclosure: the site shows Google ads to cover hosting, and those scripts make their own network requests. They don't get the photo. No account, free.
+
+https://www.photocutapp.com/editor/
+
+Feedback welcome, especially from people who audit this kind of thing.
+```
+
+---
+
+## 3) r/webdev — ángulo técnico (Safari + WebP)
+
+Mejor 2–3 días después de HN. Usar el flair "Showoff Saturday" si lo publicás un
+sábado (r/webdev limita la autopromoción al resto de los días).
+
+**Título:**
+```
+Safari's canvas.toBlob('image/webp') silently gives you a PNG. Here's how I handled it in a browser-only image editor
+```
+**Texto:**
+```
+I'm building an image editor that runs entirely client-side (background removal with onnxruntime-web + a Rust/WASM GrabCut). One export preset is the WhatsApp sticker: 512×512 WebP under 100 KB.
+
+In Chrome and Firefox, canvas.toBlob(cb, 'image/webp', q) works. In Safari/WebKit it doesn't throw: it hands you a PNG blob. If you name the file by the format you asked for, you ship a PNG called .webp.
+
+What I ended up doing:
+- Feature-detect once by encoding a tiny canvas and checking blob.type, memoized per context (main thread vs worker).
+- If native WebP isn't available, lazy-load libwebp compiled to WASM (@jsquash/webp, ~110 KB brotli) in a dedicated worker. Chrome users never download it.
+- If the worker or the import fails, drop it and recreate it on the next try (a failed dynamic import stays cached otherwise).
+- Name the file from the blob's real type, never from the requested one.
+- Tests run in Playwright with Chromium and WebKit; the WebKit run checks the bytes start with RIFF....WEBP.
+
+Result: 512×512 sticker of ~20 KB in both engines.
+
+Live: https://www.photocutapp.com/editor/
+Happy to share code details.
+```
+
+---
+
+## 4) r/SideProject
+
+**Título:**
+```
+PhotoCut: a free image editor where everything (including the AI background removal) runs in your browser
+```
+**Texto:**
+```
+Side project I've been working on: an image editor with no uploads. Background removal, background change, stickers for WhatsApp/Telegram, compress/convert, EXIF/GPS removal, face blur, color palettes and app icons. All of it runs client-side with WebAssembly.
+
+What I'm proudest of: every guide on the site has a "we tested it" section with the real numbers I measured (time, file size, how many pixels came out transparent) and what didn't go well.
+
+What I'd love feedback on: speed on low-end phones, and edge quality on hair.
+
+https://www.photocutapp.com/
+```
+
+---
+
+## 5) r/devsarg (en castellano)
+
+**Título:**
+```
+Hice un editor de imágenes que quita el fondo con IA sin subir la foto a ningún servidor
+```
+**Texto:**
+```
+Lo armé porque los removedores de fondo gratis suben la foto a sus servidores y después te cobran la descarga en alta.
+
+Todo corre en el navegador:
+- Recorte con u2netp en onnxruntime-web, dentro de un Web Worker.
+- Refinado de bordes con un GrabCut que escribí en Rust y compilé a WebAssembly.
+- La primera vez baja ~6 MB (modelo + motor); después queda en caché y anda sin internet.
+- Safari no genera WebP desde canvas (te devuelve PNG sin avisar), así que en ese caso cargo libwebp compilado a WASM solo cuando hace falta.
+
+Gratis, sin cuenta y sin marca de agua. Tiene publicidad de Google para pagar el hosting (esas peticiones no llevan la foto, lo pueden ver en la pestaña Red).
+
+https://www.photocutapp.com/editor/
+
+Acepto críticas, sobre todo de rendimiento en celulares.
+```
+
+---
+
+## 6) Product Hunt (opcional, más tarde)
+
+Lanzar un martes a jueves, 00:01 hora del Pacífico. Necesitás cuenta con algo de
+actividad previa.
+- **Nombre:** `PhotoCut`
+- **Tagline (≤60):**
+  ```
+  Remove backgrounds in your browser. Your photo never uploads.
+  ```
+- **Descripción (≤260):**
+  ```
+  Free image editor where the AI runs on your device: background removal, stickers, compression, EXIF/GPS stripping, face blur, palettes and app icons. No account, no watermark, works offline after the first load.
+  ```
+- **Primer comentario:** reusar el del Show HN.
+
+---
+
+## 7) Directorios (enlaces permanentes, poco esfuerzo)
+Alta manual en directorios gratuitos de herramientas y de apps con IA. Estar
+listado en un directorio está bien; lo prohibido es que NUESTRAS páginas nombren
+competidores. No pagar por alta ni por "backlinks".
 
 ---
 
 ## Qué medir después
-En Umami: pico de visitas por lanzamiento y de dónde vienen. En Search Console
-(2–3 semanas después): si sube "Páginas indexadas" y si aparecen impresiones.
-Si el Show HN funciona, los backlinks que deje aceleran el ranking del resto.
+- Umami: pico por lanzamiento y referrers (news.ycombinator.com, reddit.com).
+- Search Console a las 2–3 semanas: páginas indexadas, impresiones, clics.
+- Anotar en `engram/10_auditoria_2026-10.md` §6 la comparación contra la línea
+  base (≈86 visitantes/mes). AdSense se reaplica con ≥1.000 visitantes/mes
+  sostenidos 4 semanas, no antes.
