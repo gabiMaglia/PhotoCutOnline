@@ -83,9 +83,11 @@ describe("gaussianBlur", () => {
     }
   });
 
-  it.each([2, 9, 30])("conserva la media del ruido (±0,5, σ %d)", (s) => {
+  // con bordes extendidos la media se conserva mientras la imagen sea varias
+  // veces más grande que σ (si no, los bordes pesan de más): por eso crece el lado
+  it.each([[2, 64], [9, 128], [30, 400]])("conserva la media del ruido (±0,5, σ %d)", (s, side) => {
     const rnd = mulberry32(3);
-    const n = img(64, 48, () => [rnd() * 256, rnd() * 256, rnd() * 256, 255]);
+    const n = img(side, (side * 3) / 4, () => [rnd() * 256, rnd() * 256, rnd() * 256, 255]);
     const mean = (d) => {
       let t = 0;
       for (let i = 0; i < d.length; i += 4) t += d[i] + d[i + 1] + d[i + 2];

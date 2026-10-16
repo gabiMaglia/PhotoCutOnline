@@ -17,6 +17,7 @@
 // devuelven como Blob para viajar baratos por postMessage.
 
 import { canEncodeWebP, encodeWebP } from "./webpEncoder.js";
+import { gaussianBlur } from "./pixelFilters.js";
 
 const WORK_MAX = 1400;
 // T-013 (perf): el maxflow del GrabCut (WASM y fallback JS) es O(píxeles). A
@@ -607,6 +608,9 @@ export class CutoutSession {
    * Fondo desenfocado (portrait): la foto original borrosa detrás del sujeto
    * nítido. Reusa la segmentación (el sujeto sale del recorte con su alfa) y el
    * fondo es la imagen completa con blur. opts.blur = radio en px.
+   * El blur es propio (pixelFilters), no ctx.filter: en Safari no existe y la
+   * descarga salía sin desenfocar (BUG-09). Con bordes extendidos no hace
+   * falta estirar el fondo para tapar una orla, así queda alineado al sujeto.
    */
   compositeBlur(opts) {
     const art = this.renderArtFull(); // sujeto (con sombra/contorno) sobre transparente
@@ -614,11 +618,8 @@ export class CutoutSession {
     const out = createCanvas(W, H);
     const ctx = out.getContext("2d");
     const r = Math.max(1, Math.round(opts.blur ?? 12));
-    // overscan (-r … +2r) para que el desvanecido del blur en los bordes caiga
-    // fuera del lienzo y no deje una orla clara.
-    ctx.filter = `blur(${r}px)`;
-    ctx.drawImage(this.fullCanvas, -r, -r, W + 2 * r, H + 2 * r);
-    ctx.filter = "none";
+    const bg = new ImageData(new Uint8ClampedArray(this.full.data), this.full.width, this.full.height);
+    ctx.putImageData(gaussianBlur(bg, r), 0, 0);
     ctx.drawImage(art, 0, 0);
     const format = opts.format || "png";
     const mime =

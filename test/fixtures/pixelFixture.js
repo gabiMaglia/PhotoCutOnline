@@ -70,4 +70,4 @@ export function pixelFiltersHash({ applyColorOps, gaussianBlur }) {
 
 // Valor dorado: sale del algoritmo commiteado. Si cambia el algoritmo, este
 // test se rompe a propósito (y hay que re-medir F4 antes de actualizarlo).
-export const GOLDEN_HASH = "pending";
+export const GOLDEN_HASH = "325971dd-8bc0f820-85bb39b6";
