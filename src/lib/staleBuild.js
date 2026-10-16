@@ -11,8 +11,11 @@ import { t } from "./i18n.js";
 export const WORKER_LOAD_FAILED = "WORKER_LOAD_FAILED";
 export const STALE_BUILD_EVENT = "photocut:stale-build";
 
-// Texto del import() fallido según el motor: Chrome, Firefox, Safari/WebKit
-const CHUNK_LOAD = /Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed/i;
+// Texto del import() fallido según el motor: Chrome, Firefox, Safari/WebKit.
+// Anclado al inicio: un error de dominio que lo envuelve (p.ej.
+// «WEBP_ENCODE_FAILED: load: …», GROW-35) ya tiene su propio manejo.
+const CHUNK_LOAD =
+  /^(?:TypeError: )?(?:Failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed)/i;
 
 export function isChunkLoadError(message) {
   return CHUNK_LOAD.test(String(message ?? ""));

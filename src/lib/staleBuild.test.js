@@ -21,6 +21,12 @@ describe("staleBuild — detección de «versión vieja» (BUG-08)", () => {
     expect(isChunkLoadError(undefined)).toBe(false);
   });
 
+  test("un error de dominio que ENVUELVE un import fallido no es «versión nueva» (tiene su propio manejo)", () => {
+    // GROW-35: el encoder WebP sin red tiene su reintento; no es un deploy nuevo
+    expect(isChunkLoadError("WEBP_ENCODE_FAILED: load: Importing a module script failed.")).toBe(false);
+    expect(isChunkLoadError("TypeError: Failed to fetch dynamically imported module: https://x/a.js")).toBe(true);
+  });
+
   test("workerLoadError lleva el código y conserva la causa", () => {
     const e = workerLoadError("404");
     expect(e.code).toBe(WORKER_LOAD_FAILED);
