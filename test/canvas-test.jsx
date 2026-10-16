@@ -32,21 +32,49 @@ const RESULT = dataUrl(400, 300, (ctx) => {
   ctx.fillRect(120, 70, 160, 160);
 });
 
+// BUG-11 D1: foto vertical, el caso normal en un celular. En la caja de 390×500
+// el stage (234×468) arranca a 16 px del borde, a la altura del HUD.
+const IMG_V = dataUrl(300, 600, (ctx, w, h) => {
+  ctx.fillStyle = "#1a2030";
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#d6f64b";
+  ctx.fillRect(70, 150, 160, 300);
+});
+const RESULT_V = dataUrl(300, 600, (ctx) => {
+  ctx.fillStyle = "#d6f64b";
+  ctx.fillRect(70, 150, 160, 300);
+});
+const PHOTOS = {
+  landscape: { url: IMG, result: RESULT, size: { width: 400, height: 300 } },
+  portrait: { url: IMG_V, result: RESULT_V, size: { width: 300, height: 600 } },
+};
+
 let setCompareExternal;
+let setSizeExternal;
+let setPhotoExternal;
+// BUG-11: cuántas veces el lienzo emitió una edición (con comparar activo debe ser 0)
+const calls = { stroke: 0, rect: 0, wand: 0 };
 
 function Harness() {
   const [compare, setCompare] = useState(false);
+  const [size, setSize] = useState({ width: 900, height: 600 });
+  const [photo, setPhoto] = useState(PHOTOS.landscape);
   setCompareExternal = setCompare;
+  setSizeExternal = setSize;
+  setPhotoExternal = setPhoto;
   return (
-    <div className="workspace" style={{ width: 900, height: 600, display: "flex" }}>
+    // flex "none": .workspace trae flex:1 y dentro del #root flex crecía a 900 px
+    // aunque se pidieran 390 (el chequeo móvil del intento 1 nunca midió 390)
+    <div className="workspace" style={{ ...size, flex: "none", display: "flex" }}>
       <CanvasEditor
-        imageUrl={IMG}
-        imageSize={{ width: 400, height: 300 }}
-        resultUrl={RESULT}
+        imageUrl={photo.url}
+        imageSize={photo.size}
+        resultUrl={photo.result}
         mode="fg"
         brushSize={20}
-        onRect={() => {}}
-        onStroke={() => {}}
+        onRect={() => calls.rect++}
+        onStroke={() => calls.stroke++}
+        onWand={() => calls.wand++}
         busy={false}
         compare={compare}
         onCompareChange={setCompare}
@@ -154,7 +182,212 @@ async function main() {
   await tick();
   assert(!stage.querySelector(".compare-divider"), "compare: se desactiva");
 
+  await bug11(wrap, stage, cmpBtn, zoomBtn);
+
   log("ALL_DONE");
+}
+
+// ---- BUG-11: comparar se puede cerrar y se lee en todos los estados ----
+// Los chequeos no cortan al primer fallo: la corrida roja tiene que mostrar
+// cada criterio que falla, no solo el primero.
+async function bug11(wrap, stage, cmpBtn, zoomBtn) {
+  const bad = [];
+  const check = (c, n) => {
+    log(`${c ? "PASS" : "FAIL"}: ${n}`);
+    if (!c) bad.push(n);
+  };
+  const setCompare = async (v) => {
+    setCompareExternal(v);
+    await tick(450);
+  };
+
+  // C1: contraste con hover REAL del puntero (lo hace el runner)
+  const hoverReal = async (sel) => {
+    await new Promise((res) => {
+      window.__hoverAck = res;
+      document.body.dataset.hoverReq = sel;
+    });
+    await tick(250); // .hud-btn transiciona color/borde en 0.12s
+  };
+  const CMP = ".canvas-hud .hud-btn[aria-pressed]";
+  for (const on of [false, true]) {
+    await setCompare(on);
+    for (const hover of [false, true]) {
+      await hoverReal(hover ? CMP : "none");
+      const btn = document.querySelector(CMP);
+      const cs = getComputedStyle(btn);
+      const ratio = contrast(cs.color, cs.backgroundColor);
+      const state = `${on ? "encendido" : "apagado"}${hover ? " + hover" : ""}`;
+      check(ratio >= 4.5, `C1 contraste ${state}: ${ratio.toFixed(2)}:1 ≥ 4,5 (${cs.color} sobre ${cs.backgroundColor})`);
+      check(btn.textContent.trim().length > 0, `C1 texto visible ${state}`);
+    }
+  }
+  await hoverReal("none");
+
+  // C3: encendido, el botón es el cierre visible
+  await setCompare(true);
+  check(/Salir de comparar/.test(cmpBtn.textContent), `C3 encendido dice «Salir de comparar» («${cmpBtn.textContent}»)`);
+  check(cmpBtn.getAttribute("aria-pressed") === "true", "C3 aria-pressed=true");
+  check(/Esc/.test(cmpBtn.title), `C3 el tooltip menciona Esc («${cmpBtn.title}»)`);
+
+  // zoom 400 % y pan a una esquina: el HUD sigue a la vista
+  const r = wrap.getBoundingClientRect();
+  wrap.dispatchEvent(
+    new WheelEvent("wheel", {
+      deltaY: -Math.log(4) / 0.0022,
+      clientX: r.left + r.width / 2,
+      clientY: r.top + r.height / 2,
+      bubbles: true,
+      cancelable: true,
+    })
+  );
+  await tick();
+  const guide = stage.querySelector(".guide");
+  const ptr = (type, x, y, extra = {}) =>
+    guide.dispatchEvent(new PointerEvent(type, { clientX: x, clientY: y, pointerId: 7, bubbles: true, ...extra }));
+  ptr("pointerdown", r.left + 300, r.top + 300, { button: 1 });
+  ptr("pointermove", r.left + 3000, r.top + 3000, { button: 1 });
+  ptr("pointerup", r.left + 3000, r.top + 3000, { button: 1 });
+  await tick();
+  const z = parseInt(zoomBtn.textContent);
+  const b = cmpBtn.getBoundingClientRect();
+  const w = wrap.getBoundingClientRect();
+  check(z >= 350, `C3 zoom aplicado (${zoomBtn.textContent})`);
+  check(
+    b.left >= w.left && b.right <= w.right && b.top >= w.top && b.bottom <= w.bottom,
+    `C3 botón dentro del lienzo con zoom+pan (${Math.round(b.left)},${Math.round(b.top)} en ${Math.round(w.width)}×${Math.round(w.height)})`
+  );
+  check(b.width >= 24 && b.height >= 24, `C3 área de toque ${Math.round(b.width)}×${Math.round(b.height)} ≥ 24×24`);
+  cmpBtn.click();
+  await tick(450);
+  check(!stage.classList.contains("comparing"), "C3 clic en el botón apaga comparar");
+  zoomBtn.click();
+  await tick(200);
+
+  // C3 (móvil): a 390 px el botón encendido no se parte ni tapa las etiquetas,
+  // con foto apaisada y vertical (D1 de QA: la apaisada sola daba falso verde)
+  const hits = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+  const inside = (a, b) => a.left >= b.left - 0.5 && a.right <= b.right + 0.5 && a.top >= b.top - 0.5 && a.bottom <= b.bottom + 0.5;
+  setSizeExternal({ width: 390, height: 500 });
+  await tick(100);
+  check(Math.round(wrap.getBoundingClientRect().width) === 390, `C3 móvil: el lienzo mide 390 px (${Math.round(wrap.getBoundingClientRect().width)})`);
+  for (const kind of ["landscape", "portrait"]) {
+    await setCompare(false);
+    setPhotoExternal(PHOTOS[kind]);
+    await tick(100);
+    window.dispatchEvent(new Event("resize"));
+    await setCompare(true);
+    const st = stage.getBoundingClientRect();
+    const on = cmpBtn.getBoundingClientRect();
+    const zb = zoomBtn.getBoundingClientRect();
+    check(Math.abs(on.height - zb.height) < 2, `C3 móvil ${kind}: una sola línea (${Math.round(on.height)} vs ${Math.round(zb.height)} px)`);
+    check(on.left >= wrap.getBoundingClientRect().left, `C3 móvil ${kind}: el HUD entra en el ancho`);
+    for (const side of ["left", "right"]) {
+      const tag = stage.querySelector(`.compare-tag-${side}`)?.getBoundingClientRect();
+      const name = side === "left" ? "Antes" : "Después";
+      check(
+        !!tag && !hits(on, tag) && !hits(zb, tag),
+        `C3 móvil ${kind}: el HUD no tapa «${name}» (HUD y ${Math.round(on.top)}–${Math.round(on.bottom)}, etiqueta y ${tag ? `${Math.round(tag.top)}–${Math.round(tag.bottom)}` : "—"})`
+      );
+      check(!!tag && inside(tag, st), `C3 móvil ${kind}: «${name}» dentro de la foto`);
+    }
+  }
+
+  // D2: a 390 px el aviso usa el ancho del lienzo, no la mitad
+  {
+    const g = stage.querySelector(".guide");
+    const st = stage.getBoundingClientRect();
+    const at = { clientX: st.left + st.width * 0.2, clientY: st.top + st.height * 0.5, pointerId: 21, button: 0, bubbles: true };
+    g.dispatchEvent(new PointerEvent("pointerdown", at));
+    g.dispatchEvent(new PointerEvent("pointerup", at));
+    await tick();
+    const h = wrap.querySelector(".compare-hint");
+    const wr = wrap.getBoundingClientRect();
+    const hr = h?.getBoundingClientRect();
+    const lh = h ? parseFloat(getComputedStyle(h).lineHeight) || 16 : 16;
+    const lines = hr ? Math.round((hr.height - 18) / lh) : 0; // 8+8 de padding + 2 de borde
+    check(!!hr && hr.width > wr.width / 2 + 10, `D2 aviso a 390 px: ${hr ? Math.round(hr.width) : 0} px > mitad del lienzo (${Math.round(wr.width / 2)})`);
+    check(!!hr && lines <= 2, `D2 aviso a 390 px: ${lines} línea(s) ≤ 2`);
+    check(!!hr && inside(hr, wr), "D2 aviso dentro del lienzo");
+  }
+
+  await setCompare(false);
+  setPhotoExternal(PHOTOS.landscape);
+  setSizeExternal({ width: 900, height: 600 });
+  await tick(100);
+  window.dispatchEvent(new Event("resize"));
+  await tick(150);
+
+  // C5: presionar la imagen mientras se compara no edita y lo explica
+  await setCompare(true);
+  const sr = stage.getBoundingClientRect();
+  const stroke = (pid) => {
+    const x = sr.left + sr.width * 0.12;
+    const y = sr.top + sr.height * 0.5;
+    const ev = (type, dx) =>
+      guide.dispatchEvent(new PointerEvent(type, { clientX: x + dx, clientY: y + dx, pointerId: pid, button: 0, bubbles: true }));
+    ev("pointerdown", 0);
+    ev("pointermove", 12);
+    ev("pointermove", 24);
+    ev("pointerup", 24);
+  };
+  calls.stroke = calls.rect = calls.wand = 0;
+  stroke(11);
+  await tick();
+  check(calls.stroke + calls.rect + calls.wand === 0, `C5 comparando: ningún trazo emitido (${calls.stroke})`);
+  const hint = wrap.querySelector(".compare-hint");
+  check(!!hint && hint.getAttribute("role") === "status", "C5 aparece el aviso role=status");
+  check(/Estás comparando/.test(hint?.textContent || ""), `C5 aviso en español («${hint?.textContent || ""}»)`);
+  if (hint) {
+    const hr = hint.getBoundingClientRect();
+    check(hr.width > 0 && hr.height > 0, "C5 el aviso se ve (tiene caja)");
+  }
+  await tick(3000);
+  check(!wrap.querySelector(".compare-hint"), "C5 el aviso se va solo");
+
+  // arrastrar el divisor no es intención de editar: sin aviso
+  const divider = stage.querySelector(".compare-divider");
+  divider.dispatchEvent(new PointerEvent("pointerdown", { clientX: sr.left + sr.width / 2, pointerId: 12, bubbles: true }));
+  divider.dispatchEvent(new PointerEvent("pointermove", { clientX: sr.left + sr.width * 0.6, pointerId: 12, bubbles: true }));
+  divider.dispatchEvent(new PointerEvent("pointerup", { pointerId: 12, bubbles: true }));
+  await tick();
+  check(!wrap.querySelector(".compare-hint"), "C5 arrastrar el divisor no muestra el aviso");
+
+  // control: sin comparar, el mismo gesto sí pinta (el test no es vacuo)
+  await setCompare(false);
+  stroke(13);
+  await tick();
+  check(calls.stroke === 1, `C5 control: sin comparar el trazo se emite (${calls.stroke})`);
+  check(!wrap.querySelector(".compare-hint"), "C5 control: sin aviso al pintar normal");
+
+  if (bad.length) throw new Error(`BUG-11: ${bad.length} criterio(s) en rojo`);
+}
+
+// contraste WCAG; un fondo semitransparente se compone sobre negro (el HUD
+// flota sobre el lienzo oscuro)
+function contrast(fg, bg) {
+  const over = (c, base) => ({
+    r: c.r * c.a + base.r * (1 - c.a),
+    g: c.g * c.a + base.g * (1 - c.a),
+    b: c.b * c.a + base.b * (1 - c.a),
+    a: 1,
+  });
+  const b = over(rgba(bg), { r: 0, g: 0, b: 0 });
+  const f = over(rgba(fg), b);
+  const L = (c) => {
+    const ch = [c.r, c.g, c.b].map((v) => {
+      const s = v / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+  };
+  const [hi, lo] = [L(f), L(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function rgba(s) {
+  const p = s.match(/rgba?\(([^)]+)\)/)[1].split(/[\s,/]+/).filter(Boolean).map(Number);
+  return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
 }
 
 main()

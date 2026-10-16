@@ -96,3 +96,107 @@ Teclado del divisor (flechas sobre el `role="slider"`), rediseño del HUD, compa
 (Color Studio tiene su propio comparador).
 
 **Aprobado por:** nerv-arquitecto · arquitecto · 2026-10-16
+
+## CÓMO — implementación (nerv-web)
+
+Rama `fix/BUG-11-compare-close` desde `main`. Orden obligatorio: tests rojos (tarea 1) con su salida
+guardada, después el código (tareas 2–7). Sin dependencias nuevas; el lienzo sigue siempre montado.
+
+### Decisiones de diseño técnico
+- **Quién apaga comparar al elegir herramienta:** una acción nueva `pickMode(m)` en
+  `useCutoutSession` (`setMode(m)` + `setCompare(false)`). La página la pasa a `MarkPanel.setMode` y a
+  los atajos 1/2/3/W. `setMode` crudo queda para los cambios internos (`runOp` tras un recorte), que
+  así no tocan `compare`. La regla vive en el hook (testeable sin renderizar), no en el JSX.
+- **Escape:** se agrega `session.setCompare(false)` al manejador `escape` existente de `CutoutPage`. Un
+  solo dueño de la tecla.
+- **Aviso al pintar:** `CanvasEditor` marca la presión bloqueada en `handleDown` (después de las ramas
+  de pinza y pan) y muestra el aviso en `handleUp` solo si no se convirtió en gesto de dos dedos: así
+  una pinza en móvil no lo dispara por el primer dedo. El divisor ya corta la propagación
+  (`compareDown`), así que arrastrarlo nunca llega a `handleDown`. El aviso vive en `.canvas-wrap`
+  (no en el stage que se mueve con zoom), `role="status"` + `aria-live="polite"`.
+- **Temporizador del aviso:** hook genérico nuevo `src/hooks/useTimedFlag.js` → `[on, trigger]`;
+  `trigger()` enciende y reinicia un timeout que apaga a los `ms` (2500); limpia el timer al
+  desmontar. No hay hook equivalente en `src/hooks/` (inventario: useKeyboardShortcuts, useScrollEdges,
+  useToasts — los toasts globales no sirven: el aviso tiene que estar sobre el lienzo).
+- **CSS:** la regla de hover pasa a `.hud-btn:not(.hud-btn-on):hover:not(:disabled)`; el encendido con
+  puntero encima tiene su propia regla (`.hud-btn-on:hover`) que conserva texto oscuro sobre lima y
+  marca el hover con un anillo (`box-shadow` con `--acid-glow`). `white-space: nowrap` y
+  `min-height: 28px` en `.hud-btn` (≥ 24 px, WCAG 2.5.8). Sin `!important`.
+- **Arnés de hover real:** protocolo página↔runner genérico en `runSuite`: la página pone
+  `document.body.dataset.hoverReq = "<selector>"` (o `"none"` para alejar el puntero) y espera; el
+  runner hace `page.hover(selector)` (o `page.mouse.move(1,1)`), borra el atributo y llama
+  `window.__hoverAck()`. Se repite hasta ALL_DONE/ERROR. Las suites que no lo usan no cambian.
+
+### Tareas
+1. **Tests rojos primero** (guardar la salida roja contra el árbol sin cambios en
+   `/private/tmp/.../BUG-11-red.txt` y citarla en el retorno):
+   - **C1** `test/canvas-test.jsx` + `test/run-tests.mjs`: con el protocolo de hover, medir contraste
+     `color` vs `background-color` computados (fondo semitransparente compuesto sobre negro) en los
+     cuatro estados reposo/hover × apagado/encendido; ≥ 4,5:1 y texto no vacío. Hoy encendido+hover = 1:1.
+   - **C2** `src/features/cutout/CutoutPage.compare.test.jsx` (jest, provider real con backend
+     mockeado): con recorte y `compare` activo, `keydown` Escape en `window` ⇒ `compare` falso; Escape
+     con foco en un `<input>` ⇒ `compare` sigue activo.
+   - **C3** `test/canvas-test.jsx`: encendido, el botón del HUD contiene «Salir de comparar»,
+     `aria-pressed="true"`, tooltip con «Esc»; clic ⇒ se apaga. Con zoom 400 % y pan a una esquina
+     (arrastre con botón central) su caja queda dentro de `.canvas-wrap`; ≥ 24×24 px. Con el contenedor
+     a 390×500 (ancho de móvil) el botón encendido ocupa una sola línea (misma altura que el apagado) y
+     no se superpone a la etiqueta «Después».
+   - **C4** `CutoutPage.compare.test.jsx`: con `compare` activo, clic en Recortar área / Varita /
+     Pincel mantener / Pincel quitar del `MarkPanel` y atajos 1/2/3/W ⇒ `compare` falso y el modo
+     elegido activo. Una operación interna (otro `handleRect`, que pasa a «fg» por `runOp`) con
+     `compare` activo lo deja activo. Más `src/hooks/useTimedFlag.test.js` (enciende, se apaga solo,
+     `trigger` reinicia el plazo).
+   - **C5** `test/canvas-test.jsx`: harness con `onStroke`/`onWand`/`onRect` contadores; con `compare`
+     activo, `pointerdown/move/up` sobre `.guide` lejos del divisor ⇒ 0 llamadas y aparece
+     `.compare-hint[role=status]` con «Estás comparando»; a los ~3 s ya no está. Arrastrar el divisor
+     no lo muestra. Sin comparar, el mismo trazo sí llama a `onStroke` (control del test).
+2. `src/hooks/useTimedFlag.js` (nuevo).
+3. `src/features/cutout/hooks/useCutoutSession.js`: `pickMode` exportado en el objeto de retorno.
+4. `src/features/cutout/CutoutPage.jsx`: `escape` apaga comparar; `MarkPanel setMode={session.pickMode}`;
+   atajos 1/2/3/W usan `pickMode`.
+5. `src/features/cutout/CanvasEditor.jsx`: etiqueta del botón según estado (`compare.exit` /
+   `compare.toggle`), tooltip `compare.title`; presión bloqueada ⇒ aviso con `useTimedFlag(2500)`;
+   el aviso se apaga también al salir de comparar.
+6. `src/styles.css`: reglas HUD (hover/encendido/nowrap/min-height) y `.compare-hint`.
+7. `src/lib/i18n.js`: claves nuevas `compare.exit`, `compare.title`, `compare.hint` en es/en/pt.
+   - es: «✕ Salir de comparar» · «Comparar antes/después (C) — Esc para salir» · «Estás comparando:
+     tocá ✕ Salir de comparar o Esc para editar»
+   - en: «✕ Exit compare» · «Compare before/after (C) — Esc to exit» · «You're comparing: tap ✕ Exit
+     compare or Esc to edit»
+   - pt: «✕ Sair da comparação» · «Comparar antes/depois (C) — Esc para sair» · «Você está comparando:
+     toque em ✕ Sair da comparação ou Esc para editar»
+8. Verde: `npm test` y `npm run test:web` (Chrome + WebKit; reintentar si la máquina está cargada).
+   Evidencia P-21: capturas (Playwright sobre `test/canvas-test.html`) del botón encendido con el
+   puntero encima en es y en, y del overlay de comparar con el aviso. Sin páginas tocadas ⇒ sin
+   `npm run lastmod`.
+
+### Riesgos de implementación
+- `page.hover` depende del layout real: el runner espera a que el selector sea visible (default de
+  Playwright) antes de mover el puntero; si el CSS de Vite tarda, la página ya espera el ancho estable.
+- `canvas-test` corre solo en Chrome (como hoy); el CSS de hover no depende del motor. No se agrega a
+  WebKit para no alargar la corrida; queda anotado.
+
+### Correcciones intento 2 (QA: engram/qa/BUG-11.md, RECHAZADO intento 1)
+- **D1 [mayor] «Salir de comparar» tapa «Después» a 390 px con foto vertical.** Causa: las etiquetas
+  van a `top: 10px` del stage; con una foto vertical el stage arranca a 16 px del borde del lienzo, a
+  la altura del HUD (`.canvas-hud`, 14 px + 30 px). Achicar el botón a «✕» no alcanza: el HUD sigue
+  ocupando ~100 px a la derecha y la etiqueta cae debajo igual. Arreglo: las etiquetas Antes/Después
+  nunca suben por encima de la franja del HUD. `CanvasEditor` calcula su `top` (coordenadas del stage)
+  como `max(10, HUD_CLEAR − pan.y)`, con `HUD_CLEAR = 56` (14 top + 30 alto + 12 de aire), y lo topea
+  a `alto del stage − 34` para que no se salgan por abajo. Efecto extra: con zoom/pan las etiquetas
+  quedan a la vista en vez de irse de pantalla. La garantía es vertical (la etiqueta siempre debajo
+  del HUD), así que vale para cualquier proporción, idioma y ancho.
+  - Test (rojo primero contra 46e3515): `test/canvas-test.jsx` C3 móvil corre ahora con dos imágenes
+    en la caja 390×500: la apaisada 400×300 de siempre y una VERTICAL 300×600 (stage 234×468, arranca
+    a 16 px: reproduce el caso de QA). Para cada una, el botón encendido no se superpone a ninguna de
+    las dos etiquetas y las etiquetas quedan dentro del stage. El harness pasa la imagen por estado.
+  - Validación en la app real a 390×844 con foto vertical y Recorte IA, en es/en/pt, con capturas.
+- **D2 [menor] `.compare-hint` limitado al 50 % del ancho.** `left: 50%` + `translateX(-50%)` deja al
+  bloque absoluto solo la mitad derecha como ancho disponible. Arreglo: `left: 14px; right: 14px;
+  width: fit-content; margin: 0 auto` (centrado sin transform, ancho máximo real = lienzo − 28 px).
+  Test: en la caja de 390 px el aviso mide más de la mitad del lienzo y ocupa ≤ 2 líneas (rojo hoy).
+- **De paso (observación de QA):** si comparar se apaga con la imagen apretada, al soltar ya no se
+  agenda el aviso (`handleUp` solo avisa si `compare` sigue activo; el efecto que limpia el aviso
+  también descarta la presión bloqueada).
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-16

@@ -204,11 +204,19 @@ export function useCutoutSession({ imageUrl, toast }) {
     []
   );
 
+  // Elegir herramienta es intención de editar: termina la comparación (BUG-11).
+  // Los cambios de modo internos (runOp tras un recorte) usan setMode y no la tocan.
+  const pickMode = useCallback((m) => {
+    setMode(m);
+    setCompare(false);
+  }, []);
+
   return {
     // estado
     resultUrl,
     mode,
     setMode,
+    pickMode,
     brushSize,
     setBrushSize,
     nudgeBrush,

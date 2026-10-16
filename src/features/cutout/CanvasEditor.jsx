@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { t } from "../../lib/i18n.js";
 import { backend } from "../../lib/backend.js";
+import { useTimedFlag } from "../../hooks/useTimedFlag.js";
 
 // Lienzo interactivo. Modos de entrada:
 //  - "rect": arrastrar un recuadro para recortar esa área (no segmenta; marching ants)
@@ -16,6 +17,12 @@ import { backend } from "../../lib/backend.js";
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 8;
+// Franja que ocupa el HUD arriba del lienzo (.canvas-hud: 14 px + botón de 30 px)
+// más aire. Las etiquetas Antes/Después nunca suben de acá: con una foto vertical
+// el stage arranca pegado al borde y el HUD las tapaba (BUG-11 D1).
+const HUD_CLEAR = 56;
+const TAG_GAP = 10;
+const TAG_H = 24;
 
 export default function CanvasEditor({
   imageUrl,
@@ -57,6 +64,10 @@ export default function CanvasEditor({
   const gesture = useRef(null);
   const panDrag = useRef(null);
   const compareDrag = useRef(false);
+  // presión sobre la imagen mientras se compara: el aviso sale al soltar, así
+  // una pinza de dos dedos no lo dispara por el primer dedo
+  const blockedPress = useRef(false);
+  const [hintOn, flashHint, clearHint] = useTimedFlag(2500);
   const viewRef = useRef(view);
   viewRef.current = view;
   const fitRef = useRef(fitScale);
@@ -165,6 +176,13 @@ export default function CanvasEditor({
   }, [resultUrl, imageSize]);
 
   useEffect(() => () => cancelAnimationFrame(antsRaf.current), []);
+
+  useEffect(() => {
+    if (!compare) {
+      clearHint();
+      blockedPress.current = false;
+    }
+  }, [compare, clearHint]);
 
   // ---- zoom (rueda / pinch del trackpad) ----
   const zoomAt = useCallback(
@@ -298,6 +316,7 @@ export default function CanvasEditor({
     // dos dedos → gesto de zoom/pan táctil
     if (pointers.current.size === 2) {
       cancelDrawing();
+      blockedPress.current = false;
       const [a, b] = [...pointers.current.values()];
       gesture.current = {
         d0: Math.hypot(a.x - b.x, a.y - b.y),
@@ -314,7 +333,11 @@ export default function CanvasEditor({
       return;
     }
 
-    if (busy || compare) return;
+    if (busy) return;
+    if (compare) {
+      blockedPress.current = true;
+      return;
+    }
 
     // varita: un clic quita la zona del mismo color (shift = sumar otra zona a quitar); no arrastra
     if (mode === "wand") {
@@ -406,6 +429,12 @@ export default function CanvasEditor({
   function handleUp(e) {
     pointers.current.delete(e.pointerId);
     if (gesture.current && pointers.current.size < 2) gesture.current = null;
+    if (blockedPress.current) {
+      blockedPress.current = false;
+      // si comparar se apagó con la imagen apretada, no queda nada que explicar
+      if (compare) flashHint();
+      return;
+    }
     if (panDrag.current) {
       panDrag.current = null;
       return;
@@ -504,6 +533,10 @@ export default function CanvasEditor({
   // detrás, mostrando lo mismo de ambos lados.
   const clipRight = `inset(0 0 0 ${comparePos * 100}%)`;
   const clipLeft = `inset(0 ${100 - comparePos * 100}% 0 0)`;
+  // top de las etiquetas en coordenadas del stage: debajo del HUD aunque el
+  // stage suba (foto vertical, zoom o pan), sin salirse de la foto por abajo
+  const stageH = imageSize ? imageSize.height * effScale : 0;
+  const tagTop = Math.max(TAG_GAP, Math.min(HUD_CLEAR - view.pan.y, stageH - TAG_H - TAG_GAP));
 
   return (
     <div className="canvas-wrap" ref={wrapRef} onPointerLeave={handleLeave}>
@@ -550,10 +583,10 @@ export default function CanvasEditor({
           />
           {compare && (
             <>
-              <span className="compare-tag compare-tag-left" aria-hidden>
+              <span className="compare-tag compare-tag-left" style={{ top: tagTop }} aria-hidden>
                 {t("compare.before")}
               </span>
-              <span className="compare-tag compare-tag-right" aria-hidden>
+              <span className="compare-tag compare-tag-right" style={{ top: tagTop }} aria-hidden>
                 {t("compare.after")}
               </span>
               <div
@@ -585,10 +618,10 @@ export default function CanvasEditor({
             <button
               className={`hud-btn ${compare ? "hud-btn-on" : ""}`}
               aria-pressed={compare}
-              title={`${t("compare.toggle")} (C)`}
+              title={t("compare.title")}
               onClick={() => onCompareChange(!compare)}
             >
-              ◐ {t("compare.toggle")}
+              {compare ? t("compare.exit") : `◐ ${t("compare.toggle")}`}
             </button>
           )}
           <button
@@ -599,6 +632,12 @@ export default function CanvasEditor({
           >
             {Math.round(view.zoom * 100)}%
           </button>
+        </div>
+      )}
+
+      {compare && hintOn && (
+        <div className="compare-hint" role="status" aria-live="polite">
+          {t("compare.hint")}
         </div>
       )}
 
