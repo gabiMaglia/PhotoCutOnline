@@ -35,16 +35,22 @@ export async function bgWithOpacity(bgDataUrl, opacity, imageSize) {
 }
 
 /**
- * Imagen ya decodificada para dibujar a resolución completa. WebKit descarta lo
- * decodificado de fotos grandes y, al volver a dibujarlas (también vía
- * createImageBitmap(<img>)), puede pintarlas a medias: bandas en la descarga,
- * medido con 12 MP en BUG-09. Decodificar los bytes a un ImageBitmap lo evita.
+ * Fuente ya decodificada para dibujar a resolución completa. WebKit descarta lo
+ * decodificado de fotos grandes (una <img> e incluso un ImageBitmap) y, al
+ * volver a dibujarlas, puede pintar bandas corruptas: lo midió F7 con 12 MP en
+ * BUG-09. Se copia una vez a un canvas en memoria (willReadFrequently), que no
+ * se descarta. Ocupa lo mismo que el canvas a tamaño completo que había antes.
  * Sin soporte, devuelve la <img> tal cual.
  */
 export async function decodedSource(url, img) {
   try {
-    const blob = await (await fetch(url)).blob();
-    return await createImageBitmap(blob);
+    const bmp = await createImageBitmap(await (await fetch(url)).blob());
+    const c = document.createElement("canvas");
+    c.width = bmp.width;
+    c.height = bmp.height;
+    c.getContext("2d", { willReadFrequently: true }).drawImage(bmp, 0, 0);
+    bmp.close?.();
+    return c;
   } catch {
     return img;
   }
