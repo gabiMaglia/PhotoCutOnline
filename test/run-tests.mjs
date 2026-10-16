@@ -142,11 +142,16 @@ async function runSuite(browser, names, tag, check) {
     try {
       // la firma es (fn, arg, options): sin el null, {timeout} viajaba como arg y
       // mandaba el default de 30 s de Playwright (GROW-35 D-i2-1)
-      await page.waitForFunction(
-        () => /ALL_DONE|ERROR/.test(document.getElementById("out")?.textContent || ""),
-        null,
-        { timeout: TIMEOUT_MS[tag] }
-      );
+      for (;;) {
+        await page.waitForFunction(
+          () =>
+            /ALL_DONE|ERROR/.test(document.getElementById("out")?.textContent || "") ||
+            !!document.body.dataset.hoverReq,
+          null,
+          { timeout: TIMEOUT_MS[tag] }
+        );
+        if (!(await serveHover(page))) break;
+      }
     } catch {
       console.error(`  TIMEOUT esperando ALL_DONE (${TIMEOUT_MS[tag]} ms)`);
       bad++;
@@ -162,6 +167,21 @@ async function runSuite(browser, names, tag, check) {
   }
   await ctx.close();
   return bad;
+}
+
+// BUG-11: `:hover` no se puede forzar desde la página, así que la página pide un
+// hover real poniendo data-hover-req (un selector, o "none" para alejar el
+// puntero) y espera a que el runner lo haga y le avise con __hoverAck().
+async function serveHover(page) {
+  const sel = await page.evaluate(() => document.body.dataset.hoverReq || "");
+  if (!sel) return false;
+  if (sel === "none") await page.mouse.move(1, 1);
+  else await page.hover(sel);
+  await page.evaluate(() => {
+    delete document.body.dataset.hoverReq;
+    window.__hoverAck?.();
+  });
+  return true;
 }
 
 async function waitForServer(url, ms = 15000) {
