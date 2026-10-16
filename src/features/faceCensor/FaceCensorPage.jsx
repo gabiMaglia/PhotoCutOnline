@@ -8,13 +8,18 @@ import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import { detectFaces, censorBoxes, warmupFaces } from "../../lib/faceDetect.js";
 import EditTabs from "../textTool/EditTabs.jsx";
 import EditSource from "../textTool/EditSource.jsx";
-import { scaledCanvas, PREVIEW_MAX_SIDE } from "../filters/filterOps.js";
+import { scaledCanvas } from "../filters/filterOps.js";
+import { decodedSource } from "../../utils/image.js";
 
 // Censurar caras: detección 100% local (YuNet) + blur/pixelado sobre cada cara,
 // recortado a una elipse. La foto no se sube. Vive en el hub "Editar".
 // La vista previa trabaja sobre una copia reducida y memoiza la censura: a 12 MP
 // recalcularla en cada evento iba a 2–4 fps (QA BUG-09 H-2). Las cajas viven en
 // coordenadas de la imagen completa y la descarga va a resolución completa.
+// Lado mayor de la vista previa: más chico que en Filtros porque cada cambio
+// recalcula un blur de región grande (en WebKit, 1280 px rozaba los 100 ms)
+const FACES_PREVIEW_MAX_SIDE = 1024;
+
 export default function FaceCensorPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
   const { editSourceUrl, editSourceMode, setEditSourceMode, session } = useCutoutContext();
   const imgRef = useRef(null);
@@ -38,10 +43,12 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     if (!(active && editSourceUrl && editSourceUrl !== loadedUrlRef.current)) return;
     loadedUrlRef.current = editSourceUrl;
     const img = new Image();
-    img.onload = () => {
-      imgRef.current = img;
-      const canvas = scaledCanvas(img, PREVIEW_MAX_SIDE);
-      setPreview({ canvas, k: canvas.width / img.naturalWidth });
+    img.onload = async () => {
+      const src = await decodedSource(editSourceUrl, img);
+      if (loadedUrlRef.current !== editSourceUrl) return; // cambió la fuente mientras tanto
+      imgRef.current = src;
+      const canvas = scaledCanvas(src, FACES_PREVIEW_MAX_SIDE);
+      setPreview({ canvas, k: canvas.width / src.width });
       setSourceName(t("img.currentName"));
       setBoxes([]);
       setDetected(false);
@@ -121,8 +128,8 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     const cv = canvasRef.current, img = imgRef.current;
     const rect = cv.getBoundingClientRect();
     return {
-      x: (e.clientX - rect.left) / rect.width * img.naturalWidth,
-      y: (e.clientY - rect.top) / rect.height * img.naturalHeight,
+      x: (e.clientX - rect.left) / rect.width * img.width,
+      y: (e.clientY - rect.top) / rect.height * img.height,
     };
   };
   // arrastrar = agregar región a mano; clic (sin arrastre) = activar/desactivar
@@ -143,7 +150,7 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     const p = toImg(e);
     const w = Math.abs(p.x - s.x), h = Math.abs(p.y - s.y);
     const img = imgRef.current;
-    const minDrag = Math.min(img.naturalWidth, img.naturalHeight) * 0.02;
+    const minDrag = Math.min(img.width, img.height) * 0.02;
     setDragBox(null);
     if (w > minDrag && h > minDrag) {
       // región nueva a mano

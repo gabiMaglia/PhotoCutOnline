@@ -33,3 +33,19 @@ export async function bgWithOpacity(bgDataUrl, opacity, imageSize) {
   ctx.drawImage(img, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh);
   return c.toDataURL("image/png");
 }
+
+/**
+ * Imagen ya decodificada para dibujar a resolución completa. WebKit descarta lo
+ * decodificado de fotos grandes y, al volver a dibujarlas (también vía
+ * createImageBitmap(<img>)), puede pintarlas a medias: bandas en la descarga,
+ * medido con 12 MP en BUG-09. Decodificar los bytes a un ImageBitmap lo evita.
+ * Sin soporte, devuelve la <img> tal cual.
+ */
+export async function decodedSource(url, img) {
+  try {
+    const blob = await (await fetch(url)).blob();
+    return await createImageBitmap(blob);
+  } catch {
+    return img;
+  }
+}

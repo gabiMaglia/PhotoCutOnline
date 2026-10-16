@@ -9,6 +9,7 @@ import EditTabs from "../textTool/EditTabs.jsx";
 import EditSource from "../textTool/EditSource.jsx";
 import { buildOps, toImageData, renderFiltered, PREVIEW_MAX_SIDE } from "./filterOps.js";
 import { useFilterPreview } from "./useFilterPreview.js";
+import { decodedSource } from "../../utils/image.js";
 
 // Filtros y ajustes de una foto (GROW-23), sub-herramienta del hub "Editar".
 // Los píxeles los calcula pixelFilters (no ctx.filter, que Safari no tiene:
@@ -31,10 +32,12 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
     if (!(active && editSourceUrl && editSourceUrl !== loadedUrlRef.current)) return;
     loadedUrlRef.current = editSourceUrl;
     const img = new Image();
-    img.onload = () => {
-      imgRef.current = img;
+    img.onload = async () => {
+      const src = await decodedSource(editSourceUrl, img);
+      if (loadedUrlRef.current !== editSourceUrl) return; // cambió la fuente mientras tanto
+      imgRef.current = src;
       try {
-        setBase(toImageData(img, PREVIEW_MAX_SIDE));
+        setBase(toImageData(src, PREVIEW_MAX_SIDE));
       } catch {
         onToast?.(t("filters.error"));
         return;
