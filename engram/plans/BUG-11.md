@@ -176,4 +176,27 @@ guardada, después el código (tareas 2–7). Sin dependencias nuevas; el lienzo
 - `canvas-test` corre solo en Chrome (como hoy); el CSS de hover no depende del motor. No se agrega a
   WebKit para no alargar la corrida; queda anotado.
 
+### Correcciones intento 2 (QA: engram/qa/BUG-11.md, RECHAZADO intento 1)
+- **D1 [mayor] «Salir de comparar» tapa «Después» a 390 px con foto vertical.** Causa: las etiquetas
+  van a `top: 10px` del stage; con una foto vertical el stage arranca a 16 px del borde del lienzo, a
+  la altura del HUD (`.canvas-hud`, 14 px + 30 px). Achicar el botón a «✕» no alcanza: el HUD sigue
+  ocupando ~100 px a la derecha y la etiqueta cae debajo igual. Arreglo: las etiquetas Antes/Después
+  nunca suben por encima de la franja del HUD. `CanvasEditor` calcula su `top` (coordenadas del stage)
+  como `max(10, HUD_CLEAR − pan.y)`, con `HUD_CLEAR = 56` (14 top + 30 alto + 12 de aire), y lo topea
+  a `alto del stage − 34` para que no se salgan por abajo. Efecto extra: con zoom/pan las etiquetas
+  quedan a la vista en vez de irse de pantalla. La garantía es vertical (la etiqueta siempre debajo
+  del HUD), así que vale para cualquier proporción, idioma y ancho.
+  - Test (rojo primero contra 46e3515): `test/canvas-test.jsx` C3 móvil corre ahora con dos imágenes
+    en la caja 390×500: la apaisada 400×300 de siempre y una VERTICAL 300×600 (stage 234×468, arranca
+    a 16 px: reproduce el caso de QA). Para cada una, el botón encendido no se superpone a ninguna de
+    las dos etiquetas y las etiquetas quedan dentro del stage. El harness pasa la imagen por estado.
+  - Validación en la app real a 390×844 con foto vertical y Recorte IA, en es/en/pt, con capturas.
+- **D2 [menor] `.compare-hint` limitado al 50 % del ancho.** `left: 50%` + `translateX(-50%)` deja al
+  bloque absoluto solo la mitad derecha como ancho disponible. Arreglo: `left: 14px; right: 14px;
+  width: fit-content; margin: 0 auto` (centrado sin transform, ancho máximo real = lienzo − 28 px).
+  Test: en la caja de 390 px el aviso mide más de la mitad del lienzo y ocupa ≤ 2 líneas (rojo hoy).
+- **De paso (observación de QA):** si comparar se apaga con la imagen apretada, al soltar ya no se
+  agenda el aviso (`handleUp` solo avisa si `compare` sigue activo; el efecto que limpia el aviso
+  también descarta la presión bloqueada).
+
 **Aprobado por:** nerv-web · tech lead web · 2026-10-16
