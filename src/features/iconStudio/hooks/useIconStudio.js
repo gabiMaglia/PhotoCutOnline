@@ -10,6 +10,7 @@ import {
 import { loadHtmlImage } from "../../../lib/jsEngine.js";
 import { saveExport } from "../../../utils/save.js";
 import { t } from "../../../lib/i18n.js";
+import { errorText } from "../../../lib/staleBuild.js";
 import { trackEvent } from "../../../services/analytics.js";
 import { warmupAiWithToast } from "../../../utils/aiWarmup.js";
 
@@ -132,7 +133,7 @@ export function useIconStudio({ getCutout, onToast }) {
       setSourceName((n) => `${n || ""} ${t("icon.noBgTag")}`.trim());
       onToast(t("icon.bgRemoved"), "ok");
     } catch (e) {
-      onToast(String(e), "error");
+      onToast(errorText(e), "error");
     } finally {
       setRemoving(false);
     }

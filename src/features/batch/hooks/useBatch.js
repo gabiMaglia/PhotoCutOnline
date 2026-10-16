@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { backend } from "../../../lib/backend.js";
 import { makeZip } from "../../../lib/zip.js";
 import { t } from "../../../lib/i18n.js";
+import { errorText, isStaleBuildError } from "../../../lib/staleBuild.js";
 import { inspectImageFile, bitmapToDataUrl, DOWNSCALE_MAX_DIM } from "../../../lib/imageFile.js";
 import { fileToDataUrl } from "../../../utils/image.js";
 import { downloadDataUrl } from "../../../utils/dom.js";
@@ -88,7 +89,7 @@ export function useBatch({ toast }) {
           updateItem(id, { status: "done" });
         } catch (e) {
           // error por-imagen: no aborta el resto de la cola
-          updateItem(id, { status: "error", error: String(e?.message || e) });
+          updateItem(id, { status: "error", error: isStaleBuildError(e) ? errorText(e) : String(e?.message || e) });
         }
       }
     } finally {

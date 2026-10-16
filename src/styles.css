@@ -1449,6 +1449,25 @@ label.btn:has(.file-input-sr:focus-visible) {
   object-fit: contain;
 }
 
+/* -------------------------- aviso de versión nueva (BUG-08) -------------------------- */
+/* por encima del crash screen: si un chunk viejo tiró la app, recargar es la salida */
+.update-notice {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px 10px 16px;
+  font-size: 13px;
+  background: var(--panel);
+  border: 1px solid var(--line-bright);
+  border-radius: 12px;
+}
+
 /* ---------------------------------- toasts ---------------------------------- */
 .toasts {
   position: fixed;

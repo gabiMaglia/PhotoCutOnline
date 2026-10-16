@@ -461,6 +461,8 @@ const DICT = {
       "La aplicación encontró un error inesperado. Tu imagen no se envió a ningún lado — todo ocurre en tu navegador.",
     "crash.reset": "Reiniciar",
     "crash.detail": "Detalle técnico",
+    "update.body": "Hay una versión nueva de PhotoCut. Recargá la página para seguir.",
+    "update.reload": "Recargar",
   },
 
   en: {
@@ -910,6 +912,8 @@ const DICT = {
       "The app hit an unexpected error. Your image was never sent anywhere — everything happens in your browser.",
     "crash.reset": "Restart",
     "crash.detail": "Technical details",
+    "update.body": "There's a new version of PhotoCut. Reload the page to continue.",
+    "update.reload": "Reload",
   },
 
   pt: {
@@ -1359,6 +1363,8 @@ const DICT = {
       "O aplicativo encontrou um erro inesperado. Sua imagem não foi enviada a lugar nenhum — tudo acontece no seu navegador.",
     "crash.reset": "Reiniciar",
     "crash.detail": "Detalhes técnicos",
+    "update.body": "Há uma versão nova do PhotoCut. Recarregue a página para continuar.",
+    "update.reload": "Recarregar",
   },
 };
 
