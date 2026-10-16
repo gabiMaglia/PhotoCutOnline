@@ -32,22 +32,44 @@ const RESULT = dataUrl(400, 300, (ctx) => {
   ctx.fillRect(120, 70, 160, 160);
 });
 
+// BUG-11 D1: foto vertical, el caso normal en un celular. En la caja de 390×500
+// el stage (234×468) arranca a 16 px del borde, a la altura del HUD.
+const IMG_V = dataUrl(300, 600, (ctx, w, h) => {
+  ctx.fillStyle = "#1a2030";
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#d6f64b";
+  ctx.fillRect(70, 150, 160, 300);
+});
+const RESULT_V = dataUrl(300, 600, (ctx) => {
+  ctx.fillStyle = "#d6f64b";
+  ctx.fillRect(70, 150, 160, 300);
+});
+const PHOTOS = {
+  landscape: { url: IMG, result: RESULT, size: { width: 400, height: 300 } },
+  portrait: { url: IMG_V, result: RESULT_V, size: { width: 300, height: 600 } },
+};
+
 let setCompareExternal;
 let setSizeExternal;
+let setPhotoExternal;
 // BUG-11: cuántas veces el lienzo emitió una edición (con comparar activo debe ser 0)
 const calls = { stroke: 0, rect: 0, wand: 0 };
 
 function Harness() {
   const [compare, setCompare] = useState(false);
   const [size, setSize] = useState({ width: 900, height: 600 });
+  const [photo, setPhoto] = useState(PHOTOS.landscape);
   setCompareExternal = setCompare;
   setSizeExternal = setSize;
+  setPhotoExternal = setPhoto;
   return (
-    <div className="workspace" style={{ ...size, display: "flex" }}>
+    // flex "none": .workspace trae flex:1 y dentro del #root flex crecía a 900 px
+    // aunque se pidieran 390 (el chequeo móvil del intento 1 nunca midió 390)
+    <div className="workspace" style={{ ...size, flex: "none", display: "flex" }}>
       <CanvasEditor
-        imageUrl={IMG}
-        imageSize={{ width: 400, height: 300 }}
-        resultUrl={RESULT}
+        imageUrl={photo.url}
+        imageSize={photo.size}
+        resultUrl={photo.result}
         mode="fg"
         brushSize={20}
         onRect={() => calls.rect++}
@@ -242,18 +264,55 @@ async function bug11(wrap, stage, cmpBtn, zoomBtn) {
   zoomBtn.click();
   await tick(200);
 
-  // C3 (móvil): a 390 px el botón encendido no se parte ni tapa «Después»
+  // C3 (móvil): a 390 px el botón encendido no se parte ni tapa las etiquetas,
+  // con foto apaisada y vertical (D1 de QA: la apaisada sola daba falso verde)
+  const hits = (a, b) => !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+  const inside = (a, b) => a.left >= b.left - 0.5 && a.right <= b.right + 0.5 && a.top >= b.top - 0.5 && a.bottom <= b.bottom + 0.5;
   setSizeExternal({ width: 390, height: 500 });
   await tick(100);
-  window.dispatchEvent(new Event("resize"));
-  await setCompare(true);
-  const on = cmpBtn.getBoundingClientRect();
-  const zb = zoomBtn.getBoundingClientRect();
-  const tag = stage.querySelector(".compare-tag-right")?.getBoundingClientRect();
-  check(Math.abs(on.height - zb.height) < 2, `C3 móvil: una sola línea (${Math.round(on.height)} vs ${Math.round(zb.height)} px)`);
-  check(on.left >= wrap.getBoundingClientRect().left, "C3 móvil: el HUD entra en el ancho");
-  const overlap = tag && !(on.right <= tag.left || on.left >= tag.right || on.bottom <= tag.top || on.top >= tag.bottom);
-  check(!!tag && !overlap, "C3 móvil: no tapa la etiqueta «Después»");
+  check(Math.round(wrap.getBoundingClientRect().width) === 390, `C3 móvil: el lienzo mide 390 px (${Math.round(wrap.getBoundingClientRect().width)})`);
+  for (const kind of ["landscape", "portrait"]) {
+    await setCompare(false);
+    setPhotoExternal(PHOTOS[kind]);
+    await tick(100);
+    window.dispatchEvent(new Event("resize"));
+    await setCompare(true);
+    const st = stage.getBoundingClientRect();
+    const on = cmpBtn.getBoundingClientRect();
+    const zb = zoomBtn.getBoundingClientRect();
+    check(Math.abs(on.height - zb.height) < 2, `C3 móvil ${kind}: una sola línea (${Math.round(on.height)} vs ${Math.round(zb.height)} px)`);
+    check(on.left >= wrap.getBoundingClientRect().left, `C3 móvil ${kind}: el HUD entra en el ancho`);
+    for (const side of ["left", "right"]) {
+      const tag = stage.querySelector(`.compare-tag-${side}`)?.getBoundingClientRect();
+      const name = side === "left" ? "Antes" : "Después";
+      check(
+        !!tag && !hits(on, tag) && !hits(zb, tag),
+        `C3 móvil ${kind}: el HUD no tapa «${name}» (HUD y ${Math.round(on.top)}–${Math.round(on.bottom)}, etiqueta y ${tag ? `${Math.round(tag.top)}–${Math.round(tag.bottom)}` : "—"})`
+      );
+      check(!!tag && inside(tag, st), `C3 móvil ${kind}: «${name}» dentro de la foto`);
+    }
+  }
+
+  // D2: a 390 px el aviso usa el ancho del lienzo, no la mitad
+  {
+    const g = stage.querySelector(".guide");
+    const st = stage.getBoundingClientRect();
+    const at = { clientX: st.left + st.width * 0.2, clientY: st.top + st.height * 0.5, pointerId: 21, button: 0, bubbles: true };
+    g.dispatchEvent(new PointerEvent("pointerdown", at));
+    g.dispatchEvent(new PointerEvent("pointerup", at));
+    await tick();
+    const h = wrap.querySelector(".compare-hint");
+    const wr = wrap.getBoundingClientRect();
+    const hr = h?.getBoundingClientRect();
+    const lh = h ? parseFloat(getComputedStyle(h).lineHeight) || 16 : 16;
+    const lines = hr ? Math.round((hr.height - 18) / lh) : 0; // 8+8 de padding + 2 de borde
+    check(!!hr && hr.width > wr.width / 2 + 10, `D2 aviso a 390 px: ${hr ? Math.round(hr.width) : 0} px > mitad del lienzo (${Math.round(wr.width / 2)})`);
+    check(!!hr && lines <= 2, `D2 aviso a 390 px: ${lines} línea(s) ≤ 2`);
+    check(!!hr && inside(hr, wr), "D2 aviso dentro del lienzo");
+  }
+
+  await setCompare(false);
+  setPhotoExternal(PHOTOS.landscape);
   setSizeExternal({ width: 900, height: 600 });
   await tick(100);
   window.dispatchEvent(new Event("resize"));

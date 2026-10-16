@@ -17,6 +17,12 @@ import { useTimedFlag } from "../../hooks/useTimedFlag.js";
 
 const ZOOM_MIN = 1;
 const ZOOM_MAX = 8;
+// Franja que ocupa el HUD arriba del lienzo (.canvas-hud: 14 px + botón de 30 px)
+// más aire. Las etiquetas Antes/Después nunca suben de acá: con una foto vertical
+// el stage arranca pegado al borde y el HUD las tapaba (BUG-11 D1).
+const HUD_CLEAR = 56;
+const TAG_GAP = 10;
+const TAG_H = 24;
 
 export default function CanvasEditor({
   imageUrl,
@@ -172,7 +178,10 @@ export default function CanvasEditor({
   useEffect(() => () => cancelAnimationFrame(antsRaf.current), []);
 
   useEffect(() => {
-    if (!compare) clearHint();
+    if (!compare) {
+      clearHint();
+      blockedPress.current = false;
+    }
   }, [compare, clearHint]);
 
   // ---- zoom (rueda / pinch del trackpad) ----
@@ -422,7 +431,8 @@ export default function CanvasEditor({
     if (gesture.current && pointers.current.size < 2) gesture.current = null;
     if (blockedPress.current) {
       blockedPress.current = false;
-      flashHint();
+      // si comparar se apagó con la imagen apretada, no queda nada que explicar
+      if (compare) flashHint();
       return;
     }
     if (panDrag.current) {
@@ -523,6 +533,10 @@ export default function CanvasEditor({
   // detrás, mostrando lo mismo de ambos lados.
   const clipRight = `inset(0 0 0 ${comparePos * 100}%)`;
   const clipLeft = `inset(0 ${100 - comparePos * 100}% 0 0)`;
+  // top de las etiquetas en coordenadas del stage: debajo del HUD aunque el
+  // stage suba (foto vertical, zoom o pan), sin salirse de la foto por abajo
+  const stageH = imageSize ? imageSize.height * effScale : 0;
+  const tagTop = Math.max(TAG_GAP, Math.min(HUD_CLEAR - view.pan.y, stageH - TAG_H - TAG_GAP));
 
   return (
     <div className="canvas-wrap" ref={wrapRef} onPointerLeave={handleLeave}>
@@ -569,10 +583,10 @@ export default function CanvasEditor({
           />
           {compare && (
             <>
-              <span className="compare-tag compare-tag-left" aria-hidden>
+              <span className="compare-tag compare-tag-left" style={{ top: tagTop }} aria-hidden>
                 {t("compare.before")}
               </span>
-              <span className="compare-tag compare-tag-right" aria-hidden>
+              <span className="compare-tag compare-tag-right" style={{ top: tagTop }} aria-hidden>
                 {t("compare.after")}
               </span>
               <div
