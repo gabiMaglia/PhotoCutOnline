@@ -7,6 +7,10 @@ import { f, kb, pctS, G, P, pub, imgMeta, newCtx, runAI, guideBox, stroke, click
 
 export const TESTS = {};
 
+// lo que baja la IA: modelos (u2netp.onnx o las partes de BiRefNet) y motores ORT (wasm y WebGPU)
+const AI_FILE = /(onnx|ort-wasm|ort\.wasm|ort\.webgpu|photocut_wasm|cutoutWorker)/;
+const MODEL_FILE = /\.onnx(\.part\d+)?$/;
+
 // =====================================================================================
 TESTS["como-quitar-el-fondo-de-una-imagen"] = async ({ browser }) => {
   const file = G("quitar-fondo-antes.jpg");
@@ -17,7 +21,7 @@ TESTS["como-quitar-el-fondo-de-una-imagen"] = async ({ browser }) => {
   ctx.on("request", (r) => reqs.push({ m: r.method(), url: r.url(), body: r.postDataBuffer()?.length || 0 }));
   ctx.on("response", async (r) => {
     const u = r.url();
-    if (sizes.__stop || !/localhost/.test(u) || !/(onnx|ort-wasm|ort\.wasm|photocut_wasm|cutoutWorker)/.test(u)) return;
+    if (sizes.__stop || !/localhost/.test(u) || !AI_FILE.test(u)) return;
     try { sizes[new URL(u).pathname] = (await r.body()).length; } catch { /* worker */ }
   });
   const page = await L.openEditor(ctx);
@@ -33,17 +37,22 @@ TESTS["como-quitar-el-fondo-de-una-imagen"] = async ({ browser }) => {
   await page.waitForSelector("input[type=file]", { state: "attached" });
   await L.loadImage(page, file);
   const warm = await runAI(page);
-  const ai = Object.entries(sizes).filter(([k]) => /(onnx|ort-wasm|ort\.wasm|photocut_wasm|cutoutWorker)/.test(k));
-  const modelBytes = ai.filter(([k]) => /\.onnx$/.test(k)).reduce((s, [, v]) => s + v, 0);
-  const runtimeBytes = ai.filter(([k]) => !/\.onnx$/.test(k)).reduce((s, [, v]) => s + v, 0);
+  const ai = Object.entries(sizes).filter(([k]) => AI_FILE.test(k));
+  const isModel = (k) => MODEL_FILE.test(k);
+  const modelFiles = ai.filter(([k]) => isModel(k)).map(([k]) => k.split("/").pop());
+  const modelBytes = ai.filter(([k]) => isModel(k)).reduce((s, [, v]) => s + v, 0);
+  const runtimeBytes = ai.filter(([k]) => !isModel(k)).reduce((s, [, v]) => s + v, 0);
   const aiFiles = Object.fromEntries(ai);
-  // lo que viajaría por la red con Brotli (preview no comprime): comprimo los mismos archivos de dist/
-  const br = Object.keys(aiFiles).reduce((acc, k) => {
+  const birefnet = modelFiles.some((n) => n.startsWith("birefnet"));
+  // lo que viajaría por la red (preview no comprime): el motor con Brotli, calculado sobre los
+  // mismos archivos de dist/; el modelo, tal cual (el hosting no comprime .onnx ni sus partes)
+  const runtimeBr = ai.filter(([k]) => !isModel(k)).reduce((acc, [k]) => {
     try {
       const raw = readFileSync(path.join(L.ROOT, "dist", k));
       return acc + brotliCompressSync(raw, { params: { [zc.BROTLI_PARAM_QUALITY]: 11 } }).length;
     } catch { return acc; }
   }, 0);
+  const br = modelBytes + runtimeBr;
   const external = reqs.filter((r) => !/^http:\/\/localhost/.test(r.url));
   const hosts = [...new Set(external.map((r) => new URL(r.url).host))];
   const uploads = reqs.filter((r) => r.m !== "GET" && r.m !== "HEAD" && r.m !== "OPTIONS");
@@ -64,12 +73,14 @@ TESTS["como-quitar-el-fondo-de-una-imagen"] = async ({ browser }) => {
     timing: { primeraVezMs: cold, mismaPestanaMs: second, trasRecargaMs: warm },
     result: {
       pngKB: a.kb, transparentPct: a.transparentPct, semiPct: a.semiPct, w: a.w, h: a.h,
-      modelBytes, runtimeBytes, brotliTotalBytes: br, requests: reqs.length, nonGetRequests: uploads.length,
+      modelFiles, modelBytes, runtimeBytes, runtimeBrotliBytes: runtimeBr, transferBytes: br, requests: reqs.length, nonGetRequests: uploads.length,
       requestBodyBytes: bodyBytes, maxBody, nonGet: uploads.map((r) => `${r.m} ${r.url.slice(0, 80)} (${r.body} B)`), aiFiles, externalHosts: hosts, externalRequests: external.length,
     },
     findings: [
       `Recorte IA, primera vez (con la descarga del modelo desde mi servidor local): ${f(cold / 1000, 1)} s. En la misma pestaña, segunda corrida: ${f(second / 1000, 1)} s. Tras recargar, con el modelo en la caché: ${f(warm / 1000, 1)} s.`,
-      `Lo que baja la IA la primera vez, sin comprimir: ${f(modelBytes / 1e6, 2)} MB de modelo (u2netp.onnx) + ${f(runtimeBytes / 1e6, 1)} MB de motor WebAssembly. Con Brotli (nivel 11, calculado sobre esos mismos archivos de dist/) el total baja a ${f(br / 1e6, 1)} MB, en el orden de los «~7 MB» que cuenta la guía (el servidor real puede comprimir con otro nivel).`,
+      birefnet
+        ? `Este equipo tiene GPU, así que la IA bajó BiRefNet-lite: ${f(modelBytes / 1e6, 1)} MB de modelo (en ${modelFiles.length} partes) + ${f(runtimeBytes / 1e6, 1)} MB de motor WebAssembly/WebGPU, sin comprimir. El modelo viaja tal cual; el motor con Brotli (nivel 11, calculado sobre esos mismos archivos de dist/) baja a ${f(runtimeBr / 1e6, 1)} MB. En total ${f(br / 1e6, 1)} MB, los «~120 MB» que cuenta la guía para un equipo con GPU.`
+        : `Lo que baja la IA la primera vez, sin comprimir: ${f(modelBytes / 1e6, 2)} MB de modelo (u2netp.onnx) + ${f(runtimeBytes / 1e6, 1)} MB de motor WebAssembly. El modelo viaja tal cual y el motor con Brotli (nivel 11, calculado sobre esos mismos archivos de dist/) baja a ${f(runtimeBr / 1e6, 1)} MB: en total ${f(br / 1e6, 1)} MB, en el orden de los «~7 MB» que cuenta la guía.`,
       `PNG exportado: ${a.w} × ${a.h} px, ${f(a.kb, 0)} KB, ${pctS(a.transparentPct)} de píxeles totalmente transparentes y ${pctS(a.semiPct)} semitransparentes (el borde suavizado).`,
       maxBody
         ? `Red: ${reqs.length} peticiones en toda la sesión. El cuerpo más grande que salió del navegador fue de ${maxBody} bytes (${uploads.length} POST de medición de anuncios) y la foto pesa ${image.kb * 1024 | 0} bytes: no pudo ir en ninguna. Las ${external.length} peticiones a otros dominios fueron a ${hosts.join(", ")}.`

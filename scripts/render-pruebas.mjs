@@ -35,6 +35,7 @@ export const LABELS = {
     synthetic: "imagen sintética que dibujé con Pillow",
     publicDomain: "retrato de dominio público",
     sample: "imagen de ejemplo de esta web",
+    aiModel: { birefnet: "Recorte IA con BiRefNet-lite en la GPU (WebGPU)", u2netp: "Recorte IA con u2netp (sin GPU)" },
   },
   en: {
     tried: "We tested it",
@@ -53,6 +54,7 @@ export const LABELS = {
     synthetic: "synthetic image I drew with Pillow",
     publicDomain: "public-domain portrait",
     sample: "sample image from this site",
+    aiModel: { birefnet: "AI cutout with BiRefNet-lite on the GPU (WebGPU)", u2netp: "AI cutout with u2netp (no GPU)" },
   },
   pt: {
     tried: "Nós testamos",
@@ -71,6 +73,7 @@ export const LABELS = {
     synthetic: "imagem sintética que desenhei com o Pillow",
     publicDomain: "retrato de domínio público",
     sample: "imagem de exemplo deste site",
+    aiModel: { birefnet: "Recorte IA com BiRefNet-lite na GPU (WebGPU)", u2netp: "Recorte IA com u2netp (sem GPU)" },
   },
 };
 
@@ -116,7 +119,7 @@ export function renderBlock(e, lang = "es") {
     `          ${li(T.findings)}`,
     `        </ul>`,
     `        <p class="limit"><strong>${L.limit}:</strong> ${esc(T.caveat)}</p>`,
-    `        <p class="byline">${L.by} Gabriel Maglia ${L.on} <time datetime="${e.date}">${e.date}</time> ${L.with} ${esc(e.browser.replace(/^Chrome /, ""))} · ${esc(e.os)} · ${L.build}: commit ${esc(e.build)}.</p>`,
+    `        <p class="byline">${L.by} Gabriel Maglia ${L.on} <time datetime="${e.date}">${e.date}</time> ${L.with} ${esc(e.browser.replace(/^Chrome /, ""))} · ${esc(e.os)} · ${L.build}: commit ${esc(e.build)}.${e.aiModel ? ` ${L.aiModel[e.aiModel]}.` : ""}</p>`,
     `      </div>`,
     END,
   ];

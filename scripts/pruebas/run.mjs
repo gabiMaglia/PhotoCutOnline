@@ -16,6 +16,7 @@ import { TESTS as T2 } from "./tests-b.mjs";
 import { TESTS as T3 } from "./tests-c.mjs";
 import { TESTS as T4 } from "./tests-d.mjs";
 import { TESTS as T5 } from "./tests-e.mjs";
+import { aiModelsSeen } from "./common.mjs";
 const TESTS = { ...T1, ...T2, ...T4, ...T3, ...T5 };
 
 const JSON_PATH = path.join(L.ROOT, "scripts/pruebas.json");
@@ -35,9 +36,12 @@ for (const slug of slugs) {
   process.stdout.write(`\n■ ${slug}\n`);
   const t0 = Date.now();
   try {
+    aiModelsSeen.clear();
     const r = await TESTS[slug]({ browser, L });
     const prev = db[slug] || {};
-    db[slug] = { ...meta, ...r, caveat: prev.caveat ?? null };
+    // si cayó al respaldo en medio de la prueba se ven los dos: firmo con el que cortó
+    const aiModel = aiModelsSeen.has("u2netp") ? "u2netp" : aiModelsSeen.has("birefnet") ? "birefnet" : undefined;
+    db[slug] = { ...meta, ...r, ...(aiModel && { aiModel }), caveat: prev.caveat ?? null };
     console.log(`  ok (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
     console.log("  " + JSON.stringify(r.result).slice(0, 600));
   } catch (e) {
