@@ -4,6 +4,20 @@
 > Solo nerv-qa escribe "Done". Mapear SIEMPRE el ID externo si existe.
 > Niv (P-11, nivel de revisión QA): A=Advisory (default) · S=Strong · X=Adversarial.
 
+## Sprint 9 — Bug bash pre-lanzamiento (reportes del PO 2026-10-16) — 📋 TRIAGE
+> Condición del PO: "esto tiene que andar 100 de 100 antes de salir" → el launch kit queda en espera hasta cerrar este sprint.
+> Evidencia: probes Playwright contra producción en contexto limpio (sin SW) + WebKit 26.4. Scripts y capturas en el scratchpad de la sesión (no se commitean: la foto del PO tiene GPS).
+
+| ID | Hallazgo (causa raíz verificada) | Estado |
+|---|---|---|
+| BUG-08 | **"worker error" al primer ingreso tras un deploy; anda al refrescar.** `public/sw.js` sirve el HTML de navegación stale-while-revalidate → HTML viejo pide `/assets/cutoutWorker-<hash viejo>.js` → Vercel 404 (verificado: hash viejo = 404 text/html) → `worker.onerror`. Afecta a todo visitante recurrente después de cada deploy. Fix: navegación network-first (caché solo offline) + test que reproduzca HTML viejo/asset 404. | To Do |
+| BUG-09 | **Safari/WebKit: Filtros y ajustes (brillo/contraste/saturación/presets), "Desenfocar" en Censurar caras y "Descargar con fondo desenfocado" no hacen nada.** Los tres usan `CanvasRenderingContext2D.filter`, que WebKit 26.4 no soporta (`"filter" in ctx` = false; brightness 150 % deja gris 128→128, Chrome 128→192). Usos: `FiltersPage.jsx:55`, `faceDetect.js:142`, `jsEngine.js:619`. Fix: implementación propia en píxeles (matrices de filtro CSS + blur separable) con test en WebKit. | To Do |
+| BUG-10 | **Pixelado de caras demasiado grueso**: 12→4 bloques de ancho por cara (por defecto 7, `faceDetect.js:132`). Fix: bloques relativos al tamaño de cara con rango más fino (definir en plan). | To Do |
+| BUG-11 | **Comparar antes/después "no se puede cerrar"**: con el puntero encima, `.hud-btn:hover:not(:disabled)` (especificidad 0,2,0) le gana a `.hud-btn-on` (0,1,0) → texto lima sobre fondo lima = botón vacío. Escape tampoco cierra. Fix: estilo on+hover legible, Escape cierra, control de cierre visible en el overlay. | To Do |
+| GROW-36 | **Calidad del Recorte IA** (u2netp corta la oreja del perro del PO; reproducido en Chrome prod). Investigación de modelos hecha; benchmark local en curso (u2netp ±umbral, ISNet int8, BiRefNet_lite, MVANet, BEN2). Decisión del PO con números. | Spike |
+| GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
+| GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
+
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10
 
 | ID | Título | Estado | Criterios de aceptación |
