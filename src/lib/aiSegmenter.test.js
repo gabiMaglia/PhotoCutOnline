@@ -425,7 +425,8 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
 
   test("con GPU apta usa BiRefNet en WebGPU: entrada input_image 1×3×1024×1024 ImageNet, salida sigmoid", async () => {
     const { aiMatte } = require("./aiSegmenter.js");
-    const { matte, refine } = await aiMatte(photo(8, 6));
+    const { matte, refine, model } = await aiMatte(photo(8, 6));
+    expect(model).toBe("birefnet");
     const input = sessions.birefnet.feeds[0];
     expect(input.dims).toEqual([1, 3, 1024, 1024]);
     expect(input.data[0]).toBeCloseTo((0 - 0.485) / 0.229); // canvas falso: píxeles en 0
@@ -463,11 +464,14 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
     ["requestAdapter() sin adapter", null],
     ["adapter con maxStorageBuffersPerShaderStage < 8", { limits: { maxStorageBuffersPerShaderStage: 4 }, features: new Set(["shader-f16"]) }],
     ["adapter sin shader-f16", { limits: { maxStorageBuffersPerShaderStage: 10 }, features: new Set() }],
+    ["adapter de software (fallback)", { isFallbackAdapter: true, limits: { maxStorageBuffersPerShaderStage: 10 }, features: new Set(["shader-f16"]) }],
+    ["adapter de software (info.isFallbackAdapter)", { info: { isFallbackAdapter: true }, limits: { maxStorageBuffersPerShaderStage: 10 }, features: new Set(["shader-f16"]) }],
   ])("%s ⇒ u2netp en WASM como hoy, sin aviso y sin bajar BiRefNet", async (_n, adapter) => {
     setGpu(adapter);
     const { aiMatte } = require("./aiSegmenter.js");
     const seen = [];
-    const { refine } = await aiMatte(photo(4, 4), (p) => seen.push(p));
+    const { refine, model } = await aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(model).toBe("u2netp");
     expect(sessions.u2netp.feeds[0].dims).toEqual([1, 3, 320, 320]);
     expect(sessions.birefnet).toBeUndefined();
     expect(fetched.filter((u) => u.includes("part"))).toEqual([]);

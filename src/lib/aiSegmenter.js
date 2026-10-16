@@ -1,8 +1,8 @@
 // Segmentación IA 100% local (N1 del roadmap) sobre onnxruntime-web.
 //
 // Dos caminos (GROW-36):
-//  - Con GPU apta (WebGPU con adapter, ≥ 8 storage buffers por etapa y
-//    shader-f16): BiRefNet-lite 1024 fp16 (MIT) sobre el EP WebGPU. 115 MB en
+//  - Con GPU apta (WebGPU con adapter de hardware, ≥ 8 storage buffers por
+//    etapa y shader-f16): BiRefNet-lite 1024 fp16 (MIT) sobre el EP WebGPU. 115 MB en
 //    partes, verificadas por sha256 antes de crear la sesión.
 //  - Sin GPU, o si BiRefNet falla: u2netp (Apache-2.0, 4,6 MB) sobre WASM, como
 //    siempre. Quien no tiene GPU no baja nada del camino GPU.
@@ -84,6 +84,8 @@ function gpuUsable() {
         const adapter = await gpu.requestAdapter();
         return (
           !!adapter &&
+          // un adapter de software (SwiftShader) correría 115 MB de modelo en la CPU
+          !(adapter.isFallbackAdapter ?? adapter.info?.isFallbackAdapter) &&
           adapter.limits.maxStorageBuffersPerShaderStage >= MIN_STORAGE_BUFFERS &&
           adapter.features.has("shader-f16")
         );
@@ -333,8 +335,9 @@ let chain = Promise.resolve();
 
 /**
  * imageData: ImageData (resolución de trabajo).
- * Resuelve { matte: Uint8ClampedArray (0..255, width×height), refine } donde
- * `refine` son las opciones de refineMatte del modelo que cortó.
+ * Resuelve { matte: Uint8ClampedArray (0..255, width×height), refine, model }:
+ * `refine` son las opciones de refineMatte del modelo que cortó y `model` su
+ * nombre ("birefnet" | "u2netp").
  * onNotice({stage: "fallback", model}) opcional: avisa si se pasó a u2netp.
  *
  * Las llamadas concurrentes se encolan (D-02): la segunda espera a que la
@@ -362,7 +365,7 @@ export function aiMatte(imageData, onNotice) {
 async function aiMatteInner(imageData, onNotice) {
   let opened = await getSession({ onNotice });
   try {
-    return { matte: await segment(opened, imageData), refine: opened.model.refine };
+    return result(opened, await segment(opened, imageData));
   } catch (e) {
     // la GPU puede quedarse sin memoria o perder el device recién al inferir:
     // se suelta BiRefNet y la MISMA imagen se corta con u2netp
@@ -370,9 +373,11 @@ async function aiMatteInner(imageData, onNotice) {
     await releaseCurrent();
     sessionPromise = trackSession(openFallback(e, { onNotice }));
     opened = await sessionPromise;
-    return { matte: await segment(opened, imageData), refine: opened.model.refine };
+    return result(opened, await segment(opened, imageData));
   }
 }
+
+const result = ({ model }, matte) => ({ matte, refine: model.refine, model: model.name });
 
 async function segment({ ort, session, model }, imageData) {
   const { width, height } = imageData;
