@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { t, tn } from "../../lib/i18n.js";
 import Button from "../../components/ui/Button.jsx";
 import Slider from "../../components/ui/Slider.jsx";
@@ -8,9 +8,18 @@ import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import { detectFaces, censorBoxes, warmupFaces } from "../../lib/faceDetect.js";
 import EditTabs from "../textTool/EditTabs.jsx";
 import EditSource from "../textTool/EditSource.jsx";
+import { scaledCanvas } from "../filters/filterOps.js";
+import { decodedSource } from "../../utils/image.js";
 
 // Censurar caras: detección 100% local (YuNet) + blur/pixelado sobre cada cara,
 // recortado a una elipse. La foto no se sube. Vive en el hub "Editar".
+// La vista previa trabaja sobre una copia reducida y memoiza la censura: a 12 MP
+// recalcularla en cada evento iba a 2–4 fps (QA BUG-09 H-2). Las cajas viven en
+// coordenadas de la imagen completa y la descarga va a resolución completa.
+// Lado mayor de la vista previa: más chico que en Filtros porque cada cambio
+// recalcula un blur de región grande (en WebKit, 1280 px rozaba los 100 ms)
+const FACES_PREVIEW_MAX_SIDE = 1024;
+
 export default function FaceCensorPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
   const { editSourceUrl, editSourceMode, setEditSourceMode, session } = useCutoutContext();
   const imgRef = useRef(null);
@@ -19,6 +28,7 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
 
   const [sourceName, setSourceName] = useState("");
   const [ready, setReady] = useState(false);
+  const [preview, setPreview] = useState(null); // {canvas, k}: copia reducida
   const [busy, setBusy] = useState(false);
   const [boxes, setBoxes] = useState([]); // {x,y,w,h,score,on}
   const [mode, setMode] = useState("blur"); // blur | pixelate
@@ -33,8 +43,12 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     if (!(active && editSourceUrl && editSourceUrl !== loadedUrlRef.current)) return;
     loadedUrlRef.current = editSourceUrl;
     const img = new Image();
-    img.onload = () => {
-      imgRef.current = img;
+    img.onload = async () => {
+      const src = await decodedSource(editSourceUrl, img);
+      if (loadedUrlRef.current !== editSourceUrl) return; // cambió la fuente mientras tanto
+      imgRef.current = src;
+      const canvas = scaledCanvas(src, FACES_PREVIEW_MAX_SIDE);
+      setPreview({ canvas, k: canvas.width / src.width });
       setSourceName(t("img.currentName"));
       setBoxes([]);
       setDetected(false);
@@ -44,19 +58,29 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     img.src = editSourceUrl;
   }, [active, editSourceUrl, onToast]);
 
-  // (re)dibuja el preview: imagen censurada (sólo las caras activas) + contornos
+  // censura de la vista previa: solo cambia con las cajas, el modo o la
+  // intensidad (arrastrar una región nueva no la recalcula)
+  const censored = useMemo(() => {
+    if (!preview) return null;
+    const on = boxes.filter((b) => b.on);
+    if (!on.length) return preview.canvas;
+    const { k } = preview;
+    const scaled = on.map((b) => ({ ...b, x: b.x * k, y: b.y * k, w: b.w * k, h: b.h * k }));
+    return censorBoxes(preview.canvas, scaled, { mode, strength });
+  }, [preview, boxes, mode, strength]);
+
+  // (re)dibuja el preview: imagen censurada + contornos (en coords de la imagen
+  // completa, escalados al canvas reducido)
   const redraw = useCallback(() => {
     const img = imgRef.current, cv = canvasRef.current;
-    if (!img || !cv) return;
+    if (!img || !cv || !censored) return;
     const W = img.naturalWidth || img.width, H = img.naturalHeight || img.height;
-    cv.width = W; cv.height = H;
+    if (cv.width !== censored.width) cv.width = censored.width;
+    if (cv.height !== censored.height) cv.height = censored.height;
     const ctx = cv.getContext("2d");
-    const on = boxes.filter((b) => b.on);
-    if (on.length) {
-      ctx.drawImage(censorBoxes(img, on, { mode, strength }), 0, 0);
-    } else {
-      ctx.drawImage(img, 0, 0);
-    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(censored, 0, 0);
+    ctx.setTransform(preview.k, 0, 0, preview.k, 0, 0);
     // contornos: sólida = se censura, punteada = desactivada
     const line = Math.max(2, Math.round(Math.min(W, H) * 0.004));
     for (const b of boxes) {
@@ -73,7 +97,8 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
       ctx.strokeRect(dragBox.x, dragBox.y, dragBox.w, dragBox.h);
     }
     ctx.setLineDash([]);
-  }, [boxes, mode, strength, dragBox]);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }, [boxes, censored, preview, dragBox]);
 
   useEffect(() => { redraw(); }, [redraw]);
 
@@ -98,13 +123,13 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
   }, [busy, onToast]);
   const loadedWarm = useRef(false);
 
-  // coords de imagen desde un evento de puntero
+  // coords de la imagen COMPLETA desde un evento de puntero (el canvas está reducido)
   const toImg = (e) => {
-    const cv = canvasRef.current;
+    const cv = canvasRef.current, img = imgRef.current;
     const rect = cv.getBoundingClientRect();
     return {
-      x: (e.clientX - rect.left) / rect.width * cv.width,
-      y: (e.clientY - rect.top) / rect.height * cv.height,
+      x: (e.clientX - rect.left) / rect.width * img.width,
+      y: (e.clientY - rect.top) / rect.height * img.height,
     };
   };
   // arrastrar = agregar región a mano; clic (sin arrastre) = activar/desactivar
@@ -124,8 +149,8 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
     if (!s) return;
     const p = toImg(e);
     const w = Math.abs(p.x - s.x), h = Math.abs(p.y - s.y);
-    const cv = canvasRef.current;
-    const minDrag = Math.min(cv.width, cv.height) * 0.02;
+    const img = imgRef.current;
+    const minDrag = Math.min(img.width, img.height) * 0.02;
     setDragBox(null);
     if (w > minDrag && h > minDrag) {
       // región nueva a mano
@@ -209,17 +234,15 @@ export default function FaceCensorPage({ active, subTool, onSubTool, onToast, on
               <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
-          {ready && (
-            <canvas
-              ref={canvasRef}
-              className="faces-canvas"
-              onMouseDown={onDown}
-              onMouseMove={onMove}
-              onMouseUp={onUp}
-              onMouseLeave={() => { dragRef.current = null; setDragBox(null); }}
-              style={{ cursor: "crosshair" }}
-            />
-          )}
+          <canvas
+            ref={canvasRef}
+            className="faces-canvas"
+            onMouseDown={onDown}
+            onMouseMove={onMove}
+            onMouseUp={onUp}
+            onMouseLeave={() => { dragRef.current = null; setDragBox(null); }}
+            style={ready ? { cursor: "crosshair" } : { display: "none" }}
+          />
         </main>
       </div>
     </div>

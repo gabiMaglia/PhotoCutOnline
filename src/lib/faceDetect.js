@@ -96,6 +96,9 @@ export function decodeYunet(outputs, padW, padH, scoreThresh = 0.6) {
 
 // Píxeles de un rectángulo entero de la fuente (canvas chico, no la imagen entera).
 function regionPixels(source, x, y, w, h) {
+  // si la fuente ya es un canvas (vista previa reducida) se lee directo: un
+  // canvas intermedio por cada repintado cuesta más que la censura en WebKit
+  if (source instanceof HTMLCanvasElement) return source.getContext("2d").getImageData(x, y, w, h);
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;

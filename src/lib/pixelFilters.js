@@ -286,8 +286,7 @@ function blurFull(d, W, H, nc, plan) {
   }
 }
 
-// Desenfoque a escala 1/f: promedio de bloques f×f, blur con el σ que queda
-// (descontando lo que ya suavizan el promedio y la interpolación) y vuelta a
+// Desenfoque a escala 1/f: promedio de bloques f×f, blur con σ/f y vuelta a
 // tamaño completo con interpolación bilineal. Todo en Float32 a escala chica.
 function blurDownscaled(d, W, H, nc, sigma, f) {
   const w = Math.ceil(W / f), h = Math.ceil(H / f);
@@ -314,22 +313,20 @@ function blurDownscaled(d, W, H, nc, sigma, f) {
     }
   }
 
-  // el promedio aporta (f²−1)/12 de varianza y la interpolación ~f²/6
-  const rest = sigma * sigma - (f * f - 1) / 12 - (f * f) / 6;
-  const ss = Math.sqrt(Math.max(0.25, rest)) / f;
+  // σ escalado tal cual: descontar la varianza del promedio y la interpolación
+  // alejaba el resultado del nativo (σ 33: máx |Δ| 15, QA BUG-09 H-1)
+  const ss = sigma / f;
   const plan = ss < KERNEL_MAX_SIGMA ? { kernel: gaussKernel(ss) } : { boxes: boxPasses(ss) };
   const A = new Float32Array(Math.max(w, h) * nc);
   const B = new Float32Array(Math.max(w, h) * nc);
-  if (ss >= 0.5) {
-    for (let y = 0; y < h; y++) {
-      const line = small.subarray(y * w * nc, (y + 1) * w * nc);
-      const res = blurLine(line, B, w, nc, plan);
-      if (res !== line) line.set(res.subarray(0, w * nc));
-    }
-    for (let x = 0; x < w; x++) {
-      gather(small, x * nc, w * nc, A, 0, nc, h);
-      scatter(blurLine(A, B, h, nc, plan), 0, nc, small, x * nc, w * nc, h);
-    }
+  for (let y = 0; y < h; y++) {
+    const line = small.subarray(y * w * nc, (y + 1) * w * nc);
+    const res = blurLine(line, B, w, nc, plan);
+    if (res !== line) line.set(res.subarray(0, w * nc));
+  }
+  for (let x = 0; x < w; x++) {
+    gather(small, x * nc, w * nc, A, 0, nc, h);
+    scatter(blurLine(A, B, h, nc, plan), 0, nc, small, x * nc, w * nc, h);
   }
 
   // bilineal: el píxel chico j representa el centro j·f + (f−1)/2

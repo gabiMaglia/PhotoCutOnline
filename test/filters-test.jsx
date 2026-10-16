@@ -10,10 +10,11 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { CutoutProvider, useCutoutContext } from "../src/features/cutout/CutoutContext.jsx";
 import FiltersPage from "../src/features/filters/FiltersPage.jsx";
+import FaceCensorPage from "../src/features/faceCensor/FaceCensorPage.jsx";
 import { censorBoxes } from "../src/lib/faceDetect.js";
 import { backend } from "../src/lib/backend.js";
 import { t } from "../src/lib/i18n.js";
-import { syntheticPixels, pixelFiltersHash, GOLDEN_HASH } from "./fixtures/pixelFixture.js";
+import { syntheticPixels, pixelFiltersHash, GOLDEN_HASH, fnv1a as fnvOf } from "./fixtures/pixelFixture.js";
 
 const out = [];
 const flush = () => (document.getElementById("out").textContent = out.join("\n"));
@@ -325,10 +326,141 @@ function testF4(m) {
   const dv = diff(native(cssOf(vivid)), ours((im) => m.applyColorOps(im, vivid)));
   log(`INFO: F4 Vívido + 130/140/150 (5 etapas): máx |Δ| ${dv.max}, media ${dv.mean.toFixed(3)} (sin umbral, ver §CÓMO)`);
 
-  for (const s of [2, 8, 16, 48]) {
-    const d = diff(native(`blur(${s}px)`), ours((im) => m.gaussianBlur(im, s)), Math.ceil(3 * s) + 1);
-    check(d.mean <= 1.5 && d.max <= 10, `F4: blur σ ${s} ≈ nativo en el interior (media ${d.mean.toFixed(3)} ≤ 1,5, máx ${d.max} ≤ 10)`);
+  blurSweep(m);
+}
+
+// Barrido de σ (QA BUG-09 H-1): incluye los bordes de cada camino del algoritmo
+// (kernel < 3, cajas, escala reducida desde 16) y σ 33, que el slider de fondo
+// permite. 768 px para que σ 80 tenga interior a más de 3σ del borde.
+function blurSweep(m) {
+  const W = 768, H = 768;
+  const base = syntheticPixels(W, H, 13);
+  for (let i = 3; i < base.data.length; i += 4) base.data[i] = 255;
+  const src = canvasOf(W, H, (ctx) => ctx.putImageData(new ImageData(new Uint8ClampedArray(base.data), W, H), 0, 0));
+  const dctx = canvasOf(W, H, () => {}).getContext("2d");
+  for (const s of [1, 2, 3, 8, 15, 16, 24, 33, 48, 64, 80]) {
+    dctx.clearRect(0, 0, W, H);
+    dctx.filter = `blur(${s}px)`;
+    dctx.drawImage(src, 0, 0);
+    dctx.filter = "none";
+    const n = dctx.getImageData(0, 0, W, H).data;
+    const im = m.gaussianBlur({ data: new Uint8ClampedArray(base.data), width: W, height: H }, s).data;
+    const mg = Math.ceil(3 * s) + 1;
+    let max = 0, sum = 0, cnt = 0;
+    for (let y = mg; y < H - mg; y++)
+      for (let x = mg; x < W - mg; x++)
+        for (let c = 0; c < 3; c++) {
+          const i = (y * W + x) * 4 + c;
+          const e = Math.abs(n[i] - im[i]);
+          if (e > max) max = e;
+          sum += e;
+          cnt++;
+        }
+    const mean = sum / cnt;
+    check(mean <= 1.5 && max <= 10, `F4: blur σ ${s} ≈ nativo en el interior (media ${mean.toFixed(3)} ≤ 1,5, máx ${max} ≤ 10)`);
   }
+}
+
+// ---------------------------------------------------------------- F7
+// QA BUG-09 H-2: con una selfie de 12 MP la vista previa de Censurar caras no
+// puede recalcular la censura a resolución completa en cada evento.
+const settle = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+const mouse = (el, type, x, y) =>
+  el.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 }));
+
+async function testF7() {
+  const W = 4000, H = 3000;
+  const photo = photo12mp();
+  const blob = await new Promise((r) => photo.toBlob(r, "image/jpeg", 0.9));
+  const file = new File([blob], "selfie.jpg", { type: "image/jpeg" });
+  // referencia decodificada por completo (WebKit puede dibujar a medias una
+  // <img> grande que no se dibujó hace rato)
+  const img = await createImageBitmap(blob);
+
+  const root = createRoot(document.getElementById("root"));
+  root.render(
+    <CutoutProvider toast={() => {}}>
+      <Bridge file={file} />
+      <FaceCensorPage active subTool="faces" onSubTool={() => {}} onToast={() => {}} onOpenDownload={() => {}} />
+    </CutoutProvider>
+  );
+  const canvas = () => document.querySelector("#root .icon-preview canvas");
+  const shown = await waitFor(() => { const c = canvas(); return c && c.width > 0 && c.getBoundingClientRect().width > 0 && c; }, 20000);
+  if (!shown) {
+    check(false, "F7: la vista previa de Censurar caras no apareció");
+    root.unmount();
+    return;
+  }
+  await settle();
+  const cv = canvas();
+  const rect = cv.getBoundingClientRect();
+  // misma conversión que la página: coordenadas de la imagen completa
+  const toImg = (cx, cy) => ({ x: ((cx - rect.left) / rect.width) * W, y: ((cy - rect.top) / rect.height) * H });
+
+  // región a mano de ~1100 px de ancho (una cara de selfie)
+  // MouseEventInit.clientX es entero: se redondea acá para que el test y la
+  // página conviertan exactamente el mismo punto
+  const sx = Math.round(rect.left + rect.width * 0.3), sy = Math.round(rect.top + rect.height * 0.2);
+  const ex = Math.round(sx + (1100 / W) * rect.width), ey = Math.round(sy + (1300 / H) * rect.height);
+  mouse(cv, "mousedown", sx, sy);
+  mouse(cv, "mousemove", ex, ey);
+  mouse(cv, "mouseup", ex, ey);
+  const a = toImg(sx, sy), b = toImg(ex, ey);
+  const box = { x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(b.x - a.x), h: Math.abs(b.y - a.y), score: 1, on: true, manual: true };
+  const slider = await waitFor(() => document.getElementById("faces-strength"), 10000);
+  await settle();
+
+  // muestra de la región en coordenadas del canvas (sirve con cualquier escala)
+  const sample = () => {
+    const k = canvas().width / W;
+    const x = Math.round((box.x + box.w / 2) * k), y = Math.round((box.y + box.h / 2) * k);
+    const r = Math.max(4, Math.round(60 * k));
+    return fnvOf(canvas().getContext("2d").getImageData(x - r, y - r, 2 * r, 2 * r).data);
+  };
+
+  // primero, sin medir: la vista previa cambia de verdad con la intensidad (leer
+  // el canvas fuerza una copia desde la GPU, por eso no va dentro de la medición)
+  setRange(slider, 20);
+  await settle();
+  const at20 = sample();
+  setRange(slider, 90);
+  await settle();
+  check(sample() !== at20, "F7: el slider de intensidad repinta la vista previa");
+
+  const sliderTimes = [];
+  for (const v of [30, 80, 40, 70, 50]) {
+    const t0 = performance.now();
+    setRange(slider, v);
+    await settle();
+    sliderTimes.push(performance.now() - t0);
+  }
+  const ms = median(sliderTimes);
+  check(ms <= 100, `F7: slider de intensidad con 12 MP y región de 1100 px: ${ms.toFixed(0)} ms por actualización (≤ 100; ${sliderTimes.map((t) => t.toFixed(0)).join("/")})`);
+
+  // segundo arrastre fuera de la región: cada mousemove solo redibuja el recuadro
+  const qx = Math.round(rect.left + rect.width * 0.75), qy = Math.round(rect.top + rect.height * 0.7);
+  mouse(cv, "mousedown", qx, qy);
+  const moveTimes = [];
+  for (let k = 1; k <= 5; k++) {
+    const t0 = performance.now();
+    mouse(cv, "mousemove", qx + k * 8, qy + k * 6);
+    await settle();
+    moveTimes.push(performance.now() - t0);
+  }
+  mouse(cv, "mousemove", qx, qy);
+  mouse(cv, "mouseup", qx, qy); // vuelve al punto de partida: clic fuera de la región, no cambia nada
+  await settle();
+  const mm = median(moveTimes);
+  check(mm <= 100, `F7: arrastre a mano con 12 MP: ${mm.toFixed(0)} ms por mousemove (≤ 100; ${moveTimes.map((t) => t.toFixed(0)).join("/")})`);
+
+  // la descarga sigue a resolución completa y bit-idéntica a censorBoxes
+  const dl = await captureDownload(() => [...document.querySelectorAll("#root button")].find((x) => x.textContent.trim() === t("faces.download"))?.click());
+  const want = censorBoxes(img, [box], { mode: "blur", strength: 50 }).getContext("2d").getImageData(0, 0, W, H);
+  check(
+    !!dl && dl.width === W && dl.height === H && fnvOf(dl.data) === fnvOf(want.data),
+    `F7: la descarga es la censura a resolución completa, bit-idéntica (${dl ? `${dl.width}×${dl.height} ${fnvOf(dl.data)} vs ${fnvOf(want.data)}` : "sin descarga"})`
+  );
+  root.unmount();
 }
 
 function testF5(m) {
@@ -442,7 +574,7 @@ async function testPerf(m) {
 // ---------------------------------------------------------------- main
 async function main() {
   log(`motor: ${isChrome ? "Chrome" : "WebKit"} · ctx.filter ${"filter" in document.createElement("canvas").getContext("2d") ? "existe" : "NO existe"}`);
-  for (const [name, fn] of [["F1", testF1], ["F2", testF2], ["F3", testF3], ["F6", testF6]]) {
+  for (const [name, fn] of [["F1", testF1], ["F2", testF2], ["F3", testF3], ["F6", testF6], ["F7", testF7]]) {
     try {
       await fn();
     } catch (e) {

@@ -351,3 +351,15 @@ Origen: engram/qa/BUG-09.md (intento 1 APROBADO; el orquestador pide cerrar H-1 
 Tiempos antes/después de H-2 en el handoff.
 
 **Aprobado por:** nerv-web · tech lead web · 2026-10-16
+
+#### Nota de implementación del intento 2 (posterior al sello)
+- Vista previa de Censurar caras a **1024 px** de lado mayor (dentro de «≤ 1280»): a 1280 la mediana en
+  WebKit con la máquina cargada daba 85–95 ms (el blur de región en JSC); a 1024, 67 ms estable.
+- Hallazgo nuevo en WebKit: una `<img>` de 12 MP que deja de dibujarse seguido se re-decodifica a medias
+  al volver a dibujarla (también con `createImageBitmap(img)`): la descarga de Censurar caras salía con una
+  banda corrupta distinta en cada corrida (F7 lo detectó; con un `ImageBitmap` retenido también, tras
+  las suites WebP). Filtros y Censurar caras copian ahora la fuente una vez a un canvas en memoria
+  (`willReadFrequently`, `utils/image.js` `decodedSource`), que WebKit no descarta; ocupa lo mismo que
+  el canvas a tamaño completo que la página ya tenía antes del ticket.
+- F7 lee el canvas (comprobación de que la vista previa cambia) fuera del intervalo medido: la copia desde
+  la GPU no es costo de la vista previa. Mismo umbral.
