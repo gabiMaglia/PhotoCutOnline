@@ -5,6 +5,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { lastModified, publishedDate, isGuideSource } from "./scripts/lib/lastmod.mjs";
 import { injectGuideDates } from "./scripts/lib/dates.mjs";
+import { buildSwManifest, injectSwBuild, injectBuildMeta } from "./scripts/lib/swManifest.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -197,7 +198,7 @@ export default defineConfig(({ mode }) => {
   const site = (env.VITE_SITE_URL || "").replace(/\/$/, "");
 
   return {
-    plugins: [react(), absoluteOgTags(site), seoArtifacts(site, env), umamiTag(env)],
+    plugins: [react(), absoluteOgTags(site), seoArtifacts(site, env), umamiTag(env), swBuild()],
     clearScreen: false,
     worker: {
       // el worker de recorte hace import() dinámico (onnxruntime-web):
@@ -226,6 +227,34 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
+// BUG-08: versiona el service worker con el manifiesto del deploy (ver
+// scripts/lib/swManifest.mjs). writeBundle y no closeBundle: es secuencial y
+// corre antes del closeBundle paralelo de seoArtifacts, que también reescribe
+// HTML de dist. Lee el disco para incluir lo que emite el build del worker.
+function swBuild() {
+  let outDir;
+  return {
+    name: "sw-build",
+    apply: "build",
+    configResolved(config) {
+      outDir = path.resolve(config.root, config.build.outDir);
+    },
+    writeBundle() {
+      const list = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => !f.startsWith(".")) : []);
+      const htmlFiles = { "/": path.join(outDir, "index.html"), "/editor/": path.join(outDir, "editor", "index.html") };
+      const html = Object.fromEntries(Object.entries(htmlFiles).map(([r, f]) => [r, fs.readFileSync(f, "utf8")]));
+      const build = buildSwManifest({
+        assets: list(path.join(outDir, "assets")),
+        models: list(path.join(outDir, "models")),
+        html,
+      });
+      const swFile = path.join(outDir, "sw.js");
+      fs.writeFileSync(swFile, injectSwBuild(fs.readFileSync(swFile, "utf8"), build));
+      for (const [r, f] of Object.entries(htmlFiles)) fs.writeFileSync(f, injectBuildMeta(html[r], build.id));
+    },
+  };
+}
 
 // Analytics Umami (cookieless, sin banner de consentimiento): inyecta el script
 // en el <head> de AMBAS páginas (landing index.html + editor/index.html) cuando

@@ -22,6 +22,7 @@
 // no aplica.
 
 import { CutoutSession, UNDO_CAP } from "./jsEngine.js";
+import { isChunkLoadError, workerLoadError, reportStaleBuild } from "./staleBuild.js";
 
 function hasTauri() {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -37,12 +38,24 @@ let worker = null;
 let nextId = 1;
 const pending = new Map();
 
+function rejectAll(err) {
+  for (const p of pending.values()) p.reject(err);
+  pending.clear();
+}
+
 function getWorker() {
   if (worker) return worker;
-  worker = new Worker(new URL("./cutoutWorker.js", import.meta.url), {
+  const w = new Worker(new URL("./cutoutWorker.js", import.meta.url), {
     type: "module",
   });
-  worker.onmessage = (e) => {
+  // Un error ANTES del primer mensaje es que el script no cargó (BUG-08: tras
+  // un deploy, el hash viejo da 404). Ese worker no existe: se descarta para
+  // que la próxima llamada lo recree, en vez de mandarle mensajes que nadie
+  // contesta. Si ya respondió, un error es de ejecución y el worker (con la
+  // sesión de recorte adentro) se conserva.
+  let responded = false;
+  w.onmessage = (e) => {
+    responded = true;
     const { id, ok, result, error, progress } = e.data;
     const p = pending.get(id);
     if (!p) return;
@@ -52,12 +65,20 @@ function getWorker() {
     }
     pending.delete(id);
     if (ok) p.resolve(result);
-    else p.reject(new Error(error));
+    else if (isChunkLoadError(error)) {
+      // un import() de adentro del worker apunta a un chunk que ya no está
+      reportStaleBuild();
+      p.reject(workerLoadError(error));
+    } else p.reject(new Error(error));
   };
-  worker.onerror = (e) => {
-    for (const p of pending.values()) p.reject(new Error(e.message || "worker error"));
-    pending.clear();
+  w.onerror = (e) => {
+    if (responded) return rejectAll(new Error(e.message || "worker error"));
+    w.terminate();
+    if (worker === w) worker = null;
+    reportStaleBuild();
+    rejectAll(workerLoadError(e.message));
   };
+  worker = w;
   return worker;
 }
 

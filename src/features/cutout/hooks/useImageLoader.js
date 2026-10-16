@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { backend } from "../../../lib/backend.js";
 import { t } from "../../../lib/i18n.js";
+import { errorText } from "../../../lib/staleBuild.js";
 import {
   inspectImageFile,
   bitmapToDataUrl,
@@ -26,7 +27,7 @@ export function useImageLoader({ toast, onLoad }) {
         setImageSize({ width, height });
         toast(note || t("toast.loaded", { w: width, h: height }), "ok");
       } catch (e) {
-        toast(String(e), "error");
+        toast(errorText(e), "error");
       }
     },
     [toast, onLoad]

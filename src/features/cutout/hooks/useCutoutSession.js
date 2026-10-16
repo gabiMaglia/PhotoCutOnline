@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { backend } from "../../../lib/backend.js";
 import { t } from "../../../lib/i18n.js";
+import { errorText } from "../../../lib/staleBuild.js";
 import { trackEvent } from "../../../services/analytics.js";
 import { warmupAiWithToast } from "../../../utils/aiWarmup.js";
 
@@ -70,7 +71,7 @@ export function useCutoutSession({ imageUrl, toast }) {
         if (method) trackEvent("cutout", { method });
         if (okKey) toast(t(okKey), "ok");
       } catch (e) {
-        toast(String(e), "error");
+        toast(errorText(e), "error");
       } finally {
         setBusy(false);
       }
@@ -117,7 +118,7 @@ export function useCutoutSession({ imageUrl, toast }) {
         setResultUrl(await backend.refine(stroke, 2));
         refreshUndo();
       } catch (e) {
-        toast(String(e), "error");
+        toast(errorText(e), "error");
       } finally {
         setBusy(false);
       }
