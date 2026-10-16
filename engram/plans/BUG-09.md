@@ -299,3 +299,14 @@ Todas las «Pruebas» del §QUÉ verdes en Chrome y WebKit (F4 solo Chrome), sal
 tiempos de P1–P3 en el log y handoff P-1 con el hallazgo de la cadena Vívido para el arquitecto.
 
 **Aprobado por:** nerv-web · tech lead web · 2026-10-16
+
+### Nota de implementación (posterior al sello, sin cambio de tolerancias)
+- **Blur a escala reducida para σ ≥ 16** (permitido por el §QUÉ «si cumple las tolerancias»): f = ⌊σ/8⌋
+  (máx 8), promedio de bloques f×f, blur con σ corregido por la varianza del promedio y de la
+  interpolación, vuelta bilineal. Motivo: con la máquina cargada, 12 MP a resolución completa tardaba
+  1,4–2,4 s solo el blur. Medido contra `ctx.filter` en 18 valores de σ entre 1 y 80: máx |Δ| ≤ 10 y media
+  ≤ 1,36 en todos. Con f = ⌊σ/4⌋ (más agresivo) σ 8 y 16 salían de tolerancia (máx 12–13): descartado.
+- **Vista previa de Filtros a 1280 px de lado mayor** (≤ 2048 del §QUÉ): a 1600 px tardaba 106 ms (fuera
+  de los 100 ms); a 1280, 62–68 ms. El canvas se muestra a `max-height: 66vh`, así que 1280 px alcanza.
+- El test de «media conservada» usa una imagen más grande para σ 30 (400×300 en vez de 64×48): con
+  bordes extendidos la media se conserva solo si la imagen es varias veces σ. La tolerancia (±0,5) no cambió.
