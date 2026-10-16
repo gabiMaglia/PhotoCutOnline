@@ -10,6 +10,7 @@
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { chromium, webkit } from "playwright-core";
+import { runSwDeploy } from "./sw-deploy-test.mjs";
 
 const PORT = 5187;
 const TESTS = [
@@ -197,6 +198,8 @@ async function main() {
       args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
     });
     failed += await runSuite(browser, SELFTEST ? SELFTEST_SUITE : TESTS, "chrome", SELFTEST ? noCheck : checkChrome);
+    // BUG-08: service worker frente a deploys (build y servidor propios, no Vite dev)
+    if (!SELFTEST) failed += await runSwDeploy(browser, "chrome");
 
     let wk = null;
     try {
@@ -216,6 +219,7 @@ async function main() {
         else {
           failed += await runSuite(wk, WEBKIT_TESTS, "webkit", checkWebkit);
           failed += await runRetry(wk);
+          failed += await runSwDeploy(wk, "webkit");
         }
       } finally {
         await wk.close();
