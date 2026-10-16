@@ -50,10 +50,15 @@ const toPngFile = (c, name) =>
   new Promise((r) => c.toBlob((b) => r(new File([b], name, { type: "image/png" })), "image/png"));
 
 async function decodeToImageData(src) {
-  const blob = src instanceof Blob ? src : await (await fetch(src)).blob();
-  const bmp = await createImageBitmap(blob);
-  const c = canvasOf(bmp.width, bmp.height, (ctx) => ctx.drawImage(bmp, 0, 0));
-  return c.getContext("2d").getImageData(0, 0, bmp.width, bmp.height);
+  // <img> + decode() y no createImageBitmap(blob): en el WebKit de Linux (CI)
+  // ese bitmap salía a veces vacío (ver decodedSource en src/utils/image.js)
+  const url = src instanceof Blob ? URL.createObjectURL(src) : src;
+  const im = new Image();
+  im.src = url;
+  await im.decode();
+  const c = canvasOf(im.naturalWidth, im.naturalHeight, (ctx) => ctx.drawImage(im, 0, 0));
+  if (src instanceof Blob) URL.revokeObjectURL(url);
+  return c.getContext("2d").getImageData(0, 0, im.naturalWidth, im.naturalHeight);
 }
 const pixelAt = (img, x, y) => Array.from(img.data.subarray((y * img.width + x) * 4, (y * img.width + x) * 4 + 4));
 const near = (got, want, tol = 1) => want.every((v, i) => Math.abs(got[i] - v) <= tol);

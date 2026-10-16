@@ -41,15 +41,23 @@ export async function bgWithOpacity(bgDataUrl, opacity, imageSize) {
  * BUG-09. Se copia una vez a un canvas en memoria (willReadFrequently), que no
  * se descarta. Ocupa lo mismo que el canvas a tamaño completo que había antes.
  * Sin soporte, devuelve la <img> tal cual.
+ *
+ * Se copia desde la <img> recién cargada (img.decode()) y no con
+ * createImageBitmap(blob): en el WebKit de Linux (CI 172c634) ese bitmap salía
+ * a veces vacío (0,0,0,0) y la vista previa de Filtros quedaba en blanco. El
+ * problema de las bandas es volver a dibujar la <img> MÁS TARDE, no esta copia
+ * única inmediata. `url` queda por compatibilidad de firma.
  */
+// eslint-disable-next-line no-unused-vars
 export async function decodedSource(url, img) {
   try {
-    const bmp = await createImageBitmap(await (await fetch(url)).blob());
+    await img.decode?.();
+    const w = img.naturalWidth || img.width;
+    const h = img.naturalHeight || img.height;
     const c = document.createElement("canvas");
-    c.width = bmp.width;
-    c.height = bmp.height;
-    c.getContext("2d", { willReadFrequently: true }).drawImage(bmp, 0, 0);
-    bmp.close?.();
+    c.width = w;
+    c.height = h;
+    c.getContext("2d", { willReadFrequently: true }).drawImage(img, 0, 0);
     return c;
   } catch {
     return img;
