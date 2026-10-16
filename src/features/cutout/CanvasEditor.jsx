@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { t } from "../../lib/i18n.js";
 import { backend } from "../../lib/backend.js";
+import { useTimedFlag } from "../../hooks/useTimedFlag.js";
 
 // Lienzo interactivo. Modos de entrada:
 //  - "rect": arrastrar un recuadro para recortar esa área (no segmenta; marching ants)
@@ -57,6 +58,10 @@ export default function CanvasEditor({
   const gesture = useRef(null);
   const panDrag = useRef(null);
   const compareDrag = useRef(false);
+  // presión sobre la imagen mientras se compara: el aviso sale al soltar, así
+  // una pinza de dos dedos no lo dispara por el primer dedo
+  const blockedPress = useRef(false);
+  const [hintOn, flashHint, clearHint] = useTimedFlag(2500);
   const viewRef = useRef(view);
   viewRef.current = view;
   const fitRef = useRef(fitScale);
@@ -165,6 +170,10 @@ export default function CanvasEditor({
   }, [resultUrl, imageSize]);
 
   useEffect(() => () => cancelAnimationFrame(antsRaf.current), []);
+
+  useEffect(() => {
+    if (!compare) clearHint();
+  }, [compare, clearHint]);
 
   // ---- zoom (rueda / pinch del trackpad) ----
   const zoomAt = useCallback(
@@ -298,6 +307,7 @@ export default function CanvasEditor({
     // dos dedos → gesto de zoom/pan táctil
     if (pointers.current.size === 2) {
       cancelDrawing();
+      blockedPress.current = false;
       const [a, b] = [...pointers.current.values()];
       gesture.current = {
         d0: Math.hypot(a.x - b.x, a.y - b.y),
@@ -314,7 +324,11 @@ export default function CanvasEditor({
       return;
     }
 
-    if (busy || compare) return;
+    if (busy) return;
+    if (compare) {
+      blockedPress.current = true;
+      return;
+    }
 
     // varita: un clic quita la zona del mismo color (shift = sumar otra zona a quitar); no arrastra
     if (mode === "wand") {
@@ -406,6 +420,11 @@ export default function CanvasEditor({
   function handleUp(e) {
     pointers.current.delete(e.pointerId);
     if (gesture.current && pointers.current.size < 2) gesture.current = null;
+    if (blockedPress.current) {
+      blockedPress.current = false;
+      flashHint();
+      return;
+    }
     if (panDrag.current) {
       panDrag.current = null;
       return;
@@ -585,10 +604,10 @@ export default function CanvasEditor({
             <button
               className={`hud-btn ${compare ? "hud-btn-on" : ""}`}
               aria-pressed={compare}
-              title={`${t("compare.toggle")} (C)`}
+              title={t("compare.title")}
               onClick={() => onCompareChange(!compare)}
             >
-              ◐ {t("compare.toggle")}
+              {compare ? t("compare.exit") : `◐ ${t("compare.toggle")}`}
             </button>
           )}
           <button
@@ -599,6 +618,12 @@ export default function CanvasEditor({
           >
             {Math.round(view.zoom * 100)}%
           </button>
+        </div>
+      )}
+
+      {compare && hintOn && (
+        <div className="compare-hint" role="status" aria-live="polite">
+          {t("compare.hint")}
         </div>
       )}
 

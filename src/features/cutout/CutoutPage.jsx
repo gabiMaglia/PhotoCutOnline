@@ -22,10 +22,10 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
   useKeyboardShortcuts({
     undo: session.handleUndo,
     redo: session.handleRedo,
-    modeRect: () => loader.imageUrl && session.setMode("rect"),
-    modeWand: () => loader.imageUrl && backend.features.wand && session.setMode("wand"),
-    modeKeep: () => session.hasCut && session.setMode("fg"),
-    modeRemove: () => session.hasCut && session.setMode("bg"),
+    modeRect: () => loader.imageUrl && session.pickMode("rect"),
+    modeWand: () => loader.imageUrl && backend.features.wand && session.pickMode("wand"),
+    modeKeep: () => session.hasCut && session.pickMode("fg"),
+    modeRemove: () => session.hasCut && session.pickMode("bg"),
     auto: () => backend.features.auto && session.handleAuto(),
     ai: () => backend.features.ai && session.handleAi(),
     brushDown: () => session.nudgeBrush(-4),
@@ -36,6 +36,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
     help: onHelp,
     escape: () => {
       preview.setOpen(false);
+      session.setCompare(false);
       loader.cancelLarge();
       onCloseModals?.();
     },
@@ -57,7 +58,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
             hasCut={session.hasCut}
             busy={session.busy}
             mode={session.mode}
-            setMode={session.setMode}
+            setMode={session.pickMode}
             brushSize={session.brushSize}
             setBrushSize={session.setBrushSize}
             wandTolerance={session.wandTolerance}
