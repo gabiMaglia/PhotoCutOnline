@@ -373,12 +373,9 @@ async function testF7() {
   const photo = photo12mp();
   const blob = await new Promise((r) => photo.toBlob(r, "image/jpeg", 0.9));
   const file = new File([blob], "selfie.jpg", { type: "image/jpeg" });
-  const img = await new Promise((res, rej) => {
-    const i = new Image();
-    i.onload = () => res(i);
-    i.onerror = rej;
-    i.src = URL.createObjectURL(blob);
-  });
+  // referencia decodificada por completo (WebKit puede dibujar a medias una
+  // <img> grande que no se dibujó hace rato)
+  const img = await createImageBitmap(blob);
 
   const root = createRoot(document.getElementById("root"));
   root.render(
