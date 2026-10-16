@@ -314,4 +314,17 @@ antes de llamarlo flaky). No se tocan páginas públicas ⇒ sin `npm run lastmo
   entrarían al manifiesto (quedarían solo en runtime, como hoy).
 - Primer install: ≈ 600 KB de JS/CSS + 2 HTML; los deploys siguientes bajan solo lo renombrado.
 
+### Desvíos de implementación (2026-10-16, solo en la suite; el diseño no cambia)
+- **«0 requests fuera del origen»:** `editor/index.html:195` carga AdSense fijo, así que el editor real sí
+  pide a terceros. La suite los corta (`ctx.route` → `abort`, hermética y sin red real) y exige lo que
+  protege la promesa de privacidad: **ninguna request fuera del origen con cuerpo**.
+- **C1:** la primera visita a `/editor/` no está controlada por el SW; el bug real necesita la visita
+  siguiente (el usuario que vuelve), que es la que deja el HTML de A en la caché del SW viejo. C1 hace esa
+  segunda visita antes del deploy B; así reproduce exactamente «worker error» + 404 de `cutoutWorker-<A>`.
+- **C5:** la caché `photocut-v2` se siembra con un SW mínimo con la forma de los anteriores (como pasó en
+  la realidad), no desde la página: en WebKit de Playwright (contexto efímero) el SW ve el nombre de una
+  caché escrita por la página pero no sus entradas (diagnosticado con instrumentación; Chrome sí las ve).
+- `waitActive` hace polling desde node con `page.evaluate`: `waitForFunction` no documenta predicados
+  async y una Promise cuenta como «truthy» (la primera versión pasaba sin esperar).
+
 **Aprobado por:** nerv-web · tech lead web · 2026-10-16
