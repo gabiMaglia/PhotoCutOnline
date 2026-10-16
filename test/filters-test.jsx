@@ -421,17 +421,22 @@ async function testF7() {
     return fnvOf(canvas().getContext("2d").getImageData(x - r, y - r, 2 * r, 2 * r).data);
   };
 
+  // primero, sin medir: la vista previa cambia de verdad con la intensidad (leer
+  // el canvas fuerza una copia desde la GPU, por eso no va dentro de la medición)
+  setRange(slider, 20);
+  await settle();
+  const at20 = sample();
+  setRange(slider, 90);
+  await settle();
+  check(sample() !== at20, "F7: el slider de intensidad repinta la vista previa");
+
   const sliderTimes = [];
-  let changed = false;
-  for (const v of [20, 90, 30, 80, 40]) {
-    const before = sample();
+  for (const v of [30, 80, 40, 70, 50]) {
     const t0 = performance.now();
     setRange(slider, v);
     await settle();
     sliderTimes.push(performance.now() - t0);
-    if (sample() !== before) changed = true;
   }
-  check(changed, "F7: el slider de intensidad repinta la vista previa");
   const ms = median(sliderTimes);
   check(ms <= 100, `F7: slider de intensidad con 12 MP y región de 1100 px: ${ms.toFixed(0)} ms por actualización (≤ 100; ${sliderTimes.map((t) => t.toFixed(0)).join("/")})`);
 
@@ -453,7 +458,7 @@ async function testF7() {
 
   // la descarga sigue a resolución completa y bit-idéntica a censorBoxes
   const dl = await captureDownload(() => [...document.querySelectorAll("#root button")].find((x) => x.textContent.trim() === t("faces.download"))?.click());
-  const want = censorBoxes(img, [box], { mode: "blur", strength: 40 }).getContext("2d").getImageData(0, 0, W, H);
+  const want = censorBoxes(img, [box], { mode: "blur", strength: 50 }).getContext("2d").getImageData(0, 0, W, H);
   check(
     !!dl && dl.width === W && dl.height === H && fnvOf(dl.data) === fnvOf(want.data),
     `F7: la descarga es la censura a resolución completa, bit-idéntica (${dl ? `${dl.width}×${dl.height} ${fnvOf(dl.data)} vs ${fnvOf(want.data)}` : "sin descarga"})`
