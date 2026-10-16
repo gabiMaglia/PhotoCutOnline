@@ -99,16 +99,15 @@ const inlineSession = WORKER_OK ? null : new CutoutSession();
 // D1 (QA, CRÍTICO, paridad R-02): igual que en cutoutWorker.js, el timer se
 // arma al TERMINAR la operación de IA, no al iniciarla — armarlo al inicio
 // dispararía releaseAi() sobre una sesión todavía en uso si la inferencia
-// tarda más que AI_IDLE_MS.
-const AI_IDLE_MS = 30_000;
+// tarda más que el idle. El idle lo decide aiSegmenter según el modelo
+// (GROW-36: 5 min con BiRefNet, 30 s con u2netp).
 let aiIdleTimer = null;
 
-function scheduleAiRelease() {
+async function scheduleAiRelease() {
+  const mod = await import("./aiSegmenter.js");
+  // limpiar DESPUÉS del await: dos operaciones que terminan juntas dejan un solo timer
   clearTimeout(aiIdleTimer);
-  aiIdleTimer = setTimeout(async () => {
-    const mod = await import("./aiSegmenter.js");
-    mod.releaseAi();
-  }, AI_IDLE_MS);
+  aiIdleTimer = setTimeout(() => mod.releaseAi(), mod.aiIdleMs());
 }
 
 /** Envuelve una operación de IA: reprograma el idle-release al TERMINAR (ok o error). */

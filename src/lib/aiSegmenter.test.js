@@ -511,6 +511,29 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
     expect(seen.filter((p) => p.stage === "fallback")).toHaveLength(1);
   });
 
+  // Recrear BiRefNet tras liberarlo cuesta ~21 s de compilar shaders: una pausa
+  // corta no puede costar eso. u2netp abre en 0,5 s y conserva su liberación rápida.
+  test("aiIdleMs(): 5 min con BiRefNet, 30 s con u2netp (y 30 s antes de abrir nada)", async () => {
+    const seg = require("./aiSegmenter.js");
+    expect(seg.aiIdleMs()).toBe(30_000);
+    await seg.aiMatte(photo(4, 4));
+    expect(seg.aiIdleMs()).toBe(5 * 60_000);
+  });
+
+  test("sin GPU, aiIdleMs() es 30 s", async () => {
+    setGpu(undefined);
+    const seg = require("./aiSegmenter.js");
+    await seg.aiMatte(photo(4, 4));
+    expect(seg.aiIdleMs()).toBe(30_000);
+  });
+
+  test("tras el respaldo a u2netp, aiIdleMs() vuelve a 30 s", async () => {
+    fail.run.add("birefnet");
+    const seg = require("./aiSegmenter.js");
+    await seg.aiMatte(photo(4, 4));
+    expect(seg.aiIdleMs()).toBe(30_000);
+  });
+
   test("si u2netp también falla, se propaga el error ORIGINAL de BiRefNet", async () => {
     fail.create.add("birefnet");
     fail.create.add("u2netp");

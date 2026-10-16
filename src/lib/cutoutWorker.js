@@ -12,33 +12,33 @@
 
 import { CutoutSession, refineMatte } from "./jsEngine.js";
 import wasmInit, { WasmCut } from "./wasm/photocut_wasm.js";
-import { aiMatte, warmupAi, releaseAi } from "./aiSegmenter.js";
+import { aiMatte, warmupAi, releaseAi, aiIdleMs } from "./aiSegmenter.js";
 
 const session = new CutoutSession();
 
 // T-002a (A1): el InferenceSession ONNX + runtime WASM quedan residentes en
 // el worker tras el 1er aiCut (decenas-cientos de MB) y presionan el heap
-// para TODO lo demás (incl. pinceles). Se libera tras ~30s de inactividad de
-// IA; un aiCut/removeBg posterior la vuelve a crear de forma transparente
+// para TODO lo demás (incl. pinceles). Se libera tras aiIdleMs() de
+// inactividad de IA (30 s con u2netp, 5 min con BiRefNet, GROW-36); un
+// aiCut/removeBg posterior la vuelve a crear de forma transparente
 // (el costo de recrearla solo se paga si el usuario realmente dejó de usar
 // IA por un rato, no entre dos cortes seguidos).
 //
 // D1 (QA, CRÍTICO): el timer se arma al TERMINAR cada operación de IA, no al
 // iniciarla — si se armara al inicio, una inferencia (o el warmup) que tarda
-// más que AI_IDLE_MS dispararía releaseAi() sobre la sesión que la propia
+// más que el idle dispararía releaseAi() sobre la sesión que la propia
 // operación todavía tiene capturada en su await (use-after-free del runtime
 // WASM). aiSegmenter.releaseAi() además respeta un contador de operaciones
 // en vuelo y difiere la liberación si hace falta, como defensa en
 // profundidad — pero el caller no debe depender de eso para evitar el
 // disparo en primer lugar.
-const AI_IDLE_MS = 30_000;
 let aiIdleTimer = null;
 
 function scheduleAiRelease() {
   clearTimeout(aiIdleTimer);
   aiIdleTimer = setTimeout(() => {
     releaseAi();
-  }, AI_IDLE_MS);
+  }, aiIdleMs());
 }
 
 /** Envuelve una operación de IA: reprograma el idle-release al TERMINAR (ok o error). */

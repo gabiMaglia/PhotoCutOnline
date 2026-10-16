@@ -69,7 +69,7 @@ describe("cutoutWorker — pasa el canal de progreso a aiMatte (GROW-36)", () =>
       onNotice?.({ stage: "fallback", model: "u2netp" });
       return { matte: new Uint8ClampedArray(img.width * img.height), refine: undefined };
     });
-    jest.doMock("./aiSegmenter.js", () => ({ aiMatte, warmupAi: jest.fn(), releaseAi: jest.fn() }));
+    jest.doMock("./aiSegmenter.js", () => ({ aiMatte, warmupAi: jest.fn(), releaseAi: jest.fn(), aiIdleMs: () => 30_000 }));
     jest.doMock("./wasm/photocut_wasm.js", () => ({ __esModule: true, default: jest.fn(), WasmCut: class {} }));
     jest.doMock("./jsEngine.js", () => ({
       CutoutSession: class {

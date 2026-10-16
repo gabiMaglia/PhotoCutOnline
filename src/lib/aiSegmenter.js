@@ -42,6 +42,9 @@ export const MODELS = {
     // su matte ya es casi binario y sin niebla: sin estiramiento, y el filtro de
     // componentes por área absoluta para no borrar las letras de un logo
     refine: { stretch: false, minComponentFrac: 0.0005 },
+    // recrearlo tras liberarlo cuesta ~21 s de compilar shaders: una pausa corta
+    // no puede pagar eso otra vez
+    idleMs: 5 * 60_000,
   },
   u2netp: {
     name: "u2netp",
@@ -53,10 +56,13 @@ export const MODELS = {
     std: IMAGENET_STD,
     post: "minmax",
     refine: undefined, // post-proceso de siempre (refineMatte por defecto)
+    idleMs: 30_000, // abre en 0,5 s: conviene soltar la memoria rápido
   },
 };
 
 let sessionPromise = null; // → { ort, session, model }
+// último modelo abierto: decide cuánto esperar antes de liberarlo (aiIdleMs)
+let activeModel = MODELS.u2netp;
 
 // Una vez que BiRefNet falló en este equipo no se reintenta en cada corte: el
 // usuario ya vio el aviso, y cada intento cuesta una descarga grande, 20 s de
@@ -198,6 +204,7 @@ async function openModel(model, onProgress) {
   const session = await ort.InferenceSession.create(source, {
     executionProviders: [model.ep],
   });
+  activeModel = model;
   return { ort, session, model };
 }
 
@@ -241,6 +248,14 @@ function trackSession(p) {
     throw e;
   });
   return tracked;
+}
+
+/**
+ * Cuánta inactividad esperan los callers (worker e inline) antes de releaseAi():
+ * la del último modelo abierto. Si BiRefNet cayó a u2netp, rige la de u2netp.
+ */
+export function aiIdleMs() {
+  return activeModel.idleMs;
 }
 
 /**
