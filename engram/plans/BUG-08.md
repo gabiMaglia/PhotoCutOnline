@@ -158,3 +158,160 @@ Aviso «hay una versión nueva» proactivo al detectar un SW en espera; Workbox;
 `/fonts`, iconos e imágenes más allá de pasar a network-first con el resto de lo no hasheado.
 
 **Aprobado por:** nerv-arquitecto · arquitecto · 2026-10-16
+
+## CÓMO — plan de implementación
+
+Rama `fix/BUG-08-sw-deploy` desde `main` (0d2a87b). Sin dependencias nuevas (todo `node:` + lo que ya
+está: Vite 5, playwright-core, jest). Orden TDD: primero los tests rojos (T1–T2) con su salida guardada,
+después el código (T3–T7), después verde completo (T8).
+
+**Verificaciones previas (hechas, 2026-10-16):**
+- Vite `vite:preloadError`: `event.payload` = error original; `preventDefault()` evita el throw (Context7
+  `/vitejs/vite`, «Load Error Handling»). **No** se llama `preventDefault()`: un `React.lazy` sin módulo
+  rompería igual en render; dejamos que el ErrorBoundary capture y el aviso se monta FUERA de él.
+- Build real medido (`vite build` a un dir temporal, 5 s): `/assets/` = 30 archivos; JS/CSS/MJS ≈ 600 KB;
+  `.wasm` = ORT 13 MB + webp 2×≈300 KB + photocut_wasm 42 KB; `/models/` = `u2netp.onnx`,
+  `yunet_2023mar.onnx`. El worker de recorte lo referencia `editor-<hash>.js`
+  (`new URL("/assets/cutoutWorker-…")`); `FiltersPage` lo referencia `EditPage`. La landing `/` no carga
+  nada de `/assets/`.
+- Playwright WebKit (playwright-core 1.60, macOS) **sí** registra y usa un SW en `http://localhost`
+  (sonda: `fetch` respondido por el SW). `context.setOffline(true)` en WebKit hace fallar `page.goto`
+  con «internal error» aun con SW ⇒ «offline» en la suite = **servidor caído** (corta el socket), que es
+  lo que ve el SW sin red y funciona en ambos motores; en Chrome además se activa `setOffline`.
+- Playwright reporta requests del SW solo en Chromium ⇒ la fuente de verdad de «qué se pidió a la red»
+  es el **log del propio servidor de la suite** (igual en ambos motores).
+
+### Tareas
+
+**T1 — C7 rojo (jest):** `src/lib/backend.worker-load.test.js`, mismo patrón FakeWorker que
+`backend.preview.test.js`:
+  - a) el worker dispara `onerror` sin haber mandado ningún mensaje ⇒ la llamada pendiente rechaza con
+    `err.code === "WORKER_LOAD_FAILED"`, se llamó `terminate()` y se emitió `photocut:stale-build`.
+  - b) la llamada siguiente crea un FakeWorker NUEVO y resuelve cuando éste responde (hoy: postMessage
+    al worker muerto, la Promise no se resuelve nunca).
+  - c) worker que ya respondió y después dispara `onerror` ⇒ rechaza como siempre, NO se termina ni se
+    recrea (misma instancia en la llamada siguiente).
+  - d) el worker responde `{ok:false, error:"Failed to fetch dynamically imported module: …"}` ⇒ rechaza
+    con `WORKER_LOAD_FAILED` + evento, y el worker se conserva (la sesión de recorte vive ahí).
+  Más `src/lib/staleBuild.test.js` (`isChunkLoadError` con los textos de Chrome/Firefox/Safari,
+  `errorText`) y `src/features/update/StaleBuildNotice.test.jsx` (aviso es/en/pt, botón Recargar llama a
+  la función inyectada, aparece con `vite:preloadError` y con `photocut:stale-build`).
+
+**T2 — C1–C6, C8 rojos (navegador):** suite nueva `test/sw-deploy-test.mjs`, exporta
+`runSwDeploy(browser, tag)` y corre también suelta (`node test/sw-deploy-test.mjs [chrome|webkit]`).
+  - Build propio: `npx vite build --outDir <tmp>/B --emptyOutDir` con `VITE_SITE_URL=""` (el plugin SEO
+    escribe en `dist/` del repo si la variable existe; así no toca nada fuera del tmp).
+  - Deploys A y C derivados de B (`test/lib/deploys.mjs`): renombra `editor-*.js`, `cutoutWorker-*.js`,
+    `FiltersPage-*.js` **y, por clausura, todo archivo de `/assets/` que referencie a uno renombrado**
+    (como haría el hash real: si no, un chunk «compartido» tendría distinto contenido con el mismo
+    nombre, cosa que un deploy real no produce). Reescribe las referencias en `.js/.css/.mjs/.html` y en
+    `sw.js`, y el `BUILD_ID` (`<id>a` / `<id>c`) si el `sw.js` lo trae (el árbol pre-cambio no lo trae:
+    la suite corre igual y falla por los asserts, no por la infraestructura).
+  - Servidor `test/lib/deployServer.mjs` (node:http, puerto 5188) que imita a Vercel: `/editor` y
+    `/editor/` → `editor/index.html`, índice de directorio, `/sw.js` con `Cache-Control: max-age=0,
+    must-revalidate`, `/assets/*` inmutable, **404 `text/html` para lo que no existe** en el deploy
+    activo. Controles en caliente: `deploy` (A/B/C), `down` (corta el socket = sin red), `htmlDelay`
+    (ms, solo HTML), `missing` (regex de assets a responder 404 aunque existan). Log de requests con
+    estado y deploy.
+  - Casos (un `BrowserContext` nuevo por caso; `pc-onboarded=1` y `pc-lang=es` por `addInitScript`;
+    imagen PNG generada en el test con `node:zlib`, sin fixture):
+    - **C1:** A: `/editor/` hasta controlado y build A activo. → B: navegar a `/editor/`; el HTML trae el
+      entry de B (y `<meta name="photocut-build">` = id B si el build lo trae), abrir la imagen,
+      «Automático» termina con toast ok. Log: 0 respuestas 404 de `/assets/`; «worker error» no aparece.
+    - **C6** (mismo contexto que C1): desde el cambio a B, 0 requests al servidor de assets que ya
+      existían en A (los compartidos).
+    - **C2** (mismo contexto, tras C1): servidor caído (+`setOffline` en Chrome) → `/editor/?tab=text`
+      arranca y abrir «Filtros» carga su chunk y lo pinta.
+    - **C3:** contexto con B en caché; servidor pasa a C con `htmlDelay=6000` → `/editor/` llega a
+      `domcontentloaded` en ≤ 3,5 s con el HTML de B y la imagen se carga (worker vivo). Sin demora → la
+      navegación siguiente trae el HTML de C.
+    - **C4:** pestaña en A en `/editor/?tab=text` (sin abrir Filtros). → B, `registration.update()` hasta
+      que B esté activo. En la MISMA pestaña, clic en «Filtros» ⇒ el chunk de A carga (de caché), 0 404.
+    - **C5:** antes de instalar el SW, sembrar `photocut-v2` con `/assets/old-XXXX.js` y
+      `/models/u2netp.onnx` (desde una página estática que no registra SW). A → B → C, cada uno hasta
+      activo. Tras C: no existe `photocut-v2`; ninguna clave de caché con nombre exclusivo de A; están
+      las de B y C; `/models/u2netp.onnx` sigue en caché y el servidor no lo volvió a servir después de
+      la siembra.
+    - **C8:** contexto con `serviceWorkers:"block"`; `missing=/cutoutWorker-/` → abrir imagen ⇒ aparece
+      `.update-notice` con «Hay una versión nueva de PhotoCut. Recargá la página para seguir.» y botón
+      «Recargar», «worker error» no aparece y un marcador en `window` sigue ahí (no recargó). Ídem con
+      `missing=/FiltersPage-/` y clic en «Filtros» (dispara un `vite:preloadError` real).
+    - En todos: 0 requests fuera del origen (`ctx.on("request")`).
+  - `test/run-tests.mjs` la corre después de las suites existentes, en Chrome y en WebKit (el mismo
+    WebKit ya lanzado; `SKIP_WEBKIT` igual que hoy). C1 en WebKit hace el recorte completo (≈ 30 s);
+    C3 solo carga la imagen.
+  - Salida roja guardada en el scratchpad de la sesión (`red-jest.txt`, `red-sw.txt`) y citada en el
+    handoff.
+
+**T3 — `scripts/lib/swManifest.mjs` (+ `swManifest.test.mjs`, entra en `npm test` vía
+`node --test scripts/`):** funciones puras `buildSwManifest({ assets, models, html })` →
+`{ id, shell, keep }`; `injectSwBuild(swSource, build)` (reemplaza el bloque entre
+`/*__PHOTOCUT_BUILD__*/` y `/*__PHOTOCUT_BUILD_END__*/`; **tira** si el centinela no está: un build que no
+puede versionar el SW no debe salir); `injectBuildMeta(html, id)`.
+  - `shell` = `"/"`, `"/editor/"` + todo `/assets/*.{js,css,mjs}` (ordenado).
+  - `keep` = todo `/assets/*` (wasm incluido) + `/models/*`: lo que la poda conserva.
+  - `id` = sha256 (12 hex) de `shell` + `keep` + contenido de los dos HTML ⇒ cambia en cada deploy que
+    cambia algo y es estable si no cambió nada (no reinstala el SW en balde).
+
+**T4 — plugin Vite `swBuild()` en `vite.config.js`** (`apply:"build"`, hook `writeBundle`, que es
+secuencial y corre antes del `closeBundle` paralelo de `seoArtifacts`): lee `outDir/assets` y
+`outDir/models` del disco (incluye lo que emite el build del worker), calcula el manifiesto, reescribe
+`outDir/sw.js` y agrega `<meta name="photocut-build" content="<id>">` a `outDir/index.html` y
+`outDir/editor/index.html`. Usa el `outDir` resuelto (no `"dist"` fijo).
+
+**T5 — `public/sw.js` reescrito** (sigue siendo script clásico, sin imports: un SW módulo no es universal):
+  - Cachés: `photocut-shell-<id>` (precache atómico del build), `photocut-runtime` (cache-first al
+    primer uso + copias de lo network-first), `photocut-meta` (los 2 últimos builds `{id, keep}`).
+  - `install`: por cada URL del shell — HTML siempre de red (`cache:"no-cache"`); asset hasheado ya
+    presente en alguna caché ⇒ se copia (C6); el resto `addAll`. Si algo falla se borra la caché a
+    medias y se relanza (el SW nuevo no se instala; sigue el anterior). `skipWaiting()`.
+  - `activate`: builds = [actual, anterior] (N-1); rescata de `photocut-v2` las entradas que están en
+    `keep` (ORT wasm, modelos) hacia runtime; borra toda caché que no sea runtime/meta/shell retenido
+    (incluida `photocut-v2`); poda en runtime toda URL de `/assets/` o `/models/` fuera del `keep` de los
+    2 builds; `clients.claim()`.
+  - `fetch` (GET mismo origen): hasheados/modelos/wasm ⇒ cache-first (busca en todas las cachés, así una
+    pestaña N-1 encuentra lo suyo); un `put` fallido (cuota) no rompe la respuesta. Resto ⇒ network-first
+    con carrera de 3 s: gana la red (se guarda si `ok`; clave sin query para navegaciones) o, si falla o
+    tarda, la copia — para navegación primero el shell del build actual (coherente con sus chunks),
+    después cualquier caché; la respuesta tardía igual actualiza la caché (`waitUntil`). Sin copia: se
+    espera la red; si falla, `/` para navegación (como hoy) o `Response.error()`.
+  - Sin `navigationPreload` (opcional en §QUÉ): se deja fuera para no sumar superficie.
+
+**T6 — recuperación en el cliente:**
+  - `src/lib/staleBuild.js` (puro): `WORKER_LOAD_FAILED`, `isChunkLoadError(msg)` (Chrome «Failed to fetch
+    dynamically imported module», Firefox «error loading dynamically imported module», Safari «Importing
+    a module script failed»), `workerLoadError(cause)`, `reportStaleBuild()` (evento
+    `photocut:stale-build`), `isStaleBuildError(e)`, `errorText(e)` (aviso traducido si es de versión,
+    `String(e)` si no).
+  - `src/lib/backend.js`: `getWorker()` marca `responded` con el primer mensaje; `onerror` sin
+    `responded` ⇒ `terminate()`, `worker = null`, rechaza pendientes con `workerLoadError` y avisa.
+    Respuesta `ok:false` con error de import ⇒ `workerLoadError` + aviso (el worker se conserva).
+  - `src/hooks/useStaleBuild.js`: escucha `photocut:stale-build` y `vite:preloadError` ⇒ `true`.
+  - `src/components/feedback/UpdateNotice.jsx` (reutilizable, sin `t()`: recibe `message`, `actionLabel`,
+    `onAction`; usa `ui/Button` — el equivalente de `ActionButton` en este repo — `variant="primary"`).
+  - `src/features/update/StaleBuildNotice.jsx` (contenedor: `useStaleBuild` + `useLang` + `t()`), montado
+    en `src/main.jsx` **fuera** del `ErrorBoundary` (un chunk perezoso que no carga hace caer al
+    boundary; el aviso tiene que seguir visible). `onAction` = `location.reload()`, solo al tocar el botón.
+  - Llamadores que hoy hacen `toast(String(e))` con errores del backend pasan a `errorText(e)`:
+    `useImageLoader.loadDataUrl`, `useCutoutSession.runOp` y `handleStroke`,
+    `useIconStudio.removeBackground`, `useBatch` (error por imagen).
+  - CSS `.update-notice` en `src/styles.css` (fijo abajo, por encima del crash screen).
+  - i18n `update.body` / `update.reload` en es/en/pt (es con voseo).
+
+**T7 — comentarios** de `sw.js` y `main.jsx` actualizados (el «para recoger nuevos deploys» del SWR era
+falso). Sin cambios en `vercel.json` (`/sw.js` ya es `max-age=0`).
+
+**T8 — verde:** `npm test`, `npm run test:web` (Chrome + WebKit; si la máquina está cargada se reintenta
+antes de llamarlo flaky). No se tocan páginas públicas ⇒ sin `npm run lastmod`.
+
+### Riesgos (además de los de §QUÉ)
+- **GROW-36 / modelos:** desde este fix el SW trata `/models/<nombre>` como inmutable y la poda conserva
+  por NOMBRE todo lo que figure en `keep`. **Reemplazar un `.onnx` con el mismo nombre NO invalida la
+  caché de nadie** (ni cambia el `BUILD_ID` si nada más cambió). Regla: modelo nuevo ⇒ nombre nuevo
+  (p.ej. `u2netp-v2.onnx`) y actualizar la ruta en `aiSegmenter.js`/`faceDetect.js`; el nombre viejo sale
+  de `keep` y la poda lo borra en el siguiente `activate`. Anotado para GROW-36.
+- `writeBundle` lee `outDir` del disco: si un plugin futuro emitiera assets en `closeBundle`, no
+  entrarían al manifiesto (quedarían solo en runtime, como hoy).
+- Primer install: ≈ 600 KB de JS/CSS + 2 HTML; los deploys siguientes bajan solo lo renombrado.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-16
