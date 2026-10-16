@@ -1,5 +1,113 @@
 # QA BUG-11 — Comparar antes/después «no se puede cerrar» (nerv-qa, 2026-10-16)
 
+## Intento 2 — **APROBADO** · HEAD 87b0b9f (nivel A Advisory)
+
+D1 y D2 están corregidos. Lo verifiqué en el arnés y en la app real; no quedan defectos que
+bloqueen. Hay cuatro observaciones que no bloquean, al final de esta sección.
+
+### Qué cambió (`git diff e192eef..87b0b9f -- src test`)
+
+**D1.**
+- Las etiquetas Antes/Después ahora toman `top = clamp(TAG_GAP, HUD_CLEAR − pan.y, alto − TAG_H − TAG_GAP)`.
+  - Con eso quedan siempre a 56 px o más del borde superior del lienzo, justo debajo del HUD, y dentro de la foto.
+  - Código: `CanvasEditor.jsx:20-25` y `:536-539` (cálculo) y `:586-589` (uso).
+
+**D2.**
+- `.compare-hint` pasa a `left/right: 14px; width: fit-content; margin: 0 auto` (`styles.css:797-806`).
+
+**Extra.**
+- Si comparar se apaga con la imagen apretada, ya no aparece el aviso (`CanvasEditor.jsx:180-185` y `:432-436`).
+- Esto cierra la observación de borde del intento 1.
+
+**Arnés.**
+- `.workspace` pasa a `flex: none`, con aserción de 390 px. El dev encontró que el caso «390 px» del
+  intento 1 en realidad se medía a 900 px; eso corrige mi diagnóstico del intento 1, porque el falso
+  verde tenía dos causas y no una.
+- Se agrega una foto vertical de 300×600 y se chequean las dos etiquetas contra los dos botones del HUD, más «dentro de la foto».
+- D2 se mide por ancho (> mitad del lienzo) y por líneas (≤ 2).
+- P-18:
+  - Rojo previo en `BUG-11-i2-red-canvas.txt`: 3 FAIL, el portrait «Después» y dos de D2.
+  - Ningún assert se debilitó: el check único del intento 1 se reemplazó por un bucle más estricto.
+
+### Pruebas corridas por mí
+- `npm test`: 52 suites y 317 tests en jest, más 74 en node. Todo verde.
+- `npm run test:web`, en el puerto 5187 (verifiqué antes con `lsof` que estuviera libre): «✓ todo verde», EXIT 0.
+  - Chrome: 14 suites, entre ellas canvas-test con C3 móvil landscape/portrait a 390 px y D2.
+  - WebKit: 3 suites.
+- **Sonda en la app real** (`/private/tmp/claude-501/-Users-gabrielsk-Documents-Proyects-photocut/edb53082-2b69-46d4-ada9-491c9f6f736d/scratchpad/qa-BUG-11/app2.mjs`, salida `app2-run.txt`): 503 PASS y 0 FAIL.
+  - Usé fotos derivadas de dog.jpg: vertical 3:4, apaisada 4:3 y panorámica 3:1 (`mkimg.mjs`).
+  - Combinaciones probadas:
+    - Vertical a 390×844 y a 768×1024 (táctil), en es, en y pt.
+    - Apaisada y panorámica en pt (el texto más largo) a 390, 768 y 1440.
+    - Vertical en es a 1440.
+  - En todos los casos:
+    - Ningún botón del HUD se superpone a «Antes» ni a «Después», y las dos etiquetas quedan dentro de la foto.
+    - A 390 con la foto vertical, las etiquetas van en y 175–195 y el HUD termina en y 163.
+- **Aviso (D2):**
+  - A 390 mide 362 px de 390 y ocupa 2 líneas en es, en y pt.
+  - A 768 mide entre 382 y 476 px de 504, en 1 o 2 líneas.
+  - En escritorio mide 444–513 px y ocupa 1 línea.
+  - Siempre queda dentro del lienzo y no toca el HUD.
+- **Zoom 200 % y 400 % con pan por botón central** (`app4.mjs`, salida `app4-run.txt`), a 390 vertical y
+  panorámica, 768 vertical y 1440 apaisada:
+  - Si el stage sube por encima del lienzo, la etiqueta queda fija en y = 56 respecto del lienzo, con
+    el HUD terminando en 44.
+  - Si el pan baja la foto, la etiqueta acompaña al borde de la foto (+10 px).
+  - En ningún estado queda bajo el HUD.
+  - Las etiquetas siguen ancladas a los bordes horizontales de la foto, así que con zoom suelen quedar
+    fuera de la vista por los costados. Eso ya pasaba antes y está fuera de alcance. No tapan al sujeto
+    más que antes: son las mismas píldoras de 20 px de alto.
+- **Regresión en la app real (escritorio, es):**
+  - C1: 7,62 / 16,55 / 15,31 / 15,31:1.
+  - C2: Escape sale de comparar.
+  - C4: el clic en «Recortar área» y el atajo 3 salen de comparar.
+  - C5: el aviso tiene `role=status` y el canvas de resultado no cambia.
+  - Extra: si se aprieta la imagen, se apaga comparar con C, se suelta y se vuelve a encender, no aparece aviso.
+- **HUD_CLEAR contra el CSS:**
+  - Busqué los `@media` de `styles.css` (1180, 980, 760 ×2, 460 px, `pointer: coarse` y reduced-motion).
+  - Ninguno toca `.canvas-hud`, `.hud-btn`, `.compare-tag` ni `.compare-hint`.
+  - `.canvas-wrap { padding: 12px }` (≤ 760 px, `styles.css:2018`) no mueve al HUD, que es absoluto respecto del borde de padding.
+  - El HUD mide 14 + 30 = 44 px en todos los anchos medidos, con 12 px de margen hasta 56. Ese margen
+    alcanza incluso con un tamaño mínimo de fuente de 16 px en el navegador (botón ≈ 35 px).
+- Evidencia en `/private/tmp/claude-501/-Users-gabrielsk-Documents-Proyects-photocut/edb53082-2b69-46d4-ada9-491c9f6f736d/scratchpad/qa-BUG-11/i2/`:
+  - `{es,en,pt}-{390,768}-portrait-{on,hint}.png`.
+  - `pt-{390,768,1440}-{land,pano}-{on,hint}.png`.
+  - `es-1440-portrait-*.png`.
+  - `npmtest.txt` y `test-web-5187.txt`.
+
+### §GAP (intento 2)
+| Escenario | Origen | Resultado |
+|---|---|---|
+| 390 px, foto vertical: el HUD no tapa «Antes»/«Después» y las dos quedan dentro de la foto | Especificado C3 (D1) | OK en el arnés y en la app (es/en/pt) |
+| 768 px y escritorio, vertical/apaisada/panorámica 3:1 | Especificado C3 | OK |
+| Aviso a lo ancho del lienzo a 390/768/escritorio | D2 (Deducido en i1, ahora con test) | OK |
+| Apagar comparar a mitad de la presión no deja aviso | Deducido (observación i1) | OK |
+| Zoom/pan: la etiqueta se queda bajo el HUD | Deducido | OK, no pasa salvo en el borde extremo de O-2 |
+| C1/C2/C4/C5 sin regresión | Especificado | OK |
+
+### Observaciones (no bloquean; candidatas a `_debt.md`)
+- **O-1 · Legibilidad:** `HUD_CLEAR = 56` (`CanvasEditor.jsx:23`) copia a mano la geometría de
+  `.canvas-hud` y `.hud-btn` (`styles.css:747-772`). Hoy está sincronizado en todos los breakpoints.
+  Si alguien cambia `top`, `padding` o `font-size` del HUD, se desincroniza sin que nada avise.
+  Sugerencia: una custom property compartida (`--hud-clear`) o medir el HUD con un ref. El test
+  portrait de canvas-test sí lo detectaría si el HUD crece más de 12 px.
+- **O-2 · Borde extremo (Deducido):** `clampPan` (`CanvasEditor.jsx:661-669`) deja que la foto suba
+  hasta mostrar solo 60 px. En ese caso el tope inferior de `tagTop` (alto − 34) pone la etiqueta en
+  y ≈ 26–46, otra vez dentro de la franja del HUD. Solo choca si además el borde derecho de la foto
+  queda bajo los botones. Requiere empujar la imagen casi fuera de la vista a propósito. Va al PO; no
+  bloquea.
+- **O-3:** se mantienen las observaciones de proceso del intento 1:
+  - Puerto 5187 fijo en `test/run-tests.mjs:14`, con riesgo de correr contra el vite de otro worktree.
+  - El timeout del runner es por fase de hover.
+- **O-4 · Preexistente, fuera de alcance:** con zoom, las etiquetas quedan fuera de la vista por los
+  costados, porque están ancladas a los bordes horizontales de la foto.
+
+### Veredicto
+**APROBADO (intento 2).** Cumple C1–C5 en el arnés y en la app real, y D1 y D2 están cerrados con
+tests que dieron rojo antes. O-1 y O-2 pueden ir a deuda.
+
+---
+
 ## Intento 1 — **RECHAZADO** · HEAD 46e3515 (nivel A Advisory, asignado por el orquestador)
 
 El PO pidió «100 de 100», así que revisé con rigor. Casi todo cumple: contraste en los cuatro estados,
