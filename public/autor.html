@@ -74,9 +74,11 @@
         y a los pocos usos te piden pagar o crear una cuenta. Quise lo contrario:
         una herramienta que corra <strong>íntegramente dentro del
         navegador</strong>, donde la imagen nunca sale de tu dispositivo. El
-        recorte automático usa un modelo de IA (<code>u2netp</code>, 4,6 MB,
-        licencia Apache-2.0) exportado a ONNX que se ejecuta vía WebAssembly en
-        un <em>Web Worker</em>; el recorte interactivo se apoya en GrabCut
+        recorte automático usa un modelo de IA exportado a ONNX que corre en un
+        <em>Web Worker</em>: <code>BiRefNet-lite</code> (licencia MIT, ~115 MB)
+        sobre la GPU vía WebGPU cuando el navegador puede usarla, y
+        <code>u2netp</code> (4,6 MB, licencia Apache-2.0) vía WebAssembly cuando
+        no; el recorte interactivo se apoya en GrabCut
         compilado a WASM. No hay backend que reciba tus fotos porque,
         sencillamente, no hay a dónde subirlas.
       </p>

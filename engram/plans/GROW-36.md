@@ -117,8 +117,11 @@ sha256 completo: `4059896039dfccb0f15b9080ff06d11d90e499449bb045e797055eb8901cf5
 
 ### Riesgos
 - **Descarga ~140 MB** la primera vez en el camino GPU (antes ~7 MB); la 1.ª inferencia de la sesión
-  tarda ~36 s (21 s compilar + 15 s) y las siguientes ~3,5 s. El idle-release de 30 s obliga a recompilar
-  (21 s) tras una pausa ⇒ se evalúa subir el idle para el camino GPU.
+  tarda ~36 s (21 s compilar + 15 s) y las siguientes ~3,5 s. El idle-release de 30 s obligaba a recompilar
+  (21 s) tras una pausa ⇒ **decidido (coordinador, 2026-10-16): 5 min con BiRefNet, 30 s con
+  u2netp**. Cada modelo declara su `idleMs` y `aiIdleMs()` lo expone a los dos timers (worker e
+  inline); si BiRefNet cae a u2netp rige el de u2netp. Costo: hasta 5 min de ~535 MB de heap +
+  VRAM residentes tras el último corte con GPU.
 - **Memoria:** 535 MB de heap wasm + VRAM; en equipos con GPU integrada y poca RAM puede morir la
   pestaña (sin excepción, el respaldo no aplica).
 - **Safari 26 en worker sin verificar** (ver 1). Si no expone WebGPU en workers, Safari usa u2netp.

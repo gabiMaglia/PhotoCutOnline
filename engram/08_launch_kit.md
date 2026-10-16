@@ -18,12 +18,20 @@
 - [ ] Bloquear 3–4 h después de cada post para responder todo.
 
 ## Datos verificados para responder preguntas
-Salen de `scripts/pruebas.json` (medidos, Chrome 154, macOS). No inventar otros.
-- Primera vez: baja el modelo (u2netp, 4,6 MB) + el motor WebAssembly de ONNX
-  Runtime; comprimido son ~6,4 MB en total. Después queda en caché.
-- Recorte IA de una foto 720×900: 5,0 s la primera vez, 2,9 s la segunda, 3,6 s
-  tras recargar (una corrida cada uno, laptop, no es benchmark).
-- Red durante el recorte: 67 peticiones, **0 bytes enviados** con la foto.
+Salen de `scripts/pruebas.json` (medidos, Chrome 155, macOS, 2026-10-16). No inventar otros.
+- Dos modelos según el equipo (GROW-36): con una GPU que el navegador puede usar
+  (WebGPU), BiRefNet-lite; sin ella, u2netp, como antes.
+- Primera vez con GPU: 114,8 MB de modelo (sin comprimir, viaja tal cual) + el
+  motor WebAssembly/WebGPU de ONNX Runtime (3,5 MB con Brotli): ~118 MB, «~120 MB».
+  Sin GPU: u2netp (4,6 MB) + motor WebAssembly, ~6 MB. Después queda en caché.
+- Recorte IA de una foto 720×900 con GPU: 22,6 s la primera vez (baja el modelo y
+  prepara la GPU), 3,9 s la segunda, 16,1 s tras recargar (vuelve a preparar la
+  GPU). Con u2netp (medición anterior): 5,0 s, 2,9 s y 3,6 s. Una corrida cada
+  uno, laptop, no es benchmark.
+- Calidad: con BiRefNet el logo de prueba conserva la palabra de la marca; con
+  u2netp se perdía. Con GPU la IA queda en memoria 5 min después del último corte
+  (sin GPU, 30 s).
+- Red durante el recorte: 93 peticiones, **0 bytes enviados** con la foto.
   **Ojo:** el sitio carga scripts de Google AdSense, que hacen sus propias
   peticiones (sin la foto). Alguien en HN lo va a ver en la pestaña Network:
   decirlo vos antes (está en el primer comentario).
@@ -57,9 +65,9 @@ Show HN: PhotoCut – a background remover where the photo never leaves your bro
 I wanted a background remover that doesn't upload my photo to someone's server and doesn't paywall the full-resolution download, so I built one that runs entirely in the browser.
 
 How it works:
-- The cutout uses u2netp (a small salient-object model, ~4.6 MB) through onnxruntime-web, in a Web Worker.
+- The cutout runs through onnxruntime-web in a Web Worker: BiRefNet-lite (fp16) on WebGPU when the browser can use the GPU, u2netp (a small salient-object model, ~4.6 MB) on WASM when it can't.
 - Edge refinement uses a GrabCut engine I wrote in Rust and compiled to WebAssembly.
-- First use downloads about 6 MB compressed (model + WASM runtime); after that it's cached and works offline.
+- First use downloads ~120 MB with a GPU (the model is 115 MB) or about 6 MB without one; after that it's cached and works offline.
 - Export to PNG/JPG/WebP. Safari can't encode WebP from a canvas (toBlob silently returns PNG), so in that case the editor lazy-loads libwebp compiled to WASM (~110 KB) in a worker.
 
 The honest trade-off: a model small enough to run on a laptop won't beat a big server model on the hard cases (fine hair, busy backgrounds). There are keep/erase brushes to fix those by hand.
@@ -175,9 +183,9 @@ Hice un editor de imágenes que quita el fondo con IA sin subir la foto a ningú
 Lo armé porque los removedores de fondo gratis suben la foto a sus servidores y después te cobran la descarga en alta.
 
 Todo corre en el navegador:
-- Recorte con u2netp en onnxruntime-web, dentro de un Web Worker.
+- Recorte con onnxruntime-web, dentro de un Web Worker: BiRefNet-lite en la GPU (WebGPU) si el navegador puede usarla, u2netp en WebAssembly si no.
 - Refinado de bordes con un GrabCut que escribí en Rust y compilé a WebAssembly.
-- La primera vez baja ~6 MB (modelo + motor); después queda en caché y anda sin internet.
+- La primera vez baja ~120 MB con GPU (el modelo pesa 115 MB) o ~6 MB sin ella; después queda en caché y anda sin internet.
 - Safari no genera WebP desde canvas (te devuelve PNG sin avisar), así que en ese caso cargo libwebp compilado a WASM solo cuando hace falta.
 
 Gratis, sin cuenta y sin marca de agua. Tiene publicidad de Google para pagar el hosting (esas peticiones no llevan la foto, lo pueden ver en la pestaña Red).
@@ -200,7 +208,7 @@ actividad previa.
   ```
 - **Descripción (≤260):**
   ```
-  Free image editor where the AI runs on your device: background removal, stickers, compression, EXIF/GPS stripping, face blur, palettes and app icons. No account, no watermark, works offline after the first load.
+  Free image editor where the AI runs on your device: background removal, stickers, compression, EXIF/GPS stripping, face blur, palettes and app icons. No account, no watermark, works offline after the first use.
   ```
 - **Primer comentario:** reusar el del Show HN.
 

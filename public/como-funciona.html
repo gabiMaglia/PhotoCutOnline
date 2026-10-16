@@ -30,7 +30,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "Cómo funciona: IA en tu navegador, sin subir tus fotos",
-      "description": "Explicación de la arquitectura client-side de PhotoCut Studio: recorte con IA (u2netp + onnxruntime-web) y un motor GrabCut en Rust/WebAssembly, todo corriendo en el navegador.",
+      "description": "Explicación de la arquitectura client-side de PhotoCut Studio: recorte con IA (BiRefNet-lite en la GPU o u2netp sin ella, con onnxruntime-web) y un motor GrabCut en Rust/WebAssembly, todo corriendo en el navegador.",
       "inLanguage": "es",
       "author": { "@type": "Person", "name": "Gabriel Maglia" },
       "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
@@ -45,17 +45,17 @@
         {
           "@type": "Question",
           "name": "¿De verdad mis fotos no se suben a ningún servidor?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Sí. El modelo de IA y el motor de recorte se descargan una vez y corren dentro de tu navegador. La imagen se procesa en tu propio dispositivo y no se envía a ningún servidor. Podés comprobarlo: abrí las herramientas de desarrollo del navegador, mirá la pestaña Red mientras recortás, y vas a ver que no se sube ningún archivo. Incluso funciona sin conexión una vez cargada la página." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. El modelo de IA y el motor de recorte se descargan una vez y corren dentro de tu navegador. La imagen se procesa en tu propio dispositivo y no se envía a ningún servidor. Podés comprobarlo: abrí las herramientas de desarrollo del navegador, mirá la pestaña Red mientras recortás, y vas a ver que no se sube ningún archivo. Incluso funciona sin conexión una vez que usaste el recorte (el modelo ya quedó guardado)." }
         },
         {
           "@type": "Question",
           "name": "¿Cómo puede una IA correr en el navegador?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Con WebAssembly, que ejecuta código a velocidad casi nativa dentro de la página, y ONNX Runtime, que corre el modelo de red neuronal. El modelo (u2netp, de detección de objeto saliente) pesa unos 4,4 MB y se descarga la primera vez que usás el recorte; después queda cacheado. La segmentación fina usa además un motor GrabCut escrito en Rust y compilado a WebAssembly." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Con WebAssembly, que ejecuta código a velocidad casi nativa dentro de la página, y ONNX Runtime, que corre el modelo de red neuronal. Si tu equipo tiene una GPU que el navegador puede usar (WebGPU), corre BiRefNet-lite, que recorta con más detalle y se descarga una vez (~120 MB); si no, corre u2netp, más liviano (~7 MB con su motor). En los dos casos queda cacheado después de la primera vez. La segmentación fina usa además un motor GrabCut escrito en Rust y compilado a WebAssembly." }
         },
         {
           "@type": "Question",
           "name": "¿Por qué hacerlo así en vez de en un servidor?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Por privacidad y por costo. Sin servidor que procese, tu foto no sale de tu equipo — ideal para documentos, material de clientes o fotos personales. Y como no pagamos GPU por imagen, la herramienta puede ser gratis, sin créditos ni marca de agua. La contra es que el modelo tiene que ser liviano para correr en tu dispositivo; por eso sumamos pinceles para afinar a mano lo que la IA no resuelve." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Por privacidad y por costo. Sin servidor que procese, tu foto no sale de tu equipo — ideal para documentos, material de clientes o fotos personales. Y como no pagamos GPU por imagen, la herramienta puede ser gratis, sin créditos ni marca de agua. La contra es que el modelo tiene que caber en tu dispositivo: sin GPU usamos uno liviano, y con GPU la primera descarga es grande; por eso sumamos pinceles para afinar a mano lo que la IA no resuelve." }
         }
       ]
     }
@@ -112,11 +112,15 @@
       <h2>El recorte, en dos capas</h2>
       <ul>
         <li>
-          <strong>IA de recorte:</strong> un modelo de detección de objeto
-          saliente (<em>u2netp</em>, ~4,4 MB) corre con
-          <strong>ONNX Runtime</strong> compilado a WebAssembly. Detecta el
-          sujeto y separa el fondo en aproximadamente un segundo. Se descarga la
-          primera vez que lo usás y queda cacheado.
+          <strong>IA de recorte:</strong> si tu navegador puede usar la GPU
+          (WebGPU), corre <em>BiRefNet-lite</em> con <strong>ONNX Runtime</strong>
+          sobre la GPU: recorta con más detalle (orejas, pelo, el texto de un
+          logo) y pesa ~120&nbsp;MB la primera vez. Si no, corre
+          <em>u2netp</em>, un modelo de detección de objeto saliente más
+          liviano (~7&nbsp;MB con su motor), con ONNX Runtime compilado a
+          WebAssembly. En mis pruebas, con GPU, el primer recorte tardó ~23&nbsp;s
+          (descarga y preparación de la GPU) y los siguientes ~4&nbsp;s; sin GPU,
+          unos 3&nbsp;s. Se descarga una sola vez y queda cacheado.
         </li>
         <li>
           <strong>Segmentación fina:</strong> para los bordes difíciles hay un
@@ -142,17 +146,18 @@
         No hace falta que nos creas. Abrí las <strong>herramientas de
         desarrollo</strong> de tu navegador, andá a la pestaña <strong>Red</strong>
         y recortá una imagen: no vas a ver ninguna subida de tu archivo. Como
-        prueba extra, <strong>desconectá internet</strong> después de cargar la
-        página — el recorte sigue funcionando.
+        prueba extra, <strong>desconectá internet</strong> después de recortar
+        una foto (así el modelo ya quedó guardado) — el recorte sigue funcionando.
       </p>
 
       <h2>El intercambio, dicho con honestidad</h2>
       <p>
-        Que el modelo corra en tu equipo tiene un costo: debe ser
-        <strong>liviano</strong>, más chico que los modelos gigantes que corren
-        en servidores con GPU. Para siluetas claras el resultado es
-        prácticamente igual; en casos muy difíciles (pelo muy fino, fondos
-        caóticos) un modelo de nube puede ganar. Por eso el flujo combina la IA
+        Que el modelo corra en tu equipo tiene un costo: tiene que
+        <strong>caber en tu dispositivo</strong>. Con GPU eso significa una
+        primera descarga de ~120&nbsp;MB; sin GPU, un modelo más chico que
+        pierde detalles finos (la punta de una oreja, las letras de un logo).
+        En casos muy difíciles (pelo muy fino, fondos caóticos) un modelo
+        grande en un servidor todavía puede ganar. Por eso el flujo combina la IA
         con pinceles: la máquina resuelve el 90% y vos afinás el resto.
       </p>
       <p>
@@ -162,9 +167,9 @@
 
       <h2>Preguntas frecuentes</h2>
       <h3>¿De verdad mis fotos no se suben?</h3>
-      <p>Sí. El modelo corre en tu navegador; podés verificarlo en la pestaña Red y comprobando que funciona sin conexión.</p>
+      <p>Sí. El modelo corre en tu navegador; podés verificarlo en la pestaña Red y comprobando que funciona sin conexión una vez que lo usaste.</p>
       <h3>¿Cómo puede una IA correr en el navegador?</h3>
-      <p>Con WebAssembly (código a velocidad casi nativa) y ONNX Runtime (que ejecuta el modelo). El modelo se descarga una vez y queda cacheado.</p>
+      <p>Con WebAssembly (código a velocidad casi nativa), WebGPU cuando hay GPU, y ONNX Runtime (que ejecuta el modelo). El modelo se descarga una vez y queda cacheado.</p>
       <h3>¿Por qué así y no en un servidor?</h3>
       <p>Por privacidad (tu foto no sale de tu equipo) y por costo (sin GPU por imagen, la herramienta puede ser gratis).</p>
 

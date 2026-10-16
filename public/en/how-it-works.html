@@ -30,7 +30,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "How It Works: AI in Your Browser, No Uploads",
-      "description": "PhotoCut Studio's client-side architecture: AI cutout (u2netp + onnxruntime-web) and a Rust/WebAssembly GrabCut engine, all running in the browser.",
+      "description": "PhotoCut Studio's client-side architecture: AI cutout (BiRefNet-lite on the GPU, or u2netp without one, with onnxruntime-web) and a Rust/WebAssembly GrabCut engine, all running in the browser.",
       "inLanguage": "en",
       "author": { "@type": "Person", "name": "Gabriel Maglia" },
       "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
@@ -45,12 +45,12 @@
         {
           "@type": "Question",
           "name": "Are my photos really never uploaded to a server?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The AI model and the cutout engine download once and run inside your browser. The image is processed on your own device and never sent to a server. You can verify it: open your browser's developer tools, watch the Network tab while you cut out an image, and you'll see no file upload. It even works offline once the page has loaded." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The AI model and the cutout engine download once and run inside your browser. The image is processed on your own device and never sent to a server. You can verify it: open your browser's developer tools, watch the Network tab while you cut out an image, and you'll see no file upload. It even works offline once you've used the cutout (the model is already stored)." }
         },
         {
           "@type": "Question",
           "name": "How can an AI run in the browser?",
-          "acceptedAnswer": { "@type": "Answer", "text": "With WebAssembly, which runs code at near-native speed inside the page, and ONNX Runtime, which executes the neural-network model. The model (u2netp, a salient-object detector) is about 4.4 MB and downloads the first time you use the cutout; after that it's cached. Fine segmentation also uses a GrabCut engine written in Rust and compiled to WebAssembly." }
+          "acceptedAnswer": { "@type": "Answer", "text": "With WebAssembly, which runs code at near-native speed inside the page, and ONNX Runtime, which executes the neural-network model. If your device has a GPU the browser can use (WebGPU), it runs BiRefNet-lite, which cuts out finer detail and downloads once (~120 MB); otherwise it runs u2netp, a lighter model (~7 MB with its engine). Either way it's cached after the first time. Fine segmentation also uses a GrabCut engine written in Rust and compiled to WebAssembly." }
         },
         {
           "@type": "Question",
@@ -112,11 +112,15 @@
       <h2>The cutout, in two layers</h2>
       <ul>
         <li>
-          <strong>Cutout AI:</strong> a salient-object detection model
-          (<em>u2netp</em>, ~4.4 MB) runs with <strong>ONNX Runtime</strong>
-          compiled to WebAssembly. It detects the subject and separates the
-          background in about a second. It downloads the first time you use it
-          and stays cached.
+          <strong>Cutout AI:</strong> if your browser can use the GPU (WebGPU),
+          <em>BiRefNet-lite</em> runs with <strong>ONNX Runtime</strong> on the
+          GPU: it cuts out finer detail (ears, hair, the text of a logo) and
+          weighs ~120&nbsp;MB the first time. Otherwise <em>u2netp</em> runs, a
+          lighter salient-object detection model (~7&nbsp;MB with its engine),
+          with ONNX Runtime compiled to WebAssembly. In my tests, with a GPU, the
+          first cutout took ~23&nbsp;s (download and GPU setup) and the next ones
+          ~4&nbsp;s; without a GPU, about 3&nbsp;s. It downloads only once and
+          stays cached.
         </li>
         <li>
           <strong>Fine segmentation:</strong> for hard edges there's a
@@ -141,16 +145,18 @@
         Don't take our word for it. Open your browser's
         <strong>developer tools</strong>, go to the <strong>Network</strong> tab
         and cut out an image: you won't see your file being uploaded. As an extra
-        test, <strong>disconnect the internet</strong> after the page loads — the
-        cutout still works.
+        test, <strong>disconnect the internet</strong> after cutting out one photo
+        (so the model is already stored) — the cutout still works.
       </p>
 
       <h2>The trade-off, honestly</h2>
       <p>
-        Running the model on your device has a cost: it must be
-        <strong>lightweight</strong>, smaller than the huge models that run on
-        GPU servers. For clear subjects the result is virtually identical; in very
-        hard cases (very fine hair, busy backgrounds) a cloud model may win.
+        Running the model on your device has a cost: it has to
+        <strong>fit on your device</strong>. With a GPU that means a first
+        download of ~120&nbsp;MB; without one, a smaller model that loses fine
+        detail (the tip of an ear, the letters of a logo). In very hard cases
+        (very fine hair, busy backgrounds) a large model on a server can still
+        win.
         That's why the flow pairs the AI with brushes: the machine handles 90% and
         you refine the rest.
       </p>
@@ -161,9 +167,9 @@
 
       <h2>FAQ</h2>
       <h3>Are my photos really never uploaded?</h3>
-      <p>Yes. The model runs in your browser; verify it in the Network tab and by confirming it works offline.</p>
+      <p>Yes. The model runs in your browser; verify it in the Network tab and by confirming it works offline once you've used it.</p>
       <h3>How can an AI run in the browser?</h3>
-      <p>With WebAssembly (near-native-speed code) and ONNX Runtime (which executes the model). The model downloads once and stays cached.</p>
+      <p>With WebAssembly (near-native-speed code), WebGPU when there's a GPU, and ONNX Runtime (which executes the model). The model downloads once and stays cached.</p>
       <h3>Why this way and not on a server?</h3>
       <p>For privacy (your photo never leaves your device) and cost (no per-image GPU, so the tool can be free).</p>
 
