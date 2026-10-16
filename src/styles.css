@@ -493,9 +493,12 @@ label.btn:has(.file-input-sr:focus-visible) {
   transition: color 0.12s, border-color 0.12s;
 }
 
-.lang-select:hover {
-  color: var(--acid);
-  border-color: var(--acid);
+/* solo con puntero real: en táctil el :hover queda pegado tras el toque */
+@media (hover: hover) {
+  .lang-select:hover {
+    color: var(--acid);
+    border-color: var(--acid);
+  }
 }
 
 .lang-select option {
@@ -3307,8 +3310,22 @@ label.btn:has(.file-input-sr:focus-visible) {
     width: auto;
   }
 
+  /* 44×44 con radius 99px lo volvía un círculo al lado de «Abrir foto»: misma
+     forma que los botones de la barra y el texto centrado. */
   .lang-select {
     min-width: 44px;
+    padding: 0 12px;
+    border-radius: var(--radius);
+    text-align: center;
+    text-align-last: center;
+  }
+
+  /* tras elegir idioma el select queda enfocado: el anillo con offset quedaba
+     flotando alrededor; se marca el foco con el propio borde */
+  .lang-select:focus-visible {
+    outline: none;
+    border-color: var(--acid);
+    color: var(--acid);
   }
 }
 
