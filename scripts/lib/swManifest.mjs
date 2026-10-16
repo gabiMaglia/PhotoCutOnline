@@ -9,6 +9,8 @@
 import { createHash } from "node:crypto";
 
 const SHELL_ASSET = /\.(?:js|css|mjs)$/;
+// solo del camino GPU (GROW-36): se baja bajo demanda, no en el install de todos
+const GPU_ONLY = /\/ort\.webgpu\.|\.asyncify[-.]/;
 const HTML_ROUTES = ["/", "/editor/"];
 const START = "/*__PHOTOCUT_BUILD__*/";
 const END = "/*__PHOTOCUT_BUILD_END__*/";
@@ -19,7 +21,7 @@ const END = "/*__PHOTOCUT_BUILD_END__*/";
  */
 export function buildSwManifest({ assets, models, html }) {
   const assetUrls = [...assets].sort().map((f) => `/assets/${f}`);
-  const shell = [...HTML_ROUTES, ...assetUrls.filter((u) => SHELL_ASSET.test(u))];
+  const shell = [...HTML_ROUTES, ...assetUrls.filter((u) => SHELL_ASSET.test(u) && !GPU_ONLY.test(u))];
   const keep = [...assetUrls, ...[...models].sort().map((f) => `/models/${f}`)];
   const hash = createHash("sha256");
   hash.update(JSON.stringify({ shell, keep }));

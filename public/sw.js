@@ -14,8 +14,10 @@
 //    el deploy actual; offline o con red colgada, la copia del shell de ESTE
 //    build, coherente con sus chunks (nunca pide un hash que el server borró).
 //
-// Modelos: se cachean por NOMBRE. Cambiar un .onnx exige cambiarle el nombre
-// (GROW-36), si no los visitantes recurrentes siguen con el viejo.
+// Modelos: se cachean por NOMBRE. Cambiar un modelo exige cambiarle el nombre,
+// si no los visitantes recurrentes siguen con el viejo (GROW-36). No se
+// precachean: BiRefNet son 115 MB en partes (solo con GPU) y u2netp 4,6 MB; solo
+// los baja quien usa la IA y la poda los conserva mientras el build los liste.
 
 const BUILD = /*__PHOTOCUT_BUILD__*/ { id: "dev", shell: [], keep: [] } /*__PHOTOCUT_BUILD_END__*/;
 

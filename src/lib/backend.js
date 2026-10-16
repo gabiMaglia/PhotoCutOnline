@@ -165,8 +165,8 @@ async function callInline(cmd, args = {}, onProgress) {
     case "aiCut":
       return withAiIdleRelease(async () => {
         const mod = await import("./aiSegmenter.js");
-        const matte = await mod.aiMatte(s.work);
-        await s.aiCutFromMatte(matte);
+        const { matte, refine } = await mod.aiMatte(s.work, onProgress);
+        await s.aiCutFromMatte(matte, refine);
         return packPreviewInline(s);
       });
     case "removeBg":
@@ -178,8 +178,8 @@ async function callInline(cmd, args = {}, onProgress) {
           args.width,
           args.height
         );
-        const matte = await mod.aiMatte(img);
-        return eng.refineMatte(matte, args.width, args.height);
+        const { matte, refine } = await mod.aiMatte(img, onProgress);
+        return eng.refineMatte(matte, args.width, args.height, refine);
       });
     case "addStroke":
       await s.addStroke(args.stroke);
@@ -259,7 +259,7 @@ export const backend = {
 
   features: {
     auto: true,
-    ai: true, // u2netp local vía onnxruntime-web (worker)
+    ai: true, // BiRefNet (WebGPU) o u2netp (WASM), local vía onnxruntime-web en el worker
     wand: true, // varita por color (flood-fill)
     undo: true,
     feather: true,
@@ -288,26 +288,32 @@ export const backend = {
   },
 
   /**
-   * Pre-carga el modelo IA (primera vez: ~7 MB entre runtime y modelo, luego
-   * caché). onProgress({stage:"model",loaded,total} | {stage:"init"}) opcional.
+   * Pre-carga el modelo IA (primera vez: ~120 MB con GPU, ~7 MB sin GPU, entre
+   * runtime y modelo; luego caché). onProgress({stage:"model",loaded,total} | {stage:"init"} |
+   * {stage:"fallback",model}) opcional.
    */
   async warmupAi(onProgress) {
     return call("warmupAi", {}, onProgress);
   },
 
-  async aiCut() {
-    const pack = await call("aiCut");
+  /** onProgress({stage:"fallback",model}) opcional: avisa si se usó el modelo liviano. */
+  async aiCut(onProgress) {
+    const pack = await call("aiCut", {}, onProgress);
     afterOp();
     return previewUrlFrom(pack);
   },
 
   /** Matte IA para una imagen arbitraria (no toca la sesión del editor). */
-  async removeBg(imageData) {
-    return call("removeBg", {
-      width: imageData.width,
-      height: imageData.height,
-      rgba: imageData.data,
-    });
+  async removeBg(imageData, onProgress) {
+    return call(
+      "removeBg",
+      {
+        width: imageData.width,
+        height: imageData.height,
+        rgba: imageData.data,
+      },
+      onProgress
+    );
   },
 
   /** stroke: {points:[{x,y}…], radius, foreground} */

@@ -6,10 +6,17 @@ jest.mock("../../../lib/backend.js", () => ({
     canRedo: () => false,
     wand: jest.fn().mockResolvedValue("blob:wand"),
     cutRect: jest.fn().mockResolvedValue("blob:rect"),
+    aiCut: jest.fn(async (onProgress) => {
+      onProgress?.({ stage: "fallback", model: "u2netp" });
+      return "blob:ai";
+    }),
   },
 }));
 jest.mock("../../../services/analytics.js", () => ({ trackEvent: jest.fn() }));
-jest.mock("../../../utils/aiWarmup.js", () => ({ warmupAiWithToast: jest.fn() }));
+jest.mock("../../../utils/aiWarmup.js", () => ({
+  warmupAiWithToast: jest.fn(),
+  aiNoticeHandler: (toast) => (p) => p?.stage === "fallback" && toast("AVISO_RESPALDO", "ok"),
+}));
 
 import { useCutoutSession } from "./useCutoutSession.js";
 
@@ -28,5 +35,15 @@ describe("useCutoutSession: modo activo tras cada operación", () => {
     const { result } = setup();
     await act(() => result.current.handleRect({ x: 0, y: 0, w: 10, h: 10 }));
     expect(result.current.mode).toBe("fg");
+  });
+});
+
+describe("useCutoutSession: Recorte IA avisa si se usó el modelo liviano (GROW-36)", () => {
+  it("el aviso que manda aiCut llega al toast", async () => {
+    const toast = jest.fn();
+    const { result } = renderHook(() => useCutoutSession({ imageUrl: "blob:img", toast }));
+    await act(() => result.current.handleAi());
+    expect(toast).toHaveBeenCalledWith("AVISO_RESPALDO", "ok");
+    expect(result.current.hasCut).toBe(true);
   });
 });

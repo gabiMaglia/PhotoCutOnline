@@ -1,0 +1,66 @@
+PhotoCut Studio — AI models used by "AI cutout" / «Recorte IA»
+================================================================
+
+The models run entirely in the browser (onnxruntime-web: WebGPU or
+WebAssembly) and are served from this site. No image is sent to any server.
+Devices with a suitable GPU use model 1; the rest, or any device where model 1
+fails, use model 2.
+
+1) BiRefNet-lite, 1024×1024, fp16 (main model on devices with WebGPU)
+   Files served: /models/birefnet-lite-1024-fp16.onnx.part0
+                 /models/birefnet-lite-1024-fp16.onnx.part1
+                 (the two parts concatenated are the original file,
+                 114,834,127 bytes, SHA-256
+                 4059896039dfccb0f15b9080ff06d11d90e499449bb045e797055eb8901cf5f4,
+                 checked in the browser before use)
+   Model:        BiRefNet — "Bilateral Reference for High-Resolution
+                 Dichotomous Image Segmentation", Peng Zheng, Dehong Gao,
+                 Deng-Ping Fan, Li Liu, Jorma Laaksonen, Wanli Ouyang,
+                 Nicu Sebe — CAAI Artificial Intelligence Research, 2024.
+                 Original project: https://github.com/ZhengPeng7/BiRefNet (MIT)
+   ONNX export:  https://huggingface.co/jiabins0303/birefnet-lite-1024-webgpu
+                 (onnx/model_fp16.onnx), MIT. Its model card states that the
+                 MIT grant covers the weights, which are unchanged; only the
+                 graph topology was rewritten so it runs on WebGPU. It derives
+                 from onnx-community/BiRefNet_lite-ONNX and from the
+                 studioludens/birefnet-lite-512 export method.
+   Changes:      the file is split in two parts to fit our repository; the
+                 bytes are otherwise unchanged.
+   Caveat (stated by the export's own model card): BiRefNet_lite lists the
+                 DIS5K dataset among its training data, and DIS5K's terms
+                 restrict commercial use of the dataset. The card notes that a
+                 downstream MIT grant cannot resolve that question. We repeat
+                 it here as stated; we make no further claim about it.
+
+   License text (from https://github.com/ZhengPeng7/BiRefNet/blob/main/LICENSE):
+
+   MIT License
+
+   Copyright (c) 2024 ZhengPeng
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in all
+   copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+   SOFTWARE.
+
+2) U^2-Net, small variant "u2netp" (devices without WebGPU, and fallback)
+   File served:  /models/u2netp.onnx (4,574,861 bytes)
+   Model:        "U^2-Net: Going Deeper with Nested U-Structure for Salient
+                 Object Detection", Xuebin Qin, Zichen Zhang, Chenyang Huang,
+                 Masood Dehghan, Osmar R. Zaiane, Martin Jagersand —
+                 Pattern Recognition 2020.
+                 Original project: https://github.com/xuebinqin/U-2-Net
+   License:      Apache License 2.0 — full text at /licenses/Apache-2.0.txt

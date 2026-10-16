@@ -87,10 +87,14 @@ describe("variantes táctiles (GROW-27 D3)", () => {
 describe("onboarding honesto (GROW-28)", () => {
   afterAll(() => setLang("es"));
 
-  it.each(["es", "en", "pt"])("%s: el paso 2 es Recorte IA y avisa del modelo de ~7 MB", (lang) => {
+  it.each(["es", "en", "pt"])("%s: el paso 2 es Recorte IA y avisa de los dos pesos reales (GROW-36: ~7 MB y ~120 MB con GPU)", (lang) => {
     setLang(lang);
     expect(t("ob.2.title")).toMatch(/IA|AI/);
-    for (const k of ["ob.2.body", "ob.2.body.touch"]) expect(t(k)).toContain("~7 MB");
+    for (const k of ["ob.2.body", "ob.2.body.touch"]) {
+      expect(t(k)).toContain("~7 MB");
+      expect(t(k)).toContain("~120 MB");
+      expect(t(k)).toMatch(/GPU/);
+    }
   });
 
   it.each(["es", "en", "pt"])("%s: el onboarding no vende Recuadro ni Varita como paso", (lang) => {

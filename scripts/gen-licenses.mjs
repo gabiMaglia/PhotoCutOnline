@@ -48,6 +48,23 @@ entries.push(
   }
 );
 
+// Modelos de IA servidos desde /models/ (GROW-36). No son paquetes: van a mano.
+// Atribución completa y salvedades en /licenses/ai-models-NOTICE.txt.
+entries.push(
+  {
+    name: "BiRefNet-lite 1024 fp16 (ZhengPeng7/BiRefNet; export jiabins0303)",
+    version: "birefnet-lite-1024-fp16.onnx",
+    license: "MIT (aviso: /licenses/ai-models-NOTICE.txt)",
+    source: "modelo",
+  },
+  {
+    name: "U^2-Net u2netp (xuebinqin)",
+    version: "u2netp.onnx",
+    license: "Apache-2.0 (aviso: /licenses/ai-models-NOTICE.txt)",
+    source: "modelo",
+  }
+);
+
 // Crates del motor Rust (escritorio). Licencias declaradas en
 // crates/photocut-core/Cargo.toml; verificar con `cargo deny` / `cargo about`.
 const cargo = readFileSync(join(root, "crates/photocut-core/Cargo.toml"), "utf8");

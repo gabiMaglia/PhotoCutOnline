@@ -291,7 +291,7 @@ describe("aiSegmenter", () => {
     // la cadena no debe quedar rota: la segunda toma su turno igual
     expect(ortMock.session.run).toHaveBeenCalledTimes(2);
     ortMock.resolveRun();
-    await expect(p2).resolves.toBeInstanceOf(Uint8ClampedArray);
+    await expect(p2).resolves.toMatchObject({ matte: expect.any(Uint8ClampedArray) });
   });
 
   test("D-02: releaseAi() no libera con trabajo encolado", async () => {
@@ -317,5 +317,200 @@ describe("aiSegmenter", () => {
 
     // con la cola vacía, el release diferido se concreta
     expect(ortMock.session.release).toHaveBeenCalledTimes(1);
+  });
+});
+
+// GROW-36: BiRefNet-lite fp16 sobre WebGPU si el navegador tiene GPU apta;
+// u2netp sobre WASM si no, o si BiRefNet falla. Mock propio, sin deferreds: las
+// sesiones se identifican por el execution provider y se les puede pedir que
+// fallen al crearse o al correr.
+describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
+  const { createHash, webcrypto } = require("node:crypto");
+  const PART_BYTES = [[1, 2, 3], [4, 5]];
+  const ALL = Uint8Array.from(PART_BYTES.flat());
+  let orts; // ep → módulo ORT falso
+  let sessions; // "birefnet" | "u2netp" → sesión
+  let fail;
+  let fetched;
+  let partOverride;
+
+  function makeOrt(ep) {
+    class FakeTensor {
+      constructor(type, data, dims) {
+        Object.assign(this, { type, data, dims });
+      }
+      dispose() {}
+    }
+    return {
+      env: { wasm: {} },
+      Tensor: FakeTensor,
+      InferenceSession: {
+        create: jest.fn(async (model, opts) => {
+          const name = opts.executionProviders[0] === "webgpu" ? "birefnet" : "u2netp";
+          expect(opts.executionProviders).toEqual([ep]); // cada runtime con su EP
+          if (fail.create.has(name)) throw new Error(`create ${name} falló`);
+          const size = name === "birefnet" ? 1024 : 320;
+          const s = {
+            model,
+            inputNames: [name === "birefnet" ? "input_image" : "input"],
+            outputNames: ["out"],
+            feeds: [],
+            run: jest.fn(async (feeds) => {
+              s.feeds.push(Object.values(feeds)[0]);
+              if (fail.run.has(name)) throw new Error(`run ${name} falló`);
+              // logits de BiRefNet: 0 → sigmoid 0,5 → 127/128
+              return { out: { data: new Float32Array(size * size).fill(0) } };
+            }),
+            release: jest.fn(async () => {}),
+          };
+          sessions[name] = s;
+          return s;
+        }),
+      },
+    };
+  }
+
+  function setGpu(adapter) {
+    Object.defineProperty(global.navigator, "gpu", {
+      configurable: true,
+      value: adapter === undefined ? undefined : { requestAdapter: jest.fn(async () => adapter) },
+    });
+  }
+  const goodAdapter = () => ({ limits: { maxStorageBuffersPerShaderStage: 10 }, features: new Set(["shader-f16"]) });
+
+  beforeEach(() => {
+    jest.resetModules();
+    sessions = {};
+    fail = { create: new Set(), run: new Set() };
+    fetched = [];
+    partOverride = null;
+    orts = { wasm: makeOrt("wasm"), webgpu: makeOrt("webgpu") };
+    jest.doMock("onnxruntime-web/wasm", () => orts.wasm, { virtual: true });
+    jest.doMock("onnxruntime-web/webgpu", () => orts.webgpu, { virtual: true });
+    for (const f of [
+      "./ort-runtime/ort-wasm-simd-threaded.wasm?url",
+      "./ort-runtime/ort-wasm-simd-threaded.mjs?url",
+      "onnxruntime-web/ort-wasm-simd-threaded.asyncify.wasm?url",
+      "onnxruntime-web/ort-wasm-simd-threaded.asyncify.mjs?url",
+    ])
+      jest.doMock(f, () => f, { virtual: true });
+    jest.doMock("./modelParts.json", () => ({
+      birefnet: {
+        bytes: ALL.length,
+        sha256: createHash("sha256").update(ALL).digest("hex"),
+        parts: [
+          { url: "/models/m.onnx.part0", bytes: 3 },
+          { url: "/models/m.onnx.part1", bytes: 2 },
+        ],
+      },
+    }));
+    if (!global.crypto?.subtle) Object.defineProperty(global, "crypto", { configurable: true, value: webcrypto });
+    global.fetch = jest.fn(async (url) => {
+      fetched.push(url);
+      const i = url.endsWith("part0") ? 0 : url.endsWith("part1") ? 1 : -1;
+      const chunks = i < 0 ? [new Uint8Array(4)] : [Uint8Array.from((partOverride || PART_BYTES)[i])];
+      let k = 0;
+      return {
+        ok: true,
+        headers: { get: () => null },
+        body: { getReader: () => ({ read: async () => (k < chunks.length ? { done: false, value: chunks[k++] } : { done: true }) }) },
+      };
+    });
+    setGpu(goodAdapter());
+  });
+
+  afterAll(() => setGpu(undefined));
+
+  const photo = (w, h) => ({ width: w, height: h, data: new Uint8ClampedArray(w * h * 4) });
+
+  test("con GPU apta usa BiRefNet en WebGPU: entrada input_image 1×3×1024×1024 ImageNet, salida sigmoid", async () => {
+    const { aiMatte } = require("./aiSegmenter.js");
+    const { matte, refine } = await aiMatte(photo(8, 6));
+    const input = sessions.birefnet.feeds[0];
+    expect(input.dims).toEqual([1, 3, 1024, 1024]);
+    expect(input.data[0]).toBeCloseTo((0 - 0.485) / 0.229); // canvas falso: píxeles en 0
+    expect(input.data[2 * 1024 * 1024]).toBeCloseTo((0 - 0.406) / 0.225);
+    expect(Array.from(new Set(matte))).toEqual([0]); // el canvas falso devuelve alfa 0 al reescalar
+    expect(refine).toEqual(expect.objectContaining({ stretch: false }));
+    expect(sessions.u2netp).toBeUndefined();
+    expect(orts.wasm.InferenceSession.create).not.toHaveBeenCalled(); // sin GPU-path no se baja el runtime wasm
+  });
+
+  test("las partes se bajan en orden, se concatenan y la sesión se crea con esos bytes", async () => {
+    const { warmupAi } = require("./aiSegmenter.js");
+    const seen = [];
+    await warmupAi((p) => seen.push(p));
+    expect(fetched).toEqual(["/models/m.onnx.part0", "/models/m.onnx.part1"]);
+    expect(Array.from(sessions.birefnet.model)).toEqual(Array.from(ALL));
+    const model = seen.filter((p) => p.stage === "model");
+    expect(model.map((p) => p.loaded)).toEqual([0, 3, 5]); // progreso sumado sobre el total
+    expect(model.every((p) => p.total === 5)).toBe(true);
+    expect(seen.at(-1).stage).toBe("init");
+  });
+
+  test("sha256 que no coincide ⇒ no crea BiRefNet, pasa a u2netp y avisa", async () => {
+    partOverride = [[1, 2, 3], [4, 9]];
+    const { warmupAi } = require("./aiSegmenter.js");
+    const seen = [];
+    await warmupAi((p) => seen.push(p));
+    expect(orts.webgpu.InferenceSession.create).not.toHaveBeenCalled();
+    expect(sessions.u2netp).toBeDefined();
+    expect(seen.filter((p) => p.stage === "fallback")).toEqual([{ stage: "fallback", model: "u2netp" }]);
+  });
+
+  test.each([
+    ["sin navigator.gpu", undefined],
+    ["requestAdapter() sin adapter", null],
+    ["adapter con maxStorageBuffersPerShaderStage < 8", { limits: { maxStorageBuffersPerShaderStage: 4 }, features: new Set(["shader-f16"]) }],
+    ["adapter sin shader-f16", { limits: { maxStorageBuffersPerShaderStage: 10 }, features: new Set() }],
+  ])("%s ⇒ u2netp en WASM como hoy, sin aviso y sin bajar BiRefNet", async (_n, adapter) => {
+    setGpu(adapter);
+    const { aiMatte } = require("./aiSegmenter.js");
+    const seen = [];
+    const { refine } = await aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(sessions.u2netp.feeds[0].dims).toEqual([1, 3, 320, 320]);
+    expect(sessions.birefnet).toBeUndefined();
+    expect(fetched.filter((u) => u.includes("part"))).toEqual([]);
+    expect(refine).toBeUndefined(); // u2netp: post-proceso de siempre
+    expect(seen).toEqual([]);
+  });
+
+  test("si crear BiRefNet falla (OOM, device lost), cae a u2netp y avisa una vez", async () => {
+    fail.create.add("birefnet");
+    const { aiMatte } = require("./aiSegmenter.js");
+    const seen = [];
+    const { matte } = await aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(matte).toHaveLength(16);
+    expect(sessions.u2netp.feeds[0].dims).toEqual([1, 3, 320, 320]);
+    expect(seen.filter((p) => p.stage === "fallback")).toEqual([{ stage: "fallback", model: "u2netp" }]);
+  });
+
+  test("si BiRefNet falla al correr, libera su sesión y u2netp corta la MISMA imagen", async () => {
+    fail.run.add("birefnet");
+    const { aiMatte } = require("./aiSegmenter.js");
+    const seen = [];
+    const { matte } = await aiMatte(photo(5, 3), (p) => seen.push(p));
+    expect(matte).toHaveLength(15);
+    expect(sessions.birefnet.release).toHaveBeenCalledTimes(1);
+    expect(sessions.u2netp.run).toHaveBeenCalledTimes(1);
+    expect(seen.some((p) => p.stage === "fallback")).toBe(true);
+  });
+
+  test("el respaldo es pegajoso: tras liberar, el siguiente corte no reintenta BiRefNet ni repite el aviso", async () => {
+    fail.create.add("birefnet");
+    const { aiMatte, releaseAi } = require("./aiSegmenter.js");
+    const seen = [];
+    await aiMatte(photo(4, 4), (p) => seen.push(p));
+    await releaseAi();
+    await aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(orts.webgpu.InferenceSession.create).toHaveBeenCalledTimes(1);
+    expect(seen.filter((p) => p.stage === "fallback")).toHaveLength(1);
+  });
+
+  test("si u2netp también falla, se propaga el error ORIGINAL de BiRefNet", async () => {
+    fail.create.add("birefnet");
+    fail.create.add("u2netp");
+    const { aiMatte } = require("./aiSegmenter.js");
+    await expect(aiMatte(photo(4, 4))).rejects.toThrow("create birefnet falló");
   });
 });

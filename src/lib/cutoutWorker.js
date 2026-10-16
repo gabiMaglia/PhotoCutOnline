@@ -97,20 +97,21 @@ const handlers = {
 
   warmupAi: (_args, ctx) => withAiIdleRelease(() => warmupAi(ctx?.progress)),
 
-  aiCut: () =>
+  // ctx.progress lleva el aviso de respaldo a u2netp (GROW-36) hasta la UI
+  aiCut: (_args, ctx) =>
     withAiIdleRelease(async () => {
-      const matte = await aiMatte(session.work);
-      await session.aiCutFromMatte(matte);
+      const { matte, refine } = await aiMatte(session.work, ctx?.progress);
+      await session.aiCutFromMatte(matte, refine);
       return packPreview();
     }),
 
   /** Quita el fondo de una imagen arbitraria (Icon Studio) sin tocar la
    *  sesión del editor. Devuelve el matte refinado. */
-  removeBg: ({ width, height, rgba }) =>
+  removeBg: ({ width, height, rgba }, ctx) =>
     withAiIdleRelease(async () => {
       const img = new ImageData(new Uint8ClampedArray(rgba), width, height);
-      const matte = await aiMatte(img);
-      return refineMatte(matte, width, height);
+      const { matte, refine } = await aiMatte(img, ctx?.progress);
+      return refineMatte(matte, width, height, refine);
     }),
   async addStroke({ stroke }) {
     await session.addStroke(stroke);

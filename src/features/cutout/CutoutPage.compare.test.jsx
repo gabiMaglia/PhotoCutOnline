@@ -22,7 +22,7 @@ jest.mock("../../services/ads.js", () => ({
   initAds: jest.fn(),
 }));
 jest.mock("../../services/analytics.js", () => ({ initAnalytics: jest.fn(), trackEvent: jest.fn() }));
-jest.mock("../../utils/aiWarmup.js", () => ({ warmupAiWithToast: jest.fn() }));
+jest.mock("../../utils/aiWarmup.js", () => ({ warmupAiWithToast: jest.fn(), aiNoticeHandler: () => () => {} }));
 
 import { CutoutProvider, useCutoutContext } from "./CutoutContext.jsx";
 import CutoutPage from "./CutoutPage.jsx";
