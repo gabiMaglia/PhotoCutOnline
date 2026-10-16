@@ -310,3 +310,44 @@ tiempos de P1–P3 en el log y handoff P-1 con el hallazgo de la cadena Vívido 
   de los 100 ms); a 1280, 62–68 ms. El canvas se muestra a `max-height: 66vh`, así que 1280 px alcanza.
 - El test de «media conservada» usa una imagen más grande para σ 30 (400×300 en vez de 64×48): con
   bordes extendidos la media se conserva solo si la imagen es varias veces σ. La tolerancia (±0,5) no cambió.
+
+### Correcciones post-QA (intento 2)
+Origen: engram/qa/BUG-09.md (intento 1 APROBADO; el orquestador pide cerrar H-1 y H-2 antes del merge).
+
+**H-2 — vista previa de Censurar caras sin recalcular a 12 MP.**
+1. Test rojo primero, en `test/filters-test.jsx` (sección **F7**, Chrome y WebKit): `FaceCensorPage` real
+   dentro de `CutoutProvider` con una foto sintética de 4000×3000; se dibuja a mano (eventos de mouse
+   reales sobre el canvas) una región de ~1100 px. Se mide cada actualización de la vista previa como el
+   tiempo desde el evento hasta que el hilo principal queda libre (rAF + setTimeout 0):
+   - 5 cambios del slider de intensidad ⇒ mediana ≤ 100 ms, y la vista previa cambió de verdad (un
+     píxel de la región difiere entre intensidad 20 y 90: el test no puede pasar sin repintar);
+   - 5 `mousemove` de un segundo arrastre ⇒ mediana ≤ 100 ms;
+   - la descarga es **bit-idéntica** (hash FNV-1a de los píxeles) a `censorBoxes(foto, [región], opts)` a
+     resolución completa calculado por el test con la misma conversión de coordenadas que la página.
+   Se guarda la salida roja (hoy: 265–676 ms por actualización según QA).
+2. `FaceCensorPage.jsx`:
+   - al cargar la imagen se crea una vista previa reducida (lado mayor ≤ 1280 px, `PREVIEW_MAX_SIDE` de
+     `filterOps.js`, mismo criterio que Filtros) en un canvas;
+   - las cajas siguen en coordenadas de la imagen completa (detección y descarga no cambian);
+   - el canvas censurado de la vista previa se memoiza (`useMemo` sobre vista previa, cajas activas,
+     modo e intensidad) con `censorBoxes` sobre la reducida y las cajas escaladas: blur y bloques son
+     relativos al tamaño de la caja, así que la vista previa es la descarga achicada;
+   - `redraw` solo copia el canvas memoizado y dibuja contornos y la región arrastrada (escalados): un
+     `mousemove` ya no recalcula la censura;
+   - `toImg` convierte a coordenadas de la imagen completa con la misma fórmula de hoy
+     (`(clientX − left) / ancho_css · W`), y el umbral de arrastre mínimo usa W/H completos;
+   - `<canvas>` siempre montado (`display:none` hasta que hay imagen), regla del repo.
+   La descarga sigue llamando `censorBoxes(img, cajas, opts)` a resolución completa, sin cambios.
+
+**H-1 — corrección de varianza en `blurDownscaled`.**
+1. Test rojo primero: F4 barre σ ∈ {1, 3, 8, 15, 16, 24, 33, 48, 64, 80} en Chrome sobre una imagen de
+   768×768 (para que σ 80 tenga interior a más de 3σ del borde), con las mismas tolerancias (media ≤ 1,5,
+   máx ≤ 10). Hoy σ 33 sale de tolerancia (QA: máx 11–14).
+2. Se quita la corrección (`σ_chico = σ / f`): QA midió que sin ella todo σ 16–80 queda dentro, y una
+   corrección sin test que la sostenga no se deja. El hash dorado de F5 cambia (incluye σ 16 a escala) y
+   se actualiza en el mismo commit del arreglo.
+
+**Verde:** `npm test`, `npm run build`, `npm run test:web` (verificar antes que el puerto 5187 esté libre).
+Tiempos antes/después de H-2 en el handoff.
+
+**Aprobado por:** nerv-web · tech lead web · 2026-10-16
