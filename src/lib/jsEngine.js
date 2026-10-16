@@ -208,12 +208,12 @@ export class CutoutSession {
    * calculado por aiSegmenter y lo adopta como alfa. Los pinceles posteriores
    * editan el matte directamente (sin re-segmentar).
    */
-  aiCutFromMatte(matte) {
+  aiCutFromMatte(matte, refineOpts) {
     this.pushHistory();
     const { width, height } = this.work;
     this.rect = { x: 0, y: 0, w: width, h: height };
     this.trimap = new Uint8Array(width * height);
-    const refined = refineMatte(Uint8ClampedArray.from(matte), width, height);
+    const refined = refineMatte(Uint8ClampedArray.from(matte), width, height, refineOpts);
     this.softAlpha = refined;
     const label = new Uint8Array(width * height);
     for (let i = 0; i < label.length; i++) label[i] = refined[i] > 127 ? 1 : 0;
@@ -1037,13 +1037,19 @@ function drawCover(ctx, img, w, h) {
  *     banda de borde conserva valores intermedios (pelo, bordes suaves).
  *  2. Limpieza por componentes: se conservan los sujetos principales
  *     (componentes ≥ 12% del mayor) y se elimina el alfa del resto.
+ *
+ * opts (GROW-36, BiRefNet): `stretch: false` salta el paso 1 (su matte ya es
+ * casi binario) y `minComponentFrac` cambia el umbral del paso 2 a una
+ * fracción del ÁREA de la imagen: las letras de un logo son chicas al lado del
+ * emblema pero no son ruido; las motas sí lo son.
  */
-export function refineMatte(matte, width, height) {
+export function refineMatte(matte, width, height, opts = {}) {
+  const { stretch = true, minComponentFrac = null } = opts;
   const N = width * height;
   // 1. estiramiento: [50..205] → [0..255]
   const LO = 50;
   const HI = 205;
-  for (let i = 0; i < N; i++) {
+  for (let i = 0; stretch && i < N; i++) {
     const v = matte[i];
     matte[i] = v <= LO ? 0 : v >= HI ? 255 : Math.round(((v - LO) / (HI - LO)) * 255);
   }
@@ -1081,7 +1087,7 @@ export function refineMatte(matte, width, height) {
   }
   if (sizes.length > 1) {
     const largest = Math.max(...sizes);
-    const keepMin = Math.max(64, largest * 0.12);
+    const keepMin = minComponentFrac == null ? Math.max(64, largest * 0.12) : Math.max(16, N * minComponentFrac);
     const keep = sizes.map((sz) => sz >= keepMin);
     // anular el alfa fuera de los componentes conservados (adiós fantasmas),
     // conservando una banda de ~4px alrededor para no cortar pelo/bordes

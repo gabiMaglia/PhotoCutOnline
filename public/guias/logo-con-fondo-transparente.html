@@ -244,13 +244,13 @@
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Recorte IA: 4,0 s, 89,4 % transparente, 1,4 % semitransparente, PNG de 84 KB.</li>
+          <li>Recorte IA: 22,6 s, 85,7 % transparente, 4,2 % semitransparente, PNG de 127 KB.</li>
           <li>Recorte automático: 1,45 s, 89,5 % transparente, 1,2 % semitransparente, 81 KB.</li>
           <li>Varita mágica (un clic): 0,16 s, 85,7 % transparente, 3,6 % semitransparente, 117 KB.</li>
-          <li>El logo tiene un emblema y, debajo, la palabra de la marca. En la franja donde está el texto (entre 68 % y 85 % de la altura) quedó opaco: 0,0 % con la IA, 0,0 % con el recorte automático y 15,4 % con la varita.</li>
+          <li>El logo tiene un emblema y, debajo, la palabra de la marca. En la franja donde está el texto (entre 68 % y 85 % de la altura) quedó opaco: 13,6 % con la IA, 0,0 % con el recorte automático y 15,4 % con la varita.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Ni el Recorte IA ni el recorte automático conservaron la palabra del logo: solo quedó el emblema. La varita sí la conservó, pero dejó rellenos y opacos los huecos de letras como la de la A, porque no tocan el fondo, y el borde quedó con más semitransparencia. Con un logo sin texto la IA habría bastado; con texto, hubo que ir a la varita y repasar a mano los huecos.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Con GPU (BiRefNet) el Recorte IA conservó la palabra del logo y dejó transparentes los huecos de la A y la R, que la varita rellenó: en la franja del texto la IA dejó opaco 1 solo píxel claro y la varita 581. Lo que sí deja la IA es un filete claro de 1 o 2 px alrededor de las letras y del emblema, que se nota sobre un fondo oscuro. El recorte automático siguió perdiendo la palabra. Sin GPU corta u2netp, y en mi medición anterior con u2netp la IA tampoco conservó la palabra (0,0 % opaco en esa franja). El Recorte IA tardó 22,6 s porque fue el primero de la pestaña: incluye bajar el modelo y preparar la GPU.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-16">2026-10-16</time> con PhotoCut (web) en Chrome 155.0.8059.80 · macOS 14.8.8 · versión de PhotoCut: commit 7ec5265. Recorte IA con BiRefNet-lite en la GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

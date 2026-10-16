@@ -25,8 +25,12 @@ de arriba reutilizan el motor que ya tenemos sin tocar la web.
 
 `crates/photocut-core` (Rust) ya compila a tres destinos: WASM para la web,
 nativo para Tauri… y puede compilar a **un binario de servidor**. La IA
-(u2netp, 4.6 MB, Apache-2.0) corre con `ort` (ONNX Runtime para Rust) o con
-onnxruntime-node. Es decir: el "producto API" es empaquetado, no desarrollo
+(u2netp, 4.6 MB, Apache-2.0; o BiRefNet-lite, 115 MB, pesos MIT, el modelo con
+GPU desde GROW-36) corre con `ort` (ONNX Runtime para Rust) o con
+onnxruntime-node. Ojo antes de venderla como API: la model card de
+BiRefNet-lite advierte que entre sus datos de entrenamiento está DIS5K, cuyos
+términos restringen el uso comercial del dataset; esa decisión está pendiente
+del PO (ver `public/licenses/ai-models-NOTICE.txt`). Es decir: el "producto API" es empaquetado, no desarrollo
 de motor nuevo.
 
 ## 3. Las tres formas de hacerlo, comparadas

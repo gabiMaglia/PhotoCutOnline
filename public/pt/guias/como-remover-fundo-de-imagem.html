@@ -245,8 +245,10 @@
         com pessoas, animais ou produtos sobre fundos razoavelmente distinguíveis.
         No <a href="/editor/">PhotoCut Studio</a> isso é o botão
         <strong>"Recorte IA"</strong> (atalho <code>I</code>): o modelo é baixado
-        uma única vez (~7&nbsp;MB), roda no seu navegador com WebAssembly e funciona até sem
-        conexão depois da primeira visita.
+        uma única vez e roda no seu navegador: se o seu aparelho tem uma GPU que
+        o navegador consegue usar, baixa o BiRefNet-lite (~120&nbsp;MB), que
+        recorta com mais detalhe; se não, o u2netp (~7&nbsp;MB) com WebAssembly.
+        Depois de usá-lo uma vez, funciona até sem conexão.
       </p>
       <h3>2. Varinha mágica: um clique no fundo</h3>
       <p>
@@ -389,13 +391,13 @@
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Recorte IA, primeira vez (com o modelo baixado do meu servidor local): 5,0 s. Na mesma aba, segunda execução: 2,9 s. Depois de recarregar, com o modelo no cache: 3,6 s.</li>
-          <li>O que a IA baixa na primeira vez, sem compressão: 4,57 MB de modelo (u2netp.onnx) + 13,2 MB de motor WebAssembly. Com Brotli (nível 11, calculado sobre esses mesmos arquivos do dist/) o total cai para 6,4 MB, na ordem dos «~7 MB» que o guia menciona (o servidor real pode comprimir em outro nível).</li>
-          <li>PNG exportado: 720 × 900 px, 535 KB, 47,4% dos pixels totalmente transparentes e 3,3% semitransparentes (a borda suavizada).</li>
-          <li>Rede: 67 requisições na sessão inteira e nenhuma com corpo (0 bytes enviados). As 26 requisições a outros domínios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) são de publicidade do Google e não levam a foto.</li>
+          <li>Recorte IA, primeira vez (com o modelo baixado do meu servidor local): 22,6 s. Na mesma aba, segunda execução: 3,9 s. Depois de recarregar, com o modelo no cache: 16,1 s.</li>
+          <li>Este computador tem GPU, então a IA baixou o BiRefNet-lite: 114,8 MB de modelo (em 2 partes) + 24,0 MB de motor WebAssembly/WebGPU, sem compressão. O modelo trafega como está; o motor com Brotli (nível 11, calculado sobre esses mesmos arquivos do dist/) cai para 3,5 MB. No total 118,4 MB, os «~120 MB» que o guia menciona para um aparelho com GPU.</li>
+          <li>PNG exportado: 720 × 900 px, 532 KB, 47,7% dos pixels totalmente transparentes e 3,3% semitransparentes (a borda suavizada).</li>
+          <li>Rede: 93 requisições na sessão inteira e nenhuma com corpo (0 bytes enviados). As 26 requisições a outros domínios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) são de publicidade do Google e não levam a foto.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Com este retrato a IA não deixou nenhum fiapo que eu conseguisse ver sobre fundo magenta, então não posso contar um caso difícil. Os tempos são de uma única execução cada um e com o modelo servido da minha máquina: na internet real, a primeira vez soma o download de uns 6 MB. Em outra execução do mesmo teste vi quatro POST de medição de anúncios do Google (de até 435 bytes, nenhum com a foto): a publicidade faz requisições, mas a imagem não viaja.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Com este retrato a IA não deixou nenhum fiapo que eu conseguisse ver sobre fundo magenta, então não posso contar um caso difícil. Medi num Mac com GPU, então quem recortou foi o BiRefNet: a primeira vez levou 22,6 s porque, além de baixar o modelo (da minha máquina; pela internet real são uns 120 MB), o navegador prepara a GPU, e depois de recarregar levou 16,1 s de novo por essa preparação, mesmo com o modelo já no cache. Sem GPU quem recorta é o u2netp, que baixa uns 6 MB: com ele medi antes 5,0 s na primeira vez e 2,9 s na segunda. Os tempos são de uma única execução cada um. Em outra execução do mesmo teste vi quatro POST de medição de anúncios do Google (de até 435 bytes, nenhum com a foto): a publicidade faz requisições, mas a imagem não viaja.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-16">2026-10-16</time> com PhotoCut (web) no Chrome 155.0.8059.80 · macOS 14.8.8 · versão do PhotoCut: commit 7ec5265. Recorte IA com BiRefNet-lite na GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

@@ -24,12 +24,28 @@ export function imgMeta(file) {
   };
 }
 
+// Qué modelo usó el Recorte IA en la prueba en curso, por motor (GROW-36: BiRefNet con
+// GPU, u2netp sin ella; WebKit no expone WebGPU). Se deduce de lo que pidió el worker;
+// run.mjs lo vacía antes de cada prueba.
+export const aiModelsSeen = { chromium: new Set(), webkit: new Set() };
+
+// El modelo con el que cortó un motor; si cayó al respaldo en medio de la prueba se ven
+// los dos y corta u2netp.
+export function aiModelOf(engine) {
+  const seen = aiModelsSeen[engine];
+  return seen.has("u2netp") ? "u2netp" : seen.has("birefnet") ? "birefnet" : undefined;
+}
+
 export async function newCtx(browser, { block = true } = {}) {
   const ctx = await browser.newContext({
     acceptDownloads: true,
     viewport: { width: 1440, height: 900 },
     // WebKit de Playwright no conoce estos permisos y rechaza el contexto (GROW-35)
     permissions: browser.browserType().name() === "chromium" ? ["clipboard-read", "clipboard-write"] : [],
+  });
+  ctx.on("request", (r) => {
+    const m = new URL(r.url()).pathname.match(/\/models\/(birefnet|u2netp)/);
+    if (m) aiModelsSeen[browser.browserType().name()].add(m[1]);
   });
   const blocked = block ? await L.blockThirdParty(ctx) : [];
   return { ctx, blocked };

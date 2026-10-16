@@ -203,13 +203,13 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout: 4.1 s.</li>
-          <li>Amazon 2000×2000 (5% margin): 2000 × 2000 px, 196 KB JPEG; 0.1% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
-          <li>Shopify 2048×2048 (6% margin): 2048 × 2048 px, 198 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
+          <li>AI cutout: 22.7 s.</li>
+          <li>Amazon 2000×2000 (5% margin): 2000 × 2000 px, 195 KB JPEG; 0.1% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
+          <li>Shopify 2048×2048 (6% margin): 2048 × 2048 px, 197 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
           <li>Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 77 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> There is no LinkedIn preset. Each preset, when chosen, sets the background back to #ffffff and I had to set the gray again; with the gray set, the PNG comes out with exactly #c9ced6 and the JPEG shifts it slightly, to #c9cdd6, because of compression. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-10">2026-10-10</time> with PhotoCut (web) in Chrome 154.0.8037.99 · macOS 14.8.8 · PhotoCut version: commit e3d95d0.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> There is no LinkedIn preset. Each preset, when chosen, sets the background back to #ffffff and I had to set the gray again; with the gray set, the PNG comes out with exactly #c9ced6 and the JPEG shifts it slightly, to #c9cdd6, because of compression. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

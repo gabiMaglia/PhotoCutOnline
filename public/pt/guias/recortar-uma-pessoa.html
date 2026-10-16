@@ -222,12 +222,12 @@
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Recorte IA: 3,9 s. Largura aproximada da faixa de borda semitransparente (pixels semitransparentes por pixel de contorno): cabeça e cabelo 11,8 px, ombros 10,8 px, braços 9,5 px, tronco baixo 9,9 px. A zona mais difusa foi cabeça e cabelo.</li>
-          <li>Um traço do Pincel remover de 12 px sobre o ombro mudou 0,15% dos pixels da imagem (opacos: 49,2% → 49,1%).</li>
+          <li>Recorte IA: 21,7 s. Largura aproximada da faixa de borda semitransparente (pixels semitransparentes por pixel de contorno): cabeça e cabelo 11,0 px, ombros 10,7 px, braços 9,4 px, tronco baixo 9,6 px. A zona mais difusa foi cabeça e cabelo.</li>
+          <li>Um traço do Pincel remover de 12 px sobre o ombro mudou 0,15% dos pixels da imagem (opacos: 49,1% → 49,0%).</li>
           <li>«Desfazer» devolveu uma imagem idêntica à do recorte original (mesmo hash dos pixels RGBA).</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não consegui reproduzir o fiapo nos ombros que a versão anterior deste guia contava: neste retrato o contorno saiu limpo a olho nu, então dei a pincelada mesmo assim, para medir quanto muda, não para corrigir algo. O cabelo é a zona em que a borda é mais difusa, mas não medi o quanto isso aparece sobre um fundo novo.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> Não consegui reproduzir o fiapo nos ombros que a versão anterior deste guia contava: neste retrato o contorno saiu limpo a olho nu, então dei a pincelada mesmo assim, para medir quanto muda, não para corrigir algo. O cabelo é a zona em que a borda é mais difusa, mas não medi o quanto isso aparece sobre um fundo novo. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-16">2026-10-16</time> com PhotoCut (web) no Chrome 155.0.8059.80 · macOS 14.8.8 · versão do PhotoCut: commit 7ec5265. Recorte IA com BiRefNet-lite na GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

@@ -15,6 +15,7 @@ import { runSwDeploy } from "./sw-deploy-test.mjs";
 const PORT = 5187;
 const TESTS = [
   "ai-test",
+  "ai-quality-test",
   "sticker-test",
   "canvas-test",
   "engine-test",

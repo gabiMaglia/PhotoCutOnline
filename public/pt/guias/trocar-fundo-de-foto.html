@@ -201,12 +201,12 @@
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Recorte IA uma única vez: 4,1 s. Trocar o fundo depois não rodou a IA de novo: exportar com cor levou 0,1 s e com imagem de fundo 0,3 s (inclui o download).</li>
-          <li>Pixels semitransparentes da borda conforme a suavização: 0 px → 1,3%, 2 px → 3,3%, 6 px → 7,3%.</li>
-          <li>JPEG com fundo #1e4d8c: 720 × 900 px, 56 KB; o pixel do canto saiu rgb(29, 77, 139) (pedi rgb(30, 77, 140)). Com a imagem de fundo: 65 KB.</li>
+          <li>Recorte IA uma única vez: 21,6 s. Trocar o fundo depois não rodou a IA de novo: exportar com cor levou 0,1 s e com imagem de fundo 0,3 s (inclui o download).</li>
+          <li>Pixels semitransparentes da borda conforme a suavização: 0 px → 1,9%, 2 px → 3,3%, 6 px → 7,2%.</li>
+          <li>JPEG com fundo #1e4d8c: 720 × 900 px, 56 KB; o pixel do canto saiu rgb(29, 77, 139) (pedi rgb(30, 77, 140)). Com a imagem de fundo: 64 KB.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O JPEG devolveu a cor a um nível de distância do que pedi (por causa da compressão). Medi tamanhos e pixels de borda, não o quanto o cabelo se integra ao fundo novo: isso eu julguei a olho e não quantifiquei, então não afirmo qual suavização fica melhor.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O JPEG devolveu a cor a um nível de distância do que pedi (por causa da compressão). Medi tamanhos e pixels de borda, não o quanto o cabelo se integra ao fundo novo: isso eu julguei a olho e não quantifiquei, então não afirmo qual suavização fica melhor. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-16">2026-10-16</time> com PhotoCut (web) no Chrome 155.0.8059.80 · macOS 14.8.8 · versão do PhotoCut: commit 7ec5265. Recorte IA com BiRefNet-lite na GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

@@ -12,7 +12,7 @@ import { saveExport } from "../../../utils/save.js";
 import { t } from "../../../lib/i18n.js";
 import { errorText } from "../../../lib/staleBuild.js";
 import { trackEvent } from "../../../services/analytics.js";
-import { warmupAiWithToast } from "../../../utils/aiWarmup.js";
+import { aiNoticeHandler, warmupAiWithToast } from "../../../utils/aiWarmup.js";
 
 // Lógica de Icon Studio: fuente del arte (recorte actual / PNG abierto), quitar
 // fondo con IA, recortar al contenido, ajustes de render y generación del ZIP.
@@ -103,7 +103,7 @@ export function useIconStudio({ getCutout, onToast }) {
       const wctx = workC.getContext("2d");
       wctx.imageSmoothingQuality = "high";
       wctx.drawImage(source, 0, 0, w, h);
-      const matte = await backend.removeBg(wctx.getImageData(0, 0, w, h));
+      const matte = await backend.removeBg(wctx.getImageData(0, 0, w, h), aiNoticeHandler(onToast));
 
       // máscara work-res → alfa full-res con suavizado
       const maskImg = new ImageData(w, h);

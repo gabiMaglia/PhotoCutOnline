@@ -1,6 +1,7 @@
 // BUG-08: el build versiona el service worker con el manifiesto del deploy.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readdirSync } from "node:fs";
 import { buildSwManifest, injectSwBuild, injectBuildMeta } from "./swManifest.mjs";
 
 const ASSETS = ["editor-AAA.js", "editor-BBB.css", "ort-wasm-CCC.mjs", "ort-wasm-DDD.wasm", "logo-EEE.png"];
@@ -45,4 +46,27 @@ test("injectBuildMeta agrega el id al <head> una sola vez", () => {
   const out = injectBuildMeta(html, "abc123def456");
   assert.ok(out.includes('<meta name="photocut-build" content="abc123def456" />'));
   assert.equal(injectBuildMeta(out, "abc123def456"), out);
+});
+
+// GROW-36: el runtime WebGPU es solo del camino GPU; precachearlo se lo bajaría
+// a todos (incluidos Safari sin WebGPU y equipos sin GPU). Se queda en keep.
+test("el runtime WebGPU (bundle + asyncify) no entra al shell pero se conserva", () => {
+  const gpu = ["ort.webgpu.bundle.min-XYZ.js", "ort-wasm-simd-threaded.asyncify-ABC.mjs", "ort-wasm-simd-threaded.asyncify-DEF.wasm"];
+  const b = buildSwManifest({ assets: [...ASSETS, ...gpu], models: MODELS, html: HTML });
+  for (const f of gpu) {
+    assert.ok(!b.shell.includes(`/assets/${f}`), `${f} fuera del shell`);
+    assert.ok(b.keep.includes(`/assets/${f}`), `${f} en keep`);
+  }
+  assert.ok(b.shell.includes("/assets/ort-wasm-CCC.mjs"), "el runtime WASM de siempre sigue en el shell");
+});
+
+// GROW-36: el modelo de 115 MB (en partes) nunca entra al precache del install
+// (todo o nada: un visitante que no usa la IA, o que no tiene GPU, no debe
+// bajarlo) y la poda conserva lo que se sirve: las partes de BiRefNet y u2netp.
+test("con los modelos reales de public/models: ningún modelo en shell, partes de BiRefNet y u2netp en keep", () => {
+  const models = readdirSync(new URL("../../public/models/", import.meta.url)).filter((f) => !f.startsWith("."));
+  const b = buildSwManifest({ assets: ASSETS, models, html: HTML });
+  assert.deepEqual(b.shell.filter((u) => u.startsWith("/models/")), []);
+  for (const f of ["birefnet-lite-1024-fp16.onnx.part0", "birefnet-lite-1024-fp16.onnx.part1", "u2netp.onnx"])
+    assert.ok(b.keep.includes(`/models/${f}`), `${f} en keep`);
 });

@@ -20,13 +20,13 @@ uses asks you to pay or sign up.
 
 PhotoCut does the opposite: everything runs inside your browser. There's no
 backend that receives your images — there's literally nowhere to upload them.
-You can open a photo, disconnect from the internet, and keep cutting out; it
-still works.
+Once you've cut out one photo (so the model is cached), you can disconnect from
+the internet and keep cutting out; it still works.
 
 How it works:
-- Auto background removal uses a u2netp ONNX model (4.6 MB, Apache-2.0) running
-  via onnxruntime-web in a Web Worker, with WebGPU/WebGL acceleration when
-  available.
+- Auto background removal runs via onnxruntime-web in a Web Worker: with a GPU
+  the browser can use, BiRefNet-lite (MIT, ~115 MB, fp16 on WebGPU); otherwise
+  u2netp (4.6 MB, Apache-2.0) on WebAssembly.
 - Interactive cutout is GrabCut compiled to WASM, plus pixel-zoom refine brushes.
 - Export is a real alpha channel (PNG/WebP).
 
@@ -55,8 +55,8 @@ I built a background remover that runs 100% in your browser — your photo never
 ```
 The thing that always bugged me: "free" cutout tools upload your photo to a
 server, then paywall or watermark it. So I built one where nothing leaves your
-device — the AI runs in the browser (WASM + an ONNX model), and it even works
-offline after the first load.
+device — the AI runs in the browser (an ONNX model on WebGPU or WASM), and it
+even works offline after the first cutout.
 
 It also does white/changed backgrounds, round avatars, WhatsApp/Telegram
 stickers, app icons + favicons, watermarks, an EXIF/GPS metadata stripper, and
@@ -77,9 +77,10 @@ Show-off: full image editor (background removal, icons, stickers) with zero back
 Sharing a side project: an image editor where all processing is client-side.
 No server receives the images at all.
 
-Stack: React + Vite MPA, u2netp ONNX via onnxruntime-web in a Web Worker
-(WebGPU/WebGL fallback), GrabCut compiled to WASM for interactive cutout,
-canvas for the rest. Model is cached after first load so it works offline.
+Stack: React + Vite MPA, onnxruntime-web in a Web Worker (BiRefNet-lite fp16 on
+WebGPU when there's a usable GPU, u2netp on WASM otherwise), GrabCut compiled to
+WASM for interactive cutout, canvas for the rest. The model is cached after the
+first cutout, so it works offline from then on.
 
 Curious what this community thinks about the tradeoffs of doing everything in
 the browser (bundle size vs. privacy vs. no infra cost). AMA about the setup.

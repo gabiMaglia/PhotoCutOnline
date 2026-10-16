@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-11",
+  "generated": "2026-10-16",
   "entries": [
     {
       "name": "@jsquash/webp",
@@ -30,6 +30,12 @@
       "version": "2.5.4",
       "license": "MIT OR Apache-2.0",
       "source": "npm"
+    },
+    {
+      "name": "BiRefNet-lite 1024 fp16 (ZhengPeng7/BiRefNet; export jiabins0303)",
+      "version": "birefnet-lite-1024-fp16.onnx",
+      "license": "MIT (aviso: /licenses/ai-models-NOTICE.txt)",
+      "source": "modelo"
     },
     {
       "name": "image",
@@ -72,6 +78,12 @@
       "version": "2",
       "license": "MIT OR Apache-2.0",
       "source": "crates.io"
+    },
+    {
+      "name": "U^2-Net u2netp (xuebinqin)",
+      "version": "u2netp.onnx",
+      "license": "Apache-2.0 (aviso: /licenses/ai-models-NOTICE.txt)",
+      "source": "modelo"
     },
     {
       "name": "wasm-feature-detect",

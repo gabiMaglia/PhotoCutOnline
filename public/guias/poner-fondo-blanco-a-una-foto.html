@@ -275,12 +275,12 @@
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>PNG: 522 KB, 47,5 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.</li>
-          <li>JPEG: 58 KB (89 % menos), 46,4 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.</li>
-          <li>Recorte IA 4,0 s; la descarga del PNG tardó 0,1 s y la del JPEG 0,1 s.</li>
+          <li>PNG: 519 KB, 47,7 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.</li>
+          <li>JPEG: 58 KB (89 % menos), 46,6 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.</li>
+          <li>Recorte IA 21,9 s; la descarga del PNG tardó 0,1 s y la del JPEG 0,1 s.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-16">2026-10-16</time> con PhotoCut (web) en Chrome 155.0.8059.80 · macOS 14.8.8 · versión de PhotoCut: commit 7ec5265. Recorte IA con BiRefNet-lite en la GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

@@ -1,0 +1,16 @@
+{
+  "birefnet": {
+    "bytes": 114834127,
+    "sha256": "4059896039dfccb0f15b9080ff06d11d90e499449bb045e797055eb8901cf5f4",
+    "parts": [
+      {
+        "url": "/models/birefnet-lite-1024-fp16.onnx.part0",
+        "bytes": 57417064
+      },
+      {
+        "url": "/models/birefnet-lite-1024-fp16.onnx.part1",
+        "bytes": 57417063
+      }
+    ]
+  }
+}

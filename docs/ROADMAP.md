@@ -123,7 +123,8 @@ rápido).*
 
 ## Lo ya construido (no se vuelve a discutir)
 
-Motor GrabCut Rust→WASM con fallback JS · **IA local u2netp** (worker) ·
+Motor GrabCut Rust→WASM con fallback JS · **IA local: BiRefNet-lite en WebGPU
+con GPU, u2netp en WASM sin ella** (worker, GROW-36) ·
 **varita mágica por color** · worker (UI nunca se congela) · undo/redo ·
 feather · auto-recorte · **comparador antes/después** · **zoom/pan** · vista
 previa flotante arrastrable · export PNG/WebP/JPEG/portapapeles con fondo

@@ -270,12 +270,12 @@
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Recorte IA: 4,3 s sobre 1200 × 1200 px.</li>
-          <li>Al elegir el preset, Exportar quedó en «Color» #ffffff. Sin tocarlo, el JPEG salió de 2000 × 2000 px y 90 KB, con 40,3 % de píxeles #ffffff exactos y esquinas no blancas 0,0 %. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.</li>
-          <li>Con el mismo preset y «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas.</li>
+          <li>Recorte IA: 22,0 s sobre 1200 × 1200 px.</li>
+          <li>Al elegir el preset, Exportar quedó en «Color» #ffffff. Sin tocarlo, el JPEG salió de 2000 × 2000 px y 89 KB, con 40,1 % de píxeles #ffffff exactos y esquinas no blancas 0,0 %. El producto (píxeles no casi blancos) ocupa 89,5 % del ancho y 74,8 % del alto del cuadro.</li>
+          <li>Con el mismo preset y «Transparente» + PNG: 2000 × 2000 px, 645 KB, 40,3 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. El PNG transparente a 2000 × 2000 pesa 669 KB contra 90 KB del JPEG sobre blanco, y no subí ninguno de los dos a Amazon para ver si lo acepta.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-10">2026-10-10</time> con PhotoCut (web) en Chrome 154.0.8037.99 · macOS 14.8.8 · versión de PhotoCut: commit e3d95d0.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. El PNG transparente a 2000 × 2000 pesa 669 KB contra 90 KB del JPEG sobre blanco, y no subí ninguno de los dos a Amazon para ver si lo acepta. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-16">2026-10-16</time> con PhotoCut (web) en Chrome 155.0.8059.80 · macOS 14.8.8 · versión de PhotoCut: commit 7ec5265. Recorte IA con BiRefNet-lite en la GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

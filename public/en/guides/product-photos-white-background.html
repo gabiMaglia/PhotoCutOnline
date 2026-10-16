@@ -211,12 +211,12 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout: 4.3 s on 1200 × 1200 px.</li>
-          <li>When I chose the preset, Export was left on “Color” #ffffff. Without touching it, the JPEG came out at 2000 × 2000 px and 90 KB, with 40.3% of pixels exactly #ffffff and 0.0% non-white corners. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.</li>
-          <li>With the same preset and “Transparent” + PNG: 2000 × 2000 px, 669 KB, 40.3% transparent pixels and alpha 0, 0, 0, 0 in the four corners.</li>
+          <li>AI cutout: 22.0 s on 1200 × 1200 px.</li>
+          <li>When I chose the preset, Export was left on “Color” #ffffff. Without touching it, the JPEG came out at 2000 × 2000 px and 89 KB, with 40.1% of pixels exactly #ffffff and 0.0% non-white corners. The product (pixels that aren't almost white) takes up 89.5% of the canvas width and 74.8% of its height.</li>
+          <li>With the same preset and “Transparent” + PNG: 2000 × 2000 px, 645 KB, 40.3% transparent pixels and alpha 0, 0, 0, 0 in the four corners.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. The transparent PNG at 2000 × 2000 weighs 669 KB against 90 KB for the JPEG on white, and I didn't upload either one to Amazon to see whether it's accepted.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-10">2026-10-10</time> with PhotoCut (web) in Chrome 154.0.8037.99 · macOS 14.8.8 · PhotoCut version: commit e3d95d0.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. The transparent PNG at 2000 × 2000 weighs 669 KB against 90 KB for the JPEG on white, and I didn't upload either one to Amazon to see whether it's accepted. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

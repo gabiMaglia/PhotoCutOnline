@@ -8,6 +8,7 @@ import { fileToDataUrl } from "../../../utils/image.js";
 import { downloadDataUrl } from "../../../utils/dom.js";
 import { saveExport } from "../../../utils/save.js";
 import { trackEvent } from "../../../services/analytics.js";
+import { aiNoticeHandler } from "../../../utils/aiWarmup.js";
 
 // Lote: recorte IA secuencial de N imágenes → ZIP de PNG transparentes.
 //
@@ -19,7 +20,7 @@ import { trackEvent } from "../../../services/analytics.js";
 // con muchos archivos, no hay razón para mantener vivas N URLs a la vez. El
 // dataURL de entrada tampoco se pre-computa para todo el lote: se arma uno
 // por vez, dentro del paso que lo consume, así el heap no crece con N.
-async function processFile(file) {
+async function processFile(file, onAiNotice) {
   const insp = await inspectImageFile(file);
   if (insp.kind === "heic") throw new Error(t("toast.heic"));
   if (insp.kind === "undecodable") throw new Error(t("toast.unreadable"));
@@ -32,7 +33,7 @@ async function processFile(file) {
   insp.bitmap.close();
 
   await backend.loadImage(dataUrl);
-  await backend.aiCut();
+  await backend.aiCut(onAiNotice);
   const url = await backend.exportTransparent({ format: "png" });
   try {
     const buf = await (await fetch(url)).arrayBuffer();
@@ -84,7 +85,7 @@ export function useBatch({ toast }) {
         const { id, file } = queueRef.current.shift();
         updateItem(id, { status: "processing" });
         try {
-          const buf = await processFile(file);
+          const buf = await processFile(file, toast ? aiNoticeHandler(toast) : undefined);
           resultsRef.current.set(id, buf);
           updateItem(id, { status: "done" });
         } catch (e) {
@@ -96,7 +97,7 @@ export function useBatch({ toast }) {
       processingRef.current = false;
       setRunning(false);
     }
-  }, [updateItem]);
+  }, [updateItem, toast]);
 
   const addFiles = useCallback(
     (fileList) => {

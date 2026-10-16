@@ -3,7 +3,7 @@ import { backend } from "../../../lib/backend.js";
 import { t } from "../../../lib/i18n.js";
 import { errorText } from "../../../lib/staleBuild.js";
 import { trackEvent } from "../../../services/analytics.js";
-import { warmupAiWithToast } from "../../../utils/aiWarmup.js";
+import { aiNoticeHandler, warmupAiWithToast } from "../../../utils/aiWarmup.js";
 
 const ITERS = 4;
 
@@ -106,7 +106,7 @@ export function useCutoutSession({ imageUrl, toast }) {
         await warmupAiWithToast(toast, (onProgress) => backend.warmupAi(onProgress));
         aiWarm.current = true;
       }
-      return backend.aiCut();
+      return backend.aiCut(aiNoticeHandler(toast));
     }, "toast.ai", { method: "ai" });
   }, [imageUrl, busy, runOp, toast]);
 

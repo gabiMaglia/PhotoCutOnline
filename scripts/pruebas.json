@@ -1,9 +1,9 @@
 {
   "como-quitar-el-fondo-de-una-imagen": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "la foto no sale del navegador y el modelo tarda lo que tarda",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -21,31 +21,41 @@
       "Registré todas las peticiones de red de la sesión."
     ],
     "timing": {
-      "primeraVezMs": 4967,
-      "mismaPestanaMs": 2901,
-      "trasRecargaMs": 3592
+      "primeraVezMs": 22622,
+      "mismaPestanaMs": 3858,
+      "trasRecargaMs": 16104
     },
     "result": {
-      "pngKB": 535.1,
-      "transparentPct": 47.44,
-      "semiPct": 3.34,
+      "pngKB": 532,
+      "transparentPct": 47.67,
+      "semiPct": 3.27,
       "w": 720,
       "h": 900,
-      "modelBytes": 4574861,
-      "runtimeBytes": 13185684,
-      "brotliTotalBytes": 6351507,
-      "requests": 67,
+      "modelFiles": [
+        "birefnet-lite-1024-fp16.onnx.part0",
+        "birefnet-lite-1024-fp16.onnx.part1"
+      ],
+      "modelBytes": 114834127,
+      "runtimeBytes": 24014021,
+      "runtimeBrotliBytes": 3547869,
+      "transferBytes": 118381996,
+      "requests": 93,
       "nonGetRequests": 0,
       "requestBodyBytes": 0,
       "maxBody": 0,
       "nonGet": [],
       "aiFiles": {
-        "/assets/cutoutWorker-B9IGSm2K.js": 24657,
-        "/assets/photocut_wasm_bg-p3xQbcxP.wasm": 42532,
-        "/assets/ort.wasm.bundle.min-BqI5mSIH.js": 71910,
-        "/models/u2netp.onnx": 4574861,
+        "/assets/cutoutWorker-D9ve_F6z.js": 34010,
+        "/assets/ort-wasm-simd-threaded-BVsa2MSA.js": 126,
         "/assets/ort-wasm-simd-threaded-Blof5Tg3.mjs": 24180,
-        "/assets/ort-wasm-simd-threaded-CDsxkEtH.wasm": 13022405
+        "/assets/photocut_wasm-DxQ0Z48p.js": 3397,
+        "/assets/ort.wasm.bundle.min-BqI5mSIH.js": 71910,
+        "/assets/photocut_wasm_bg-p3xQbcxP.wasm": 42532,
+        "/assets/ort.webgpu.bundle.min-lmfq1f7u.js": 112003,
+        "/models/birefnet-lite-1024-fp16.onnx.part0": 57417064,
+        "/models/birefnet-lite-1024-fp16.onnx.part1": 57417063,
+        "/assets/ort-wasm-simd-threaded.asyncify-BO-kLJLU.mjs": 47389,
+        "/assets/ort-wasm-simd-threaded.asyncify-DcJj-9Dx.wasm": 23678474
       },
       "externalHosts": [
         "pagead2.googlesyndication.com",
@@ -57,15 +67,16 @@
       "externalRequests": 26
     },
     "findings": [
-      "Recorte IA, primera vez (con la descarga del modelo desde mi servidor local): 5,0 s. En la misma pestaña, segunda corrida: 2,9 s. Tras recargar, con el modelo en la caché: 3,6 s.",
-      "Lo que baja la IA la primera vez, sin comprimir: 4,57 MB de modelo (u2netp.onnx) + 13,2 MB de motor WebAssembly. Con Brotli (nivel 11, calculado sobre esos mismos archivos de dist/) el total baja a 6,4 MB, en el orden de los «~7 MB» que cuenta la guía (el servidor real puede comprimir con otro nivel).",
-      "PNG exportado: 720 × 900 px, 535 KB, 47,4 % de píxeles totalmente transparentes y 3,3 % semitransparentes (el borde suavizado).",
-      "Red: 67 peticiones en toda la sesión y ninguna con cuerpo (0 bytes enviados). Las 26 peticiones a otros dominios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) son de publicidad de Google y no llevan la foto."
+      "Recorte IA, primera vez (con la descarga del modelo desde mi servidor local): 22,6 s. En la misma pestaña, segunda corrida: 3,9 s. Tras recargar, con el modelo en la caché: 16,1 s.",
+      "Este equipo tiene GPU, así que la IA bajó BiRefNet-lite: 114,8 MB de modelo (en 2 partes) + 24,0 MB de motor WebAssembly/WebGPU, sin comprimir. El modelo viaja tal cual; el motor con Brotli (nivel 11, calculado sobre esos mismos archivos de dist/) baja a 3,5 MB. En total 118,4 MB, los «~120 MB» que cuenta la guía para un equipo con GPU.",
+      "PNG exportado: 720 × 900 px, 532 KB, 47,7 % de píxeles totalmente transparentes y 3,3 % semitransparentes (el borde suavizado).",
+      "Red: 93 peticiones en toda la sesión y ninguna con cuerpo (0 bytes enviados). Las 26 peticiones a otros dominios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) son de publicidad de Google y no llevan la foto."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "Con este retrato la IA no me dejó ningún fleco que pudiera ver sobre fondo magenta, así que no puedo contar un caso difícil. Los tiempos son de una sola corrida cada uno y con el modelo servido desde mi máquina: en internet real la primera vez suma la descarga de unos 6 MB. En otra corrida de la misma prueba vi cuatro POST de medición de anuncios de Google (de hasta 435 bytes, ninguno con la foto): la publicidad hace peticiones, pero la imagen no viaja.",
+    "aiModel": "birefnet",
+    "caveat": "Con este retrato la IA no me dejó ningún fleco que pudiera ver sobre fondo magenta, así que no puedo contar un caso difícil. Medí en una Mac con GPU, así que cortó BiRefNet: la primera vez tardó 22,6 s porque, además de bajar el modelo (desde mi máquina; por internet real son unos 120 MB), el navegador prepara la GPU, y tras recargar volvió a tardar 16,1 s por esa preparación aunque el modelo ya estaba en la caché. Sin GPU corta u2netp, que baja unos 6 MB: con él medí antes 5,0 s la primera vez y 2,9 s la segunda. Los tiempos son de una sola corrida cada uno. En otra corrida de la misma prueba vi cuatro POST de medición de anuncios de Google (de hasta 435 bytes, ninguno con la foto): la publicidad hace peticiones, pero la imagen no viaja.",
     "i18n": {
       "en": {
         "title": "the photo doesn't leave the browser, and the model takes as long as it takes",
@@ -78,12 +89,12 @@
           "I logged every network request of the session."
         ],
         "findings": [
-          "AI cutout, first time (with the model downloaded from my local server): 5.0 s. In the same tab, second run: 2.9 s. After reloading, with the model in the cache: 3.6 s.",
-          "What the AI downloads the first time, uncompressed: 4.57 MB of model (u2netp.onnx) + 13.2 MB of WebAssembly engine. With Brotli (level 11, computed on those same files from dist/) the total drops to 6.4 MB, in the range of the “~7 MB” the guide mentions (the real server may compress at a different level).",
-          "Exported PNG: 720 × 900 px, 535 KB, 47.4% of pixels fully transparent and 3.3% semi-transparent (the smoothed edge).",
-          "Network: 67 requests in the whole session and none with a body (0 bytes sent). The 26 requests to other domains (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) are Google advertising and don't carry the photo."
+          "AI cutout, first time (with the model downloaded from my local server): 22.6 s. In the same tab, second run: 3.9 s. After reloading, with the model in the cache: 16.1 s.",
+          "This computer has a GPU, so the AI downloaded BiRefNet-lite: 114.8 MB of model (in 2 parts) + 24.0 MB of WebAssembly/WebGPU engine, uncompressed. The model travels as is; the engine with Brotli (level 11, computed on those same files from dist/) drops to 3.5 MB. In total 118.4 MB, the “~120 MB” the guide mentions for a device with a GPU.",
+          "Exported PNG: 720 × 900 px, 532 KB, 47.7% of pixels fully transparent and 3.3% semi-transparent (the smoothed edge).",
+          "Network: 93 requests in the whole session and none with a body (0 bytes sent). The 26 requests to other domains (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) are Google advertising and don't carry the photo."
         ],
-        "caveat": "With this portrait the AI left no fringe I could see on a magenta background, so I can't describe a hard case. Each timing is from a single run and with the model served from my machine: on the real internet the first time adds the download of about 6 MB. In another run of the same test I saw four Google ad-measurement POSTs (up to 435 bytes, none with the photo): the ads make requests, but the image doesn't travel."
+        "caveat": "With this portrait the AI left no fringe I could see on a magenta background, so I can't describe a hard case. I measured on a Mac with a GPU, so BiRefNet did the cutout: the first time took 22.6 s because, besides downloading the model (from my machine; over the real internet that's about 120 MB), the browser prepares the GPU, and after reloading it took 16.1 s again for that preparation even though the model was already cached. Without a GPU u2netp does the cutout and downloads about 6 MB: with it I previously measured 5.0 s the first time and 2.9 s the second. Each timing is from a single run. In another run of the same test I saw four Google ad-measurement POSTs (up to 435 bytes, none with the photo): the ads make requests, but the image doesn't travel."
       },
       "pt": {
         "title": "a foto não sai do navegador e o modelo demora o que demora",
@@ -96,20 +107,20 @@
           "Registrei todas as requisições de rede da sessão."
         ],
         "findings": [
-          "Recorte IA, primeira vez (com o modelo baixado do meu servidor local): 5,0 s. Na mesma aba, segunda execução: 2,9 s. Depois de recarregar, com o modelo no cache: 3,6 s.",
-          "O que a IA baixa na primeira vez, sem compressão: 4,57 MB de modelo (u2netp.onnx) + 13,2 MB de motor WebAssembly. Com Brotli (nível 11, calculado sobre esses mesmos arquivos do dist/) o total cai para 6,4 MB, na ordem dos «~7 MB» que o guia menciona (o servidor real pode comprimir em outro nível).",
-          "PNG exportado: 720 × 900 px, 535 KB, 47,4% dos pixels totalmente transparentes e 3,3% semitransparentes (a borda suavizada).",
-          "Rede: 67 requisições na sessão inteira e nenhuma com corpo (0 bytes enviados). As 26 requisições a outros domínios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) são de publicidade do Google e não levam a foto."
+          "Recorte IA, primeira vez (com o modelo baixado do meu servidor local): 22,6 s. Na mesma aba, segunda execução: 3,9 s. Depois de recarregar, com o modelo no cache: 16,1 s.",
+          "Este computador tem GPU, então a IA baixou o BiRefNet-lite: 114,8 MB de modelo (em 2 partes) + 24,0 MB de motor WebAssembly/WebGPU, sem compressão. O modelo trafega como está; o motor com Brotli (nível 11, calculado sobre esses mesmos arquivos do dist/) cai para 3,5 MB. No total 118,4 MB, os «~120 MB» que o guia menciona para um aparelho com GPU.",
+          "PNG exportado: 720 × 900 px, 532 KB, 47,7% dos pixels totalmente transparentes e 3,3% semitransparentes (a borda suavizada).",
+          "Rede: 93 requisições na sessão inteira e nenhuma com corpo (0 bytes enviados). As 26 requisições a outros domínios (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) são de publicidade do Google e não levam a foto."
         ],
-        "caveat": "Com este retrato a IA não deixou nenhum fiapo que eu conseguisse ver sobre fundo magenta, então não posso contar um caso difícil. Os tempos são de uma única execução cada um e com o modelo servido da minha máquina: na internet real, a primeira vez soma o download de uns 6 MB. Em outra execução do mesmo teste vi quatro POST de medição de anúncios do Google (de até 435 bytes, nenhum com a foto): a publicidade faz requisições, mas a imagem não viaja."
+        "caveat": "Com este retrato a IA não deixou nenhum fiapo que eu conseguisse ver sobre fundo magenta, então não posso contar um caso difícil. Medi num Mac com GPU, então quem recortou foi o BiRefNet: a primeira vez levou 22,6 s porque, além de baixar o modelo (da minha máquina; pela internet real são uns 120 MB), o navegador prepara a GPU, e depois de recarregar levou 16,1 s de novo por essa preparação, mesmo com o modelo já no cache. Sem GPU quem recorta é o u2netp, que baixa uns 6 MB: com ele medi antes 5,0 s na primeira vez e 2,9 s na segunda. Os tempos são de uma única execução cada um. Em outra execução do mesmo teste vi quatro POST de medição de anúncios do Google (de até 435 bytes, nenhum com a foto): a publicidade faz requisições, mas a imagem não viaja."
       }
     }
   },
   "recortar-una-persona-de-una-foto": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "dónde es más flojo el borde y cuánto cambia un trazo de pincel",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -126,53 +137,54 @@
       "Descargué de nuevo y comparé píxel a píxel; después apreté «Deshacer» y descargué otra vez."
     ],
     "timing": {
-      "recorteIaMs": 3946,
-      "trazoMs": 1326
+      "recorteIaMs": 21714,
+      "trazoMs": 1330
     },
     "result": {
       "bandas": [
         {
           "name": "cabeza y pelo",
-          "semi": 7009,
-          "contour": 595,
-          "semiPerContour": 11.78
+          "semi": 6663,
+          "contour": 605,
+          "semiPerContour": 11.01
         },
         {
           "name": "hombros",
-          "semi": 5508,
-          "contour": 511,
-          "semiPerContour": 10.78
+          "semi": 5506,
+          "contour": 513,
+          "semiPerContour": 10.73
         },
         {
           "name": "brazos",
-          "semi": 5035,
-          "contour": 529,
-          "semiPerContour": 9.52
+          "semi": 5014,
+          "contour": 531,
+          "semiPerContour": 9.44
         },
         {
           "name": "torso bajo",
-          "semi": 4070,
-          "contour": 409,
-          "semiPerContour": 9.95
+          "semi": 3987,
+          "contour": 414,
+          "semiPerContour": 9.63
         }
       ],
-      "semiTotalPct": 3.34,
+      "semiTotalPct": 3.27,
       "pixelsCambiadosPorTrazo": 0.15,
-      "hashOriginal": "6844e42b",
-      "hashTrasTrazo": "7eb8372e",
-      "hashTrasDeshacer": "6844e42b",
-      "opaqueAntes": 49.22,
-      "opaqueDespues": 49.15
+      "hashOriginal": "22449412",
+      "hashTrasTrazo": "e66d218c",
+      "hashTrasDeshacer": "22449412",
+      "opaqueAntes": 49.06,
+      "opaqueDespues": 49
     },
     "findings": [
-      "Recorte IA: 3,9 s. Ancho aproximado de la franja de borde semitransparente (píxeles semitransparentes por píxel de contorno): cabeza y pelo 11,8 px, hombros 10,8 px, brazos 9,5 px, torso bajo 9,9 px. La zona más difusa fue cabeza y pelo.",
-      "Un trazo del Pincel quitar de 12 px sobre el hombro cambió 0,15 % de los píxeles de la imagen (opacos: 49,2 % → 49,1 %).",
+      "Recorte IA: 21,7 s. Ancho aproximado de la franja de borde semitransparente (píxeles semitransparentes por píxel de contorno): cabeza y pelo 11,0 px, hombros 10,7 px, brazos 9,4 px, torso bajo 9,6 px. La zona más difusa fue cabeza y pelo.",
+      "Un trazo del Pincel quitar de 12 px sobre el hombro cambió 0,15 % de los píxeles de la imagen (opacos: 49,1 % → 49,0 %).",
       "«Deshacer» devolvió una imagen idéntica a la del recorte original (mismo hash de los píxeles RGBA)."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo.",
+    "aiModel": "birefnet",
+    "caveat": "No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.",
     "i18n": {
       "en": {
         "title": "where the edge is weakest and how much one brush stroke changes",
@@ -184,11 +196,11 @@
           "I downloaded again and compared pixel by pixel; then I pressed “Undo” and downloaded once more."
         ],
         "findings": [
-          "AI cutout: 3.9 s. Approximate width of the semi-transparent edge band (semi-transparent pixels per outline pixel): head and hair 11.8 px, shoulders 10.8 px, arms 9.5 px, lower torso 9.9 px. The blurriest area was head and hair.",
-          "One 12 px Remove brush stroke over the shoulder changed 0.15% of the image's pixels (opaque: 49.2% → 49.1%).",
+          "AI cutout: 21.7 s. Approximate width of the semi-transparent edge band (semi-transparent pixels per outline pixel): head and hair 11.0 px, shoulders 10.7 px, arms 9.4 px, lower torso 9.6 px. The blurriest area was head and hair.",
+          "One 12 px Remove brush stroke over the shoulder changed 0.15% of the image's pixels (opaque: 49.1% → 49.0%).",
           "“Undo” returned an image identical to the original cutout (same hash of the RGBA pixels)."
         ],
-        "caveat": "I couldn't reproduce the fringe on the shoulders that the previous version of this guide described: in this portrait the outline looked clean to the naked eye, so I made the brush stroke anyway, to measure how much it changes, not to fix anything. Hair is the area where the edge is blurriest, but I didn't measure how visible that is on a new background."
+        "caveat": "I couldn't reproduce the fringe on the shoulders that the previous version of this guide described: in this portrait the outline looked clean to the naked eye, so I made the brush stroke anyway, to measure how much it changes, not to fix anything. Hair is the area where the edge is blurriest, but I didn't measure how visible that is on a new background. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s."
       },
       "pt": {
         "title": "onde a borda é mais fraca e quanto muda uma pincelada",
@@ -200,19 +212,19 @@
           "Baixei de novo e comparei pixel a pixel; depois apertei «Desfazer» e baixei mais uma vez."
         ],
         "findings": [
-          "Recorte IA: 3,9 s. Largura aproximada da faixa de borda semitransparente (pixels semitransparentes por pixel de contorno): cabeça e cabelo 11,8 px, ombros 10,8 px, braços 9,5 px, tronco baixo 9,9 px. A zona mais difusa foi cabeça e cabelo.",
-          "Um traço do Pincel remover de 12 px sobre o ombro mudou 0,15% dos pixels da imagem (opacos: 49,2% → 49,1%).",
+          "Recorte IA: 21,7 s. Largura aproximada da faixa de borda semitransparente (pixels semitransparentes por pixel de contorno): cabeça e cabelo 11,0 px, ombros 10,7 px, braços 9,4 px, tronco baixo 9,6 px. A zona mais difusa foi cabeça e cabelo.",
+          "Um traço do Pincel remover de 12 px sobre o ombro mudou 0,15% dos pixels da imagem (opacos: 49,1% → 49,0%).",
           "«Desfazer» devolveu uma imagem idêntica à do recorte original (mesmo hash dos pixels RGBA)."
         ],
-        "caveat": "Não consegui reproduzir o fiapo nos ombros que a versão anterior deste guia contava: neste retrato o contorno saiu limpo a olho nu, então dei a pincelada mesmo assim, para medir quanto muda, não para corrigir algo. O cabelo é a zona em que a borda é mais difusa, mas não medi o quanto isso aparece sobre um fundo novo."
+        "caveat": "Não consegui reproduzir o fiapo nos ombros que a versão anterior deste guia contava: neste retrato o contorno saiu limpo a olho nu, então dei a pincelada mesmo assim, para medir quanto muda, não para corrigir algo. O cabelo é a zona em que a borda é mais difusa, mas não medi o quanto isso aparece sobre um fundo novo. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s."
       }
     }
   },
   "cambiar-el-fondo-de-una-foto": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "recortar una vez, probar fondos sin volver a recortar",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -229,30 +241,30 @@
       "Cargué paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) como imagen de fondo con opacidad 100 y descargué en JPEG."
     ],
     "timing": {
-      "recorteIaMs": 4069,
+      "recorteIaMs": 21628,
       "exportColorMs": 108,
-      "exportImagenMs": 294
+      "exportImagenMs": 291
     },
     "result": {
       "feather": {
         "0": {
-          "semiPct": 1.26,
-          "transparentPct": 48.48,
+          "semiPct": 1.89,
+          "transparentPct": 48.42,
           "kb": 516.3
         },
         "2": {
-          "semiPct": 3.34,
-          "transparentPct": 47.44,
-          "kb": 535.1
+          "semiPct": 3.27,
+          "transparentPct": 47.67,
+          "kb": 532
         },
         "6": {
-          "semiPct": 7.3,
-          "transparentPct": 45.45,
-          "kb": 568.5
+          "semiPct": 7.21,
+          "transparentPct": 45.66,
+          "kb": 566
         }
       },
       "color": {
-        "kb": 56.3,
+        "kb": 56.1,
         "w": 720,
         "h": 900,
         "corner": [
@@ -263,7 +275,7 @@
         ]
       },
       "imagen": {
-        "kb": 64.5,
+        "kb": 64.3,
         "w": 720,
         "h": 900,
         "corner": [
@@ -275,15 +287,16 @@
       }
     },
     "findings": [
-      "Recorte IA una sola vez: 4,1 s. Cambiar de fondo después no volvió a correr la IA: exportar con color tardó 0,1 s y con imagen de fondo 0,3 s (incluye la descarga).",
-      "Píxeles semitransparentes del borde según el suavizado: 0 px → 1,3 %, 2 px → 3,3 %, 6 px → 7,3 %.",
-      "JPEG con fondo #1e4d8c: 720 × 900 px, 56 KB; el píxel de la esquina salió rgb(29, 77, 139) (pedí rgb(30, 77, 140)). Con la imagen de fondo: 65 KB."
+      "Recorte IA una sola vez: 21,6 s. Cambiar de fondo después no volvió a correr la IA: exportar con color tardó 0,1 s y con imagen de fondo 0,3 s (incluye la descarga).",
+      "Píxeles semitransparentes del borde según el suavizado: 0 px → 1,9 %, 2 px → 3,3 %, 6 px → 7,2 %.",
+      "JPEG con fondo #1e4d8c: 720 × 900 px, 56 KB; el píxel de la esquina salió rgb(29, 77, 139) (pedí rgb(30, 77, 140)). Con la imagen de fondo: 64 KB."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg",
       "/media/guias/pruebas/paisaje-sintetico.jpg"
     ],
-    "caveat": "El JPEG devolvió el color a un nivel de distancia de lo que pedí (por la compresión). Medí tamaños y píxeles de borde, no cuánto se integra el pelo con el fondo nuevo: eso lo juzgué a ojo y no lo cuantifiqué, así que no afirmo cuál suavizado se ve mejor.",
+    "aiModel": "birefnet",
+    "caveat": "El JPEG devolvió el color a un nivel de distancia de lo que pedí (por la compresión). Medí tamaños y píxeles de borde, no cuánto se integra el pelo con el fondo nuevo: eso lo juzgué a ojo y no lo cuantifiqué, así que no afirmo cuál suavizado se ve mejor. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.",
     "i18n": {
       "en": {
         "title": "cut out once, try backgrounds without cutting out again",
@@ -295,11 +308,11 @@
           "I loaded paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) as the background image at opacity 100 and downloaded in JPEG."
         ],
         "findings": [
-          "AI cutout just once: 4.1 s. Changing the background afterwards didn't run the AI again: exporting with a color took 0.1 s and with a background image 0.3 s (download included).",
-          "Semi-transparent edge pixels by feather: 0 px → 1.3%, 2 px → 3.3%, 6 px → 7.3%.",
-          "JPEG with the #1e4d8c background: 720 × 900 px, 56 KB; the corner pixel came out rgb(29, 77, 139) (I asked for rgb(30, 77, 140)). With the background image: 65 KB."
+          "AI cutout just once: 21.6 s. Changing the background afterwards didn't run the AI again: exporting with a color took 0.1 s and with a background image 0.3 s (download included).",
+          "Semi-transparent edge pixels by feather: 0 px → 1.9%, 2 px → 3.3%, 6 px → 7.2%.",
+          "JPEG with the #1e4d8c background: 720 × 900 px, 56 KB; the corner pixel came out rgb(29, 77, 139) (I asked for rgb(30, 77, 140)). With the background image: 64 KB."
         ],
-        "caveat": "The JPEG returned the color one level off from what I asked for (because of compression). I measured sizes and edge pixels, not how well the hair blends into the new background: I judged that by eye and didn't quantify it, so I'm not claiming which feather looks best."
+        "caveat": "The JPEG returned the color one level off from what I asked for (because of compression). I measured sizes and edge pixels, not how well the hair blends into the new background: I judged that by eye and didn't quantify it, so I'm not claiming which feather looks best. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s."
       },
       "pt": {
         "title": "recortar uma vez, testar fundos sem recortar de novo",
@@ -311,19 +324,19 @@
           "Carreguei paisaje-sintetico.jpg (4000 × 3000 px, 97 KB) como imagem de fundo com opacidade 100 e baixei em JPEG."
         ],
         "findings": [
-          "Recorte IA uma única vez: 4,1 s. Trocar o fundo depois não rodou a IA de novo: exportar com cor levou 0,1 s e com imagem de fundo 0,3 s (inclui o download).",
-          "Pixels semitransparentes da borda conforme a suavização: 0 px → 1,3%, 2 px → 3,3%, 6 px → 7,3%.",
-          "JPEG com fundo #1e4d8c: 720 × 900 px, 56 KB; o pixel do canto saiu rgb(29, 77, 139) (pedi rgb(30, 77, 140)). Com a imagem de fundo: 65 KB."
+          "Recorte IA uma única vez: 21,6 s. Trocar o fundo depois não rodou a IA de novo: exportar com cor levou 0,1 s e com imagem de fundo 0,3 s (inclui o download).",
+          "Pixels semitransparentes da borda conforme a suavização: 0 px → 1,9%, 2 px → 3,3%, 6 px → 7,2%.",
+          "JPEG com fundo #1e4d8c: 720 × 900 px, 56 KB; o pixel do canto saiu rgb(29, 77, 139) (pedi rgb(30, 77, 140)). Com a imagem de fundo: 64 KB."
         ],
-        "caveat": "O JPEG devolveu a cor a um nível de distância do que pedi (por causa da compressão). Medi tamanhos e pixels de borda, não o quanto o cabelo se integra ao fundo novo: isso eu julguei a olho e não quantifiquei, então não afirmo qual suavização fica melhor."
+        "caveat": "O JPEG devolveu a cor a um nível de distância do que pedi (por causa da compressão). Medi tamanhos e pixels de borda, não o quanto o cabelo se integra ao fundo novo: isso eu julguei a olho e não quantifiquei, então não afirmo qual suavização fica melhor. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s."
       }
     }
   },
   "poner-fondo-blanco-a-una-foto": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "blanco puro en PNG y en JPEG",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -340,31 +353,32 @@
       "Medí en las dos salidas cuántos píxeles son exactamente blancos (255, 255, 255) y cuántos de los 4 recuadros de 40 × 40 px de las esquinas no lo son."
     ],
     "timing": {
-      "recorteIaMs": 3957,
-      "descargaPngMs": 119,
-      "descargaJpegMs": 101
+      "recorteIaMs": 21915,
+      "descargaPngMs": 133,
+      "descargaJpegMs": 90
     },
     "result": {
       "png": {
-        "kb": 521.9,
-        "whitePct": 47.48,
+        "kb": 519.3,
+        "whitePct": 47.72,
         "cornerNonWhitePct": 0
       },
       "jpeg": {
         "kb": 57.5,
-        "whitePct": 46.39,
+        "whitePct": 46.6,
         "cornerNonWhitePct": 0
       }
     },
     "findings": [
-      "PNG: 522 KB, 47,5 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.",
-      "JPEG: 58 KB (89 % menos), 46,4 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.",
-      "Recorte IA 4,0 s; la descarga del PNG tardó 0,1 s y la del JPEG 0,1 s."
+      "PNG: 519 KB, 47,7 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.",
+      "JPEG: 58 KB (89 % menos), 46,6 % de píxeles #ffffff exactos, 0,0 % de las esquinas no son blanco puro.",
+      "Recorte IA 21,9 s; la descarga del PNG tardó 0,1 s y la del JPEG 0,1 s."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG.",
+    "aiModel": "birefnet",
+    "caveat": "El JPEG no deja todo el blanco exacto: tiene un poco menos de píxeles #ffffff que el PNG porque la compresión corre algunos a 254 o menos. No medí el halo claro del contorno (sobre blanco no se puede contar automáticamente) ni comparé a ojo PNG contra JPEG. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.",
     "i18n": {
       "en": {
         "title": "pure white in PNG and in JPEG",
@@ -376,11 +390,11 @@
           "In both outputs I measured how many pixels are exactly white (255, 255, 255) and how many of the pixels in the 4 corner squares of 40 × 40 px are not."
         ],
         "findings": [
-          "PNG: 522 KB, 47.5% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
-          "JPEG: 58 KB (89% smaller), 46.4% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
-          "AI cutout 4.0 s; the PNG download took 0.1 s and the JPEG one 0.1 s."
+          "PNG: 519 KB, 47.7% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
+          "JPEG: 58 KB (89% smaller), 46.6% of pixels exactly #ffffff, 0.0% of the corners are not pure white.",
+          "AI cutout 21.9 s; the PNG download took 0.1 s and the JPEG one 0.1 s."
         ],
-        "caveat": "The JPEG doesn't keep all the white exact: it has slightly fewer #ffffff pixels than the PNG because compression pushes some to 254 or lower. I didn't measure the light halo around the outline (on white it can't be counted automatically) or compare the PNG against the JPEG by eye."
+        "caveat": "The JPEG doesn't keep all the white exact: it has slightly fewer #ffffff pixels than the PNG because compression pushes some to 254 or lower. I didn't measure the light halo around the outline (on white it can't be counted automatically) or compare the PNG against the JPEG by eye. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s."
       },
       "pt": {
         "title": "branco puro em PNG e em JPEG",
@@ -392,19 +406,19 @@
           "Nas duas saídas medi quantos pixels são exatamente brancos (255, 255, 255) e quantos dos pixels dos 4 quadrados de 40 × 40 px dos cantos não são."
         ],
         "findings": [
-          "PNG: 522 KB, 47,5% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.",
-          "JPEG: 58 KB (89% menos), 46,4% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.",
-          "Recorte IA 4,0 s; o download do PNG levou 0,1 s e o do JPEG 0,1 s."
+          "PNG: 519 KB, 47,7% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.",
+          "JPEG: 58 KB (89% menos), 46,6% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.",
+          "Recorte IA 21,9 s; o download do PNG levou 0,1 s e o do JPEG 0,1 s."
         ],
-        "caveat": "O JPEG não deixa todo o branco exato: tem um pouco menos de pixels #ffffff que o PNG porque a compressão empurra alguns para 254 ou menos. Não medi o halo claro do contorno (sobre branco não dá para contar automaticamente) nem comparei PNG e JPEG a olho."
+        "caveat": "O JPEG não deixa todo o branco exato: tem um pouco menos de pixels #ffffff que o PNG porque a compressão empurra alguns para 254 ou menos. Não medi o halo claro do contorno (sobre branco não dá para contar automaticamente) nem comparei PNG e JPEG a olho. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s."
       }
     }
   },
   "foto-carnet-fondo-blanco": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "cuánto aguanta el blanco puro al bajar la calidad del JPG",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -420,20 +434,20 @@
       "En cada salida medí el peso y qué porcentaje de los cuatro recuadros de 40 × 40 px de las esquinas ya no era #ffffff exacto."
     ],
     "timing": {
-      "recorteIaMs": 3960
+      "recorteIaMs": 22026
     },
     "result": {
       "exportInicial": {
         "kb": 57.5,
         "cornerNonWhitePct": 0,
-        "whitePct": 46.39
+        "whitePct": 46.6
       },
       "calidad": {
         "5": {
           "kb": 10.3,
-          "est": "58 KB → 10 KB",
+          "est": "57 KB → 10 KB",
           "cornerNonWhitePct": 0,
-          "whitePct": 47.16,
+          "whitePct": 47.4,
           "esquina": [
             255,
             255,
@@ -442,9 +456,9 @@
         },
         "20": {
           "kb": 15.3,
-          "est": "58 KB → 15 KB",
+          "est": "57 KB → 15 KB",
           "cornerNonWhitePct": 100,
-          "whitePct": 0.42,
+          "whitePct": 0.44,
           "esquina": [
             253,
             253,
@@ -452,10 +466,10 @@
           ]
         },
         "35": {
-          "kb": 22.2,
-          "est": "58 KB → 22 KB",
+          "kb": 22.1,
+          "est": "57 KB → 22 KB",
           "cornerNonWhitePct": 0,
-          "whitePct": 46.48,
+          "whitePct": 46.84,
           "esquina": [
             255,
             255,
@@ -464,9 +478,9 @@
         },
         "50": {
           "kb": 25.9,
-          "est": "58 KB → 26 KB",
+          "est": "57 KB → 26 KB",
           "cornerNonWhitePct": 0,
-          "whitePct": 45.68,
+          "whitePct": 46.05,
           "esquina": [
             255,
             255,
@@ -474,10 +488,10 @@
           ]
         },
         "80": {
-          "kb": 45.8,
-          "est": "58 KB → 46 KB",
+          "kb": 45.7,
+          "est": "57 KB → 46 KB",
           "cornerNonWhitePct": 0,
-          "whitePct": 45.94,
+          "whitePct": 46.02,
           "esquina": [
             255,
             255,
@@ -488,15 +502,16 @@
     },
     "findings": [
       "Exportación inicial (JPEG del Recorte): 57,5 KB, esquinas no blancas 0,0 %.",
-      "Calidad 5: 10,3 KB (la pantalla estimaba 58 KB → 10 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 47,2 %.",
-      "Calidad 20: 15,3 KB (la pantalla estimaba 58 KB → 15 KB), esquinas no blancas 100,0 % (píxel de la esquina rgb(253, 253, 253)), #ffffff exactos en toda la imagen 0,4 %.",
-      "Calidad 35: 22,2 KB (la pantalla estimaba 58 KB → 22 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 46,5 %.",
-      "Calidad 50: 25,9 KB (la pantalla estimaba 58 KB → 26 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 45,7 %.",
-      "Calidad 80: 45,8 KB (la pantalla estimaba 58 KB → 46 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 45,9 %."
+      "Calidad 5: 10,3 KB (la pantalla estimaba 57 KB → 10 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 47,4 %.",
+      "Calidad 20: 15,3 KB (la pantalla estimaba 57 KB → 15 KB), esquinas no blancas 100,0 % (píxel de la esquina rgb(253, 253, 253)), #ffffff exactos en toda la imagen 0,4 %.",
+      "Calidad 35: 22,1 KB (la pantalla estimaba 57 KB → 22 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 46,8 %.",
+      "Calidad 50: 25,9 KB (la pantalla estimaba 57 KB → 26 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 46,0 %.",
+      "Calidad 80: 45,7 KB (la pantalla estimaba 57 KB → 46 KB), esquinas no blancas 0,0 % (píxel de la esquina rgb(255, 255, 255)), #ffffff exactos en toda la imagen 46,0 %."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
+    "aiModel": "birefnet",
     "caveat": "No es monótono: a calidad 20 las esquinas ya no eran blanco puro (rgb(253, 253, 253)) y a calidad 5 y 35 sí lo eran, así que no hay una calidad «segura» que pueda recomendar con un solo número: revisá la tuya. Esta prueba solo cubre el fondo blanco; no mide el encuadre ni la proporción de la cabeza, y mi retrato corta el torso, así que no es una foto carné real.",
     "i18n": {
       "en": {
@@ -509,11 +524,11 @@
         ],
         "findings": [
           "Initial export (JPEG from the Cutout tab): 57.5 KB, non-white corners 0.0%.",
-          "Quality 5: 10.3 KB (the screen estimated 58 KB → 10 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 47.2%.",
-          "Quality 20: 15.3 KB (the screen estimated 58 KB → 15 KB), non-white corners 100.0% (corner pixel rgb(253, 253, 253)), exact #ffffff across the whole image 0.4%.",
-          "Quality 35: 22.2 KB (the screen estimated 58 KB → 22 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 46.5%.",
-          "Quality 50: 25.9 KB (the screen estimated 58 KB → 26 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 45.7%.",
-          "Quality 80: 45.8 KB (the screen estimated 58 KB → 46 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 45.9%."
+          "Quality 5: 10.3 KB (the screen estimated 57 KB → 10 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 47.4%.",
+          "Quality 20: 15.3 KB (the screen estimated 57 KB → 15 KB), non-white corners 100.0% (corner pixel rgb(253, 253, 253)), exact #ffffff across the whole image 0.4%.",
+          "Quality 35: 22.1 KB (the screen estimated 57 KB → 22 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 46.8%.",
+          "Quality 50: 25.9 KB (the screen estimated 57 KB → 26 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 46.0%.",
+          "Quality 80: 45.7 KB (the screen estimated 57 KB → 46 KB), non-white corners 0.0% (corner pixel rgb(255, 255, 255)), exact #ffffff across the whole image 46.0%."
         ],
         "caveat": "It isn't monotonic: at quality 20 the corners were no longer pure white (rgb(253, 253, 253)) and at quality 5 and 35 they were, so there's no “safe” quality I can recommend with a single number: check yours. This test only covers the white background; it doesn't measure the framing or the head proportion, and my portrait cuts off the torso, so it isn't a real ID photo."
       },
@@ -527,21 +542,21 @@
         ],
         "findings": [
           "Exportação inicial (JPEG do Recorte): 57,5 KB, cantos não brancos 0,0%.",
-          "Qualidade 5: 10,3 KB (a tela estimava 58 KB → 10 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 47,2%.",
-          "Qualidade 20: 15,3 KB (a tela estimava 58 KB → 15 KB), cantos não brancos 100,0% (pixel do canto rgb(253, 253, 253)), #ffffff exatos na imagem toda 0,4%.",
-          "Qualidade 35: 22,2 KB (a tela estimava 58 KB → 22 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 46,5%.",
-          "Qualidade 50: 25,9 KB (a tela estimava 58 KB → 26 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,7%.",
-          "Qualidade 80: 45,8 KB (a tela estimava 58 KB → 46 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 45,9%."
+          "Qualidade 5: 10,3 KB (a tela estimava 57 KB → 10 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 47,4%.",
+          "Qualidade 20: 15,3 KB (a tela estimava 57 KB → 15 KB), cantos não brancos 100,0% (pixel do canto rgb(253, 253, 253)), #ffffff exatos na imagem toda 0,4%.",
+          "Qualidade 35: 22,1 KB (a tela estimava 57 KB → 22 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 46,8%.",
+          "Qualidade 50: 25,9 KB (a tela estimava 57 KB → 26 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 46,0%.",
+          "Qualidade 80: 45,7 KB (a tela estimava 57 KB → 46 KB), cantos não brancos 0,0% (pixel do canto rgb(255, 255, 255)), #ffffff exatos na imagem toda 46,0%."
         ],
         "caveat": "Não é monótono: na qualidade 20 os cantos já não eram branco puro (rgb(253, 253, 253)) e nas qualidades 5 e 35 eram, então não há uma qualidade «segura» que eu possa recomendar com um único número: confira a sua. Este teste só cobre o fundo branco; não mede o enquadramento nem a proporção da cabeça, e meu retrato corta o tronco, então não é uma foto de documento de verdade."
       }
     }
   },
   "fotos-de-producto-amazon-etsy-shopify": {
-    "date": "2026-10-10",
-    "browser": "Chrome 154.0.8037.99",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "e3d95d0",
+    "build": "7ec5265",
     "title": "una taza sintética a 2000 × 2000 px sobre blanco",
     "image": {
       "name": "producto-sintetico.jpg",
@@ -558,9 +573,9 @@
       "Con el mismo preset cambié a «Transparente» + PNG y descargué para ver si respetaba la transparencia."
     ],
     "timing": {
-      "recorteIaMs": 4348,
-      "descargaJpegMs": 311,
-      "descargaPngMs": 264
+      "recorteIaMs": 22030,
+      "descargaJpegMs": 287,
+      "descargaPngMs": 280
     },
     "result": {
       "preload": {
@@ -570,8 +585,8 @@
       "jpeg": {
         "w": 2000,
         "h": 2000,
-        "kb": 89.7,
-        "whitePct": 40.33,
+        "kb": 88.7,
+        "whitePct": 40.06,
         "cornerNonWhitePct": 0,
         "corners": [
           [
@@ -598,18 +613,18 @@
       },
       "productBox": {
         "x0": 106,
-        "y0": 255,
-        "x1": 1892,
+        "y0": 252,
+        "x1": 1894,
         "y1": 1746,
-        "wPct": 89.35,
-        "hPct": 74.6
+        "wPct": 89.45,
+        "hPct": 74.75
       },
       "png": {
         "w": 2000,
         "h": 2000,
-        "kb": 669.1,
-        "transparentPct": 40.3,
-        "opaquePct": 55.73,
+        "kb": 644.8,
+        "transparentPct": 40.25,
+        "opaquePct": 56.3,
         "cornersAlpha": [
           0,
           0,
@@ -619,14 +634,15 @@
       }
     },
     "findings": [
-      "Recorte IA: 4,3 s sobre 1200 × 1200 px.",
-      "Al elegir el preset, Exportar quedó en «Color» #ffffff. Sin tocarlo, el JPEG salió de 2000 × 2000 px y 90 KB, con 40,3 % de píxeles #ffffff exactos y esquinas no blancas 0,0 %. El producto (píxeles no casi blancos) ocupa 89,3 % del ancho y 74,6 % del alto del cuadro.",
-      "Con el mismo preset y «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas."
+      "Recorte IA: 22,0 s sobre 1200 × 1200 px.",
+      "Al elegir el preset, Exportar quedó en «Color» #ffffff. Sin tocarlo, el JPEG salió de 2000 × 2000 px y 89 KB, con 40,1 % de píxeles #ffffff exactos y esquinas no blancas 0,0 %. El producto (píxeles no casi blancos) ocupa 89,5 % del ancho y 74,8 % del alto del cuadro.",
+      "Con el mismo preset y «Transparente» + PNG: 2000 × 2000 px, 645 KB, 40,3 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas."
     ],
     "assets": [
       "/media/guias/pruebas/producto-sintetico.jpg"
     ],
-    "caveat": "La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. El PNG transparente a 2000 × 2000 pesa 669 KB contra 90 KB del JPEG sobre blanco, y no subí ninguno de los dos a Amazon para ver si lo acepta.",
+    "aiModel": "birefnet",
+    "caveat": "La imagen es una taza dibujada por mí con colores planos: es el caso más fácil para la IA, y no probé un producto brillante o con sombras duras, donde puede fallar. El PNG transparente a 2000 × 2000 pesa 669 KB contra 90 KB del JPEG sobre blanco, y no subí ninguno de los dos a Amazon para ver si lo acepta. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.",
     "i18n": {
       "en": {
         "title": "a synthetic mug at 2000 × 2000 px on white",
@@ -638,11 +654,11 @@
           "With the same preset I switched to “Transparent” + PNG and downloaded to see whether it kept the transparency."
         ],
         "findings": [
-          "AI cutout: 4.3 s on 1200 × 1200 px.",
-          "When I chose the preset, Export was left on “Color” #ffffff. Without touching it, the JPEG came out at 2000 × 2000 px and 90 KB, with 40.3% of pixels exactly #ffffff and 0.0% non-white corners. The product (pixels that aren't almost white) takes up 89.3% of the canvas width and 74.6% of its height.",
-          "With the same preset and “Transparent” + PNG: 2000 × 2000 px, 669 KB, 40.3% transparent pixels and alpha 0, 0, 0, 0 in the four corners."
+          "AI cutout: 22.0 s on 1200 × 1200 px.",
+          "When I chose the preset, Export was left on “Color” #ffffff. Without touching it, the JPEG came out at 2000 × 2000 px and 89 KB, with 40.1% of pixels exactly #ffffff and 0.0% non-white corners. The product (pixels that aren't almost white) takes up 89.5% of the canvas width and 74.8% of its height.",
+          "With the same preset and “Transparent” + PNG: 2000 × 2000 px, 645 KB, 40.3% transparent pixels and alpha 0, 0, 0, 0 in the four corners."
         ],
-        "caveat": "The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. The transparent PNG at 2000 × 2000 weighs 669 KB against 90 KB for the JPEG on white, and I didn't upload either one to Amazon to see whether it's accepted."
+        "caveat": "The image is a mug I drew with flat colors: it's the easiest case for the AI, and I didn't test a shiny product or one with hard shadows, where it can fail. The transparent PNG at 2000 × 2000 weighs 669 KB against 90 KB for the JPEG on white, and I didn't upload either one to Amazon to see whether it's accepted. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s."
       },
       "pt": {
         "title": "uma caneca sintética em 2000 × 2000 px sobre branco",
@@ -654,19 +670,19 @@
           "Com o mesmo preset troquei para «Transparente» + PNG e baixei para ver se ele respeitava a transparência."
         ],
         "findings": [
-          "Recorte IA: 4,3 s sobre 1200 × 1200 px.",
-          "Ao escolher o preset, Exportar ficou em «Cor» #ffffff. Sem mexer, o JPEG saiu com 2000 × 2000 px e 90 KB, com 40,3% dos pixels #ffffff exatos e cantos não brancos 0,0%. O produto (pixels que não são quase brancos) ocupa 89,3% da largura e 74,6% da altura do quadro.",
-          "Com o mesmo preset e «Transparente» + PNG: 2000 × 2000 px, 669 KB, 40,3% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos."
+          "Recorte IA: 22,0 s sobre 1200 × 1200 px.",
+          "Ao escolher o preset, Exportar ficou em «Cor» #ffffff. Sem mexer, o JPEG saiu com 2000 × 2000 px e 89 KB, com 40,1% dos pixels #ffffff exatos e cantos não brancos 0,0%. O produto (pixels que não são quase brancos) ocupa 89,5% da largura e 74,8% da altura do quadro.",
+          "Com o mesmo preset e «Transparente» + PNG: 2000 × 2000 px, 645 KB, 40,3% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos."
         ],
-        "caveat": "A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. O PNG transparente em 2000 × 2000 pesa 669 KB contra 90 KB do JPEG sobre branco, e não enviei nenhum dos dois à Amazon para ver se é aceito."
+        "caveat": "A imagem é uma caneca desenhada por mim com cores chapadas: é o caso mais fácil para a IA, e não testei um produto brilhante ou com sombras duras, onde ela pode falhar. O PNG transparente em 2000 × 2000 pesa 669 KB contra 90 KB do JPEG sobre branco, e não enviei nenhum dos dois à Amazon para ver se é aceito. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s."
       }
     }
   },
   "logo-con-fondo-transparente": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "el mismo logo con IA, recorte automático y varita",
     "image": {
       "name": "logo-antes.jpg",
@@ -683,21 +699,21 @@
       "De cada PNG medí el porcentaje de píxeles transparentes y semitransparentes."
     ],
     "timing": {
-      "iaMs": 4045,
-      "autoMs": 1452,
-      "varitaMs": 163
+      "iaMs": 22589,
+      "autoMs": 1450,
+      "varitaMs": 160
     },
     "result": {
       "ia": {
-        "ms": 4045,
-        "transparentPct": 89.41,
-        "semiPct": 1.37,
-        "kb": 83.5,
-        "hash": "4b119f46",
-        "bandaInferiorOpacaPct": 0
+        "ms": 22589,
+        "transparentPct": 85.72,
+        "semiPct": 4.2,
+        "kb": 126.5,
+        "hash": "b62021f2",
+        "bandaInferiorOpacaPct": 13.62
       },
       "auto": {
-        "ms": 1452,
+        "ms": 1450,
         "transparentPct": 89.5,
         "semiPct": 1.18,
         "kb": 80.9,
@@ -705,7 +721,7 @@
         "bandaInferiorOpacaPct": 0
       },
       "varita": {
-        "ms": 163,
+        "ms": 160,
         "transparentPct": 85.66,
         "semiPct": 3.58,
         "kb": 117,
@@ -714,15 +730,16 @@
       }
     },
     "findings": [
-      "Recorte IA: 4,0 s, 89,4 % transparente, 1,4 % semitransparente, PNG de 84 KB.",
+      "Recorte IA: 22,6 s, 85,7 % transparente, 4,2 % semitransparente, PNG de 127 KB.",
       "Recorte automático: 1,45 s, 89,5 % transparente, 1,2 % semitransparente, 81 KB.",
       "Varita mágica (un clic): 0,16 s, 85,7 % transparente, 3,6 % semitransparente, 117 KB.",
-      "El logo tiene un emblema y, debajo, la palabra de la marca. En la franja donde está el texto (entre 68 % y 85 % de la altura) quedó opaco: 0,0 % con la IA, 0,0 % con el recorte automático y 15,4 % con la varita."
+      "El logo tiene un emblema y, debajo, la palabra de la marca. En la franja donde está el texto (entre 68 % y 85 % de la altura) quedó opaco: 13,6 % con la IA, 0,0 % con el recorte automático y 15,4 % con la varita."
     ],
     "assets": [
       "/media/guias/logo-antes.jpg"
     ],
-    "caveat": "Ni el Recorte IA ni el recorte automático conservaron la palabra del logo: solo quedó el emblema. La varita sí la conservó, pero dejó rellenos y opacos los huecos de letras como la de la A, porque no tocan el fondo, y el borde quedó con más semitransparencia. Con un logo sin texto la IA habría bastado; con texto, hubo que ir a la varita y repasar a mano los huecos.",
+    "aiModel": "birefnet",
+    "caveat": "Con GPU (BiRefNet) el Recorte IA conservó la palabra del logo y dejó transparentes los huecos de la A y la R, que la varita rellenó: en la franja del texto la IA dejó opaco 1 solo píxel claro y la varita 581. Lo que sí deja la IA es un filete claro de 1 o 2 px alrededor de las letras y del emblema, que se nota sobre un fondo oscuro. El recorte automático siguió perdiendo la palabra. Sin GPU corta u2netp, y en mi medición anterior con u2netp la IA tampoco conservó la palabra (0,0 % opaco en esa franja). El Recorte IA tardó 22,6 s porque fue el primero de la pestaña: incluye bajar el modelo y preparar la GPU.",
     "i18n": {
       "en": {
         "title": "the same logo with the AI cutout, the auto cutout and the wand",
@@ -734,12 +751,12 @@
           "On each PNG I measured the percentage of transparent and semi-transparent pixels."
         ],
         "findings": [
-          "AI cutout: 4.0 s, 89.4% transparent, 1.4% semi-transparent, 84 KB PNG.",
+          "AI cutout: 22.6 s, 85.7% transparent, 4.2% semi-transparent, 127 KB PNG.",
           "Auto cutout: 1.45 s, 89.5% transparent, 1.2% semi-transparent, 81 KB.",
           "Magic wand (one click): 0.16 s, 85.7% transparent, 3.6% semi-transparent, 117 KB.",
-          "The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 0.0% with the AI, 0.0% with the auto cutout and 15.4% with the wand."
+          "The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 13.6% with the AI, 0.0% with the auto cutout and 15.4% with the wand."
         ],
-        "caveat": "Neither the AI cutout nor the auto cutout kept the logo's wordmark: only the emblem survived. The wand did keep it, but it left letter holes like the one in the A filled in and opaque, because they don't touch the background, and the edge ended up with more semi-transparency. With a logo without text the AI would have been enough; with text, I had to go to the wand and touch up the holes by hand."
+        "caveat": "With a GPU (BiRefNet) the AI cutout kept the logo's wordmark and left the holes in the A and the R transparent, which the wand filled in: in the text band the AI left just 1 light pixel opaque and the wand 581. What the AI does leave is a light rim of 1 or 2 px around the letters and the emblem, noticeable on a dark background. The auto cutout still lost the wordmark. Without a GPU u2netp does the cutout, and in my earlier measurement with u2netp the AI didn't keep the wordmark either (0.0% opaque in that band). The AI cutout took 22.6 s because it was the first one in the tab: that includes downloading the model and preparing the GPU."
       },
       "pt": {
         "title": "o mesmo logo com o Recorte IA, o recorte automático e a varinha",
@@ -751,12 +768,12 @@
           "De cada PNG medi a porcentagem de pixels transparentes e semitransparentes."
         ],
         "findings": [
-          "Recorte IA: 4,0 s, 89,4% transparente, 1,4% semitransparente, PNG de 84 KB.",
+          "Recorte IA: 22,6 s, 85,7% transparente, 4,2% semitransparente, PNG de 127 KB.",
           "Recorte automático: 1,45 s, 89,5% transparente, 1,2% semitransparente, 81 KB.",
           "Varinha mágica (um clique): 0,16 s, 85,7% transparente, 3,6% semitransparente, 117 KB.",
-          "O logo tem um emblema e, embaixo, a palavra da marca. Na faixa onde está o texto (entre 68% e 85% da altura) a parte que ficou opaca foi 0,0% com a IA, 0,0% com o recorte automático e 15,4% com a varinha."
+          "O logo tem um emblema e, embaixo, a palavra da marca. Na faixa onde está o texto (entre 68% e 85% da altura) a parte que ficou opaca foi 13,6% com a IA, 0,0% com o recorte automático e 15,4% com a varinha."
         ],
-        "caveat": "Nem o Recorte IA nem o recorte automático conservaram a palavra do logo: só sobrou o emblema. A varinha conservou, mas deixou preenchidos e opacos os buracos de letras como o do A, porque não tocam o fundo, e a borda ficou com mais semitransparência. Com um logo sem texto a IA teria bastado; com texto, precisei ir para a varinha e retocar os buracos à mão."
+        "caveat": "Com GPU (BiRefNet) o Recorte IA conservou a palavra do logo e deixou transparentes os buracos do A e do R, que a varinha preencheu: na faixa do texto a IA deixou opaco só 1 pixel claro e a varinha 581. O que a IA deixa, sim, é um filete claro de 1 ou 2 px em volta das letras e do emblema, que aparece sobre um fundo escuro. O recorte automático continuou perdendo a palavra. Sem GPU quem recorta é o u2netp, e na minha medição anterior com o u2netp a IA também não conservou a palavra (0,0% opaco nessa faixa). O Recorte IA levou 22,6 s porque foi o primeiro da aba: isso inclui baixar o modelo e preparar a GPU."
       }
     }
   },
@@ -848,10 +865,10 @@
     }
   },
   "foto-de-perfil-redonda": {
-    "date": "2026-10-06",
-    "browser": "Chrome 154.0.8037.98",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "bc142c7",
+    "build": "7ec5265",
     "title": "qué queda dentro del círculo del preset «Avatar circular 512»",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -867,15 +884,15 @@
       "Medí en el PNG la caja del sujeto, los píxeles transparentes y la alfa de las esquinas."
     ],
     "timing": {
-      "recorteIaMs": 4019,
-      "descargaMs": 121
+      "recorteIaMs": 22042,
+      "descargaMs": 473
     },
     "result": {
       "w": 512,
       "h": 512,
-      "kb": 160.7,
-      "transparentPct": 72,
-      "semiPct": 1.92,
+      "kb": 159.6,
+      "transparentPct": 72.12,
+      "semiPct": 1.87,
       "cornersAlpha": [
         0,
         0,
@@ -883,27 +900,28 @@
         0
       ],
       "bbox": {
-        "x0": 123,
-        "y0": 54,
-        "x1": 387,
+        "x0": 124,
+        "y0": 53,
+        "x1": 388,
         "y1": 460,
         "wPct": 51.76,
-        "hPct": 79.49
+        "hPct": 79.69
       },
-      "topMarginPct": 10.5,
-      "sideMarginPct": 24,
+      "topMarginPct": 10.4,
+      "sideMarginPct": 24.2,
       "outsideCirclePct": 0
     },
     "findings": [
-      "Salió un PNG de 512 × 512 px y 161 KB. Las cuatro esquinas tienen alfa 0, 0, 0, 0: el preset recorta en círculo de verdad, no solo centra.",
-      "72,0 % de la imagen quedó transparente: 21,5 % son las esquinas fuera del círculo y el resto es fondo recortado dentro de él.",
-      "La figura queda a 10,5 % del alto desde el borde de arriba hasta la coronilla y la figura empieza a 24,0 % del ancho contando desde el borde izquierdo (ocupa 51,8 % del ancho y 79,5 % del alto).",
-      "Recorte IA 4,0 s; la descarga del avatar 0,1 s."
+      "Salió un PNG de 512 × 512 px y 160 KB. Las cuatro esquinas tienen alfa 0, 0, 0, 0: el preset recorta en círculo de verdad, no solo centra.",
+      "72,1 % de la imagen quedó transparente: 21,5 % son las esquinas fuera del círculo y el resto es fondo recortado dentro de él.",
+      "La figura queda a 10,4 % del alto desde el borde de arriba hasta la coronilla y la figura empieza a 24,2 % del ancho contando desde el borde izquierdo (ocupa 51,8 % del ancho y 79,7 % del alto).",
+      "Recorte IA 22,0 s; la descarga del avatar 0,5 s."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "El preset hace el recorte circular y la figura entra completa, pero no medí cómo cada red (WhatsApp, Instagram, Slack) enmascara el cuadrado: eso depende de la app. La coronilla quedó a un 10,5 % del borde de arriba con este retrato; con una cara más alta en el encuadre podría quedar más justa.",
+    "aiModel": "birefnet",
+    "caveat": "El preset hace el recorte circular y la figura entra completa, pero no medí cómo cada red (WhatsApp, Instagram, Slack) enmascara el cuadrado: eso depende de la app. La coronilla quedó a un 10,5 % del borde de arriba con este retrato; con una cara más alta en el encuadre podría quedar más justa. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.",
     "i18n": {
       "en": {
         "title": "what ends up inside the circle of the “Circle avatar 512” preset",
@@ -914,12 +932,12 @@
           "In the PNG I measured the subject's box, the transparent pixels and the alpha of the corners."
         ],
         "findings": [
-          "It produced a 512 × 512 px, 161 KB PNG. The four corners have alpha 0, 0, 0, 0: the preset really crops to a circle, it doesn't just center.",
-          "72.0% of the image ended up transparent: 21.5% is the corners outside the circle and the rest is cut-out background inside it.",
-          "The figure sits 10.5% of the height from the top edge down to the crown of the head, and starts 24.0% of the width from the left edge (it takes up 51.8% of the width and 79.5% of the height).",
-          "AI cutout 4.0 s; the avatar download 0.1 s."
+          "It produced a 512 × 512 px, 160 KB PNG. The four corners have alpha 0, 0, 0, 0: the preset really crops to a circle, it doesn't just center.",
+          "72.1% of the image ended up transparent: 21.5% is the corners outside the circle and the rest is cut-out background inside it.",
+          "The figure sits 10.4% of the height from the top edge down to the crown of the head, and starts 24.2% of the width from the left edge (it takes up 51.8% of the width and 79.7% of the height).",
+          "AI cutout 22.0 s; the avatar download 0.5 s."
         ],
-        "caveat": "The preset does the circular crop and the figure fits whole, but I didn't measure how each network (WhatsApp, Instagram, Slack) masks the square: that depends on the app. The crown of the head ended up 10.5% from the top edge with this portrait; with a higher face in the frame it could end up tighter."
+        "caveat": "The preset does the circular crop and the figure fits whole, but I didn't measure how each network (WhatsApp, Instagram, Slack) masks the square: that depends on the app. The crown of the head ended up 10.5% from the top edge with this portrait; with a higher face in the frame it could end up tighter. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s."
       },
       "pt": {
         "title": "o que fica dentro do círculo do preset «Avatar circular 512»",
@@ -930,20 +948,20 @@
           "No PNG medi a caixa do sujeito, os pixels transparentes e o alfa dos cantos."
         ],
         "findings": [
-          "Saiu um PNG de 512 × 512 px e 161 KB. Os quatro cantos têm alfa 0, 0, 0, 0: o preset recorta em círculo de verdade, não só centraliza.",
-          "72,0% da imagem ficou transparente: 21,5% são os cantos fora do círculo e o resto é fundo recortado dentro dele.",
-          "A figura fica a 10,5% da altura desde a borda de cima até o topo da cabeça e começa a 24,0% da largura contando da borda esquerda (ocupa 51,8% da largura e 79,5% da altura).",
-          "Recorte IA 4,0 s; o download do avatar 0,1 s."
+          "Saiu um PNG de 512 × 512 px e 160 KB. Os quatro cantos têm alfa 0, 0, 0, 0: o preset recorta em círculo de verdade, não só centraliza.",
+          "72,1% da imagem ficou transparente: 21,5% são os cantos fora do círculo e o resto é fundo recortado dentro dele.",
+          "A figura fica a 10,4% da altura desde a borda de cima até o topo da cabeça e começa a 24,2% da largura contando da borda esquerda (ocupa 51,8% da largura e 79,7% da altura).",
+          "Recorte IA 22,0 s; o download do avatar 0,5 s."
         ],
-        "caveat": "O preset faz o recorte circular e a figura entra inteira, mas não medi como cada rede (WhatsApp, Instagram, Slack) mascara o quadrado: isso depende do app. O topo da cabeça ficou a 10,5% da borda de cima com este retrato; com um rosto mais alto no enquadramento poderia ficar mais apertado."
+        "caveat": "O preset faz o recorte circular e a figura entra inteira, mas não medi como cada rede (WhatsApp, Instagram, Slack) mascara o quadrado: isso depende do app. O topo da cabeça ficou a 10,5% da borda de cima com este retrato; com um rosto mais alto no enquadramento poderia ficar mais apertado. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s."
       }
     }
   },
   "foto-de-perfil-para-linkedin": {
-    "date": "2026-10-10",
-    "browser": "Chrome 154.0.8037.99",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80",
     "os": "macOS 14.8.8",
-    "build": "e3d95d0",
+    "build": "7ec5265",
     "title": "cuánta figura se pierde cuando LinkedIn muestra el círculo",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -960,14 +978,14 @@
       "Después puse «Color» #c9ced6 (un gris sobrio), descargué en PNG y en JPEG, y leí el color de las cuatro esquinas."
     ],
     "timing": {
-      "recorteIaMs": 4072
+      "recorteIaMs": 22665
     },
     "result": {
       "amazon": {
         "name": "Amazon 2000×2000 (margen 5 %)",
         "w": 2000,
         "h": 2000,
-        "kb": 195.8,
+        "kb": 194.7,
         "preloaded": "#ffffff",
         "outsideCirclePct": 0.05,
         "pngCorners": [
@@ -981,7 +999,7 @@
         "name": "Shopify 2048×2048 (margen 6 %)",
         "w": 2048,
         "h": 2048,
-        "kb": 197.7,
+        "kb": 196.6,
         "preloaded": "#ffffff",
         "outsideCirclePct": 0,
         "pngCorners": [
@@ -995,7 +1013,7 @@
         "name": "Instagram post 1080×1080 (margen 8 %)",
         "w": 1080,
         "h": 1080,
-        "kb": 76.8,
+        "kb": 76.5,
         "preloaded": "#ffffff",
         "outsideCirclePct": 0,
         "pngCorners": [
@@ -1007,15 +1025,16 @@
       }
     },
     "findings": [
-      "Recorte IA: 4,1 s.",
-      "Amazon 2000×2000 (margen 5 %): 2000 × 2000 px, JPEG de 196 KB; 0,1 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.",
-      "Shopify 2048×2048 (margen 6 %): 2048 × 2048 px, JPEG de 198 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.",
+      "Recorte IA: 22,7 s.",
+      "Amazon 2000×2000 (margen 5 %): 2000 × 2000 px, JPEG de 195 KB; 0,1 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.",
+      "Shopify 2048×2048 (margen 6 %): 2048 × 2048 px, JPEG de 197 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG.",
       "Instagram post 1080×1080 (margen 8 %): 1080 × 1080 px, JPEG de 77 KB; 0,0 % de la figura queda fuera del círculo; esquinas #c9ced6 en PNG y #c9cdd6 en JPEG."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "No hay un preset de LinkedIn. Cada preset, al elegirlo, vuelve a dejar el fondo en #ffffff y tuve que poner el gris de nuevo; con el gris puesto, el PNG sale con #c9ced6 exacto y el JPEG lo corre apenas, a #c9cdd6, por la compresión. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn.",
+    "aiModel": "birefnet",
+    "caveat": "No hay un preset de LinkedIn. Cada preset, al elegirlo, vuelve a dejar el fondo en #ffffff y tuve que poner el gris de nuevo; con el gris puesto, el PNG sale con #c9ced6 exacto y el JPEG lo corre apenas, a #c9cdd6, por la compresión. Medí la figura entera contra el círculo, no solo la cara, y no comparé con el recorte real que hace LinkedIn. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.",
     "i18n": {
       "en": {
         "title": "how much of the figure is lost when LinkedIn shows the circle",
@@ -1027,12 +1046,12 @@
           "Then I set “Color” #c9ced6 (a sober gray), downloaded as PNG and as JPEG, and read the color of the four corners."
         ],
         "findings": [
-          "AI cutout: 4.1 s.",
-          "Amazon 2000×2000 (5% margin): 2000 × 2000 px, 196 KB JPEG; 0.1% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.",
-          "Shopify 2048×2048 (6% margin): 2048 × 2048 px, 198 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.",
+          "AI cutout: 22.7 s.",
+          "Amazon 2000×2000 (5% margin): 2000 × 2000 px, 195 KB JPEG; 0.1% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.",
+          "Shopify 2048×2048 (6% margin): 2048 × 2048 px, 197 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG.",
           "Instagram post 1080×1080 (8% margin): 1080 × 1080 px, 77 KB JPEG; 0.0% of the figure falls outside the circle; corners #c9ced6 in PNG and #c9cdd6 in JPEG."
         ],
-        "caveat": "There is no LinkedIn preset. Each preset, when chosen, sets the background back to #ffffff and I had to set the gray again; with the gray set, the PNG comes out with exactly #c9ced6 and the JPEG shifts it slightly, to #c9cdd6, because of compression. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does."
+        "caveat": "There is no LinkedIn preset. Each preset, when chosen, sets the background back to #ffffff and I had to set the gray again; with the gray set, the PNG comes out with exactly #c9ced6 and the JPEG shifts it slightly, to #c9cdd6, because of compression. I measured the whole figure against the circle, not just the face, and I didn't compare with the real crop LinkedIn does. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s."
       },
       "pt": {
         "title": "quanto da figura se perde quando o LinkedIn mostra o círculo",
@@ -1044,20 +1063,20 @@
           "Depois coloquei «Cor» #c9ced6 (um cinza sóbrio), baixei em PNG e em JPEG, e li a cor dos quatro cantos."
         ],
         "findings": [
-          "Recorte IA: 4,1 s.",
-          "Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, JPEG de 196 KB; 0,1% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.",
-          "Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, JPEG de 198 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.",
+          "Recorte IA: 22,7 s.",
+          "Amazon 2000×2000 (margem de 5%): 2000 × 2000 px, JPEG de 195 KB; 0,1% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.",
+          "Shopify 2048×2048 (margem de 6%): 2048 × 2048 px, JPEG de 197 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG.",
           "Instagram post 1080×1080 (margem de 8%): 1080 × 1080 px, JPEG de 77 KB; 0,0% da figura fica fora do círculo; cantos #c9ced6 em PNG e #c9cdd6 em JPEG."
         ],
-        "caveat": "Não existe preset do LinkedIn. Cada preset, ao ser escolhido, volta a deixar o fundo em #ffffff e tive que colocar o cinza de novo; com o cinza colocado, o PNG sai com #c9ced6 exato e o JPEG o desloca um pouco, para #c9cdd6, pela compressão. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz."
+        "caveat": "Não existe preset do LinkedIn. Cada preset, ao ser escolhido, volta a deixar o fundo em #ffffff e tive que colocar o cinza de novo; com o cinza colocado, o PNG sai com #c9ced6 exato e o JPEG o desloca um pouco, para #c9cdd6, pela compressão. Medi a figura inteira contra o círculo, não só o rosto, e não comparei com o recorte real que o LinkedIn faz. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s."
       }
     }
   },
   "stickers-de-whatsapp-y-telegram": {
-    "date": "2026-10-11",
-    "browser": "Chrome 154.0.8037.99 + WebKit 26.4",
+    "date": "2026-10-16",
+    "browser": "Chrome 155.0.8059.80 + WebKit 26.4",
     "os": "macOS 14.8.8",
-    "build": "bf2fa08",
+    "build": "7ec5265",
     "title": "los presets «Sticker WhatsApp» y «Sticker Telegram» contra lo que piden las apps",
     "image": {
       "name": "quitar-fondo-antes.jpg",
@@ -1075,15 +1094,15 @@
       "Repetí todo en WebKit (el motor de Safari) para comprobar que el WebP sale igual."
     ],
     "timing": {
-      "recorteIaMs": 3976,
-      "whatsappMs": 195,
-      "telegramMs": 178
+      "recorteIaMs": 21682,
+      "whatsappMs": 196,
+      "telegramMs": 173
     },
     "result": {
       "referencia": {
         "w": 720,
         "h": 900,
-        "kb": 529,
+        "kb": 526.7,
         "subjectRatio": 0.6715
       },
       "whatsapp": {
@@ -1092,7 +1111,7 @@
         "w": 512,
         "h": 512,
         "kb": 20.2,
-        "transparentPct": 67.79,
+        "transparentPct": 67.87,
         "cornersAlpha": [
           0,
           0,
@@ -1110,7 +1129,7 @@
         "toasts": [
           "Exportado ✓"
         ],
-        "ms": 195,
+        "ms": 196,
         "ratioDevPct": 0.25
       },
       "telegram": {
@@ -1118,8 +1137,8 @@
         "format": "png",
         "w": 512,
         "h": 512,
-        "kb": 199.3,
-        "transparentPct": 61.31,
+        "kb": 198.7,
+        "transparentPct": 61.4,
         "cornersAlpha": [
           0,
           0,
@@ -1137,10 +1156,11 @@
         "toasts": [
           "Exportado ✓"
         ],
-        "ms": 178,
+        "ms": 173,
         "ratioDevPct": 0.3
       },
       "webkit": {
+        "aiModel": "u2netp",
         "whatsapp": {
           "file": "photocut-transparent.webp",
           "format": "webp",
@@ -1165,7 +1185,7 @@
           "toasts": [
             "Exportado ✓"
           ],
-          "ms": 329
+          "ms": 320
         },
         "telegram": {
           "file": "photocut-transparent.png",
@@ -1191,20 +1211,21 @@
           "toasts": [
             "Exportado ✓"
           ],
-          "ms": 167
+          "ms": 204
         }
       }
     },
     "findings": [
-      "Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,8 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.",
-      "Sticker Telegram: PNG de 512 × 512 px y 199,3 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.",
+      "Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,9 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.",
+      "Sticker Telegram: PNG de 512 × 512 px y 198,7 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.",
       "La foto es vertical (720 × 900) y el preset no la deforma: la figura mide 0,671 de ancho por cada 1 de alto en la referencia, 0,670 en el de WhatsApp y 0,669 en el de Telegram. El lado más largo de la figura ocupa 430 px en WhatsApp (margen de 8,0 % por lado) y 472 px en Telegram.",
-      "En WebKit 26.4 (el motor de Safari): Sticker WhatsApp WebP de 512 × 512 px y 19,9 KB, alfa 0, 0, 0, 0 en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor."
+      "En WebKit 26.4 (el motor de Safari): Sticker WhatsApp WebP de 512 × 512 px y 19,9 KB, alfa 0, 0, 0, 0 en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor. WebKit no ofrece WebGPU, así que ahí el recorte lo hizo u2netp, no BiRefNet."
     ],
     "assets": [
       "/media/guias/quitar-fondo-antes.jpg"
     ],
-    "caveat": "Medí en Chrome y en WebKit de Playwright sobre macOS, no en un iPhone ni en Safari reales. El peso del WebP cambia según el motor (20,2 KB en Chrome, 19,9 KB en WebKit) porque no es el mismo codificador. Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP quedó muy por debajo de 100 KB en los dos motores: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.",
+    "aiModel": "birefnet",
+    "caveat": "Medí en Chrome y en WebKit de Playwright sobre macOS, no en un iPhone ni en Safari reales. El peso del WebP cambia según el motor (20,2 KB en Chrome, 19,9 KB en WebKit) porque no es el mismo codificador y tampoco el mismo recorte: WebKit no tiene WebGPU y cortó u2netp, no BiRefNet. Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP quedó muy por debajo de 100 KB en los dos motores: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.",
     "i18n": {
       "en": {
         "title": "the “WhatsApp sticker” and “Telegram sticker” presets against what the apps ask for",
@@ -1217,12 +1238,12 @@
           "I repeated everything in WebKit (Safari's engine) to check that the WebP comes out the same."
         ],
         "findings": [
-          "WhatsApp sticker: WebP of 512 × 512 px and 20.2 KB (WhatsApp's limit is 100 KB), 67.8% transparent pixels and alpha 0, 0, 0, 0 in the four corners. With the preset chosen, the panel only let me pick the WEBP format.",
-          "Telegram sticker: PNG of 512 × 512 px and 199.3 KB, alpha 0, 0, 0, 0 in the corners; format enabled: PNG.",
+          "WhatsApp sticker: WebP of 512 × 512 px and 20.2 KB (WhatsApp's limit is 100 KB), 67.9% transparent pixels and alpha 0, 0, 0, 0 in the four corners. With the preset chosen, the panel only let me pick the WEBP format.",
+          "Telegram sticker: PNG of 512 × 512 px and 198.7 KB, alpha 0, 0, 0, 0 in the corners; format enabled: PNG.",
           "The photo is vertical (720 × 900) and the preset doesn't stretch it: the figure is 0.671 wide for every 1 tall in the reference, 0.670 in the WhatsApp one and 0.669 in the Telegram one. The figure's longest side takes 430 px in WhatsApp (an 8.0% margin per side) and 472 px in Telegram.",
-          "In WebKit 26.4 (Safari's engine): WhatsApp sticker WebP of 512 × 512 px and 19.9 KB, alpha 0, 0, 0, 0 in the corners; that engine doesn't create WebP on its own and the file was built by the editor's own encoder."
+          "In WebKit 26.4 (Safari's engine): WhatsApp sticker WebP of 512 × 512 px and 19.9 KB, alpha 0, 0, 0, 0 in the corners; that engine doesn't create WebP on its own and the file was built by the editor's own encoder. WebKit doesn't offer WebGPU, so there the cutout was done by u2netp, not BiRefNet."
         ],
-        "caveat": "I measured in Chrome and in Playwright's WebKit on macOS, not on a real iPhone or in real Safari. The WebP's weight changes with the engine (20.2 KB in Chrome, 19.9 KB in WebKit) because it isn't the same encoder. Both presets gave the exact square without stretching the figure, but with this portrait the WebP stayed well under 100 KB in both engines: I didn't see the case where it goes over 100 KB and the editor lowers the quality by itself, so I didn't test that with a real photo. The preset locks the format (with the WhatsApp one only WEBP is left) and there's no preset for the 96 × 96 tray icon that a WhatsApp pack needs. I didn't build the pack or test it inside WhatsApp or Telegram."
+        "caveat": "I measured in Chrome and in Playwright's WebKit on macOS, not on a real iPhone or in real Safari. The WebP's weight changes with the engine (20.2 KB in Chrome, 19.9 KB in WebKit) because it isn't the same encoder, nor the same cutout: WebKit has no WebGPU and u2netp did the cutout, not BiRefNet. Both presets gave the exact square without stretching the figure, but with this portrait the WebP stayed well under 100 KB in both engines: I didn't see the case where it goes over 100 KB and the editor lowers the quality by itself, so I didn't test that with a real photo. The preset locks the format (with the WhatsApp one only WEBP is left) and there's no preset for the 96 × 96 tray icon that a WhatsApp pack needs. I didn't build the pack or test it inside WhatsApp or Telegram."
       },
       "pt": {
         "title": "os presets «Figurinha WhatsApp» e «Figurinha Telegram» contra o que os apps pedem",
@@ -1235,12 +1256,12 @@
           "Repeti tudo no WebKit (o motor do Safari) para conferir que o WebP sai igual."
         ],
         "findings": [
-          "Figurinha WhatsApp: WebP de 512 × 512 px e 20,2 KB (o limite do WhatsApp é 100 KB), 67,8% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos. Com o preset escolhido, o painel só me deixou mexer no formato WEBP.",
-          "Figurinha Telegram: PNG de 512 × 512 px e 199,3 KB, alfa 0, 0, 0, 0 nos cantos; formato habilitado: PNG.",
+          "Figurinha WhatsApp: WebP de 512 × 512 px e 20,2 KB (o limite do WhatsApp é 100 KB), 67,9% de pixels transparentes e alfa 0, 0, 0, 0 nos quatro cantos. Com o preset escolhido, o painel só me deixou mexer no formato WEBP.",
+          "Figurinha Telegram: PNG de 512 × 512 px e 198,7 KB, alfa 0, 0, 0, 0 nos cantos; formato habilitado: PNG.",
           "A foto é vertical (720 × 900) e o preset não a deforma: a figura mede 0,671 de largura para cada 1 de altura na referência, 0,670 na do WhatsApp e 0,669 na do Telegram. O lado mais longo da figura ocupa 430 px no WhatsApp (margem de 8,0% por lado) e 472 px no Telegram.",
-          "No WebKit 26.4 (o motor do Safari): Figurinha WhatsApp WebP de 512 × 512 px e 19,9 KB, alfa 0, 0, 0, 0 nos cantos; esse motor não cria WebP sozinho e o arquivo foi montado pelo codificador próprio do editor."
+          "No WebKit 26.4 (o motor do Safari): Figurinha WhatsApp WebP de 512 × 512 px e 19,9 KB, alfa 0, 0, 0, 0 nos cantos; esse motor não cria WebP sozinho e o arquivo foi montado pelo codificador próprio do editor. O WebKit não oferece WebGPU, então ali o recorte foi feito pelo u2netp, não pelo BiRefNet."
         ],
-        "caveat": "Medi no Chrome e no WebKit do Playwright no macOS, não num iPhone nem no Safari de verdade. O peso do WebP muda conforme o motor (20,2 KB no Chrome, 19,9 KB no WebKit) porque não é o mesmo codificador. Os dois presets deram o quadrado exato sem deformar a figura, mas com este retrato o WebP ficou bem abaixo de 100 KB nos dois motores: não vi o caso em que passa de 100 KB e o editor baixa a qualidade sozinho, então isso eu não testei com uma foto real. O preset fixa o formato (com o do WhatsApp só sobra WEBP) e não há um preset para o ícone de capa de 96 × 96 que o pacote do WhatsApp pede. Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram."
+        "caveat": "Medi no Chrome e no WebKit do Playwright no macOS, não num iPhone nem no Safari de verdade. O peso do WebP muda conforme o motor (20,2 KB no Chrome, 19,9 KB no WebKit) porque não é o mesmo codificador nem o mesmo recorte: o WebKit não tem WebGPU e quem recortou foi o u2netp, não o BiRefNet. Os dois presets deram o quadrado exato sem deformar a figura, mas com este retrato o WebP ficou bem abaixo de 100 KB nos dois motores: não vi o caso em que passa de 100 KB e o editor baixa a qualidade sozinho, então isso eu não testei com uma foto real. O preset fixa o formato (com o do WhatsApp só sobra WEBP) e não há um preset para o ícone de capa de 96 × 96 que o pacote do WhatsApp pede. Não montei o pacote nem o testei dentro do WhatsApp ou do Telegram."
       }
     }
   },
