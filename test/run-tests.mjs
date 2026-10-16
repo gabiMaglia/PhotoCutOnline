@@ -28,6 +28,7 @@ const TESTS = [
   "worker-test",
   "perf-test",
   "webp-test",
+  "filters-test",
 ];
 
 // viewport por suite (por defecto escritorio)
@@ -38,7 +39,8 @@ const DESKTOP = { width: 1280, height: 800 };
 
 // GROW-35: lo que depende del códec corre también en WebKit (el motor de Safari
 // no codifica WebP en canvas). Es la corrida que le faltó a GROW-34.
-const WEBKIT_TESTS = ["webp-test", "reencode-test"];
+// BUG-09: Filtros y desenfoques también (WebKit no tiene ctx.filter).
+const WEBKIT_TESTS = ["webp-test", "reencode-test", "filters-test"];
 
 // Límite de espera por motor, explícito. WebKit es más lento (autoCut ronda los
 // 28 s en un Mac cargado y puede multiplicarse en un runner de 2 vCPU); uno

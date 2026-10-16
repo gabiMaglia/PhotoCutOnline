@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { t } from "../../lib/i18n.js";
 import Button from "../../components/ui/Button.jsx";
 import Slider from "../../components/ui/Slider.jsx";
@@ -7,17 +7,12 @@ import AdSlot from "../promo/AdSlot.jsx";
 import { useCutoutContext } from "../cutout/CutoutContext.jsx";
 import EditTabs from "../textTool/EditTabs.jsx";
 import EditSource from "../textTool/EditSource.jsx";
+import { buildOps, toImageData, renderFiltered, PREVIEW_MAX_SIDE } from "./filterOps.js";
+import { useFilterPreview } from "./useFilterPreview.js";
 
 // Filtros y ajustes de una foto (GROW-23), sub-herramienta del hub "Editar".
-// Todo con ctx.filter (grayscale/sepia/brightness/contrast/saturate): 100% en
-// el navegador, la foto no se sube.
-const PRESETS = {
-  none: "",
-  bw: "grayscale(1)",
-  sepia: "sepia(0.75)",
-  vivid: "saturate(1.4) contrast(1.08)",
-  soft: "contrast(0.92) brightness(1.04)",
-};
+// Los píxeles los calcula pixelFilters (no ctx.filter, que Safari no tiene:
+// BUG-09): 100% en el navegador, la foto no se sube.
 
 export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpenDownload }) {
   const { editSourceUrl, editSourceMode, setEditSourceMode, session } = useCutoutContext();
@@ -25,7 +20,7 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
   const canvasRef = useRef(null);
   const loadedUrlRef = useRef(null);
   const [ready, setReady] = useState(false);
-  const [imgTick, setImgTick] = useState(0); // fuerza el redraw al cambiar de fuente
+  const [base, setBase] = useState(null); // copia reducida para la vista previa
   const [sourceName, setSourceName] = useState("");
   const [preset, setPreset] = useState("none");
   const [brightness, setBrightness] = useState(100);
@@ -36,36 +31,43 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
     if (!(active && editSourceUrl && editSourceUrl !== loadedUrlRef.current)) return;
     loadedUrlRef.current = editSourceUrl;
     const img = new Image();
-    img.onload = () => { imgRef.current = img; setSourceName(t("img.currentName")); setReady(true); setImgTick((n) => n + 1); };
+    img.onload = () => {
+      imgRef.current = img;
+      try {
+        setBase(toImageData(img, PREVIEW_MAX_SIDE));
+      } catch {
+        onToast?.(t("filters.error"));
+        return;
+      }
+      setSourceName(t("img.currentName"));
+      setReady(true);
+    };
     img.onerror = () => onToast?.("No se pudo cargar la imagen");
     img.src = editSourceUrl;
   }, [active, editSourceUrl, onToast]);
 
-  const filterString = useCallback(
-    () => `${PRESETS[preset]} brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`.trim(),
-    [preset, brightness, contrast, saturation]
-  );
-
-  const redraw = useCallback(() => {
-    const img = imgRef.current, cv = canvasRef.current;
-    if (!img || !cv) return;
-    const W = img.naturalWidth || img.width, H = img.naturalHeight || img.height;
-    cv.width = W; cv.height = H;
-    const ctx = cv.getContext("2d");
-    ctx.filter = filterString();
-    ctx.drawImage(img, 0, 0);
-    ctx.filter = "none";
-  }, [filterString]);
-
-  useEffect(() => { if (ready) redraw(); }, [ready, redraw, imgTick]);
+  const ops = useMemo(() => buildOps(preset, brightness, contrast, saturation), [preset, brightness, contrast, saturation]);
+  const previewError = useCallback(() => onToast?.(t("filters.error")), [onToast]);
+  useFilterPreview(canvasRef, base, ops, previewError);
 
   const reset = () => { setPreset("none"); setBrightness(100); setContrast(100); setSaturation(100); };
 
+  // la descarga se recalcula a resolución completa (la vista previa está reducida)
   const download = () => {
-    const cv = canvasRef.current;
-    if (!cv) return;
+    const img = imgRef.current;
+    if (!img) return;
+    let cv;
+    try {
+      cv = renderFiltered(img, ops);
+    } catch {
+      onToast?.(t("filters.error"));
+      return;
+    }
     cv.toBlob((blob) => {
-      if (!blob) return;
+      if (!blob) {
+        onToast?.(t("filters.error"));
+        return;
+      }
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = (sourceName?.replace(/\.[^.]+$/, "") || "imagen") + "-filtro.png";
@@ -124,7 +126,7 @@ export default function FiltersPage({ active, subTool, onSubTool, onToast, onOpe
               <p className="canvas-empty-hint">{t("empty.drag")}</p>
             </div>
           )}
-          {ready && <canvas ref={canvasRef} className="faces-canvas" />}
+          <canvas ref={canvasRef} className="faces-canvas" style={ready ? undefined : { display: "none" }} />
         </main>
       </div>
     </div>

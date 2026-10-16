@@ -7,6 +7,7 @@
 
 import ortWasmUrl from "./ort-runtime/ort-wasm-simd-threaded.wasm?url";
 import ortMjsUrl from "./ort-runtime/ort-wasm-simd-threaded.mjs?url";
+import { gaussianBlur, pixelBlockPx, pixelateBlocks } from "./pixelFilters.js";
 
 const MODEL_URL = "/models/yunet_2023mar.onnx";
 const STRIDES = [8, 16, 32];
@@ -93,6 +94,25 @@ export function decodeYunet(outputs, padW, padH, scoreThresh = 0.6) {
   return boxes;
 }
 
+// Píxeles de un rectángulo entero de la fuente (canvas chico, no la imagen entera).
+function regionPixels(source, x, y, w, h) {
+  const c = document.createElement("canvas");
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(source, x, y, w, h, 0, 0, w, h);
+  return ctx.getImageData(0, 0, w, h);
+}
+
+function cropPixels(img, x, y, w, h) {
+  const out = new ImageData(w, h);
+  for (let row = 0; row < h; row++) {
+    const from = ((y + row) * img.width + x) * 4;
+    out.data.set(img.data.subarray(from, from + w * 4), row * w * 4);
+  }
+  return out;
+}
+
 /**
  * Dibuja `source` en un canvas nuevo y censura (blur o pixelado) las cajas
  * dadas, recortadas a una elipse (queda más natural sobre una cara que un
@@ -123,26 +143,30 @@ export function censorBoxes(source, boxes, opts = {}) {
     const bh = Math.min(H - by, b.h * (1 + 2 * p));
     if (bw <= 1 || bh <= 1) continue;
 
-    const tmp = document.createElement("canvas");
-    tmp.width = Math.round(bw);
-    tmp.height = Math.round(bh);
-    const tctx = tmp.getContext("2d");
+    // caja alineada a píxeles enteros: se trabaja sobre los píxeles de la
+    // fuente sin reescalar (la forma del recorte sigue siendo la exacta)
+    const ix = Math.floor(bx), iy = Math.floor(by);
+    const iw = Math.min(W, Math.ceil(bx + bw)) - ix, ih = Math.min(H, Math.ceil(by + bh)) - iy;
+    let px;
     if (mode === "pixelate") {
-      // más strength → bloques más grandes (12 a 4 celdas de ancho)
-      const across = Math.max(3, Math.round(12 - (strength / 100) * 8));
-      const sw = across, sh = Math.max(1, Math.round(across * bh / bw));
-      const px = document.createElement("canvas");
-      px.width = sw; px.height = sh;
-      px.getContext("2d").drawImage(source, bx, by, bw, bh, 0, 0, sw, sh);
-      tctx.imageSmoothingEnabled = false;
-      tctx.drawImage(px, 0, 0, sw, sh, 0, 0, tmp.width, tmp.height);
+      // BUG-10: bloques relativos al ancho de la cara (sin margen), anclados a ella
+      px = regionPixels(source, ix, iy, iw, ih);
+      pixelateBlocks(px, pixelBlockPx(b.w, strength), b.x - ix, b.y - iy);
     } else {
-      // blur proporcional al tamaño de la cara
+      // blur proporcional al tamaño de la cara, calculado acá y no con
+      // ctx.filter (Safari no lo tiene: la cara quedaba SIN censurar, BUG-09).
+      // Se toma 3σ de contexto alrededor para que el borde no se mezcle con nada.
       const radius = Math.max(2, Math.round(Math.min(bw, bh) * (strength / 100) * 0.28));
-      tctx.filter = `blur(${radius}px)`;
-      tctx.drawImage(source, bx, by, bw, bh, 0, 0, tmp.width, tmp.height);
-      tctx.filter = "none";
+      const m = Math.ceil(3 * radius);
+      const rx = Math.max(0, ix - m), ry = Math.max(0, iy - m);
+      const region = regionPixels(source, rx, ry, Math.min(W, ix + iw + m) - rx, Math.min(H, iy + ih + m) - ry);
+      gaussianBlur(region, radius);
+      px = cropPixels(region, ix - rx, iy - ry, iw, ih);
     }
+    const tmp = document.createElement("canvas");
+    tmp.width = iw;
+    tmp.height = ih;
+    tmp.getContext("2d").putImageData(px, 0, 0);
 
     // pegar el resultado recortado: rectángulo (a mano) o elipse (caras)
     ctx.save();
@@ -150,7 +174,7 @@ export function censorBoxes(source, boxes, opts = {}) {
     if (rectShape) ctx.rect(bx, by, bw, bh);
     else ctx.ellipse(bx + bw / 2, by + bh / 2, bw / 2, bh / 2, 0, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(tmp, bx, by);
+    ctx.drawImage(tmp, ix, iy);
     ctx.restore();
   }
   return out;
