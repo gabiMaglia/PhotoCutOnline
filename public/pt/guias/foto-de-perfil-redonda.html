@@ -216,13 +216,13 @@
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>Saiu um PNG de 512 × 512 px e 161 KB. Os quatro cantos têm alfa 0, 0, 0, 0: o preset recorta em círculo de verdade, não só centraliza.</li>
-          <li>72,0% da imagem ficou transparente: 21,5% são os cantos fora do círculo e o resto é fundo recortado dentro dele.</li>
-          <li>A figura fica a 10,5% da altura desde a borda de cima até o topo da cabeça e começa a 24,0% da largura contando da borda esquerda (ocupa 51,8% da largura e 79,5% da altura).</li>
-          <li>Recorte IA 4,0 s; o download do avatar 0,1 s.</li>
+          <li>Saiu um PNG de 512 × 512 px e 160 KB. Os quatro cantos têm alfa 0, 0, 0, 0: o preset recorta em círculo de verdade, não só centraliza.</li>
+          <li>72,1% da imagem ficou transparente: 21,5% são os cantos fora do círculo e o resto é fundo recortado dentro dele.</li>
+          <li>A figura fica a 10,4% da altura desde a borda de cima até o topo da cabeça e começa a 24,2% da largura contando da borda esquerda (ocupa 51,8% da largura e 79,7% da altura).</li>
+          <li>Recorte IA 22,0 s; o download do avatar 0,5 s.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O preset faz o recorte circular e a figura entra inteira, mas não medi como cada rede (WhatsApp, Instagram, Slack) mascara o quadrado: isso depende do app. O topo da cabeça ficou a 10,5% da borda de cima com este retrato; com um rosto mais alto no enquadramento poderia ficar mais apertado.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O preset faz o recorte circular e a figura entra inteira, mas não medi como cada rede (WhatsApp, Instagram, Slack) mascara o quadrado: isso depende do app. O topo da cabeça ficou a 10,5% da borda de cima com este retrato; com um rosto mais alto no enquadramento poderia ficar mais apertado. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-16">2026-10-16</time> com PhotoCut (web) no Chrome 155.0.8059.80 · macOS 14.8.8 · versão do PhotoCut: commit 7ec5265. Recorte IA com BiRefNet-lite na GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

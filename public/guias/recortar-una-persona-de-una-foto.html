@@ -225,12 +225,12 @@
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Recorte IA: 3,9 s. Ancho aproximado de la franja de borde semitransparente (píxeles semitransparentes por píxel de contorno): cabeza y pelo 11,8 px, hombros 10,8 px, brazos 9,5 px, torso bajo 9,9 px. La zona más difusa fue cabeza y pelo.</li>
-          <li>Un trazo del Pincel quitar de 12 px sobre el hombro cambió 0,15 % de los píxeles de la imagen (opacos: 49,2 % → 49,1 %).</li>
+          <li>Recorte IA: 21,7 s. Ancho aproximado de la franja de borde semitransparente (píxeles semitransparentes por píxel de contorno): cabeza y pelo 11,0 px, hombros 10,7 px, brazos 9,4 px, torso bajo 9,6 px. La zona más difusa fue cabeza y pelo.</li>
+          <li>Un trazo del Pincel quitar de 12 px sobre el hombro cambió 0,15 % de los píxeles de la imagen (opacos: 49,1 % → 49,0 %).</li>
           <li>«Deshacer» devolvió una imagen idéntica a la del recorte original (mismo hash de los píxeles RGBA).</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-06">2026-10-06</time> con PhotoCut (web) en Chrome 154.0.8037.98 · macOS 14.8.8 · versión de PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> No pude reproducir el fleco en los hombros que contaba la versión anterior de esta guía: en este retrato el contorno salió limpio a simple vista, así que el trazo de pincel lo di igual, para medir cuánto cambia, no para corregir algo. El pelo es la zona donde el borde es más difuso, pero no medí qué tan visible es eso sobre un fondo nuevo. El Recorte IA tardó ~22 s porque fue el primero de una pestaña nueva en una Mac con GPU: incluye bajar el modelo desde mi máquina y preparar la GPU; en la misma pestaña, los siguientes tardan unos 4 s.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-16">2026-10-16</time> con PhotoCut (web) en Chrome 155.0.8059.80 · macOS 14.8.8 · versión de PhotoCut: commit 7ec5265. Recorte IA con BiRefNet-lite en la GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

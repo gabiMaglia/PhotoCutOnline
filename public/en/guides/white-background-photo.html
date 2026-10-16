@@ -237,12 +237,12 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>PNG: 522 KB, 47.5% of pixels exactly #ffffff, 0.0% of the corners are not pure white.</li>
-          <li>JPEG: 58 KB (89% smaller), 46.4% of pixels exactly #ffffff, 0.0% of the corners are not pure white.</li>
-          <li>AI cutout 4.0 s; the PNG download took 0.1 s and the JPEG one 0.1 s.</li>
+          <li>PNG: 519 KB, 47.7% of pixels exactly #ffffff, 0.0% of the corners are not pure white.</li>
+          <li>JPEG: 58 KB (89% smaller), 46.6% of pixels exactly #ffffff, 0.0% of the corners are not pure white.</li>
+          <li>AI cutout 21.9 s; the PNG download took 0.1 s and the JPEG one 0.1 s.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The JPEG doesn't keep all the white exact: it has slightly fewer #ffffff pixels than the PNG because compression pushes some to 254 or lower. I didn't measure the light halo around the outline (on white it can't be counted automatically) or compare the PNG against the JPEG by eye.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The JPEG doesn't keep all the white exact: it has slightly fewer #ffffff pixels than the PNG because compression pushes some to 254 or lower. I didn't measure the light halo around the outline (on white it can't be counted automatically) or compare the PNG against the JPEG by eye. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

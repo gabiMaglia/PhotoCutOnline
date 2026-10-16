@@ -1,6 +1,6 @@
 // Pruebas 1-4 de 20 (una por guía ES). Cada una devuelve datos crudos + frases con esos números.
 import path from "node:path";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { brotliCompressSync, constants as zc } from "node:zlib";
 import * as L from "./lib.mjs";
 import { f, kb, pctS, G, P, pub, imgMeta, newCtx, runAI, guideBox, stroke, clickCanvas, dl, radio, choosePreset } from "./common.mjs";
@@ -19,10 +19,13 @@ TESTS["como-quitar-el-fondo-de-una-imagen"] = async ({ browser }) => {
   const reqs = [];
   const sizes = {};
   ctx.on("request", (r) => reqs.push({ m: r.method(), url: r.url(), body: r.postDataBuffer()?.length || 0 }));
-  ctx.on("response", async (r) => {
+  // tamaño del archivo de dist/ que sirvió preview: Playwright no entrega el cuerpo de los
+  // fetch grandes en streaming del worker (las partes del modelo, el wasm del motor)
+  ctx.on("response", (r) => {
     const u = r.url();
-    if (sizes.__stop || !/localhost/.test(u) || !AI_FILE.test(u)) return;
-    try { sizes[new URL(u).pathname] = (await r.body()).length; } catch { /* worker */ }
+    if (sizes.__stop || !/localhost/.test(u) || !AI_FILE.test(u) || !r.ok()) return;
+    const p = new URL(u).pathname;
+    try { sizes[p] = statSync(path.join(L.ROOT, "dist", p)).size; } catch { /* no es de dist */ }
   });
   const page = await L.openEditor(ctx);
   await L.loadImage(page, file);
@@ -53,7 +56,8 @@ TESTS["como-quitar-el-fondo-de-una-imagen"] = async ({ browser }) => {
     } catch { return acc; }
   }, 0);
   const br = modelBytes + runtimeBr;
-  const external = reqs.filter((r) => !/^http:\/\/localhost/.test(r.url));
+  // data:/blob: no salen a la red
+  const external = reqs.filter((r) => /^https?:/.test(r.url) && !/^http:\/\/localhost/.test(r.url));
   const hosts = [...new Set(external.map((r) => new URL(r.url).host))];
   const uploads = reqs.filter((r) => r.m !== "GET" && r.m !== "HEAD" && r.m !== "OPTIONS");
   const bodyBytes = reqs.reduce((s, r) => s + r.body, 0);

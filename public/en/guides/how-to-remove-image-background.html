@@ -244,8 +244,10 @@
         point for photos with people, pets or products on reasonably
         distinguishable backgrounds. In <a href="/editor/">PhotoCut Studio</a>
         this is the <strong>"AI Cutout"</strong> button (shortcut <code>I</code>):
-        the model downloads once (~7&nbsp;MB), runs in your browser with WebAssembly and works
-        even offline after the first visit.
+        the model downloads once and runs in your browser: if your device has a
+        GPU the browser can use, it fetches BiRefNet-lite (~120&nbsp;MB), which
+        cuts out finer detail; otherwise u2netp (~7&nbsp;MB) with WebAssembly.
+        Once you've used it, it works even offline.
       </p>
       <h3>2. Magic wand: one click on the background</h3>
       <p>
@@ -386,13 +388,13 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout, first time (with the model downloaded from my local server): 5.0 s. In the same tab, second run: 2.9 s. After reloading, with the model in the cache: 3.6 s.</li>
-          <li>What the AI downloads the first time, uncompressed: 4.57 MB of model (u2netp.onnx) + 13.2 MB of WebAssembly engine. With Brotli (level 11, computed on those same files from dist/) the total drops to 6.4 MB, in the range of the “~7 MB” the guide mentions (the real server may compress at a different level).</li>
-          <li>Exported PNG: 720 × 900 px, 535 KB, 47.4% of pixels fully transparent and 3.3% semi-transparent (the smoothed edge).</li>
-          <li>Network: 67 requests in the whole session and none with a body (0 bytes sent). The 26 requests to other domains (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) are Google advertising and don't carry the photo.</li>
+          <li>AI cutout, first time (with the model downloaded from my local server): 22.6 s. In the same tab, second run: 3.9 s. After reloading, with the model in the cache: 16.1 s.</li>
+          <li>This computer has a GPU, so the AI downloaded BiRefNet-lite: 114.8 MB of model (in 2 parts) + 24.0 MB of WebAssembly/WebGPU engine, uncompressed. The model travels as is; the engine with Brotli (level 11, computed on those same files from dist/) drops to 3.5 MB. In total 118.4 MB, the “~120 MB” the guide mentions for a device with a GPU.</li>
+          <li>Exported PNG: 720 × 900 px, 532 KB, 47.7% of pixels fully transparent and 3.3% semi-transparent (the smoothed edge).</li>
+          <li>Network: 93 requests in the whole session and none with a body (0 bytes sent). The 26 requests to other domains (pagead2.googlesyndication.com, googleads.g.doubleclick.net, ep1.adtrafficquality.google, ep2.adtrafficquality.google, www.google.com) are Google advertising and don't carry the photo.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> With this portrait the AI left no fringe I could see on a magenta background, so I can't describe a hard case. Each timing is from a single run and with the model served from my machine: on the real internet the first time adds the download of about 6 MB. In another run of the same test I saw four Google ad-measurement POSTs (up to 435 bytes, none with the photo): the ads make requests, but the image doesn't travel.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> With this portrait the AI left no fringe I could see on a magenta background, so I can't describe a hard case. I measured on a Mac with a GPU, so BiRefNet did the cutout: the first time took 22.6 s because, besides downloading the model (from my machine; over the real internet that's about 120 MB), the browser prepares the GPU, and after reloading it took 16.1 s again for that preparation even though the model was already cached. Without a GPU u2netp does the cutout and downloads about 6 MB: with it I previously measured 5.0 s the first time and 2.9 s the second. Each timing is from a single run. In another run of the same test I saw four Google ad-measurement POSTs (up to 435 bytes, none with the photo): the ads make requests, but the image doesn't travel.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

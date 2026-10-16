@@ -299,13 +299,13 @@
         </ol>
         <p><strong>Lo que medí:</strong></p>
         <ul>
-          <li>Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,8 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.</li>
-          <li>Sticker Telegram: PNG de 512 × 512 px y 199,3 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.</li>
+          <li>Sticker WhatsApp: WebP de 512 × 512 px y 20,2 KB (el límite de WhatsApp es 100 KB), 67,9 % de píxeles transparentes y alfa 0, 0, 0, 0 en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato WEBP.</li>
+          <li>Sticker Telegram: PNG de 512 × 512 px y 198,7 KB, alfa 0, 0, 0, 0 en las esquinas; formato habilitado: PNG.</li>
           <li>La foto es vertical (720 × 900) y el preset no la deforma: la figura mide 0,671 de ancho por cada 1 de alto en la referencia, 0,670 en el de WhatsApp y 0,669 en el de Telegram. El lado más largo de la figura ocupa 430 px en WhatsApp (margen de 8,0 % por lado) y 472 px en Telegram.</li>
-          <li>En WebKit 26.4 (el motor de Safari): Sticker WhatsApp WebP de 512 × 512 px y 19,9 KB, alfa 0, 0, 0, 0 en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor.</li>
+          <li>En WebKit 26.4 (el motor de Safari): Sticker WhatsApp WebP de 512 × 512 px y 19,9 KB, alfa 0, 0, 0, 0 en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor. WebKit no ofrece WebGPU, así que ahí el recorte lo hizo u2netp, no BiRefNet.</li>
         </ul>
-        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Medí en Chrome y en WebKit de Playwright sobre macOS, no en un iPhone ni en Safari reales. El peso del WebP cambia según el motor (20,2 KB en Chrome, 19,9 KB en WebKit) porque no es el mismo codificador. Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP quedó muy por debajo de 100 KB en los dos motores: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
-        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-11">2026-10-11</time> con PhotoCut (web) en Chrome 154.0.8037.99 + WebKit 26.4 · macOS 14.8.8 · versión de PhotoCut: commit bf2fa08.</p>
+        <p class="limit"><strong>Qué salió mal o qué límite vi:</strong> Medí en Chrome y en WebKit de Playwright sobre macOS, no en un iPhone ni en Safari reales. El peso del WebP cambia según el motor (20,2 KB en Chrome, 19,9 KB en WebKit) porque no es el mismo codificador y tampoco el mismo recorte: WebKit no tiene WebGPU y cortó u2netp, no BiRefNet. Los dos presets dieron el cuadrado exacto sin deformar la figura, pero con este retrato el WebP quedó muy por debajo de 100 KB en los dos motores: no vi el caso en que pasa de 100 KB y el editor baja la calidad solo, así que eso no lo probé con una foto real. El preset fija el formato (con el de WhatsApp solo queda WEBP) y no hay un preset para el ícono de portada de 96 × 96 que pide el pack de WhatsApp. No armé el pack ni lo probé dentro de WhatsApp o Telegram.</p>
+        <p class="byline">Probado por Gabriel Maglia el <time datetime="2026-10-16">2026-10-16</time> con PhotoCut (web) en Chrome 155.0.8059.80 + WebKit 26.4 · macOS 14.8.8 · versión de PhotoCut: commit 7ec5265. Recorte IA con BiRefNet-lite en la GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

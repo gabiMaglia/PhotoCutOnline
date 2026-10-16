@@ -237,12 +237,12 @@
         </ol>
         <p><strong>O que eu medi:</strong></p>
         <ul>
-          <li>PNG: 522 KB, 47,5% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.</li>
-          <li>JPEG: 58 KB (89% menos), 46,4% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.</li>
-          <li>Recorte IA 4,0 s; o download do PNG levou 0,1 s e o do JPEG 0,1 s.</li>
+          <li>PNG: 519 KB, 47,7% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.</li>
+          <li>JPEG: 58 KB (89% menos), 46,6% dos pixels #ffffff exatos, 0,0% dos cantos não são branco puro.</li>
+          <li>Recorte IA 21,9 s; o download do PNG levou 0,1 s e o do JPEG 0,1 s.</li>
         </ul>
-        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O JPEG não deixa todo o branco exato: tem um pouco menos de pixels #ffffff que o PNG porque a compressão empurra alguns para 254 ou menos. Não medi o halo claro do contorno (sobre branco não dá para contar automaticamente) nem comparei PNG e JPEG a olho.</p>
-        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-06">2026-10-06</time> com PhotoCut (web) no Chrome 154.0.8037.98 · macOS 14.8.8 · versão do PhotoCut: commit bc142c7.</p>
+        <p class="limit"><strong>O que deu errado ou que limite eu vi:</strong> O JPEG não deixa todo o branco exato: tem um pouco menos de pixels #ffffff que o PNG porque a compressão empurra alguns para 254 ou menos. Não medi o halo claro do contorno (sobre branco não dá para contar automaticamente) nem comparei PNG e JPEG a olho. O Recorte IA levou ~22 s porque foi o primeiro de uma aba nova num Mac com GPU: isso inclui baixar o modelo da minha máquina e preparar a GPU; na mesma aba, os seguintes levam uns 4 s.</p>
+        <p class="byline">Testado por Gabriel Maglia em <time datetime="2026-10-16">2026-10-16</time> com PhotoCut (web) no Chrome 155.0.8059.80 · macOS 14.8.8 · versão do PhotoCut: commit 7ec5265. Recorte IA com BiRefNet-lite na GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

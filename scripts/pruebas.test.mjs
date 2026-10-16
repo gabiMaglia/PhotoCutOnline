@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { renderBlock, injectBlock, loadPruebas, readI18nGroups, guideFiles, LANGS, START, END } from "./render-pruebas.mjs";
+import { renderBlock, injectBlock, loadPruebas, readI18nGroups, guideFiles, LANGS, LABELS, START, END } from "./render-pruebas.mjs";
 import { measure } from "./faq-overlap.mjs";
 import { faqRegion, norm, FAQ_H2 } from "./faq-prune.mjs";
 
@@ -86,6 +86,23 @@ test("el bloque de cada guía (ES, EN y PT) es exactamente el que genera el JSON
     assert.equal(h.split(END).length - 1, 1, `${lang}/${slug}: marcador de fin`);
     assert.equal(injectBlock(h, renderBlock(db[slug], lang)), h, `${lang}/${slug}: el HTML no coincide con pruebas.json (corré npm run pruebas:render)`);
   });
+});
+
+// GROW-36: el Recorte IA usa BiRefNet con GPU y u2netp sin ella; un número de la IA
+// sin decir con qué modelo salió no se puede reproducir.
+test("las guías con Recorte IA dicen con qué modelo se midió (ES, EN y PT)", () => {
+  const withAi = Object.entries(db).filter(([, e]) => /Recorte IA/.test(e.tool));
+  assert.ok(withAi.length >= 10, "faltan guías con Recorte IA");
+  for (const [slug, e] of withAi) {
+    assert.ok(["birefnet", "u2netp"].includes(e.aiModel), `${slug}: aiModel = ${e.aiModel}`);
+    for (const lang of LANGS) {
+      const line = html(slug, lang).match(/<p class="byline">[\s\S]*?<\/p>/)[0];
+      assert.ok(line.includes(LABELS[lang].aiModel[e.aiModel]), `${lang}/${slug}: el byline no nombra el modelo`);
+    }
+  }
+  for (const [slug, e] of Object.entries(db)) {
+    if (!/Recorte IA/.test(e.tool)) assert.equal(e.aiModel, undefined, `${slug}: no usa la IA`);
+  }
 });
 
 test("byline único por idioma, sin «equipo»/«team»/«equipe», sin las frases viejas ni el «18 MB»", () => {
@@ -186,6 +203,8 @@ test("los valores corregidos de las medidas son los mismos en ES, EN y PT", () =
 test("EN/PT dicen lo mismo que ES en lo que cambió fuera del bloque", () => {
   for (const lang of LANGS) {
     assert.match(html("como-quitar-el-fondo-de-una-imagen", lang).replace(/&nbsp;/g, " "), /~7 MB/, `${lang}: ~7 MB`);
+    // GROW-36: con GPU baja BiRefNet (~120 MB); la guía dice los dos pesos
+    assert.match(html("como-quitar-el-fondo-de-una-imagen", lang).replace(/&nbsp;/g, " "), /~120 MB/, `${lang}: ~120 MB con GPU`);
     assert.match(html("quitar-la-ubicacion-de-una-foto", lang).replace(/&nbsp;/g, " "), /21[.,]0[\s\S]{1,12}24[.,]1/, `${lang}: la recompresión del EXIF (21,0→24,1 KB)`);
     const dark = html("generar-modo-oscuro-desde-una-captura", lang);
     assert.doesNotMatch(dark, /Recolor|Recolorear|Recolorir/, `${lang}: «Recolorear» no existe`);

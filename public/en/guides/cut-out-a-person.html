@@ -223,12 +223,12 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout: 3.9 s. Approximate width of the semi-transparent edge band (semi-transparent pixels per outline pixel): head and hair 11.8 px, shoulders 10.8 px, arms 9.5 px, lower torso 9.9 px. The blurriest area was head and hair.</li>
-          <li>One 12 px Remove brush stroke over the shoulder changed 0.15% of the image's pixels (opaque: 49.2% → 49.1%).</li>
+          <li>AI cutout: 21.7 s. Approximate width of the semi-transparent edge band (semi-transparent pixels per outline pixel): head and hair 11.0 px, shoulders 10.7 px, arms 9.4 px, lower torso 9.6 px. The blurriest area was head and hair.</li>
+          <li>One 12 px Remove brush stroke over the shoulder changed 0.15% of the image's pixels (opaque: 49.1% → 49.0%).</li>
           <li>“Undo” returned an image identical to the original cutout (same hash of the RGBA pixels).</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> I couldn't reproduce the fringe on the shoulders that the previous version of this guide described: in this portrait the outline looked clean to the naked eye, so I made the brush stroke anyway, to measure how much it changes, not to fix anything. Hair is the area where the edge is blurriest, but I didn't measure how visible that is on a new background.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> I couldn't reproduce the fringe on the shoulders that the previous version of this guide described: in this portrait the outline looked clean to the naked eye, so I made the brush stroke anyway, to measure how much it changes, not to fix anything. Hair is the area where the edge is blurriest, but I didn't measure how visible that is on a new background. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

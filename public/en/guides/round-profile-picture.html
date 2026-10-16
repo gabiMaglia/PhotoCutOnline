@@ -215,13 +215,13 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>It produced a 512 × 512 px, 161 KB PNG. The four corners have alpha 0, 0, 0, 0: the preset really crops to a circle, it doesn't just center.</li>
-          <li>72.0% of the image ended up transparent: 21.5% is the corners outside the circle and the rest is cut-out background inside it.</li>
-          <li>The figure sits 10.5% of the height from the top edge down to the crown of the head, and starts 24.0% of the width from the left edge (it takes up 51.8% of the width and 79.5% of the height).</li>
-          <li>AI cutout 4.0 s; the avatar download 0.1 s.</li>
+          <li>It produced a 512 × 512 px, 160 KB PNG. The four corners have alpha 0, 0, 0, 0: the preset really crops to a circle, it doesn't just center.</li>
+          <li>72.1% of the image ended up transparent: 21.5% is the corners outside the circle and the rest is cut-out background inside it.</li>
+          <li>The figure sits 10.4% of the height from the top edge down to the crown of the head, and starts 24.2% of the width from the left edge (it takes up 51.8% of the width and 79.7% of the height).</li>
+          <li>AI cutout 22.0 s; the avatar download 0.5 s.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The preset does the circular crop and the figure fits whole, but I didn't measure how each network (WhatsApp, Instagram, Slack) masks the square: that depends on the app. The crown of the head ended up 10.5% from the top edge with this portrait; with a higher face in the frame it could end up tighter.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> The preset does the circular crop and the figure fits whole, but I didn't measure how each network (WhatsApp, Instagram, Slack) masks the square: that depends on the app. The crown of the head ended up 10.5% from the top edge with this portrait; with a higher face in the frame it could end up tighter. The AI cutout took ~22 s because it was the first one in a new tab on a Mac with a GPU: that includes downloading the model from my machine and preparing the GPU; in the same tab, the following ones take about 4 s.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

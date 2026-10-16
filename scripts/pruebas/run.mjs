@@ -16,7 +16,7 @@ import { TESTS as T2 } from "./tests-b.mjs";
 import { TESTS as T3 } from "./tests-c.mjs";
 import { TESTS as T4 } from "./tests-d.mjs";
 import { TESTS as T5 } from "./tests-e.mjs";
-import { aiModelsSeen } from "./common.mjs";
+import { aiModelsSeen, aiModelOf } from "./common.mjs";
 const TESTS = { ...T1, ...T2, ...T4, ...T3, ...T5 };
 
 const JSON_PATH = path.join(L.ROOT, "scripts/pruebas.json");
@@ -36,12 +36,13 @@ for (const slug of slugs) {
   process.stdout.write(`\n■ ${slug}\n`);
   const t0 = Date.now();
   try {
-    aiModelsSeen.clear();
+    for (const seen of Object.values(aiModelsSeen)) seen.clear();
     const r = await TESTS[slug]({ browser, L });
     const prev = db[slug] || {};
-    // si cayó al respaldo en medio de la prueba se ven los dos: firmo con el que cortó
-    const aiModel = aiModelsSeen.has("u2netp") ? "u2netp" : aiModelsSeen.has("birefnet") ? "birefnet" : undefined;
-    db[slug] = { ...meta, ...r, ...(aiModel && { aiModel }), caveat: prev.caveat ?? null };
+    // el byline firma Chrome: va su modelo (lo de WebKit lo dice el hallazgo)
+    const aiModel = aiModelOf("chromium");
+    // caveat e i18n los escribe una persona: se conservan (pruebas.test avisa si los números quedaron viejos)
+    db[slug] = { ...meta, ...r, ...(aiModel && { aiModel }), caveat: prev.caveat ?? null, ...(prev.i18n && { i18n: prev.i18n }) };
     console.log(`  ok (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
     console.log("  " + JSON.stringify(r.result).slice(0, 600));
   } catch (e) {

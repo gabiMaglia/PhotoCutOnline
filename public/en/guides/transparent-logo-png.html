@@ -209,13 +209,13 @@
         </ol>
         <p><strong>What I measured:</strong></p>
         <ul>
-          <li>AI cutout: 4.0 s, 89.4% transparent, 1.4% semi-transparent, 84 KB PNG.</li>
+          <li>AI cutout: 22.6 s, 85.7% transparent, 4.2% semi-transparent, 127 KB PNG.</li>
           <li>Auto cutout: 1.45 s, 89.5% transparent, 1.2% semi-transparent, 81 KB.</li>
           <li>Magic wand (one click): 0.16 s, 85.7% transparent, 3.6% semi-transparent, 117 KB.</li>
-          <li>The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 0.0% with the AI, 0.0% with the auto cutout and 15.4% with the wand.</li>
+          <li>The logo has an emblem and, below it, the brand's wordmark. In the band where the text sits (between 68% and 85% of the height) the share that stayed opaque was 13.6% with the AI, 0.0% with the auto cutout and 15.4% with the wand.</li>
         </ul>
-        <p class="limit"><strong>What went wrong or what limit I saw:</strong> Neither the AI cutout nor the auto cutout kept the logo's wordmark: only the emblem survived. The wand did keep it, but it left letter holes like the one in the A filled in and opaque, because they don't touch the background, and the edge ended up with more semi-transparency. With a logo without text the AI would have been enough; with text, I had to go to the wand and touch up the holes by hand.</p>
-        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-06">2026-10-06</time> with PhotoCut (web) in Chrome 154.0.8037.98 · macOS 14.8.8 · PhotoCut version: commit bc142c7.</p>
+        <p class="limit"><strong>What went wrong or what limit I saw:</strong> With a GPU (BiRefNet) the AI cutout kept the logo's wordmark and left the holes in the A and the R transparent, which the wand filled in: in the text band the AI left just 1 light pixel opaque and the wand 581. What the AI does leave is a light rim of 1 or 2 px around the letters and the emblem, noticeable on a dark background. The auto cutout still lost the wordmark. Without a GPU u2netp does the cutout, and in my earlier measurement with u2netp the AI didn't keep the wordmark either (0.0% opaque in that band). The AI cutout took 22.6 s because it was the first one in the tab: that includes downloading the model and preparing the GPU.</p>
+        <p class="byline">Tested by Gabriel Maglia on <time datetime="2026-10-16">2026-10-16</time> with PhotoCut (web) in Chrome 155.0.8059.80 · macOS 14.8.8 · PhotoCut version: commit 7ec5265. AI cutout with BiRefNet-lite on the GPU (WebGPU).</p>
       </div>
       <!-- pruebas:end -->
 

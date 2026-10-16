@@ -1,6 +1,6 @@
 // Pruebas de avatar, LinkedIn y stickers.
 import * as L from "./lib.mjs";
-import { f, pctS, G, pub, imgMeta, newCtx, runAI, dl, radio, choosePreset } from "./common.mjs";
+import { f, pctS, G, pub, imgMeta, newCtx, runAI, dl, radio, choosePreset, aiModelOf } from "./common.mjs";
 
 export const TESTS = {};
 
@@ -146,6 +146,7 @@ TESTS["stickers-de-whatsapp-y-telegram"] = async ({ browser }) => {
   } finally {
     await wk.close();
   }
+  const wkModel = aiModelOf("webkit");
   const dev = (r) => +((100 * Math.abs(r / refRatio - 1))).toFixed(2);
   const onlyFormat = (fm) => Object.entries(fm).filter(([, on]) => on).map(([n]) => n).join(", ");
   return {
@@ -165,13 +166,13 @@ TESTS["stickers-de-whatsapp-y-telegram"] = async ({ browser }) => {
       referencia: { w: ref.w, h: ref.h, kb: ref.kb, subjectRatio: refRatio },
       whatsapp: { ...wa, ratioDevPct: dev(wa.subjectRatio) },
       telegram: { ...tg, ratioDevPct: dev(tg.subjectRatio) },
-      webkit: { whatsapp: sf.wa, telegram: sf.tg },
+      webkit: { aiModel: wkModel, whatsapp: sf.wa, telegram: sf.tg },
     },
     findings: [
       `Sticker WhatsApp: ${wa.format === "webp" ? "WebP" : wa.format} de ${wa.w} × ${wa.h} px y ${f(wa.kb, 1)} KB (el límite de WhatsApp es 100 KB), ${pctS(wa.transparentPct)} de píxeles transparentes y alfa ${wa.cornersAlpha.join(", ")} en las cuatro esquinas. Con el preset elegido, el panel solo dejó tocar el formato ${onlyFormat(wa.formatsEnabled)}.`,
       `Sticker Telegram: ${tg.format === "png" ? "PNG" : tg.format} de ${tg.w} × ${tg.h} px y ${f(tg.kb, 1)} KB, alfa ${tg.cornersAlpha.join(", ")} en las esquinas; formato habilitado: ${onlyFormat(tg.formatsEnabled)}.`,
       `La foto es vertical (${image.w} × ${image.h}) y el preset no la deforma: la figura mide ${f(refRatio, 3)} de ancho por cada 1 de alto en la referencia, ${f(wa.subjectRatio, 3)} en el de WhatsApp y ${f(tg.subjectRatio, 3)} en el de Telegram. El lado más largo de la figura ocupa ${wa.subjectLongPx} px en WhatsApp (margen de ${f(wa.marginPct, 1)} % por lado) y ${tg.subjectLongPx} px en Telegram.`,
-      `En WebKit ${wkVersion} (el motor de Safari): Sticker WhatsApp ${sf.wa.format === "webp" ? "WebP" : sf.wa.format} de ${sf.wa.w} × ${sf.wa.h} px y ${f(sf.wa.kb, 1)} KB, alfa ${sf.wa.cornersAlpha.join(", ")} en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor.`,
+      `En WebKit ${wkVersion} (el motor de Safari): Sticker WhatsApp ${sf.wa.format === "webp" ? "WebP" : sf.wa.format} de ${sf.wa.w} × ${sf.wa.h} px y ${f(sf.wa.kb, 1)} KB, alfa ${sf.wa.cornersAlpha.join(", ")} en las esquinas; ese motor no crea WebP por sí solo y el archivo lo armó el codificador propio del editor.${wkModel === "u2netp" ? " WebKit no ofrece WebGPU, así que ahí el recorte lo hizo u2netp, no BiRefNet." : ""}`,
     ],
     assets: [pub(file)],
   };
