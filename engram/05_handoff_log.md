@@ -78,3 +78,12 @@
 - Tarea: Recorte IA no debe usar BiRefNet en móviles + marca persistente anti-bucle. Causa confirmada por el PO (iPhone 13, flag WebGPU off ⇒ funciona). Criterios en 03_backlog.md (bloque BUG-13). CÓMO en engram/plans/BUG-13.md ANTES del código.
 - Leer SOLO: engram/03_backlog.md (fila + bloque BUG-13), engram/plans/GROW-36.md, src/lib/aiSegmenter.js, src/lib/cutoutWorker.js, src/lib/backend.js, sus tests, src/lib/i18n.js (claves de onboarding con ~120 MB).
 - Rama fix/BUG-13-mobile-ai (worktree). En paralelo corre BUG-12 (styles/CutoutPage/i18n): posible conflicto menor en i18n.js. Return handoff P-1.
+
+### 2026-10-20 Orquestador→nerv-qa (BUG-12, Advisory)
+- Revisar rama fix/BUG-12-mobile-empty (38e86a5) contra el bloque Gherkin BUG-12. Return de nerv-web: CTA reutiliza openPhoto (sin i18n nuevo), .canvas-empty-hint oculto en móvil (fuera de pedido), mobile-test.jsx ajustado (carga foto antes de medir), sin diff automático en escritorio.
+
+### 2026-10-20 Orquestador→nerv-qa (BUG-13, Strong)
+- Revisar rama fix/BUG-13-mobile-ai (96fdcee, base df54085, 14 archivos +523) contra el bloque Gherkin BUG-13 y engram/plans/BUG-13.md. Return nerv-web: deviceClass.js + aiAttemptMark.js (IndexedDB, timeout 2 s), veredicto móvil calculado en hilo principal y pasado al worker; webp-retry-test [webkit] falló en su corrida (no comparado contra main); riesgos: marca huérfana sin TTL, dos pestañas, UA de escritorio en Android.
+
+### 2026-10-20 PO→Orquestador→nerv-web (BUG-12 ajuste)
+- PO vio las capturas: «no hay espacio en el header, emprolijalo». Escenario Gherkin nuevo «header prolijo» en el bloque BUG-12. Mismo agente, misma rama; la revisión QA en curso queda desactualizada → re-QA.

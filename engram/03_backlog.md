@@ -48,6 +48,13 @@ Característica: editor mobile respirable sin foto
     Y la separación entre la fila de acciones y la tira de pestañas es de al menos 10 px
     Y ningún control de la topbar queda a menos de 12 px del borde lateral
 
+  Escenario: header prolijo (agregado por el PO 2026-10-20, tras ver las capturas)
+    Entonces la topbar tiene padding de al menos 12 px arriba y abajo y 16 px a los costados
+    Y los controles de la fila de acciones (Abrir foto, idioma, ☕, ⓘ) tienen la misma altura y la misma separación entre sí, de al menos 8 px
+    Y en móvil no hay divisor vertical suelto entre idioma y ☕
+    Y la tira de pestañas respeta el mismo margen lateral de 16 px que la fila de acciones
+    Y entre el borde inferior de la topbar y el contenido (zona vacía o lienzo) hay al menos 16 px
+
   Escenario: escritorio sin cambios
     Dado un viewport de 1280×800
     Entonces el editor se ve igual que antes (sin foto y con foto): captura antes/después sin diferencias de layout
