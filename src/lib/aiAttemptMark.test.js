@@ -28,7 +28,8 @@ function fakeIndexedDB() {
           createObjectStore: () => ({}),
           transaction: () => {
             const tx = {};
-            later(() => tx.oncomplete?.());
+            // se confirma después de que corrieron las operaciones pedidas, como el IndexedDB real
+            later(() => later(() => tx.oncomplete?.()));
             tx.objectStore = () => ({
               put: (v, k) => req(() => void data.set(k, v)),
               get: (k) => req(() => data.get(k)),

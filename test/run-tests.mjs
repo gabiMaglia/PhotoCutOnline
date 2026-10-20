@@ -12,7 +12,7 @@ import { pathToFileURL } from "node:url";
 import { chromium, webkit } from "playwright-core";
 import { runSwDeploy } from "./sw-deploy-test.mjs";
 
-const PORT = 5187;
+const PORT = Number(process.env.TEST_PORT) || 5187; // TEST_PORT: otro worktree puede tener el 5187
 const TESTS = [
   "ai-test",
   "ai-quality-test",
@@ -61,6 +61,23 @@ const checkChrome = (name, reqs) =>
   name === "webp-test" && reqs.some((u) => ENCODER_WASM.test(u))
     ? [`Chrome pidió el encoder WASM: ${reqs.filter((u) => ENCODER_WASM.test(u)).join(", ")}`]
     : [];
+
+// BUG-13: un iPhone (UA + táctil) con WebGPU real —Chrome headless la expone también
+// en workers— nunca debe pedir BiRefNet: iOS mata la pestaña por memoria. El jetsam
+// real no se reproduce acá; esto prueba la decisión de punta a punta (UI→worker→red).
+const IPHONE_CTX = {
+  userAgent:
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
+  isMobile: true,
+  hasTouch: true,
+};
+export const mobileAiVerdict = (reqs) => {
+  const msgs = [];
+  const birefnet = reqs.filter((u) => /\/models\/birefnet-/.test(u));
+  if (birefnet.length) msgs.push(`el iPhone pidió BiRefNet: ${birefnet.join(", ")}`);
+  if (!reqs.some((u) => /\/models\/u2netp/.test(u))) msgs.push("el iPhone no pidió u2netp");
+  return msgs;
+};
 
 // WebKit: cero requests fuera del origen (privacidad) y, en macOS, la ruta WASM probada de verdad.
 const checkWebkit = (name, reqs, txt) => {
@@ -130,9 +147,9 @@ async function runRetry(browser) {
   return msgs.length ? 1 : 0;
 }
 
-async function runSuite(browser, names, tag, check) {
+async function runSuite(browser, names, tag, check, ctxOpts = {}) {
   let bad = 0;
-  const ctx = await browser.newContext();
+  const ctx = await browser.newContext(ctxOpts);
   const page = await ctx.newPage();
   const reqs = [];
   ctx.on("request", (r) => reqs.push(r.url()));
@@ -221,6 +238,10 @@ async function main() {
       args: process.env.CI ? ["--no-sandbox", "--disable-dev-shm-usage"] : [],
     });
     failed += await runSuite(browser, SELFTEST ? SELFTEST_SUITE : TESTS, "chrome", SELFTEST ? noCheck : checkChrome);
+    if (!SELFTEST) {
+      console.log("\n(ai-test con UA de iPhone: BUG-13, no debe pedir BiRefNet)");
+      failed += await runSuite(browser, ["ai-test"], "chrome", (_n, reqs) => mobileAiVerdict(reqs), IPHONE_CTX);
+    }
     // BUG-08: service worker frente a deploys (build y servidor propios, no Vite dev)
     if (!SELFTEST) failed += await runSwDeploy(browser, "chrome");
 

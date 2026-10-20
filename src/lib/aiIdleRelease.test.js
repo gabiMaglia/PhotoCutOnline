@@ -10,6 +10,7 @@ function mockSegmenter(idleMs) {
   const seg = {
     aiMatte: jest.fn(async (img) => ({ matte: new Uint8ClampedArray(img.width * img.height), refine: undefined })),
     warmupAi: jest.fn(async () => true),
+    setDeviceHint: jest.fn(),
     releaseAi: jest.fn(),
     aiIdleMs: jest.fn(() => idleMs),
   };

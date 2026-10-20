@@ -554,6 +554,12 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
   const realUA = global.navigator.userAgent;
   afterEach(() => setUA(realUA));
 
+  // el camino real baja partes y calcula sha256 (macrotareas): se espera a la condición
+  const until = async (cond) => {
+    for (let i = 0; i < 200 && !cond(); i++) await new Promise((r) => setTimeout(r, 5));
+    expect(cond()).toBe(true);
+  };
+
   const expectU2netpOnly = (seen) => {
     expect(sessions.u2netp).toBeDefined();
     expect(sessions.birefnet).toBeUndefined();
@@ -625,7 +631,7 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
     const first = require("./aiSegmenter.js");
     orts.webgpu.InferenceSession.create.mockImplementationOnce(() => new Promise(() => {})); // jetsam: nunca vuelve
     first.aiMatte(photo(4, 4)); // sin await: la pestaña «murió»
-    for (let i = 0; i < 50; i++) await Promise.resolve();
+    await until(() => orts.webgpu.InferenceSession.create.mock.calls.length === 1);
     expect(mark.set).toBe(true); // la marca ya está confirmada
     // recarga: módulo nuevo, mismo almacenamiento
     jest.resetModules();
@@ -642,7 +648,7 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
     mark.set = false; // (la dejó limpia un corte anterior)
     sessions.birefnet.run.mockImplementationOnce(() => new Promise(() => {}));
     seg.aiMatte(photo(4, 4));
-    for (let i = 0; i < 50; i++) await Promise.resolve();
+    await until(() => sessions.birefnet.run.mock.calls.length === 1);
     expect(mark.set).toBe(true);
   });
 

@@ -12,7 +12,7 @@
 
 import { CutoutSession, refineMatte } from "./jsEngine.js";
 import wasmInit, { WasmCut } from "./wasm/photocut_wasm.js";
-import { aiMatte, warmupAi, releaseAi, aiIdleMs } from "./aiSegmenter.js";
+import { aiMatte, warmupAi, releaseAi, aiIdleMs, setDeviceHint } from "./aiSegmenter.js";
 
 const session = new CutoutSession();
 
@@ -95,11 +95,17 @@ const handlers = {
     return packPreview();
   },
 
-  warmupAi: (_args, ctx) => withAiIdleRelease(() => warmupAi(ctx?.progress)),
+  // `mobile` lo decide el hilo principal (maxTouchPoints no existe en el worker): BUG-13
+  warmupAi: ({ mobile }, ctx) =>
+    withAiIdleRelease(() => {
+      setDeviceHint(mobile);
+      return warmupAi(ctx?.progress);
+    }),
 
   // ctx.progress lleva el aviso de respaldo a u2netp (GROW-36) hasta la UI
-  aiCut: (_args, ctx) =>
+  aiCut: ({ mobile }, ctx) =>
     withAiIdleRelease(async () => {
+      setDeviceHint(mobile);
       const { matte, refine } = await aiMatte(session.work, ctx?.progress);
       await session.aiCutFromMatte(matte, refine);
       return packPreview();
@@ -107,8 +113,9 @@ const handlers = {
 
   /** Quita el fondo de una imagen arbitraria (Icon Studio) sin tocar la
    *  sesión del editor. Devuelve el matte refinado. */
-  removeBg: ({ width, height, rgba }, ctx) =>
+  removeBg: ({ width, height, rgba, mobile }, ctx) =>
     withAiIdleRelease(async () => {
+      setDeviceHint(mobile);
       const img = new ImageData(new Uint8ClampedArray(rgba), width, height);
       const { matte, refine } = await aiMatte(img, ctx?.progress);
       return refineMatte(matte, width, height, refine);

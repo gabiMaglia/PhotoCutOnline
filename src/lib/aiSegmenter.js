@@ -1,10 +1,10 @@
 // Segmentación IA 100% local (N1 del roadmap) sobre onnxruntime-web.
 //
-// Dos caminos (GROW-36):
-//  - Con GPU apta (WebGPU con adapter de hardware, ≥ 8 storage buffers por
+// Dos caminos (GROW-36, BUG-13):
+//  - Solo en computadoras: con GPU apta (WebGPU con adapter de hardware, ≥ 8 storage buffers por
 //    etapa y shader-f16): BiRefNet-lite 1024 fp16 (MIT) sobre el EP WebGPU. 115 MB en
 //    partes, verificadas por sha256 antes de crear la sesión.
-//  - Sin GPU, o si BiRefNet falla: u2netp (Apache-2.0, 4,6 MB) sobre WASM, como
+//  - Celular/tablet, sin GPU, con una marca de intento que no terminó, o si BiRefNet falla: u2netp (Apache-2.0, 4,6 MB) sobre WASM, como
 //    siempre. Quien no tiene GPU no baja nada del camino GPU.
 // Todo same-origin — modelos y runtimes salen de NUESTRO hosting bajo demanda y
 // los cachea el service worker: «tu foto nunca sale de tu equipo» se mantiene.
@@ -21,6 +21,8 @@ import ortMjsUrl from "./ort-runtime/ort-wasm-simd-threaded.mjs?url";
 import gpuWasmUrl from "onnxruntime-web/ort-wasm-simd-threaded.asyncify.wasm?url";
 import gpuMjsUrl from "onnxruntime-web/ort-wasm-simd-threaded.asyncify.mjs?url";
 import modelParts from "./modelParts.json";
+import { isMobileDevice } from "./deviceClass.js";
+import { hasAttempt, markAttempt, clearAttempt } from "./aiAttemptMark.js";
 
 const IMAGENET_MEAN = [0.485, 0.456, 0.406];
 const IMAGENET_STD = [0.229, 0.224, 0.225];
@@ -69,6 +71,16 @@ let activeModel = MODELS.u2netp;
 // compilación y cientos de MB.
 let usingFallback = false;
 let gpuCheck = null;
+
+// BUG-13: iOS 26 expone WebGPU+shader-f16 y mata la pestaña por memoria al abrir
+// BiRefNet (~535 MB) — sin excepción, así que ningún respaldo corre. En celulares
+// y tablets BiRefNet no se abre nunca. El hilo principal sabe más que el worker
+// (maxTouchPoints no existe en WorkerNavigator): backend.js nos manda su veredicto.
+let mobileHint = false;
+export function setDeviceHint(mobile) {
+  mobileHint = !!mobile;
+}
+const isMobile = () => mobileHint || isMobileDevice();
 
 // Guard contra el use-after-free detectado en QA (D1): releaseAi() puede
 // llegar (vía timer de inactividad del caller) mientras getSession()/aiMatte
@@ -201,9 +213,15 @@ async function openModel(model, onProgress) {
     // el runtime WASM (~2 MB comprimido) lo baja ORT acá adentro, sin eventos
     onProgress({ stage: "init" });
   }
+  // la marca se confirma ANTES de la fase que puede matar el proceso (compilar
+  // shaders + ~535 MB); la descarga de arriba no la dispara a propósito
+  if (model === MODELS.birefnet) await markAttempt();
   const session = await ort.InferenceSession.create(source, {
     executionProviders: [model.ep],
   });
+  // sesión abierta sin morir: no queda un intento «en curso» solo por haber
+  // precargado (el usuario puede cerrar la pestaña sin cortar nada)
+  if (model === MODELS.birefnet) await clearAttempt();
   activeModel = model;
   return { ort, session, model };
 }
@@ -227,7 +245,12 @@ async function openFallback(gpuError, { onProgress, onNotice }) {
 }
 
 async function openPreferred(handlers) {
-  if (usingFallback || !(await gpuUsable())) return openModel(MODELS.u2netp, handlers.onProgress);
+  // móvil se evalúa primero: ni toca el almacenamiento ni pide /models/birefnet-*.
+  // La marca persistida (se lee solo si hay GPU apta) dice que un intento anterior
+  // murió sin avisar: no se repite.
+  if (usingFallback || isMobile() || !(await gpuUsable()) || (await hasAttempt())) {
+    return openModel(MODELS.u2netp, handlers.onProgress);
+  }
   try {
     return await openModel(MODELS.birefnet, handlers.onProgress);
   } catch (e) {
@@ -380,7 +403,7 @@ export function aiMatte(imageData, onNotice) {
 async function aiMatteInner(imageData, onNotice) {
   let opened = await getSession({ onNotice });
   try {
-    return result(opened, await segment(opened, imageData));
+    return result(opened, await segmentTracked(opened, imageData));
   } catch (e) {
     // la GPU puede quedarse sin memoria o perder el device recién al inferir:
     // se suelta BiRefNet y la MISMA imagen se corta con u2netp
@@ -390,6 +413,16 @@ async function aiMatteInner(imageData, onNotice) {
     opened = await sessionPromise;
     return result(opened, await segment(opened, imageData));
   }
+}
+
+// La inferencia de BiRefNet también puede matar el proceso: marca antes y limpia
+// solo si terminó bien (un BiRefNet exitoso borra la marca).
+async function segmentTracked(opened, imageData) {
+  if (opened.model !== MODELS.birefnet) return segment(opened, imageData);
+  await markAttempt();
+  const matte = await segment(opened, imageData);
+  await clearAttempt();
+  return matte;
 }
 
 const result = ({ model }, matte) => ({ matte, refine: model.refine, model: model.name });
