@@ -113,8 +113,9 @@ async function newContext(browser, opts = {}) {
   // lib/originPolicy.mjs, que tolera solo los pings de los anuncios declarados.
   await ctx.route((url) => url.origin !== ORIGIN, (route) => route.abort());
   const foreign = [];
+  const budget = { used: 0 };
   ctx.on("request", (r) => {
-    const bad = foreignBodyViolation({ origin: ORIGIN, method: r.method(), url: r.url(), body: r.postDataBuffer() });
+    const bad = foreignBodyViolation({ origin: ORIGIN, method: r.method(), url: r.url(), body: r.postDataBuffer(), budget });
     if (bad) foreign.push(bad);
   });
   return { ctx, foreign };
@@ -238,14 +239,14 @@ const CASES = {
         check("C1", auto === "ok", `recorte automático terminado (${auto})`);
       }
       check("C1", !/worker error/i.test(await bodyText(page)), "sin «worker error» en pantalla");
-      await waitActive(page, P.ids.B).catch(() => {});
+      await waitActive(page, P.ids.B);
       const afterB = srv.state.log.slice(mark);
       check("C1", assets404(afterB).length === 0, `0 respuestas 404 de /assets/ (${assets404(afterB).join(", ")})`);
       const refetched = afterB.filter((e) => e.path.startsWith("/assets/") && fetchedUnderA.has(e.path)).map((e) => e.path);
       check("C6", refetched.length === 0, `0 re-descargas de assets ya bajados con A (${refetched.join(", ")})`);
 
-      // C2: sin red (servidor caído; en Chrome además setOffline)
-      srv.state.down = true;
+      // C2: sin red (el puerto rechaza conexiones, como un usuario real; en Chrome además setOffline)
+      await srv.setDown(true);
       if (tag === "chrome") await ctx.setOffline(true);
       let offline = "ok";
       try {
@@ -255,10 +256,15 @@ const CASES = {
         // el mensaje completo trae el «intercepts pointer events» / «not visible» que
         // explica un timeout de click; la primera línea sola lo esconde (BUG-15)
         offline = e.message.split("\n").slice(0, 8).join(" | ");
+        // WebKit/Linux a veces pierde registro y cachés a mitad de la carga: es del motor, no del SW
+        const lost = await page
+          .evaluate(async () => !(await navigator.serviceWorker.getRegistration()) || (await caches.keys()).length === 0)
+          .catch(() => false);
+        if (lost) offline = `arnés: WebKit perdió el storage (${offline})`;
       }
       check("C2", offline === "ok", `offline: el editor arranca y abre Filtros (${offline})`);
       if (tag === "chrome") await ctx.setOffline(false);
-      srv.state.down = false;
+      await srv.setDown(false);
     } finally {
       check("origen", foreign.length === 0, `ninguna request fuera del origen con cuerpo (${foreign.join(", ")})`);
       await ctx.close();
@@ -405,7 +411,7 @@ export async function runSwDeploy(browser, tag) {
   let bad = 0;
   try {
     for (const [name, run] of Object.entries(CASES)) {
-      srv.reset();
+      await srv.reset();
       const fails = [];
       const check = (id, ok, msg) => {
         console.log(`  ${ok ? "PASS" : "FAIL"}: ${id} ${msg}`);
