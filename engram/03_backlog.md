@@ -19,7 +19,7 @@
 | BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página** (reporte PO 2026-10-20). **Causa CONFIRMADA por el PO (iPhone 13):** con el flag WebGPU de Safari desactivado el recorte anda (u2netp). iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → iOS mata el proceso por memoria → el respaldo a u2netp (aiSegmenter.js:212-235) nunca corre y, como nada persiste, se repite en cada intento. **Bloquea el lanzamiento.** Rama `fix/BUG-13-mobile-ai`. Niv S (escalado por el orquestador: ruta de IA, bloqueante de lanzamiento) → CÓMO en engram/plans/BUG-13.md antes del código. **Criterios:** bloque BUG-13 abajo. | QA X APROBADO (intento 3) + nerv-verifier ciego APROBADO · mergeado a main · SIN PUSH |
 | BUG-14 | **Textos públicos sobre el peso del modelo, tras BUG-13** (pedido PO 2026-10-20). Hoy dicen «con GPU ~120 MB / sin GPU ~7 MB» (p. ej. como-funciona.html:53, en/how-it-works.html:53, llms.txt), y con BUG-13 un celular SIEMPRE baja u2netp (~6 MB) aunque tenga GPU. Rama `content/BUG-14-model-size`. Niv A. **Criterios:** bloque BUG-14 abajo. Depende de BUG-13 mergeado. | QA X APROBADO (intento 2) · mergeado a main · SIN PUSH |
 | BUG-15 | **CI rojo tras el push de BUG-14 (run 39471468361, 2 corridas).** (a) `sw-deploy-test` C2 «offline: el editor arranca y abre Filtros» → Timeout de locator.click en las 2 corridas; en el run anterior (39468473942, BUG-12+13) PASÓ. (b) `mobile-empty-test` «lienzo a >= 16 px de la topbar (7.2)» falla 1 de 2 (aserción flaky ya anotada por QA). (c) «origen: ninguna request fuera del origen con cuerpo» falló 1 vez por POST de pagead2.googlesyndication.com (externo). Prod OK (textos de BUG-14 publicados). Rama `fix/BUG-15-ci`. Niv A. Diagnóstico con systematic-debugging ANTES de tocar código. | Done 2026-10-20 (nerv-qa: (b) y (c) corregidos; (a) C2 SIN causa raíz, solo diagnóstico mejorado → deuda BUG-16, ver qa/BUG-15.md) |
-| BUG-16 | **Deuda de BUG-15 (QA 2026-10-20).** (1) C2 offline sin causa raíz (falló en WebKit/Linux del CI, 30 s de click; candidato: overlay del AdSense real, que corre pese al ctx.route): registrar `document.elementFromPoint` del botón Filtros al fallar y cortar adsbygoogle en WebKit con init script si se confirma. (2) Quitar el `.catch` que traga `waitActive(B)`. (3) Endurecer originPolicy: path `/pagead/ping`, tope 1–2 KiB, presupuesto acumulado, más firmas (GIF/BMP/AVIF/HEIC, gzip, base64 desalineado), origin con `new URL(url).origin` (hoy `startsWith` deja pasar `localhost:5188.evil.com`). **Evidencia 2026-10-20 (run 39479330273, mensaje ampliado):** «waiting for getByRole('radio', { name: 'Filtros' })» → la pestaña NO existe: el editor offline no arrancó en WebKit/Linux (no es un overlay). **Flaky confirmado:** el MISMO sha 8188a53 dio PASS en 39479327705 y FAIL en 39479330273; 2 FAIL de 5 runs hoy, 0 de 4 antes (16/10). Posible defecto intermitente de arranque offline en WebKit → afecta la promesa «works offline» del kit: verificación manual del PO en iPhone (modo avión tras el primer recorte). | Backlog — prioridad ALTA |
+| BUG-16 | **Deuda de BUG-15 (QA 2026-10-20).** (1) C2 offline sin causa raíz (falló en WebKit/Linux del CI, 30 s de click; candidato: overlay del AdSense real, que corre pese al ctx.route): registrar `document.elementFromPoint` del botón Filtros al fallar y cortar adsbygoogle en WebKit con init script si se confirma. (2) Quitar el `.catch` que traga `waitActive(B)`. (3) Endurecer originPolicy: path `/pagead/ping`, tope 1–2 KiB, presupuesto acumulado, más firmas (GIF/BMP/AVIF/HEIC, gzip, base64 desalineado), origin con `new URL(url).origin` (hoy `startsWith` deja pasar `localhost:5188.evil.com`). **Evidencia 2026-10-20 (run 39479330273, mensaje ampliado):** «waiting for getByRole('radio', { name: 'Filtros' })» → la pestaña NO existe: el editor offline no arrancó en WebKit/Linux (no es un overlay). **Flaky confirmado:** el MISMO sha 8188a53 dio PASS en 39479327705 y FAIL en 39479330273; 2 FAIL de 5 runs hoy, 0 de 4 antes (16/10). Posible defecto intermitente de arranque offline en WebKit → afecta la promesa «works offline» del kit: verificación manual del PO en iPhone (modo avión tras el primer recorte). **Causa raíz (diag 2026-10-20, docker x86_64 --cpus=1, 5/14 FAIL):** condición del ARNÉS. `srv.state.down` acepta la conexión y hace `socket.destroy()`; en WebKit/Linux eso dispara aserciones de libsoup (5/5 fallas, 0/9 verdes) y WebKit pierde TODO el almacenamiento del origen (registro del SW + Cache Storage) a mitad de la navegación. Cerrando el listener (rechazo como un offline real): 0/14. Safari (CFNetwork) no usa libsoup: sin evidencia de defecto de producto; Safari real queda para la prueba manual del PO. | To Do — fix solo en test/ |
 | GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
 | GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
 
@@ -139,6 +139,31 @@ Característica: lo que el sitio dice del peso del modelo es verdad en celular y
     Entonces `grep -rn "7 MB"` en public/ solo aparece en entradas históricas o en «Lo probamos»
     Y JSON-LD y texto visible de cada FAQ dicen lo mismo
     Y se corre `npm run lastmod` y se commitea el json
+```
+
+### BUG-16 — criterios (Gherkin)
+```gherkin
+Característica: el arnés simula «sin red» como un usuario real
+
+  Escenario: offline por rechazo de conexión
+    Dado sw-deploy-test en WebKit y Chrome
+    Cuando un caso pasa a «sin red» (C2 y cualquier otro que use down)
+    Entonces el servidor deja de aceptar conexiones (rechazo inmediato) en vez de aceptar y destruir el socket
+    Y al volver la red el servidor vuelve a escuchar en el mismo puerto
+    Y en Chrome se mantiene además ctx.setOffline(true)
+
+  Escenario: estabilidad
+    Dado docker x86_64 con --cpus=1 (imagen Playwright del CI)
+    Entonces C1/C6/C2 en WebKit pasa 14 de 14 corridas, y con el arnés anterior falla al menos 1 (prueba de rojo)
+
+  Escenario: diagnóstico honesto
+    Cuando C2 falla en WebKit y getRegistration está vacío o caches.keys() es 0
+    Entonces el mensaje dice «arnés: WebKit perdió el storage» además del error de Playwright
+    Y waitActive(B) ya no se traga su fallo con .catch
+
+  Escenario: política de pings endurecida (deuda de BUG-15)
+    Entonces originPolicy solo tolera POST a hosts de anuncios declarados con path /pagead/ping, cuerpo ≤ 2 KiB y presupuesto acumulado ≤ 8 KiB por sesión
+    Y detecta además GIF/BMP/AVIF/HEIC, base64 desalineado, gzip, y compara el origen con new URL(url).origin
 ```
 
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10

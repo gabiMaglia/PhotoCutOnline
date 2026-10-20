@@ -177,3 +177,12 @@
 - files touched: test/lib/originPolicy.mjs, scripts/origin-policy.test.mjs (nuevos), test/sw-deploy-test.mjs, test/mobile-empty-test.jsx. Sin src/.
 - risks: C2 puede volver a fallar en CI; la tolerancia de POST a anuncios es un cambio de política de test (coherente con lo declarado en el kit).
 - how to test: node --test scripts/origin-policy.test.mjs; npm run test:web; node test/sw-deploy-test.mjs webkit.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-16 diagnóstico, registrado por el orquestador)
+- status: causa raíz = arnés (socket.destroy → libsoup → WebKit/Linux pierde el storage). Evidencia en ~/.cache/bug16/out (fuera del repo). Colima quedó iniciado.
+- files touched: ninguno en el repo (instrumentación en ~/.cache/bug16/repo).
+- risks: Safari real no probado (prueba manual del PO en iPhone, modo avión).
+- how to test: docker playwright v1.60.0-noble --cpus=1, solo C1/C6/C2 WebKit: 5/14 FAIL con socket.destroy, 0/14 cerrando el listener.
+
+### 2026-10-20 Orquestador→nerv-web (BUG-16 fix, Advisory)
+- Gherkin en bloque BUG-16. Solo test/. Rama fix/BUG-16-harness-offline.
