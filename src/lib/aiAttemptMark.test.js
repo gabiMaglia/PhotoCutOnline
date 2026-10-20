@@ -110,4 +110,41 @@ describe("aiAttemptMark", () => {
       jest.useRealTimers();
     }
   });
+
+  // BUG-13 ampliación: la marca vence a los 7 días
+  describe("vencimiento (TTL 7 días)", () => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const T0 = 1_800_000_000_000;
+    let now;
+    beforeEach(() => {
+      now = jest.spyOn(Date, "now").mockReturnValue(T0);
+    });
+    afterEach(() => now.mockRestore());
+
+    test("marca de 6 días ⇒ vigente", async () => {
+      await mark.markAttempt();
+      now.mockReturnValue(T0 + 6 * DAY);
+      expect(await mark.hasAttempt()).toBe(true);
+    });
+
+    test("marca de más de 7 días ⇒ se ignora", async () => {
+      await mark.markAttempt();
+      now.mockReturnValue(T0 + 7 * DAY + 1);
+      expect(await mark.hasAttempt()).toBe(false);
+    });
+
+    test("marca con fecha en el futuro o formato viejo (true) ⇒ se ignora", async () => {
+      await mark.markAttempt();
+      now.mockReturnValue(T0 - DAY);
+      expect(await mark.hasAttempt()).toBe(false);
+    });
+
+    test("una marca nueva tras el vencimiento vuelve a valer", async () => {
+      await mark.markAttempt();
+      now.mockReturnValue(T0 + 8 * DAY);
+      await mark.markAttempt();
+      now.mockReturnValue(T0 + 9 * DAY);
+      expect(await mark.hasAttempt()).toBe(true);
+    });
+  });
 });

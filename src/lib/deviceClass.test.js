@@ -33,4 +33,24 @@ describe("isMobileDevice", () => {
   ])("%s ⇒ false", (_n, nav) => {
     expect(isMobileDevice(nav)).toBe(false);
   });
+
+  // BUG-13 ampliación: Chrome Android en «Sitio de escritorio» se presenta como Linux sin «Android»
+  const ANDROID_DESKTOP_SITE =
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+  test.each([
+    ["Linux sin Android + táctil", { userAgent: ANDROID_DESKTOP_SITE, platform: "Linux x86_64", maxTouchPoints: 5 }, undefined],
+    ["táctil + lado corto de pantalla 412 px", { userAgent: WIN_CHROME, platform: "Win32", maxTouchPoints: 5 }, { width: 915, height: 412 }],
+    ["táctil + lado corto exactamente 600 px", { userAgent: WIN_CHROME, platform: "Win32", maxTouchPoints: 5 }, { width: 960, height: 600 }],
+  ])("%s ⇒ true", (_n, nav, scr) => {
+    expect(isMobileDevice(nav, scr)).toBe(true);
+  });
+
+  test.each([
+    ["laptop Windows táctil 1366×768", { userAgent: WIN_CHROME, platform: "Win32", maxTouchPoints: 10 }, { width: 1366, height: 768 }],
+    ["laptop Windows táctil 1920×1080", { userAgent: WIN_CHROME, platform: "Win32", maxTouchPoints: 10 }, { width: 1920, height: 1080 }],
+    ["pantalla chica pero sin táctil (ventana de escritorio)", { userAgent: WIN_CHROME, platform: "Win32", maxTouchPoints: 0 }, { width: 800, height: 500 }],
+    ["Linux de escritorio sin táctil", { userAgent: ANDROID_DESKTOP_SITE, platform: "Linux x86_64", maxTouchPoints: 0 }, { width: 1920, height: 1080 }],
+  ])("%s ⇒ false", (_n, nav, scr) => {
+    expect(isMobileDevice(nav, scr)).toBe(false);
+  });
 });
