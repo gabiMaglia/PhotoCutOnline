@@ -38,3 +38,22 @@ proceso por memoria (jetsam). No hay excepción: el respaldo a u2netp nunca corr
    `/models/birefnet-*` si el arnés lo permite.
 7. **Fuera de alcance:** estilos, guías, arnés «Lo probamos». Verificación real: el PO en su iPhone 13 con
    WebGPU ACTIVADO (jetsam no es reproducible en CI).
+
+## Ampliación del alcance (decisión del PO, 2026-10-20, tras el QA del intento 1: O3 y O4)
+8. **Marca con vencimiento (7 días):** `markAttempt()` guarda `Date.now()` (número) en vez de `true`.
+   `hasAttempt()` solo devuelve true si el valor es un número con edad < 7 días (`MARK_TTL_MS`); una marca
+   vencida, de formato viejo (`true`) o con fecha futura/ilegible se ignora ⇒ se reintenta BiRefNet. Ya no hay
+   «u2netp para siempre» (cierra O4). Tests: marca de 8 días ⇒ ignorada; de 6 días ⇒ vigente; en aiSegmenter,
+   marca vencida en escritorio con GPU ⇒ BiRefNet, vigente ⇒ u2netp.
+9. **Android en «Sitio de escritorio» (cierra O3):** `isMobileDevice(nav, scr)` suma dos reglas, ambas con
+   `maxTouchPoints > 1`: (a) UA con `Linux` y sin `Android` (así se presenta Chrome Android en ese modo);
+   (b) lado corto de `screen` ≤ 600 px. `screen` solo existe en el hilo principal: ya es quien manda el veredicto
+   al worker (paso 1), así que no cambia el transporte. Una laptop Windows/macOS táctil de 1366×768 o más sigue en
+   BiRefNet. Tests: UA Linux sin Android + táctil ⇒ true; táctil + screen 412×915 ⇒ true; Windows táctil
+   1366×768 ⇒ false; Mac táctil 1440×900 sin otra señal ⇒ sigue la regla de iPad (true solo por Mac+táctil).
+   Riesgo aceptado por el PO: una laptop Linux táctil cae en u2netp.
+10. **Fuera de alcance (deuda, qa/_debt.md):** O1 (timeouts acumulados con IDB colgado) y O2 (dos pestañas).
+
+---
+Aprobado por: nerv-web [2026-10-20]
+Nota: sellado después del código del intento 1 por decisión del PO; plan original commiteado en c785f69; desvío en qa/_debt.md. La ampliación (pasos 8–10) se sella antes de su código.
