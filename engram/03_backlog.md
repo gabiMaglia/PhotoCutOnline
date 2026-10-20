@@ -16,7 +16,7 @@
 | BUG-11 | **Comparar antes/después "no se puede cerrar"**: con el puntero encima, `.hud-btn:hover:not(:disabled)` (especificidad 0,2,0) le gana a `.hud-btn-on` (0,1,0) → texto lima sobre fondo lima = botón vacío. Escape tampoco cierra. Fix: estilo on+hover legible, Escape cierra, control de cierre visible en el overlay. | To Do |
 | GROW-36 | **Calidad del Recorte IA** → BiRefNet-lite fp16 en WebGPU + u2netp sin GPU (merge a404b31). ISNet int8 descartado (benchmark: manchas/agujeros). **Decisión PO 2026-10-16: acepta el riesgo de licencia DIS5K** (pesos MIT; dataset de entrenamiento con uso comercial restringido; mitigación: volver a u2netp es un cambio de una línea; aviso publicado en licencias). | Done (local) |
 | BUG-12 | **Editor mobile sin foto: «asfixia» (reporte PO 2026-10-20, iPhone).** Medido en WebKit iPhone 15 (390×659): `.canvas-empty` mide 311 px dentro de un `.canvas-wrap` de 237 px → borde punteado y texto recortados; topbar de 2 filas = 119 px con ☕/ⓘ a 2 px (`.topbar-icons gap:2px`) y `row-gap:6px`; `.rail` fijo 46vh muestra 6 herramientas DESACTIVADAS casi pegadas. Decisión PO: opción «sin foto: solo el CTA». Rama `fix/BUG-12-mobile-empty`. Niv A (las Gherkin son el plan). **Criterios:** ver bloque BUG-12 abajo. | To Do |
-| BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página al terminar de bajar el modelo** (reporte PO 2026-10-20). Hipótesis H1 (sin confirmar): iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → jetsam del proceso → el respaldo a u2netp nunca corre y se repite en cada intento. «Recorte automático» + export WebP en el mismo iPhone: OK. **Bloquea el lanzamiento.** Espera: prueba del PO con WebGPU desactivado + modelo/iOS. | Bloqueado (PO) |
+| BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página** (reporte PO 2026-10-20). **Causa CONFIRMADA por el PO (iPhone 13):** con el flag WebGPU de Safari desactivado el recorte anda (u2netp). iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → iOS mata el proceso por memoria → el respaldo a u2netp (aiSegmenter.js:212-235) nunca corre y, como nada persiste, se repite en cada intento. **Bloquea el lanzamiento.** Rama `fix/BUG-13-mobile-ai`. Niv S (escalado por el orquestador: ruta de IA, bloqueante de lanzamiento) → CÓMO en engram/plans/BUG-13.md antes del código. **Criterios:** bloque BUG-13 abajo. | To Do |
 | GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
 | GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
 
@@ -57,6 +57,39 @@ Característica: editor mobile respirable sin foto
 ```
 - Alcance: pestaña Recorte + topbar compartida. Las demás pestañas NO se rediseñan: si tienen el mismo problema, se reporta con captura en el return handoff.
 - Verificación: test Playwright nuevo en el harness (`npm run test:web`) que mida los criterios numéricos en WebKit y Chromium a 390×844, con prueba de rojo contra main.
+
+### BUG-13 — criterios (Gherkin)
+```gherkin
+Característica: el Recorte IA nunca tumba la pestaña en celulares
+
+  Escenario: celular o tablet con WebGPU usa u2netp
+    Dado un dispositivo táctil móvil (iPhone, iPad —incluido iPadOS que se presenta como Mac—, Android) con WebGPU y shader-f16 disponibles
+    Cuando toco «Recorte IA»
+    Entonces se descarga y usa u2netp (~6 MB), nunca las partes de BiRefNet
+    Y no se pide ninguna URL /models/birefnet-*
+
+  Escenario: computadora con GPU apta sigue usando BiRefNet
+    Dado Chrome de escritorio en macOS con GPU apta
+    Cuando toco «Recorte IA»
+    Entonces se usa BiRefNet como hoy (sin regresión de GROW-36)
+
+  Escenario: si la pestaña muere abriendo BiRefNet, la próxima vez va u2netp
+    Dado que un intento con BiRefNet empezó y la página se recargó antes de terminar (el proceso murió: no hubo error atrapable)
+    Cuando vuelvo al editor y toco «Recorte IA»
+    Entonces se usa u2netp sin volver a intentar BiRefNet
+    Y la marca persiste entre recargas y sesiones (no solo en memoria)
+    Y si el almacenamiento no está disponible (modo privado, bloqueado), el editor sigue funcionando y la decisión cae a la regla del dispositivo
+
+  Escenario: un BiRefNet exitoso limpia la marca
+    Dado una computadora con GPU apta
+    Cuando un recorte con BiRefNet termina bien
+    Entonces la marca de «intento en curso» se borra y el próximo recorte vuelve a usar BiRefNet
+
+  Escenario: textos honestos sobre el peso
+    Entonces los textos del editor (onboarding/ayuda, ES/EN/PT) que hablan de ~120 MB dicen que eso aplica a computadoras con GPU, y que en el celular baja ~6 MB
+```
+- Verificación: tests unitarios (jest) de la decisión de modelo y de la marca persistente, con prueba de rojo contra main; una corrida Playwright WebKit/Chromium con UA de iPhone y WebGPU simulado que confirme que no se pide /models/birefnet-*. El jetsam real no se puede reproducir en CI: la verificación final es del PO en su iPhone 13 con WebGPU ACTIVADO.
+- No tocar el arnés de «Lo probamos» ni los textos de las guías (otro ticket si hace falta).
 
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10
 

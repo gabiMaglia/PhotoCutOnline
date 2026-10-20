@@ -73,3 +73,8 @@
 - Tarea: editor mobile sin foto — opción PO «sin foto: solo el CTA». Criterios Gherkin en 03_backlog.md (bloque BUG-12).
 - Leer SOLO: engram/03_backlog.md (fila + bloque BUG-12), src/styles.css (@media max-width 760px, .rail/.canvas-wrap/.canvas-empty/.topbar*), src/features/cutout/CutoutPage.jsx, componentes del estado vacío y de la topbar (src/components/layout/), src/lib/i18n.js.
 - Rama fix/BUG-12-mobile-empty (worktree). Return handoff P-1 (4 campos) con capturas 390×844 antes/después.
+
+### 2026-10-20 Orquestador→nerv-web (BUG-13, Strong)
+- Tarea: Recorte IA no debe usar BiRefNet en móviles + marca persistente anti-bucle. Causa confirmada por el PO (iPhone 13, flag WebGPU off ⇒ funciona). Criterios en 03_backlog.md (bloque BUG-13). CÓMO en engram/plans/BUG-13.md ANTES del código.
+- Leer SOLO: engram/03_backlog.md (fila + bloque BUG-13), engram/plans/GROW-36.md, src/lib/aiSegmenter.js, src/lib/cutoutWorker.js, src/lib/backend.js, sus tests, src/lib/i18n.js (claves de onboarding con ~120 MB).
+- Rama fix/BUG-13-mobile-ai (worktree). En paralelo corre BUG-12 (styles/CutoutPage/i18n): posible conflicto menor en i18n.js. Return handoff P-1.
