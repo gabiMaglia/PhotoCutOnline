@@ -112,3 +112,9 @@
 
 ### 2026-10-20 PO→Orquestador (BUG-13 control compensatorio)
 - PO aprueba sumar nerv-verifier ciego a BUG-13 antes del merge (además de nerv-qa Strong), por el sello post-código del CÓMO. Orden: return intento 2 → nerv-qa Strong → nerv-verifier ciego → gate → merge.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-13 return intento 2, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-13-mobile-ai: b0601c0 (CÓMO sellado + pasos 8–10) → b904e48 (5 tests rojos) → c3dfaed (fix). jest 439/439; test:web: Chrome todo verde incl. «ai-test con UA de iPhone»; WebKit webp/reencode/webp-retry rojos (\0asm, igual que main en worktree según QA intento 1).
+- files touched: engram/plans/BUG-13.md, src/lib/aiAttemptMark.js (timestamp, TTL 7 días; futuro/basura ignorados), src/lib/deviceClass.js (isMobileDevice(nav, scr): táctil + Linux sin Android, o lado corto de screen 1–600 px), sus tests.
+- risks: laptop Linux táctil → u2netp (consecuencia de la heurística del Gherkin; no la decidió el PO explícitamente); heurísticas solo vía aviso del hilo principal (worker sin screen); O1/O2 abiertos; jetsam real lo verifica el PO.
+- how to test: npx jest; TEST_PORT=<libre> npm run test:web; rojo: checkout 028e44b de deviceClass.js y aiAttemptMark.js.
