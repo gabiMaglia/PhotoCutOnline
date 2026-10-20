@@ -105,4 +105,12 @@ el §CÓMO.
 
 ## CÓMO — implementación (nerv-web)
 
-_Pendiente: lo escribe y lo estampa nerv-web antes del fix del intento 2._
+Solo contenido estático en `public/`; no hay código ni tests nuevos (el cambio es texto, la verificación son los greps del §QUÉ y `npm test` como regresión).
+
+1. **Superficies ya hechas (intento 1, 456d618):** como-funciona, en/how-it-works (visible + FAQ JSON-LD), llms.txt, autor ×3. Se re-revisan con los greps.
+2. **D2:** en las 3 guías, el párrafo del cuerpo (fuera de «Lo probamos») que dice «si no / otherwise / se não, u2netp (~7&nbsp;MB)» pasa a la regla única: computadora con GPU apta → BiRefNet-lite ~120 MB; celulares y tablets, o sin GPU apta → u2netp ~6 MB con su motor. Se revisa a mano su FAQ/JSON-LD.
+3. **Barrido:** los dos greps del §QUÉ (cifra con `&nbsp;`, y condición `u2netp|BiRefNet`), cada hit revisado a mano; solo se corrige lo que esté fuera de «Lo probamos» y de novedades/changelog.
+4. **No se toca:** `class="tested"`, `.limit`, `.byline`, novedades/changelog, cifras de autor (115 / 4,6), src/.
+5. **Cierre:** `JSON.parse` de los ld+json de cada página tocada; `npm run lastmod` tras commitear las páginas y commit del json con [lastmod-skip]; `npm test`; `nerv-gate`.
+
+**Aprobado por:** nerv-web [2026-10-20]

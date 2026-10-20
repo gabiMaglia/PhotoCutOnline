@@ -30,7 +30,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "Cómo funciona: IA en tu navegador, sin subir tus fotos",
-      "description": "Explicación de la arquitectura client-side de PhotoCut Studio: recorte con IA (BiRefNet-lite en la GPU o u2netp sin ella, con onnxruntime-web) y un motor GrabCut en Rust/WebAssembly, todo corriendo en el navegador.",
+      "description": "Explicación de la arquitectura client-side de PhotoCut Studio: recorte con IA (BiRefNet-lite en la GPU de una computadora, o u2netp en celulares, tablets o sin GPU, con onnxruntime-web) y un motor GrabCut en Rust/WebAssembly, todo corriendo en el navegador.",
       "inLanguage": "es",
       "author": { "@type": "Person", "name": "Gabriel Maglia" },
       "publisher": { "@type": "Organization", "name": "PhotoCut Studio", "url": "https://www.photocutapp.com/" },
@@ -50,7 +50,7 @@
         {
           "@type": "Question",
           "name": "¿Cómo puede una IA correr en el navegador?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Con WebAssembly, que ejecuta código a velocidad casi nativa dentro de la página, y ONNX Runtime, que corre el modelo de red neuronal. Si tu equipo tiene una GPU que el navegador puede usar (WebGPU), corre BiRefNet-lite, que recorta con más detalle y se descarga una vez (~120 MB); si no, corre u2netp, más liviano (~7 MB con su motor). En los dos casos queda cacheado después de la primera vez. La segmentación fina usa además un motor GrabCut escrito en Rust y compilado a WebAssembly." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Con WebAssembly, que ejecuta código a velocidad casi nativa dentro de la página, y ONNX Runtime, que corre el modelo de red neuronal. En una computadora con una GPU que el navegador puede usar (WebGPU), corre BiRefNet-lite, que recorta con más detalle y se descarga una vez (~120 MB); en celulares y tablets, o si no hay GPU, corre u2netp, más liviano (~6 MB con su motor). En los dos casos queda cacheado después de la primera vez. La segmentación fina usa además un motor GrabCut escrito en Rust y compilado a WebAssembly." }
         },
         {
           "@type": "Question",
@@ -113,11 +113,12 @@
       <ul>
         <li>
           <strong>IA de recorte:</strong> si tu navegador puede usar la GPU
-          (WebGPU), corre <em>BiRefNet-lite</em> con <strong>ONNX Runtime</strong>
+          (WebGPU) y estás en una computadora, corre <em>BiRefNet-lite</em> con <strong>ONNX Runtime</strong>
           sobre la GPU: recorta con más detalle (orejas, pelo, el texto de un
-          logo) y pesa ~120&nbsp;MB la primera vez. Si no, corre
+          logo) y pesa ~120&nbsp;MB la primera vez. En celulares y
+          tablets, o si no hay GPU, corre
           <em>u2netp</em>, un modelo de detección de objeto saliente más
-          liviano (~7&nbsp;MB con su motor), con ONNX Runtime compilado a
+          liviano (~6&nbsp;MB con su motor), con ONNX Runtime compilado a
           WebAssembly. En mis pruebas, con GPU, el primer recorte tardó ~23&nbsp;s
           (descarga y preparación de la GPU) y los siguientes ~4&nbsp;s; sin GPU,
           unos 3&nbsp;s. Se descarga una sola vez y queda cacheado.
@@ -153,8 +154,8 @@
       <h2>El intercambio, dicho con honestidad</h2>
       <p>
         Que el modelo corra en tu equipo tiene un costo: tiene que
-        <strong>caber en tu dispositivo</strong>. Con GPU eso significa una
-        primera descarga de ~120&nbsp;MB; sin GPU, un modelo más chico que
+        <strong>caber en tu dispositivo</strong>. En una computadora con GPU eso significa una
+        primera descarga de ~120&nbsp;MB; en celulares y tablets, o sin GPU, ~6&nbsp;MB de un modelo más chico que
         pierde detalles finos (la punta de una oreja, las letras de un logo).
         En casos muy difíciles (pelo muy fino, fondos caóticos) un modelo
         grande en un servidor todavía puede ganar. Por eso el flujo combina la IA
