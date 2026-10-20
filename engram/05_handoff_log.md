@@ -161,3 +161,10 @@
 - files touched: engram/plans/BUG-14.md.
 - risks: la rama debe traer el plan (merge main) y sellar §CÓMO antes de tocar public/; BUG-14 se mergea después de BUG-13.
 - how to test: grep de cifra con &nbsp;/&#160;/U+00A0/U+202F + grep u2netp|BiRefNet revisado a mano; solo deben quedar las 3 líneas 69 históricas.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-14 return intento 2, registrado por el orquestador)
+- status: En revisión QA. Rama content/BUG-14-model-size: 80c104f merge main → f80993f §CÓMO sellado (antes de public/) → 415e71e fix → c4eb0a3 lastmod → ae224bd test. nerv-gate PASS en X (files 12, plan OK, proof of red OK, suite green).
+- files touched: engram/plans/BUG-14.md; 3 guías (ES/EN/PT quitar fondo); como-funciona + en/how-it-works (JSON-LD description, hit nuevo del grep de condición); scripts/lastmod.json; scripts/pruebas.test.mjs (~7→~6 MB + aserción de que no quede ~7).
+- risks: i18n.js ya corregido por BUG-13 (mergeado); hits restantes del grep de condición: «Lo probamos», cifras de autor (modelo solo), histórico.
+- how to test: G1 grep de cifra → solo las 3 líneas 69 históricas; G2 grep u2netp|BiRefNet revisado a mano; rm -rf dist && npm test.
+- Push de main (BUG-12+BUG-13) aprobado por el PO: 9b42c71..1c35544, CI 39468473942.
