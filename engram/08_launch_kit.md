@@ -13,10 +13,10 @@
 - [ ] Probar el editor en un navegador limpio (sin caché): que cargue y el recorte ande.
 - [x] Correr `npm run indexnow` ✅ 2026-10-20, 125 URLs (empuja las URLs a Bing/Copilot).
 - [ ] Umami cargado (para medir el pico del lanzamiento).
-- [ ] Decidir si enlazás el repo (es público pero **no tiene licencia**: en HN te
+- [x] Licencia: **MIT** (2026-10-20). Si preguntan «is it open source?» → «Yes, MIT». ~~Decidir si enlazás el repo (es público pero no tiene licencia: en HN te
       van a preguntar "is it open source?". Respuesta honesta: "the source is
       public, I haven't picked a license yet". O agregás una antes).
-- [ ] **Después de BUG-12/13/14 en prod: Recorte IA en el iPhone 13 con WebGPU ACTIVADO** (baja ~6 MB, no recarga).
+- [x] **Después de BUG-12/13/14 en prod: Recorte IA en el iPhone 13 con WebGPU ACTIVADO** (baja ~6 MB, no recarga) + modo avión: el editor abre y recorta. ✅ PO 2026-10-20.
 - [ ] Bloquear 3–4 h después de cada post para responder todo.
 
 ## Datos verificados para responder preguntas

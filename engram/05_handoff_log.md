@@ -186,3 +186,6 @@
 
 ### 2026-10-20 Orquestador→nerv-web (BUG-16 fix, Advisory)
 - Gherkin en bloque BUG-16. Solo test/. Rama fix/BUG-16-harness-offline.
+
+### 2026-10-20 PO→Orquestador (verificación física)
+- iPhone 13, WebGPU activado: Recorte IA OK (no recarga), modo avión: editor abre y recorta. Launch kit desbloqueado. Show HN propuesto: jueves 2026-10-22 9 h ART.
