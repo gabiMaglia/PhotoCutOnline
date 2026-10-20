@@ -93,6 +93,18 @@ async function main() {
   const sideR = window.innerWidth - Math.max(rect($(".tabs")).right, rect(about).right);
   assert(sideL >= 16 - 0.5 && sideR >= 16 - 0.5, `header: margen lateral >= 16 px en pestañas y acciones (${sideL}/${sideR})`);
   assert(rect($(".tabs")).right <= window.innerWidth - 16 + 0.5 && rect(about).right <= window.innerWidth - 16 + 0.5, "header: pestañas y acciones alinean a la derecha dentro de 16 px");
+  // mismo molde para idioma, ☕ e ⓘ: tamaño y radio idénticos
+  const trio = [$(".lang-select"), donate, about].map((c) => {
+    const r = rect(c);
+    return { w: Math.round(r.width), h: Math.round(r.height), br: getComputedStyle(c).borderTopLeftRadius };
+  });
+  const same = trio.every((x) => x.w === 44 && x.h === 44 && x.br === trio[0].br);
+  assert(same, `header: idioma, ☕ e ⓘ misma forma 44×44 y mismo radio (${JSON.stringify(trio)})`);
+  // la pista de arrastrar/pegar solo se oculta en táctil
+  const hint = $(".canvas-empty-hint");
+  const coarse = matchMedia("(pointer: coarse)").matches;
+  const hintShown = getComputedStyle(hint).display !== "none";
+  assert(hintShown === !coarse, `pista de arrastrar/pegar: visible=${hintShown} con pointer ${coarse ? "coarse" : "fine"} (solo se oculta en táctil)`);
   const underTop = rect(empty).top - rect(top).bottom;
   assert(underTop >= 16 - 0.5, `header: zona vacía a >= 16 px de la topbar (${underTop})`);
 
