@@ -146,3 +146,9 @@
 ### 2026-10-20 PO→Orquestador→nerv-web (BUG-14, Advisory)
 - PO: corregir textos públicos del peso del modelo (punto 2 del arquitecto); R1 aceptado como riesgo. Gherkin en bloque BUG-14. Rama content/BUG-14-model-size desde main; mergear después de BUG-13.
 - Leer SOLO: bloque BUG-14, scripts/pruebas.json (cifras), public/como-funciona.html, public/en/how-it-works.html, public/llms.txt y los archivos que devuelva `grep -rln -E "120 MB|7 MB" public`.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-14 return, registrado por el orquestador)
+- status: En revisión QA. Rama content/BUG-14-model-size: 456d618 (contenido) + 1e7c559 (lastmod). npm test verde.
+- files touched: public/llms.txt, public/como-funciona.html, public/en/how-it-works.html (FAQ JSON-LD + texto visible), public/autor.html, public/en/author.html, public/pt/autor.html (criterio de ruteo; fuera de cifra, decisión del TL), scripts/lastmod.json.
+- risks: src/lib/i18n.js ob.2.body* y su test dicen ~7 MB en main → ya lo corrige la rama de BUG-13 (orquestador); novedades/changelog y «Lo probamos» intactos por criterio; no existe pt/como-funciona.
+- how to test: grep -rn -I "7 MB" public → solo novedades.html:69, pt/novidades.html:69, en/changelog.html:69; git diff main -- public.
