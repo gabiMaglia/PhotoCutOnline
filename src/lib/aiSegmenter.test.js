@@ -333,6 +333,7 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
   let fail;
   let fetched;
   let partOverride;
+  let mark; // BUG-13: estado de la marca persistente (sobrevive a jest.resetModules = «recarga»)
 
   function makeOrt(ep) {
     class FakeTensor {
@@ -384,6 +385,18 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
     fail = { create: new Set(), run: new Set() };
     fetched = [];
     partOverride = null;
+    mark = { set: false, events: [] };
+    jest.doMock("./aiAttemptMark.js", () => ({
+      hasAttempt: async () => mark.set,
+      markAttempt: async () => {
+        mark.set = true;
+        mark.events.push({ ev: "mark", gpuCreates: orts.webgpu.InferenceSession.create.mock.calls.length });
+      },
+      clearAttempt: async () => {
+        mark.set = false;
+        mark.events.push({ ev: "clear" });
+      },
+    }), { virtual: true });
     orts = { wasm: makeOrt("wasm"), webgpu: makeOrt("webgpu") };
     jest.doMock("onnxruntime-web/wasm", () => orts.wasm, { virtual: true });
     jest.doMock("onnxruntime-web/webgpu", () => orts.webgpu, { virtual: true });
@@ -532,6 +545,118 @@ describe("aiSegmenter — BiRefNet (WebGPU) + u2netp (GROW-36)", () => {
     const seg = require("./aiSegmenter.js");
     await seg.aiMatte(photo(4, 4));
     expect(seg.aiIdleMs()).toBe(30_000);
+  });
+
+  // ---- BUG-13: celulares y marca persistente anti-bucle ----
+  const IPHONE_UA =
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1";
+  const setUA = (ua) => Object.defineProperty(global.navigator, "userAgent", { configurable: true, value: ua });
+  const realUA = global.navigator.userAgent;
+  afterEach(() => setUA(realUA));
+
+  // el camino real baja partes y calcula sha256 (macrotareas): se espera a la condición
+  const until = async (cond) => {
+    for (let i = 0; i < 200 && !cond(); i++) await new Promise((r) => setTimeout(r, 5));
+    expect(cond()).toBe(true);
+  };
+
+  const expectU2netpOnly = (seen) => {
+    expect(sessions.u2netp).toBeDefined();
+    expect(sessions.birefnet).toBeUndefined();
+    expect(orts.webgpu.InferenceSession.create).not.toHaveBeenCalled();
+    expect(fetched.filter((u) => u.includes("birefnet") || u.includes("part"))).toEqual([]);
+    expect(seen).toEqual([]); // no es un respaldo: no hay aviso
+  };
+
+  test("BUG-13: celular con WebGPU y shader-f16 (aviso del hilo principal) ⇒ u2netp, sin pedir BiRefNet", async () => {
+    const seg = require("./aiSegmenter.js");
+    seg.setDeviceHint(true); // p.ej. iPad que se presenta como Mac: solo el hilo principal lo sabe
+    const seen = [];
+    const { model } = await seg.aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(model).toBe("u2netp");
+    expectU2netpOnly(seen);
+    expect(mark.events).toEqual([]); // ni siquiera toca la marca
+  });
+
+  test("BUG-13: celular reconocido por el UA del propio worker ⇒ u2netp", async () => {
+    setUA(IPHONE_UA);
+    const { aiMatte } = require("./aiSegmenter.js");
+    const seen = [];
+    const { model } = await aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(model).toBe("u2netp");
+    expectU2netpOnly(seen);
+  });
+
+  test("BUG-13: warmupAi en celular tampoco baja BiRefNet", async () => {
+    const seg = require("./aiSegmenter.js");
+    seg.setDeviceHint(true);
+    await seg.warmupAi(() => {});
+    expectU2netpOnly([]);
+  });
+
+  test("BUG-13: computadora (aviso móvil=false) con GPU apta sigue usando BiRefNet", async () => {
+    const seg = require("./aiSegmenter.js");
+    seg.setDeviceHint(false);
+    const { model } = await seg.aiMatte(photo(4, 4));
+    expect(model).toBe("birefnet");
+  });
+
+  test("BUG-13: con la marca puesta (la pestaña murió abriendo BiRefNet) ⇒ u2netp sin reintentar", async () => {
+    mark.set = true;
+    const { aiMatte } = require("./aiSegmenter.js");
+    const seen = [];
+    const { model } = await aiMatte(photo(4, 4), (p) => seen.push(p));
+    expect(model).toBe("u2netp");
+    expectU2netpOnly(seen);
+  });
+
+  test("BUG-13: la marca se escribe ANTES de crear la sesión de BiRefNet y se borra al terminar bien", async () => {
+    const { aiMatte } = require("./aiSegmenter.js");
+    const { model } = await aiMatte(photo(4, 4));
+    expect(model).toBe("birefnet");
+    expect(mark.events[0]).toEqual({ ev: "mark", gpuCreates: 0 });
+    expect(mark.events.at(-1)).toEqual({ ev: "clear" });
+    expect(mark.set).toBe(false);
+  });
+
+  test("BUG-13: un BiRefNet exitoso limpia la marca y el próximo recorte («recarga») vuelve a usarlo", async () => {
+    let seg = require("./aiSegmenter.js");
+    await seg.aiMatte(photo(4, 4));
+    jest.resetModules();
+    seg = require("./aiSegmenter.js");
+    expect((await seg.aiMatte(photo(4, 4))).model).toBe("birefnet");
+  });
+
+  test("BUG-13: proceso muerto en medio de crear la sesión ⇒ tras recargar va u2netp", async () => {
+    const first = require("./aiSegmenter.js");
+    orts.webgpu.InferenceSession.create.mockImplementationOnce(() => new Promise(() => {})); // jetsam: nunca vuelve
+    first.aiMatte(photo(4, 4)); // sin await: la pestaña «murió»
+    await until(() => orts.webgpu.InferenceSession.create.mock.calls.length === 1);
+    expect(mark.set).toBe(true); // la marca ya está confirmada
+    // recarga: módulo nuevo, mismo almacenamiento
+    jest.resetModules();
+    jest.doMock("onnxruntime-web/wasm", () => orts.wasm, { virtual: true });
+    const second = require("./aiSegmenter.js");
+    const { model } = await second.aiMatte(photo(4, 4));
+    expect(model).toBe("u2netp");
+    expect(sessions.birefnet).toBeUndefined();
+  });
+
+  test("BUG-13: proceso muerto en medio de la inferencia ⇒ la marca también está puesta", async () => {
+    const seg = require("./aiSegmenter.js");
+    await seg.warmupAi(() => {}); // sesión BiRefNet abierta y marca puesta
+    mark.set = false; // (la dejó limpia un corte anterior)
+    sessions.birefnet.run.mockImplementationOnce(() => new Promise(() => {}));
+    seg.aiMatte(photo(4, 4));
+    await until(() => sessions.birefnet.run.mock.calls.length === 1);
+    expect(mark.set).toBe(true);
+  });
+
+  test("BUG-13: si BiRefNet falla con error atrapable la marca queda (no se vuelve a bajar 115 MB)", async () => {
+    fail.create.add("birefnet");
+    const { aiMatte } = require("./aiSegmenter.js");
+    await aiMatte(photo(4, 4), () => {});
+    expect(mark.set).toBe(true);
   });
 
   test("si u2netp también falla, se propaga el error ORIGINAL de BiRefNet", async () => {

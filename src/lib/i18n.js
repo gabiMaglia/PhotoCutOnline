@@ -412,8 +412,8 @@ const DICT = {
     "ob.1.body.touch": "Tocá «Abrir foto» para elegir una imagen.",
     "ob.1.body": "Arrastrá un archivo, pegá con ⌘V o tocá «Abrir foto».",
     "ob.2.title": "Recorte IA en un clic",
-    "ob.2.body.touch": "Tocá «Recorte IA». La primera vez descarga el modelo (~7 MB, o ~120 MB en equipos con GPU, que recorta con más detalle); después no se vuelve a bajar.",
-    "ob.2.body": "Hacé clic en «Recorte IA» (I). La primera vez descarga el modelo (~7 MB, o ~120 MB en equipos con GPU, que recorta con más detalle); después no se vuelve a bajar.",
+    "ob.2.body.touch": "Tocá «Recorte IA». La primera vez descarga el modelo: ~6 MB en el celular (~120 MB solo en computadoras con GPU, que recortan con más detalle); después no se vuelve a bajar.",
+    "ob.2.body": "Hacé clic en «Recorte IA» (I). La primera vez descarga el modelo: ~6 MB en el celular (~120 MB solo en computadoras con GPU, que recortan con más detalle); después no se vuelve a bajar.",
     "ob.3.title": "Afiná con los pinceles y exportá",
     "ob.3.body":
       "Pinceles mantener/quitar para los bordes. Exportá PNG transparente o creá iconos de app.",
@@ -868,8 +868,8 @@ const DICT = {
     "ob.1.body.touch": "Tap “Open photo” to pick an image.",
     "ob.1.body": "Drag a file in, paste with ⌘V or tap “Open photo”.",
     "ob.2.title": "AI cutout in one click",
-    "ob.2.body.touch": "Tap “AI cutout”. The first time it downloads the model (~7 MB, or ~120 MB on devices with a GPU, which cuts out finer detail); it is not downloaded again after that.",
-    "ob.2.body": "Click “AI cutout” (I). The first time it downloads the model (~7 MB, or ~120 MB on devices with a GPU, which cuts out finer detail); it is not downloaded again after that.",
+    "ob.2.body.touch": "Tap “AI cutout”. The first time it downloads the model: ~6 MB on a phone (~120 MB only on computers with a GPU, which cut out finer detail); it is not downloaded again after that.",
+    "ob.2.body": "Click “AI cutout” (I). The first time it downloads the model: ~6 MB on a phone (~120 MB only on computers with a GPU, which cut out finer detail); it is not downloaded again after that.",
     "ob.3.title": "Refine with the brushes and export",
     "ob.3.body":
       "Keep/remove brushes for the edges. Export a transparent PNG or create app icons.",
@@ -1324,8 +1324,8 @@ const DICT = {
     "ob.1.body.touch": "Toque em «Abrir foto» para escolher uma imagem.",
     "ob.1.body": "Arraste um arquivo, cole com ⌘V ou toque em «Abrir foto».",
     "ob.2.title": "Recorte IA com um clique",
-    "ob.2.body.touch": "Toque em «Recorte IA». Na primeira vez baixa o modelo (~7 MB, ou ~120 MB em aparelhos com GPU, que recorta com mais detalhe); depois não é baixado de novo.",
-    "ob.2.body": "Clique em «Recorte IA» (I). Na primeira vez baixa o modelo (~7 MB, ou ~120 MB em aparelhos com GPU, que recorta com mais detalhe); depois não é baixado de novo.",
+    "ob.2.body.touch": "Toque em «Recorte IA». Na primeira vez baixa o modelo: ~6 MB no celular (~120 MB só em computadores com GPU, que recortam com mais detalhe); depois não é baixado de novo.",
+    "ob.2.body": "Clique em «Recorte IA» (I). Na primeira vez baixa o modelo: ~6 MB no celular (~120 MB só em computadores com GPU, que recortam com mais detalhe); depois não é baixado de novo.",
     "ob.3.title": "Refine com os pincéis e exporte",
     "ob.3.body":
       "Pincéis manter/remover para as bordas. Exporte PNG transparente ou crie ícones de app.",

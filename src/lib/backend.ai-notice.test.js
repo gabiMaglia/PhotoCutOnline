@@ -45,6 +45,47 @@ describe("backend.js — aviso de respaldo desde aiCut/removeBg (GROW-36)", () =
     expect(seen).toEqual([{ stage: "fallback", model: "u2netp" }]);
   });
 
+  // BUG-13: el worker no tiene maxTouchPoints (WorkerNavigator): el hilo principal decide
+  // si es un celular/tablet y se lo manda en cada comando de IA.
+  describe("BUG-13: el hilo principal avisa al worker si es un dispositivo móvil", () => {
+    const IPHONE =
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1";
+    const IPAD_AS_MAC =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15";
+    const define = (k, v) => Object.defineProperty(window.navigator, k, { configurable: true, value: v });
+    afterEach(() => {
+      delete window.navigator.userAgent;
+      delete window.navigator.maxTouchPoints;
+      delete window.navigator.platform;
+    });
+    const calls = {
+      warmupAi: () => backend.warmupAi(),
+      aiCut: () => backend.aiCut(),
+      removeBg: () => backend.removeBg({ width: 1, height: 1, data: new Uint8ClampedArray(4) }),
+    };
+
+    test.each(Object.keys(calls))("%s manda mobile:true en un iPhone", (cmd) => {
+      define("userAgent", IPHONE);
+      calls[cmd]().catch(() => {});
+      expect(FakeWorker.instances[0].posted[0].args.mobile).toBe(true);
+    });
+
+    test.each(Object.keys(calls))("%s manda mobile:true en un iPad que se presenta como Mac", (cmd) => {
+      define("userAgent", IPAD_AS_MAC);
+      define("platform", "MacIntel");
+      define("maxTouchPoints", 5);
+      calls[cmd]().catch(() => {});
+      expect(FakeWorker.instances[0].posted[0].args.mobile).toBe(true);
+    });
+
+    test.each(Object.keys(calls))("%s manda mobile:false en una computadora", (cmd) => {
+      define("platform", "MacIntel");
+      define("maxTouchPoints", 0);
+      calls[cmd]().catch(() => {});
+      expect(FakeWorker.instances[0].posted[0].args.mobile).toBe(false);
+    });
+  });
+
   test("removeBg(imageData, onProgress) también lo recibe", async () => {
     const seen = [];
     const img = { width: 1, height: 1, data: new Uint8ClampedArray(4) };
@@ -69,7 +110,7 @@ describe("cutoutWorker — pasa el canal de progreso a aiMatte (GROW-36)", () =>
       onNotice?.({ stage: "fallback", model: "u2netp" });
       return { matte: new Uint8ClampedArray(img.width * img.height), refine: undefined };
     });
-    jest.doMock("./aiSegmenter.js", () => ({ aiMatte, warmupAi: jest.fn(), releaseAi: jest.fn(), aiIdleMs: () => 30_000 }));
+    jest.doMock("./aiSegmenter.js", () => ({ aiMatte, warmupAi: jest.fn(), setDeviceHint: jest.fn(), releaseAi: jest.fn(), aiIdleMs: () => 30_000 }));
     jest.doMock("./wasm/photocut_wasm.js", () => ({ __esModule: true, default: jest.fn(), WasmCut: class {} }));
     jest.doMock("./jsEngine.js", () => ({
       CutoutSession: class {

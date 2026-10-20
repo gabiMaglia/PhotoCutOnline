@@ -22,6 +22,7 @@
 // no aplica.
 
 import { CutoutSession, UNDO_CAP } from "./jsEngine.js";
+import { isMobileDevice } from "./deviceClass.js";
 import { isChunkLoadError, workerLoadError, reportStaleBuild } from "./staleBuild.js";
 
 function hasTauri() {
@@ -159,11 +160,13 @@ async function callInline(cmd, args = {}, onProgress) {
     case "warmupAi":
       return withAiIdleRelease(async () => {
         const mod = await import("./aiSegmenter.js");
+        mod.setDeviceHint(args.mobile);
         return mod.warmupAi(onProgress);
       });
     case "aiCut":
       return withAiIdleRelease(async () => {
         const mod = await import("./aiSegmenter.js");
+        mod.setDeviceHint(args.mobile);
         const { matte, refine } = await mod.aiMatte(s.work, onProgress);
         await s.aiCutFromMatte(matte, refine);
         return packPreviewInline(s);
@@ -177,6 +180,7 @@ async function callInline(cmd, args = {}, onProgress) {
           args.width,
           args.height
         );
+        mod.setDeviceHint(args.mobile);
         const { matte, refine } = await mod.aiMatte(img, onProgress);
         return eng.refineMatte(matte, args.width, args.height, refine);
       });
@@ -287,17 +291,17 @@ export const backend = {
   },
 
   /**
-   * Pre-carga el modelo IA (primera vez: ~120 MB con GPU, ~7 MB sin GPU, entre
+   * Pre-carga el modelo IA (primera vez: ~120 MB solo en computadoras con GPU, ~6 MB en celulares y sin GPU, entre
    * runtime y modelo; luego caché). onProgress({stage:"model",loaded,total} | {stage:"init"} |
    * {stage:"fallback",model}) opcional.
    */
   async warmupAi(onProgress) {
-    return call("warmupAi", {}, onProgress);
+    return call("warmupAi", { mobile: isMobileDevice() }, onProgress);
   },
 
   /** onProgress({stage:"fallback",model}) opcional: avisa si se usó el modelo liviano. */
   async aiCut(onProgress) {
-    const pack = await call("aiCut", {}, onProgress);
+    const pack = await call("aiCut", { mobile: isMobileDevice() }, onProgress);
     afterOp();
     return previewUrlFrom(pack);
   },
@@ -310,6 +314,8 @@ export const backend = {
         width: imageData.width,
         height: imageData.height,
         rgba: imageData.data,
+        // el worker no ve maxTouchPoints: el veredicto de «celular» sale de acá (BUG-13)
+        mobile: isMobileDevice(),
       },
       onProgress
     );
