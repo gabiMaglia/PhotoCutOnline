@@ -10,6 +10,8 @@ const STORE = "flags";
 const KEY = "birefnet-attempt";
 // un IndexedDB colgado no puede frenar el recorte
 const TIMEOUT_MS = 2000;
+// una marca vieja no puede dejar a una computadora en u2netp para siempre
+export const MARK_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function withTimeout(p, fallback) {
   let timer;
@@ -47,10 +49,16 @@ async function run(mode, op) {
 // siempre resuelve: ante cualquier fallo devuelve `fallback`
 const safe = (fn, fallback) => withTimeout(Promise.resolve().then(fn).catch(() => fallback), fallback);
 
-/** ¿Un intento anterior con BiRefNet empezó y nunca terminó? */
-export const hasAttempt = () => safe(async () => (await run("readonly", (s) => s.get(KEY))) === true, false);
+/** ¿Un intento anterior con BiRefNet empezó y nunca terminó (hace menos de 7 días)? */
+export const hasAttempt = () =>
+  safe(async () => {
+    const at = await run("readonly", (s) => s.get(KEY));
+    // solo vale un timestamp pasado y reciente; `true` viejo, futuro o basura se ignoran
+    const age = typeof at === "number" ? Date.now() - at : -1;
+    return age >= 0 && age <= MARK_TTL_MS;
+  }, false);
 
 /** Se confirma en disco ANTES de volver: llamarla justo antes de la fase que puede matar el proceso. */
-export const markAttempt = () => safe(() => run("readwrite", (s) => s.put(true, KEY)).then(() => undefined), undefined);
+export const markAttempt = () => safe(() => run("readwrite", (s) => s.put(Date.now(), KEY)).then(() => undefined), undefined);
 
 export const clearAttempt = () => safe(() => run("readwrite", (s) => s.delete(KEY)).then(() => undefined), undefined);

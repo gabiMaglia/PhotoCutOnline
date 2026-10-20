@@ -6,12 +6,21 @@
 // lo manda al worker. Dentro del worker rige lo que dé el UA.
 const MOBILE_UA = /iPhone|iPad|iPod|Android|Mobile/i;
 
-export function isMobileDevice(nav = globalThis.navigator) {
+const MAX_PHONE_SHORT_SIDE = 600;
+
+export function isMobileDevice(nav = globalThis.navigator, scr = globalThis.screen) {
   if (!nav) return false;
   if (nav.userAgentData?.mobile === true) return true;
   const ua = nav.userAgent || "";
   if (MOBILE_UA.test(ua)) return true;
   // iPadOS 13+ manda un UA de Mac de escritorio; una Mac real no tiene pantalla táctil
-  const macLike = /Macintosh/.test(ua) || nav.platform === "MacIntel";
-  return macLike && (nav.maxTouchPoints ?? 0) > 1;
+  const touch = (nav.maxTouchPoints ?? 0) > 1;
+  if (!touch) return false;
+  if (/Macintosh/.test(ua) || nav.platform === "MacIntel") return true;
+  // Chrome Android en «Sitio de escritorio» se presenta como Linux sin «Android»
+  if (/Linux/.test(ua) && !/Android/.test(ua)) return true;
+  // táctil con pantalla de teléfono/tablet chica; una laptop táctil (≥ 768 px de lado corto) no
+  const short = scr ? Math.min(scr.width, scr.height) : 0;
+  // 0 o ausente = tamaño desconocido (jsdom, worker): no es señal de teléfono
+  return short > 0 && short <= MAX_PHONE_SHORT_SIDE;
 }
