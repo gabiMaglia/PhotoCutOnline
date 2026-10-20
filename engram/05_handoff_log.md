@@ -171,3 +171,9 @@
 
 ### 2026-10-20 Orquestador→nerv-web (BUG-15, diagnóstico de CI)
 - PO pusheó BUG-14 (1c35544..HEAD) y corrió IndexNow (125 URLs). CI run 39471468361 rojo 2 veces: C2 offline consistente; lienzo 16 px flaky; POST de AdSense en test de origen. Primero causa raíz (P-15, máx. 3 hipótesis), después fix con test que discrimine.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-15 return, registrado por el orquestador)
+- status: parcial, En revisión QA. Rama fix/BUG-15-ci @ c94ae2e. (b) causa probada (stage-in + pan, medía antes de asentarse) → settled() por rAF; rojo 2/12 → 0/30 WebKit. (c) test/lib/originPolicy.mjs: tolera POST a hosts de anuncios declarados en docs/MONETIZACION.md solo si ≤16 KiB y sin firma PNG/JPEG/WebP (cruda o base64); 7 tests. (a) C2 SIN causa raíz: falló en WebKit/Linux (36,8 s vs 3,8 s en verde); BUG-14 no toca src/sw/editor; ~25 corridas locales sin reproducir; hipótesis: AdSense real en runner de 2 vCPU (ctx.route no siempre corta adsbygoogle.js con SW activo en WebKit). Solo se amplió el mensaje de error de C2 (8 líneas). Hallazgo: en C2 el SW activo sigue siendo el de A (waitActive(B) tenía .catch).
+- files touched: test/lib/originPolicy.mjs, scripts/origin-policy.test.mjs (nuevos), test/sw-deploy-test.mjs, test/mobile-empty-test.jsx. Sin src/.
+- risks: C2 puede volver a fallar en CI; la tolerancia de POST a anuncios es un cambio de política de test (coherente con lo declarado en el kit).
+- how to test: node --test scripts/origin-policy.test.mjs; npm run test:web; node test/sw-deploy-test.mjs webkit.
