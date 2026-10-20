@@ -87,13 +87,16 @@ describe("variantes táctiles (GROW-27 D3)", () => {
 describe("onboarding honesto (GROW-28)", () => {
   afterAll(() => setLang("es"));
 
-  it.each(["es", "en", "pt"])("%s: el paso 2 es Recorte IA y avisa de los dos pesos reales (GROW-36: ~7 MB y ~120 MB con GPU)", (lang) => {
+  it.each(["es", "en", "pt"])("%s: el paso 2 es Recorte IA y avisa de los dos pesos reales (BUG-13: ~6 MB en el celular, ~120 MB solo con GPU en computadoras)", (lang) => {
     setLang(lang);
     expect(t("ob.2.title")).toMatch(/IA|AI/);
     for (const k of ["ob.2.body", "ob.2.body.touch"]) {
-      expect(t(k)).toContain("~7 MB");
+      expect(t(k)).toContain("~6 MB");
       expect(t(k)).toContain("~120 MB");
       expect(t(k)).toMatch(/GPU/);
+      expect(t(k)).not.toContain("~7 MB");
+      // los ~120 MB se atan a las computadoras con GPU, no a «equipos» en general
+      expect(t(k)).toMatch(/(computadoras|computers|computadores)[^.;)]*GPU/i);
     }
   });
 
