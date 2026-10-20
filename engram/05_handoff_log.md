@@ -3,6 +3,12 @@
 > Entradas nuevas ARRIBA. Máx. 6 líneas por entrada. Al superar 30 entradas,
 > el Orquestador mueve las más viejas a ~/.nerv/archive/[alias]-handoffs-[fecha].md
 
+### [2026-10-20 18:20] CIERRE DE SESIÓN
+- Hecho hoy: Sprint 9 cerrado — BUG-12 (editor mobile sin foto/header), BUG-13 (Recorte IA no tumba el iPhone: u2netp en móviles + marca anti-bucle TTL 7 d), BUG-14 (textos ~120/~6 MB), BUG-15/16 (CI: flaky 16 px, política de pings, offline del arnés = libsoup), licencia MIT; todo en prod, CI verde 39498402189; PO verificó iPhone 13 (IA + modo avión); launch kit corregido y desbloqueado.
+- Próximo paso: PO publica Show HN jue 2026-10-22 9 h ART (engram/08); luego r/webdev (sáb), r/devsarg, r/privacy, r/SideProject; medir en Umami vs línea base.
+- Quien retoma: nerv-orquestador (acompañar respuestas de HN; ADR-003 propuesto pendiente de decisión del PO).
+- Nota: las entradas de esta sesión se anexaron AL PIE del log por error del orquestador (convención: arriba).
+
 ### [2026-10-06 18:06] CIERRE DE SESIÓN
 - Hecho hoy: auditoría 3 ejes (engram/10) → Fase A (GROW-25..29 + 25b) y Fase B (GROW-30/31/32) Done con QA Strong, todo mergeado, pusheado y verificado en vivo; D-06/D-07 cerradas; CI corre `npm test`; carrera de `ensure-dist` arreglada (0a181a1, CI verde; el run rojo de b58d222 fue esa carrera); IndexNow 125 URLs.
 - Próximo paso: Fase C del PO (launch kit, datos de autor GROW-33, decidir BUG-01/06); reaplicar AdSense por números (≥1.000 visitantes/mes).

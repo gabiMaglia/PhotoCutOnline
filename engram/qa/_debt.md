@@ -58,3 +58,21 @@
 
 ## BUG-16 — gate RED_PROOF_FAILED falso positivo (2026-10-20)
 - La implementación de la política (test/lib/originPolicy.mjs) vive bajo test/; el gate la copia al árbol previo y la prueba de rojo no discrimina. QA hizo rojo manual (6 fail → 13/13). Se mergea con el gate en rojo por esa causa documentada; deuda D-3: excluir test/lib/ del copiado o mover la política fuera de test/.
+
+## Done heredados sin artefacto de QA (declarados en el cierre del 2026-10-20)
+> Se cerraron entre jun y jul 2026, antes de que se exigiera engram/qa/<T-ID>.md (P-21.2). No se inventa un veredicto retroactivo. Si hubo uno, está en la tabla «Veredictos QA» del backlog (p. ej. T-002) o en el handoff log.
+
+| Ticket | Motivo |
+|---|---|
+| T-001 | Done previo al requisito de artefacto QA; sin engram/qa/T-001.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-003 | Done previo al requisito de artefacto QA; sin engram/qa/T-003.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-004 | Done previo al requisito de artefacto QA; sin engram/qa/T-004.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-007 | Done previo al requisito de artefacto QA; sin engram/qa/T-007.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-008 | Done previo al requisito de artefacto QA; sin engram/qa/T-008.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-009 | Done previo al requisito de artefacto QA; sin engram/qa/T-009.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-010 | Done previo al requisito de artefacto QA; sin engram/qa/T-010.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-011 | Done previo al requisito de artefacto QA; sin engram/qa/T-011.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-013 | Done previo al requisito de artefacto QA; sin engram/qa/T-013.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-014 | Done previo al requisito de artefacto QA; sin engram/qa/T-014.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-015 | Done previo al requisito de artefacto QA; sin engram/qa/T-015.md. Riesgo: bajo (en producción desde jul 2026). |
+| T-016 | Done previo al requisito de artefacto QA; sin engram/qa/T-016.md. Riesgo: bajo (en producción desde jul 2026). |

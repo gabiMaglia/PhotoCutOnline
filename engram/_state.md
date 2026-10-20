@@ -1,10 +1,9 @@
-# STATE — photocut · actualizado: 2026-10-12 (Sprint 8: GROW-34 + GROW-35)
-**Sprint:** 7 — Fase B auditoría 2026-10 (contenido) ✅ CERRADO · Sprint 6 Fase A ✅ CERRADO · auditoría completa en engram/10
-**Rama activa:** main @ 8494b97 = origin/main, CI verde. Sin ramas ni worktrees abiertos.
-**En curso:** nada. Sprint 8 cerrado: GROW-34 (presets respetan color + presets Sticker WhatsApp/Telegram 512, en prod bc88b8e; gate rechazado post-merge por falta de plan → desvío en qa/_debt.md) y GROW-35 (WebP real en Safari/WebKit con @jsquash/webp bajo demanda, en prod 965579b; plan §QUÉ+§CÓMO antes del código, gate X PASS intento 4, verifier ciego + QA Strong aprobados, CI PR #4 verde; .wasm verificados en prod). GROW-33 BLOQUEADO (datos de autor del PO).
-**Bloqueos:** GROW-33 espera input PO · BUG-01 (presets ignoran color) y BUG-06 (pestaña Stickers desactivada) esperan decisión PO.
-**Hecho en producción (2026-10-06):** hero con ilustración del PO · legales EN/PT · footer de confianza 6 enlaces/126 págs · fuentes propias + AdSense diferido (LCP móvil 4,2→2,4 s) · editor i18n/móvil/teclado/voseo/progreso modelo · varita corregida (estaba invertida) · Recuadro→"Recortar área" · 25→20 guías/idioma con 18 redirects 308 · "Lo probamos" con 20 mediciones reales reproducibles (`scripts/pruebas.json`, `npm run pruebas`) en 60 guías · datePublished/dateModified reales · /novedades ES/EN/PT.
-**Convenciones:** commits mecánicos masivos `[lastmod-skip]`; tras tocar páginas `npm run lastmod` + commit del json; merge sin squash; footer desde `scripts/lib/trust.mjs`; pruebas desde `scripts/pruebas.json` (+ `npm run pruebas:render`).
-**Línea base (Umami 90 d al 2026-10-06):** 86 visitantes/mes, 36 % llega a /editor/, Google≈Bing. GDPR activo en AdSense.
-**Próximo paso sugerido:** PO: probar en Safari/iPhone físico exportar «Sticker WhatsApp» (WebP real) y la app desktop; publicar launch kit; datos GROW-33. Técnico opcional: flag forceWasm para que CI Linux ejercite la ruta WASM, O1/O2 (UX), D-08..D-11. Herramientas NERV en ~/Documents/NERV/bin (gate, backlog-check, metrics): correr el gate ANTES de cada merge; la columna Veredicto acepta solo la palabra exacta RECHAZADO/APROBADO.
-**Preguntas abiertas al PO:** 4 (GROW-33 datos, BUG-01, BUG-06, Figma §6 heredada)
+# STATE — photocut · actualizado: 2026-10-20 18:20
+**Sprint:** 9 — Bug bash pre-lanzamiento ✅ CERRADO (BUG-08..16 Done, en prod)
+**Rama activa:** main @ 19fc563 = origin/main, CI verde (39498402189). Sin ramas de trabajo abiertas (worktrees de agentes por limpiar).
+**En curso:** nada. Lanzamiento listo: launch kit corregido (engram/08), repo MIT, IndexNow 125 URLs (PO), iPhone 13 verificado (Recorte IA con WebGPU + modo avión).
+**Bloqueos:** ninguno para lanzar. GROW-33 espera datos del PO; GROW-37/38, BUG-01/06 esperan decisión PO (no bloquean).
+**Próximo paso sugerido:** PO publica Show HN jueves 2026-10-22 9 h ART; responder 3–4 h; Reddit escalonado; medir Umami vs 86 visitantes/mes.
+**Deuda abierta:** qa/_debt.md — O1/O2/H1/H2/G3 (BUG-13), R1 aceptado, ad slot cut-rail y bandeja desactivada en otras pestañas (BUG-12), gzip/deflate y D-2/D-3 (BUG-16: gate RED_PROOF falso positivo con impl. bajo test/), NOTICE de modelos sin clase de dispositivo.
+**Preguntas abiertas al PO:** 5 (GROW-33 datos, BUG-01, BUG-06, Figma §6 heredada, ADR-003 propuesto: RECHAZADO-PROCESO no escala a X)
+**Convenciones:** commits engram `[lastmod-skip]`; tras tocar páginas `npm run lastmod`; merge sin squash; gate en ~/Documents/NERV/bin ANTES de merge; returns de agentes se registran en 05 al recibirlos; ramas de agentes hacen `git merge main` (no copiar engram).
