@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { t } from "../../lib/i18n.js";
 import { backend } from "../../lib/backend.js";
 import { useTimedFlag } from "../../hooks/useTimedFlag.js";
+import FileButton from "../../components/ui/FileButton.jsx";
 
 // Lienzo interactivo. Modos de entrada:
 //  - "rect": arrastrar un recuadro para recortar esa área (no segmenta; marching ants)
@@ -36,6 +37,7 @@ export default function CanvasEditor({
   busy,
   compare,
   onCompareChange,
+  onFileInput,
 }) {
   const wrapRef = useRef(null);
   const baseRef = useRef(null);
@@ -546,6 +548,12 @@ export default function CanvasEditor({
           <h2>{t("canvas.empty.title")}</h2>
           <p>{t("cut.emptyDesc")}</p>
           <p className="canvas-empty-hint">{t("empty.drag")}</p>
+          {/* solo móvil (CSS): con la bandeja oculta, el CTA es lo único que hay que tocar */}
+          {onFileInput && (
+            <FileButton variant="primary" className="canvas-empty-cta" onChange={onFileInput}>
+              {t("openPhoto")}
+            </FileButton>
+          )}
         </div>
       )}
 

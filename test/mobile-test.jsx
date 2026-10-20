@@ -49,7 +49,19 @@ async function main() {
   assert((await fetch("/icons/icon-512.png")).ok, "pwa: icono 512 servido");
   assert((await fetch("/og.png")).ok, "seo: og.png servido");
 
-  // layout: bandeja inferior
+  // layout: bandeja inferior. BUG-12: sin foto la bandeja se oculta, así que se
+  // carga una foto antes de medirla (el estado vacío lo cubre mobile-empty-test)
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  c.getContext("2d").fillRect(0, 0, 64, 64);
+  const png = await new Promise((r) => c.toBlob(r, "image/png"));
+  const dt = new DataTransfer();
+  dt.items.add(new File([png], "f.png", { type: "image/png" }));
+  const fileInput = document.querySelector(".topbar-actions input[type=file]");
+  fileInput.files = dt.files;
+  fileInput.dispatchEvent(new Event("change", { bubbles: true }));
+  for (let i = 0; i < 100 && !document.querySelector(".canvas-stage"); i++) await tick();
+  assert(!!document.querySelector(".canvas-stage"), "layout: foto cargada para medir la bandeja");
   const body = document.querySelector(".body");
   assert(getComputedStyle(body).flexDirection === "column-reverse", "layout: .body en column-reverse");
 

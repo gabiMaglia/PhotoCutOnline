@@ -25,6 +25,7 @@ const TESTS = [
   "i18n-test",
   "imagefile-test",
   "mobile-test",
+  "mobile-empty-test",
   "preview-test",
   "worker-test",
   "perf-test",
@@ -35,13 +36,15 @@ const TESTS = [
 // viewport por suite (por defecto escritorio)
 const VIEWPORTS = {
   "mobile-test": { width: 390, height: 844 }, // iPhone-ish
+  "mobile-empty-test": { width: 390, height: 844 }, // BUG-12
 };
 const DESKTOP = { width: 1280, height: 800 };
 
 // GROW-35: lo que depende del códec corre también en WebKit (el motor de Safari
 // no codifica WebP en canvas). Es la corrida que le faltó a GROW-34.
 // BUG-09: Filtros y desenfoques también (WebKit no tiene ctx.filter).
-const WEBKIT_TESTS = ["webp-test", "reencode-test", "filters-test"];
+// BUG-12: el layout mobile se mide también en WebKit (el motor del iPhone).
+const WEBKIT_TESTS = ["webp-test", "reencode-test", "filters-test", "mobile-empty-test"];
 
 // Límite de espera por motor, explícito. WebKit es más lento (autoCut ronda los
 // 28 s en un Mac cargado y puede multiplicarse en un runner de 2 vCPU); uno

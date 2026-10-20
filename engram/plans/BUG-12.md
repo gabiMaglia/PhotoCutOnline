@@ -92,6 +92,48 @@ Veredicto del arquitecto: **el código cumple este §QUÉ**. No hay defecto estr
 
 ## CÓMO — implementación (nerv-web)
 
-Pendiente: lo escribe y lo sella nerv-web dentro de esta sección, antes del próximo `## `. Como el
-código ya existe, el sello declara su alcance: describe lo implementado en 38e86a5, fb13ad5 y
-d7ee4d9 y no precedió al código (P-21.2). No lleva fecha retroactiva.
+Declaración (P-21.2): este §CÓMO describe lo ya implementado en 38e86a5, fb13ad5 y d7ee4d9. Se escribe
+**después** del código; no lo precedió ni lleva fecha retroactiva.
+
+Verificación común: `test/mobile-empty-test.{html,jsx}` mide en WebKit y Chromium a 390×844 (registrado en
+`test/run-tests.mjs`, `VIEWPORTS`, `TESTS` y `WEBKIT_TESTS`). La prueba de rojo se corrió contra el
+árbol previo a cada commit.
+
+### 38e86a5 — sin foto solo el CTA; bandeja y topbar con aire
+1. `src/features/cutout/CutoutPage.jsx`: el `<aside className="rail">` suma la clase `rail-empty` cuando
+   `loader.imageUrl` es nulo, y pasa `onFileInput={loader.onFileInput}` a `CanvasEditor`.
+   Verifica: `mobile-empty-test.jsx`, aserción «sin foto: la bandeja no se muestra».
+2. `src/features/cutout/CanvasEditor.jsx`: prop opcional `onFileInput`; en el estado vacío renderiza
+   `FileButton` primario con `t("openPhoto")` (sin i18n nuevo).
+   Verifica: CTA con alto >= 44 px, mismo `accept` que la topbar, y la foto se carga por su input.
+3. `src/styles.css`, bloque `@media (max-width:760px)` de ~1927: `.rail.rail-empty{display:none}`,
+   `.canvas-empty` en stretch/flex/border-box, `.rail-group` gap 12, padding inferior de la bandeja 28 px +
+   safe-area, `.topbar-icons` gap 10, topbar `row-gap` 12. En base: `.canvas-empty-cta{display:none}`.
+   Verifica: zona vacía sin recorte, gap entre `.tool` >= 10, margen bajo el último control >= 12.
+4. `test/mobile-test.jsx`: carga una foto antes de medir la bandeja (sin foto ahora está oculta). No se
+   quitó ni aflojó ninguna aserción.
+   Verifica: `mobile-test` pasa en ambos motores.
+
+### fb13ad5 — header prolijo
+5. `src/styles.css`, bloques ≤760: topbar `padding: 12px 16px`, `.topbar-actions` gap 10,
+   `.topbar-icons` sin `border-left` ni padding, `.canvas-wrap` padding 16.
+   Verifica: padding 12/16, fila de 4 controles de igual altura y separación pareja >= 8, sin divisor,
+   margen lateral >= 16, lienzo y zona vacía a >= 16 px de la topbar.
+6. `test/mobile-empty-test.jsx`: aserciones del escenario «header prolijo».
+   Verifica: rojo contra 38e86a5 («padding vertical >= 12 px (8px/8px)»).
+
+### d7ee4d9 — misma forma y pista solo en táctil
+7. `src/styles.css`, bloque ≤760: `.lang-select` 44×44, padding 0, radio 99px (mismo molde que ☕ e ⓘ).
+   Verifica: aserción «idioma, ☕ e ⓘ misma forma 44×44 y mismo radio»; rojo contra fb13ad5 (10px vs 99px).
+8. `src/styles.css`: se quita el `display:none` de `.canvas-empty-hint` del bloque por ancho y se suma al
+   `@media (pointer: coarse)`.
+   Verifica: aserción de pista visible con `pointer: fine` y oculta con `coarse`.
+9. `engram/03_backlog.md` devuelto a la versión de c54b053: la rama no toca `engram/`.
+
+### Cobertura
+Escritorio 1280×800: sin cambios de layout (reglas solo en ≤760 o `pointer: coarse`).
+`npm test` (jest) 85/85; `mobile-empty-test` y `mobile-test` verdes en Chromium y WebKit.
+Sin dependencias nuevas, sin tocar contratos ni ADRs.
+
+**Aprobado por:** nerv-web [2026-10-20] — post-hoc. Alcance: §CÓMO de lo implementado en 38e86a5,
+fb13ad5 y d7ee4d9; no precedió al código.
