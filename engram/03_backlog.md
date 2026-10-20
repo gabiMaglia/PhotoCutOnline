@@ -15,8 +15,48 @@
 | BUG-10 | **Pixelado de caras demasiado grueso**: 12→4 bloques de ancho por cara (por defecto 7, `faceDetect.js:132`). Fix: bloques relativos al tamaño de cara con rango más fino (definir en plan). | To Do |
 | BUG-11 | **Comparar antes/después "no se puede cerrar"**: con el puntero encima, `.hud-btn:hover:not(:disabled)` (especificidad 0,2,0) le gana a `.hud-btn-on` (0,1,0) → texto lima sobre fondo lima = botón vacío. Escape tampoco cierra. Fix: estilo on+hover legible, Escape cierra, control de cierre visible en el overlay. | To Do |
 | GROW-36 | **Calidad del Recorte IA** → BiRefNet-lite fp16 en WebGPU + u2netp sin GPU (merge a404b31). ISNet int8 descartado (benchmark: manchas/agujeros). **Decisión PO 2026-10-16: acepta el riesgo de licencia DIS5K** (pesos MIT; dataset de entrenamiento con uso comercial restringido; mitigación: volver a u2netp es un cambio de una línea; aviso publicado en licencias). | Done (local) |
+| BUG-12 | **Editor mobile sin foto: «asfixia» (reporte PO 2026-10-20, iPhone).** Medido en WebKit iPhone 15 (390×659): `.canvas-empty` mide 311 px dentro de un `.canvas-wrap` de 237 px → borde punteado y texto recortados; topbar de 2 filas = 119 px con ☕/ⓘ a 2 px (`.topbar-icons gap:2px`) y `row-gap:6px`; `.rail` fijo 46vh muestra 6 herramientas DESACTIVADAS casi pegadas. Decisión PO: opción «sin foto: solo el CTA». Rama `fix/BUG-12-mobile-empty`. Niv A (las Gherkin son el plan). **Criterios:** ver bloque BUG-12 abajo. | To Do |
+| BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página al terminar de bajar el modelo** (reporte PO 2026-10-20). Hipótesis H1 (sin confirmar): iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → jetsam del proceso → el respaldo a u2netp nunca corre y se repite en cada intento. «Recorte automático» + export WebP en el mismo iPhone: OK. **Bloquea el lanzamiento.** Espera: prueba del PO con WebGPU desactivado + modelo/iOS. | Bloqueado (PO) |
 | GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
 | GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
+
+### BUG-12 — criterios (Gherkin)
+```gherkin
+Característica: editor mobile respirable sin foto
+  Antecedentes: viewport 390×844 (iPhone 15, WebKit y Chromium), /editor/ ES, pestaña Recorte, onboarding cerrado
+
+  Escenario: sin foto, la zona vacía entra entera y no hay herramientas
+    Dado que no hay ninguna foto cargada
+    Entonces la bandeja de herramientas (.rail) no se muestra
+    Y la zona vacía ocupa todo el alto entre la topbar y el borde inferior
+    Y su contenido no se recorta (scrollHeight <= clientHeight del contenedor) y el borde punteado se ve completo en los 4 lados
+
+  Escenario: CTA grande para abrir foto
+    Dado que no hay ninguna foto cargada
+    Entonces la zona vacía muestra un botón primario «Abrir foto» de al menos 44 px de alto
+    Cuando lo toco
+    Entonces se abre el mismo selector de archivos que el «Abrir foto» de la topbar
+
+  Escenario: con foto aparecen las herramientas con aire
+    Cuando cargo una foto
+    Entonces la bandeja de herramientas se muestra
+    Y la separación vertical entre botones de herramienta es de al menos 10 px
+    Y el último control de la bandeja se puede ver entero al scrollear hasta el final (con margen inferior, no pegado al borde)
+
+  Escenario: topbar con aire
+    Entonces la separación entre ☕ e ⓘ es de al menos 8 px
+    Y la separación entre la fila de acciones y la tira de pestañas es de al menos 10 px
+    Y ningún control de la topbar queda a menos de 12 px del borde lateral
+
+  Escenario: escritorio sin cambios
+    Dado un viewport de 1280×800
+    Entonces el editor se ve igual que antes (sin foto y con foto): captura antes/después sin diferencias de layout
+
+  Escenario: textos nuevos traducidos
+    Entonces todo texto nuevo existe en ES (voseo), EN y PT en src/lib/i18n.js
+```
+- Alcance: pestaña Recorte + topbar compartida. Las demás pestañas NO se rediseñan: si tienen el mismo problema, se reporta con captura en el return handoff.
+- Verificación: test Playwright nuevo en el harness (`npm run test:web`) que mida los criterios numéricos en WebKit y Chromium a 390×844, con prueba de rojo contra main.
 
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10
 

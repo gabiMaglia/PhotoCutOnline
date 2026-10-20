@@ -68,3 +68,8 @@
 - GROW-29 → nerv-web → nerv-qa APROBADO → merge 5fd55ee.
 - GROW-28 → nerv-web → nerv-qa RECHAZADO (guías decían que Recuadro segmentaba) → fix → re-QA APROBADO → merge 9e89cf2.
 - Sin push: decisión PO sobre foto del hero.
+
+### 2026-10-20 Orquestador→nerv-web (BUG-12, Advisory)
+- Tarea: editor mobile sin foto — opción PO «sin foto: solo el CTA». Criterios Gherkin en 03_backlog.md (bloque BUG-12).
+- Leer SOLO: engram/03_backlog.md (fila + bloque BUG-12), src/styles.css (@media max-width 760px, .rail/.canvas-wrap/.canvas-empty/.topbar*), src/features/cutout/CutoutPage.jsx, componentes del estado vacío y de la topbar (src/components/layout/), src/lib/i18n.js.
+- Rama fix/BUG-12-mobile-empty (worktree). Return handoff P-1 (4 campos) con capturas 390×844 antes/después.
