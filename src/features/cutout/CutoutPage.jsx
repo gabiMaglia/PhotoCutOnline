@@ -52,7 +52,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
   return (
     <>
       <div className="body" style={active ? undefined : { display: "none" }}>
-        <aside className="rail">
+        <aside className={`rail ${loader.imageUrl ? "" : "rail-empty"}`}>
           <MarkPanel
             imageUrl={loader.imageUrl}
             hasCut={session.hasCut}
@@ -149,6 +149,7 @@ export default function CutoutPage({ active, onGoIcons, onOpenDownload, onHelp, 
             busy={session.busy}
             compare={session.compare}
             onCompareChange={session.setCompare}
+            onFileInput={loader.onFileInput}
           />
         </main>
       </div>

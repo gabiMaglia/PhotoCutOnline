@@ -652,6 +652,11 @@ label.btn:has(.file-input-sr:focus-visible) {
   animation: empty-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 
+/* CTA solo móvil: en escritorio el «Abrir foto» de la topbar ya está a la vista */
+.canvas-empty-cta {
+  display: none;
+}
+
 .canvas-empty h2 {
   font-family: var(--display);
   font-weight: 750;
@@ -1958,7 +1963,7 @@ label.btn:has(.file-input-sr:focus-visible) {
 
   .topbar-icons {
     padding-left: 8px;
-    gap: 2px;
+    gap: 10px; /* BUG-12: ☕ e ⓘ no se pueden tocar sin rozarse */
   }
 
   .lang-select {
@@ -1994,7 +1999,13 @@ label.btn:has(.file-input-sr:focus-visible) {
     overflow-x: hidden;
     border-right: 0;
     border-top: 1px solid var(--line);
-    padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    padding: 14px 16px calc(28px + env(safe-area-inset-bottom)); /* el último control no queda pegado al borde */
+  }
+
+  /* BUG-12: sin foto todas las herramientas están desactivadas; la bandeja
+     solo ocupaba la mitad de la pantalla. Solo queda el CTA de la zona vacía. */
+  .rail.rail-empty {
+    display: none;
   }
 
   .rail-group {
@@ -2002,7 +2013,7 @@ label.btn:has(.file-input-sr:focus-visible) {
     max-width: 430px;
     margin: 0 auto;
     flex-shrink: 0;
-
+    gap: 12px; /* BUG-12: botones de herramienta con aire (antes 8 px) */
   }
 
   .rail-title {
@@ -2041,8 +2052,30 @@ label.btn:has(.file-input-sr:focus-visible) {
     padding: 12px;
   }
 
+  /* BUG-12: la zona vacía llena el lienzo (antes medía 311 px en un contenedor
+     de 237 y el borde punteado se cortaba) y centra su contenido */
   .canvas-empty {
-    padding: 32px 20px;
+    align-self: stretch;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+
+  .canvas-empty-hint {
+    display: none; /* arrastrar / pegar no aplica en touch: el CTA lo reemplaza */
+  }
+
+  .canvas-empty-cta {
+    display: inline-flex;
+    margin-top: 24px;
+    min-height: 52px;
+    padding: 0 32px;
+    font-size: 16px;
   }
 
   .canvas-empty h2 {
@@ -3245,7 +3278,7 @@ label.btn:has(.file-input-sr:focus-visible) {
   .topbar {
     flex-wrap: wrap;
     height: auto;
-    row-gap: 6px;
+    row-gap: 12px;
     padding: 8px 12px;
   }
 
