@@ -38,3 +38,13 @@
 
 ## BUG-13 — desvío de proceso (2026-10-20)
 - El §CÓMO de engram/plans/BUG-13.md se commiteó antes del código (c785f69 < 028e44b) pero SIN sello; el Tech Lead lo sella después del código por decisión del PO. Gate intento 1: PLAN_GATE_MISSING. La ampliación (TTL 7 días, Android sitio de escritorio) sí se sella antes de su código.
+- **§QUÉ estampado después del código (2026-10-20, nerv-arquitecto, decisión del PO tras 2 rechazos de proceso):** con 2 RECHAZADO en el backlog el gate computa X por reintento y exige §QUÉ, que el plan no tenía. Va en `engram/plans/BUG-13-QUE.md` (main), con el sello «no precedió a la implementación» (revisión post-hoc, ADR-009 de NERV), sobre c3dfaed. nerv-web lo copia textual dentro de `engram/plans/BUG-13.md` de la rama y pone su propio sello DENTRO de `## CÓMO` (no al pie, bajo `## Ampliación…`).
+- Riesgos residuales que vio el arquitecto, fuera del Gherkin y no bloqueantes:
+  - (R1) Si una computadora con poca memoria muere mientras baja los 115 MB de BiRefNet (antes de que se escriba la marca), el ciclo puede repetirse. Los celulares no llegan a ese punto.
+  - (R2) `public/como-funciona.html:53` y `public/en/how-it-works.html:53` siguen diciendo «GPU ⇒ ~120 MB; si no ⇒ ~7 MB». Para un celular con GPU ya no es exacto. Es deuda de contenido para el PO.
+  - G3 de QA sigue abierto: no hay test del TTL a nivel `aiSegmenter`.
+
+## BUG-12 — desvío de proceso (2026-10-20)
+- **Origen de la X:** el intento 1 lo rechazó QA solo por HANDOFF_INCOMPLETE. **El orquestador no registró el return handoff de nerv-web en `05_handoff_log.md`**. Fue un fallo del orquestador, no del Tech Lead ni del código. Ese RECHAZADO hizo que el gate derivara el reintento ⇒ X, y el intento 2 se rechazó por la falta de §QUÉ y §CÓMO que eso exige. QA no encontró defectos de código en ninguno de los dos intentos.
+- **§QUÉ estampado después del código, por decisión del PO tras 2 rechazos de proceso:** lo escribió nerv-arquitecto en `engram/plans/BUG-12.md` (main) como revisión de diseño post-hoc (ADR-009 de NERV) sobre d7ee4d9, a partir del Gherkin aprobado. El sello dice explícitamente que no precedió a la implementación. El §CÓMO lo escribe y lo sella nerv-web, también post-hoc y con su alcance declarado. Sin fecha retroactiva.
+- **Gate y fuente de verdad:** el gate lee `engram/` (backlog y planes) **del checkout de la rama**. Como `d7ee4d9` devolvió `engram/` a la base, en la rama no se ven ni los veredictos ni este plan. Antes de volver a correr el gate, la rama tiene que incorporar el `engram/` de main (por ejemplo, `git merge main`). Si no, el gate da A/PASS en la rama y X/REJECTED en main, que es justo la ambigüedad de los 2 intentos. Propuesta estructural: ADR-003 (Propuesto) en `02_architecture.md`.

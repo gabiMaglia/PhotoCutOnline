@@ -123,3 +123,9 @@
 - BUG-12 intento 2 RECHAZADO: reintento ⇒ gate computa X ⇒ falta §QUÉ+§CÓMO estampados. BUG-13 intento 2 RECHAZADO: sello fuera de `## CÓMO` (el gate lee solo esa sección) y falta §QUÉ (X por reintento). Código limpio en ambos. WebKit «\0asm»: artefacto de worktree (main principal verde, verificado por QA).
 - PO elige: nerv-arquitecto escribe y estampa §QUÉ de ambos desde el Gherkin aprobado, verifica que el código lo cumple; desvío (sello post-código) a qa/_debt.md. Luego nerv-web: §CÓMO de BUG-12 y sello de BUG-13 dentro de `## CÓMO`. Después gate (backlog de main) → QA → nerv-verifier (BUG-13) → merge.
 - Gherkin BUG-13 corregido por el orquestador (GAP G1): «Windows/macOS táctil» → «Windows táctil».
+
+### 2026-10-20 nerv-arquitecto→Orquestador (BUG-12/BUG-13 return, registrado por el orquestador)
+- status: §QUÉ estampado post-hoc (ADR-009 NERV) para BUG-12 (plans/BUG-12.md) y BUG-13 (plans/BUG-13-QUE.md, a copiar en el plan de la rama). Conformidad con citas file:line; sin defectos estructurales.
+- files touched: engram/plans/BUG-12.md, engram/plans/BUG-13-QUE.md, engram/qa/_debt.md, engram/02_architecture.md (ADR-003 PROPUESTO: veredicto RECHAZADO-PROCESO no escala a X; gate lee veredictos desde la base).
+- risks: ramas deben hacer git merge main antes del re-gate (no copiar archivos: 02_architecture forzaría X); R1 PC con poca RAM muere bajando antes de la marca; R2 como-funciona/how-it-works dicen ~7 MB y no distinguen celular; G3 TTL sin test a nivel aiSegmenter.
+- how to test: tras merge main en cada rama, nerv-gate computa X (#3) y solo falta §CÓMO hasta que nerv-web lo selle dentro de ## CÓMO.
