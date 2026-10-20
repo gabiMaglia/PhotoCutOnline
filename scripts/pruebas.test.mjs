@@ -202,8 +202,10 @@ test("los valores corregidos de las medidas son los mismos en ES, EN y PT", () =
 
 test("EN/PT dicen lo mismo que ES en lo que cambió fuera del bloque", () => {
   for (const lang of LANGS) {
-    assert.match(html("como-quitar-el-fondo-de-una-imagen", lang).replace(/&nbsp;/g, " "), /~7 MB/, `${lang}: ~7 MB`);
-    // GROW-36: con GPU baja BiRefNet (~120 MB); la guía dice los dos pesos
+    assert.match(html("como-quitar-el-fondo-de-una-imagen", lang).replace(/&nbsp;/g, " "), /~6 MB/, `${lang}: ~6 MB`);
+    // BUG-14: celular/tablet o sin GPU baja u2netp (~6 MB), ya no «~7 MB»
+    assert.doesNotMatch(html("como-quitar-el-fondo-de-una-imagen", lang).replace(/&nbsp;/g, " "), /~7 MB/, `${lang}: quedó ~7 MB`);
+    // GROW-36: en computadora con GPU baja BiRefNet (~120 MB); la guía dice los dos pesos
     assert.match(html("como-quitar-el-fondo-de-una-imagen", lang).replace(/&nbsp;/g, " "), /~120 MB/, `${lang}: ~120 MB con GPU`);
     assert.match(html("quitar-la-ubicacion-de-una-foto", lang).replace(/&nbsp;/g, " "), /21[.,]0[\s\S]{1,12}24[.,]1/, `${lang}: la recompresión del EXIF (21,0→24,1 KB)`);
     const dark = html("generar-modo-oscuro-desde-una-captura", lang);
