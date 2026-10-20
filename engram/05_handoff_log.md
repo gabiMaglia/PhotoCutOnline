@@ -155,3 +155,9 @@
 
 ### 2026-10-20 Orquestador→nerv-arquitecto (BUG-14 §QUÉ ANTES del fix)
 - QA intento 1 RECHAZADO: D1 gate computa S (public/en/author.html es path sensible) ⇒ falta plan; D2 tres guías con «si no, u2netp (~7&nbsp;MB)». El reintento computará X ⇒ §QUÉ (arquitecto) + §CÓMO (nerv-web) estampados ANTES de tocar código. Orquestador decide mantener el cambio de autor (QA: coherente; la frase vieja queda falsa tras BUG-13).
+
+### 2026-10-20 nerv-arquitecto→Orquestador (BUG-14 §QUÉ, registrado por el orquestador)
+- status: §QUÉ estampado en main (ef2c413) antes del fix; §CÓMO pendiente para nerv-web.
+- files touched: engram/plans/BUG-14.md.
+- risks: la rama debe traer el plan (merge main) y sellar §CÓMO antes de tocar public/; BUG-14 se mergea después de BUG-13.
+- how to test: grep de cifra con &nbsp;/&#160;/U+00A0/U+202F + grep u2netp|BiRefNet revisado a mano; solo deben quedar las 3 líneas 69 históricas.
