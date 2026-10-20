@@ -245,9 +245,10 @@
         com pessoas, animais ou produtos sobre fundos razoavelmente distinguíveis.
         No <a href="/editor/">PhotoCut Studio</a> isso é o botão
         <strong>"Recorte IA"</strong> (atalho <code>I</code>): o modelo é baixado
-        uma única vez e roda no seu navegador: se o seu aparelho tem uma GPU que
+        uma única vez e roda no seu navegador: em um computador com uma GPU que
         o navegador consegue usar, baixa o BiRefNet-lite (~120&nbsp;MB), que
-        recorta com mais detalhe; se não, o u2netp (~7&nbsp;MB) com WebAssembly.
+        recorta com mais detalhe; em celulares e tablets, ou sem GPU, baixa o
+        u2netp (~6&nbsp;MB) e roda com WebAssembly.
         Depois de usá-lo uma vez, funciona até sem conexão.
       </p>
       <h3>2. Varinha mágica: um clique no fundo</h3>

@@ -244,9 +244,10 @@
         point for photos with people, pets or products on reasonably
         distinguishable backgrounds. In <a href="/editor/">PhotoCut Studio</a>
         this is the <strong>"AI Cutout"</strong> button (shortcut <code>I</code>):
-        the model downloads once and runs in your browser: if your device has a
+        the model downloads once and runs in your browser: on a computer with a
         GPU the browser can use, it fetches BiRefNet-lite (~120&nbsp;MB), which
-        cuts out finer detail; otherwise u2netp (~7&nbsp;MB) with WebAssembly.
+        cuts out finer detail; on phones and tablets, or without a GPU, it
+        fetches u2netp (~6&nbsp;MB) and runs it with WebAssembly.
         Once you've used it, it works even offline.
       </p>
       <h3>2. Magic wand: one click on the background</h3>
