@@ -148,8 +148,8 @@ You can sell both products. Notes:
   no copyleft dependency sneaks in via an update.
 - **GrabCut** is a published academic algorithm; implementing it yourself (as here)
   carries no license burden. Do not pull in OpenCV's GPL-ish modules — not needed.
-- Your **frontend** `package.json` is marked `PROPRIETARY`; set your real company
-  name and copyright in `src-tauri/tauri.conf.json` (`copyright`, `identifier`,
+- The code is MIT-licensed (see `LICENSE`); keep the copyright in
+  `src-tauri/tauri.conf.json` consistent with it in `src-tauri/tauri.conf.json` (`copyright`, `identifier`,
   `productName`).
 - For paid desktop distribution you'll want **code signing** (Apple Developer ID
   for macOS notarization; an Authenticode cert for Windows) — configure under
@@ -168,7 +168,12 @@ and load it from `backend.js`). Then both products share the exact same engine.
 
 ## License
 
-Your application code: proprietary (yours to license/sell).
-Bundled open-source dependencies retain their MIT/Apache-2.0 licenses; include
-their notices in an "Acknowledgements" / "Third-party licenses" screen
-(`cargo about generate` can produce this automatically).
+PhotoCut's own code (web app, desktop app and the Rust engine) is released under
+the [MIT License](LICENSE).
+
+Third-party components keep their own licenses:
+- Bundled open-source dependencies (MIT/Apache-2.0 and others): see the
+  "Third-party licenses" screen and `npm run licenses`.
+- AI models: BiRefNet-lite (MIT weights; trained on DIS5K, whose dataset terms
+  restrict commercial use) and u2netp (Apache-2.0). See
+  `public/licenses/ai-models-NOTICE.txt`.
