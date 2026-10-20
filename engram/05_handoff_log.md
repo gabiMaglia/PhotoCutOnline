@@ -135,3 +135,10 @@
 - files touched: engram/plans/BUG-12.md (§CÓMO). Diff de la rama vs main: engram/plans/BUG-12.md, CanvasEditor.jsx, CutoutPage.jsx, styles.css, test/mobile-empty-test.{html,jsx}, test/mobile-test.jsx, test/run-tests.mjs.
 - risks: sin salida del gate todavía; ad slot cut-rail; otras pestañas con bandeja desactivada (deuda).
 - how to test: nerv-gate desde el worktree con el handoff de scratchpad/bug12-handoff.md; mobile-empty-test y mobile-test en Chromium/WebKit.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-13 return intento 3, registrado por el orquestador)
+- status: merge main limpio + §QUÉ del arquitecto copiado en plans/BUG-13.md + sello dentro de ## CÓMO (rama @ 6987cba). nerv-gate: PASS ticket=BUG-13, computado X (reintento #3), plan estampado para X, proof of red OK, suite green; WARN declarado S < X.
+- files touched: engram/plans/BUG-13.md, engram/plans/BUG-13-QUE.md (borrado). Código = c3dfaed.
+- risks: O1/O2 deuda; jetsam real lo verifica el PO.
+- how to test: npx jest (439); TEST_PORT=<libre> npm run test:web.
+- Orquestador: QA en X + nerv-verifier ciego en paralelo (jueces independientes).
