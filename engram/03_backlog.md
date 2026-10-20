@@ -17,6 +17,7 @@
 | GROW-36 | **Calidad del Recorte IA** → BiRefNet-lite fp16 en WebGPU + u2netp sin GPU (merge a404b31). ISNet int8 descartado (benchmark: manchas/agujeros). **Decisión PO 2026-10-16: acepta el riesgo de licencia DIS5K** (pesos MIT; dataset de entrenamiento con uso comercial restringido; mitigación: volver a u2netp es un cambio de una línea; aviso publicado en licencias). | Done (local) |
 | BUG-12 | **Editor mobile sin foto: «asfixia» (reporte PO 2026-10-20, iPhone).** Medido en WebKit iPhone 15 (390×659): `.canvas-empty` mide 311 px dentro de un `.canvas-wrap` de 237 px → borde punteado y texto recortados; topbar de 2 filas = 119 px con ☕/ⓘ a 2 px (`.topbar-icons gap:2px`) y `row-gap:6px`; `.rail` fijo 46vh muestra 6 herramientas DESACTIVADAS casi pegadas. Decisión PO: opción «sin foto: solo el CTA». Rama `fix/BUG-12-mobile-empty`. Niv A (las Gherkin son el plan). **Criterios:** ver bloque BUG-12 abajo. | To Do |
 | BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página** (reporte PO 2026-10-20). **Causa CONFIRMADA por el PO (iPhone 13):** con el flag WebGPU de Safari desactivado el recorte anda (u2netp). iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → iOS mata el proceso por memoria → el respaldo a u2netp (aiSegmenter.js:212-235) nunca corre y, como nada persiste, se repite en cada intento. **Bloquea el lanzamiento.** Rama `fix/BUG-13-mobile-ai`. Niv S (escalado por el orquestador: ruta de IA, bloqueante de lanzamiento) → CÓMO en engram/plans/BUG-13.md antes del código. **Criterios:** bloque BUG-13 abajo. | To Do |
+| BUG-14 | **Textos públicos sobre el peso del modelo, tras BUG-13** (pedido PO 2026-10-20). Hoy dicen «con GPU ~120 MB / sin GPU ~7 MB» (p. ej. como-funciona.html:53, en/how-it-works.html:53, llms.txt), y con BUG-13 un celular SIEMPRE baja u2netp (~6 MB) aunque tenga GPU. Rama `content/BUG-14-model-size`. Niv A. **Criterios:** bloque BUG-14 abajo. Depende de BUG-13 mergeado. | To Do |
 | GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
 | GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
 
@@ -118,6 +119,25 @@ Característica: el Recorte IA nunca tumba la pestaña en celulares
 ```
 - Verificación: tests unitarios (jest) de la decisión de modelo y de la marca persistente, con prueba de rojo contra main; una corrida Playwright WebKit/Chromium con UA de iPhone y WebGPU simulado que confirme que no se pide /models/birefnet-*. El jetsam real no se puede reproducir en CI: la verificación final es del PO en su iPhone 13 con WebGPU ACTIVADO.
 - No tocar el arnés de «Lo probamos» ni los textos de las guías (otro ticket si hace falta).
+
+### BUG-14 — criterios (Gherkin)
+```gherkin
+Característica: lo que el sitio dice del peso del modelo es verdad en celular y en computadora
+
+  Escenario: páginas que explican la descarga
+    Dado cualquier página pública ES/EN/PT o llms.txt que afirme cuánto baja la IA (texto visible, FAQ y JSON-LD)
+    Entonces dice que en computadoras con GPU (WebGPU) baja ~120 MB y que en celulares y tablets, o sin GPU, baja ~6 MB
+    Y la cifra «~7 MB» se reemplaza por «~6 MB» donde describa el estado actual (u2netp 4,6 MB + motor WASM, según scripts/pruebas.json)
+
+  Escenario: lo histórico y lo medido no se reescribe
+    Dado una entrada fechada de novedades/changelog, o un bloque «Lo probamos» generado desde scripts/pruebas.json
+    Entonces no se modifica (es registro de lo que pasó o de lo que se midió)
+
+  Escenario: consistencia
+    Entonces `grep -rn "7 MB"` en public/ solo aparece en entradas históricas o en «Lo probamos»
+    Y JSON-LD y texto visible de cada FAQ dicen lo mismo
+    Y se corre `npm run lastmod` y se commitea el json
+```
 
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10
 

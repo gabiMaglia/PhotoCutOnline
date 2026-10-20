@@ -142,3 +142,7 @@
 - risks: O1/O2 deuda; jetsam real lo verifica el PO.
 - how to test: npx jest (439); TEST_PORT=<libre> npm run test:web.
 - Orquestador: QA en X + nerv-verifier ciego en paralelo (jueces independientes).
+
+### 2026-10-20 PO→Orquestador→nerv-web (BUG-14, Advisory)
+- PO: corregir textos públicos del peso del modelo (punto 2 del arquitecto); R1 aceptado como riesgo. Gherkin en bloque BUG-14. Rama content/BUG-14-model-size desde main; mergear después de BUG-13.
+- Leer SOLO: bloque BUG-14, scripts/pruebas.json (cifras), public/como-funciona.html, public/en/how-it-works.html, public/llms.txt y los archivos que devuelva `grep -rln -E "120 MB|7 MB" public`.
