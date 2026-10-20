@@ -81,3 +81,11 @@ Veredicto: **RECHAZADO**, solo por proceso (D1). Funcionalmente sin defectos.
 ## Observaciones (no bloquean)
 - Flaky aislado: una corrida en WebKit táctil falló «lienzo a >= 16 px de la topbar (7.2)» (primera carga en frío del vite); 20/20 corridas siguientes verdes y el layout asentado mide 28 px (stage 161 vs topbar 133). La aserción mide apenas aparece `.canvas-stage`, posiblemente antes de que se asiente el tamaño. Deuda: esperar un frame/estabilidad antes de medir.
 - Ad slot cut-rail oculto sin foto en móvil y bandeja desactivada en Editar/Icon/Color: deuda ya anotada.
+
+---
+## Intento 3 — APROBADO (2026-10-20)
+- Gate (worktree, `--files` = 8 archivos del diff, `--handoff` = bug12-handoff.md): **PASS**, nivel X computado (reintento #3), plan estampado, 4 campos P-1. WARN: sin NERV_TEST_CMD no verifica rojo (hecho a mano en intento 2).
+- Código sin cambios desde d7ee4d9 (`git diff d7ee4d9 HEAD -- src test` vacío). `npm test` 85/85.
+- §CÓMO vs commits: 38e86a5 (7 archivos), fb13ad5, d7ee4d9 coinciden con lo descrito; la reversión de engram/03_backlog.md aparece en d7ee4d9. §CÓMO y §QUÉ declaran escritura posterior al código (commits fa83f27/b08a2c6, 2026-10-20), sin fechas retroactivas.
+- §GAP/§Casos: sin cambios respecto al intento 2 (9 escenarios Especificados; híbrido táctil+mouse Deducido, no bloquea).
+- §Defectos: ninguno. Deuda vigente en _debt.md.

@@ -4,17 +4,19 @@
 > pasar por el fundador sería astroturfing (lo que HN/Reddit/Google castigan).
 > Los textos van en bloques de código para copiar y pegar tal cual.
 > Actualizado 2026-10-14 con lo de Sprints 6–8 (mediciones reales, WebP en Safari).
+> Actualizado 2026-10-20: primer comentario de HN alineado con scripts/pruebas.json (93 peticiones, tiempos con GPU, POST de anuncios), «sin conexión» = después del primer recorte, y celulares siempre con u2netp (BUG-13).
 
 ## Antes de publicar (checklist)
-- [ ] **Probar en un iPhone/Safari real**: exportar "Sticker WhatsApp" y abrir el
-      archivo. Si falla, sacar la frase de Safari de los posts (solo está probado
+- [x] **Probar en un iPhone/Safari real**: exportar "Sticker WhatsApp" y abrir el
+      archivo. ✅ PO 2026-10-20 (iPhone 13): sale WebP. Si falla, sacar la frase de Safari de los posts (solo está probado
       en WebKit de Playwright, no en un iPhone).
 - [ ] Probar el editor en un navegador limpio (sin caché): que cargue y el recorte ande.
-- [ ] Correr `npm run indexnow` (empuja las URLs a Bing/Copilot).
+- [x] Correr `npm run indexnow` ✅ 2026-10-20, 125 URLs (empuja las URLs a Bing/Copilot).
 - [ ] Umami cargado (para medir el pico del lanzamiento).
 - [ ] Decidir si enlazás el repo (es público pero **no tiene licencia**: en HN te
       van a preguntar "is it open source?". Respuesta honesta: "the source is
       public, I haven't picked a license yet". O agregás una antes).
+- [ ] **Después de BUG-12/13/14 en prod: Recorte IA en el iPhone 13 con WebGPU ACTIVADO** (baja ~6 MB, no recarga).
 - [ ] Bloquear 3–4 h después de cada post para responder todo.
 
 ## Datos verificados para responder preguntas
@@ -65,9 +67,9 @@ Show HN: PhotoCut – a background remover where the photo never leaves your bro
 I wanted a background remover that doesn't upload my photo to someone's server and doesn't paywall the full-resolution download, so I built one that runs entirely in the browser.
 
 How it works:
-- The cutout runs through onnxruntime-web in a Web Worker: BiRefNet-lite (fp16) on WebGPU when the browser can use the GPU, u2netp (a small salient-object model, ~4.6 MB) on WASM when it can't.
+- The cutout runs through onnxruntime-web in a Web Worker: BiRefNet-lite (fp16) on WebGPU on computers whose GPU the browser can use, u2netp (a small salient-object model, ~4.6 MB) on WASM on phones, tablets and machines without one. (Phones get u2netp even with WebGPU: a 115 MB model makes iOS kill the tab.)
 - Edge refinement uses a GrabCut engine I wrote in Rust and compiled to WebAssembly.
-- First use downloads ~120 MB with a GPU (the model is 115 MB) or about 6 MB without one; after that it's cached and works offline.
+- First use downloads ~120 MB on a computer with a GPU (the model is 115 MB) or about 6 MB on phones/tablets or without a GPU; after your first cutout it's cached and works offline.
 - Export to PNG/JPG/WebP. Safari can't encode WebP from a canvas (toBlob silently returns PNG), so in that case the editor lazy-loads libwebp compiled to WASM (~110 KB) in a worker.
 
 The honest trade-off: a model small enough to run on a laptop won't beat a big server model on the hard cases (fine hair, busy backgrounds). There are keep/erase brushes to fix those by hand.
@@ -85,11 +87,11 @@ Happy to go into the WASM/ONNX side or the privacy model.
 ```
 Author here. Two things people usually ask:
 
-1. "Is the photo really not uploaded?" Open devtools → Network while you run the cutout, or turn off wifi after the model has loaded. In my measurement the session made 67 requests and none carried the image (0 request body bytes).
+1. "Is the photo really not uploaded?" Open devtools → Network while you run the cutout, or turn off wifi after your first cutout (the model is cached by then). In my last measurement the session made 93 requests and none carried the image.
 
-2. You will see requests to Google domains: the site runs AdSense ads to pay for hosting. Those scripts make their own requests, but the photo never goes to them or to me. If that bothers you, a content blocker doesn't break the editor.
+2. You will see requests to Google domains: the site runs AdSense to pay for hosting. Those scripts make their own requests (in one run I saw a few small ad-measurement POSTs, under 0.5 KB each), but the photo never goes to them or to me. A content blocker doesn't break the editor.
 
-On a mid-range laptop the cutout of a 720×900 photo took ~5 s the first time and ~3 s after. Speed on low-end phones is the part I'd most like feedback on.
+Speed depends on the path: on a computer with a GPU (BiRefNet) a 720×900 photo took 22.6 s the first time (model download + GPU warm-up) and ~4 s after; without one (u2netp, also what phones use) ~5 s and ~3 s. Single runs on a laptop, not a benchmark. Speed on low-end phones is the part I'd most like feedback on.
 ```
 > Verificá el punto 2 antes de postear: abrí el editor con uBlock y confirmá que
 > el recorte anda. Si no anda, borrá esa última frase.
@@ -110,7 +112,7 @@ I built a background remover that runs locally in the browser, so the photo is n
 ```
 **Texto:**
 ```
-Most free background removers upload your photo to their servers to process it. I wanted one that doesn't, so the AI model runs inside the browser (WebAssembly + ONNX). The image never leaves your device: you can check the Network tab, or turn off wifi once the page has loaded and it keeps working.
+Most free background removers upload your photo to their servers to process it. I wanted one that doesn't, so the AI model runs inside the browser (WebAssembly + ONNX). The image never leaves your device: you can check the Network tab, or turn off wifi after your first cutout (the model is cached by then) and it keeps working.
 
 It also strips EXIF/GPS metadata and can blur faces, same local approach.
 
@@ -183,9 +185,9 @@ Hice un editor de imágenes que quita el fondo con IA sin subir la foto a ningú
 Lo armé porque los removedores de fondo gratis suben la foto a sus servidores y después te cobran la descarga en alta.
 
 Todo corre en el navegador:
-- Recorte con onnxruntime-web, dentro de un Web Worker: BiRefNet-lite en la GPU (WebGPU) si el navegador puede usarla, u2netp en WebAssembly si no.
+- Recorte con onnxruntime-web, dentro de un Web Worker: BiRefNet-lite en la GPU (WebGPU) en computadoras donde el navegador puede usarla; u2netp en WebAssembly en celulares, tablets y equipos sin GPU (en el celular uso u2netp aunque haya WebGPU: con 115 MB iOS cierra la pestaña).
 - Refinado de bordes con un GrabCut que escribí en Rust y compilé a WebAssembly.
-- La primera vez baja ~120 MB con GPU (el modelo pesa 115 MB) o ~6 MB sin ella; después queda en caché y anda sin internet.
+- La primera vez baja ~120 MB en una computadora con GPU (el modelo pesa 115 MB) o ~6 MB en el celular o sin GPU; después del primer recorte queda en caché y anda sin internet.
 - Safari no genera WebP desde canvas (te devuelve PNG sin avisar), así que en ese caso cargo libwebp compilado a WASM solo cuando hace falta.
 
 Gratis, sin cuenta y sin marca de agua. Tiene publicidad de Google para pagar el hosting (esas peticiones no llevan la foto, lo pueden ver en la pestaña Red).

@@ -51,3 +51,7 @@
 
 ## BUG-13 R1 — aceptado por el PO (2026-10-20)
 - Una computadora con muy poca memoria puede morir bajando los 115 MB antes de que se escriba la marca anti-bucle. PO: riesgo aceptado, no se cubre («no puedo hacer software en 2026 para computadoras de 2001»).
+
+## BUG-13 intento 3 — deuda de la pasada hostil (nerv-qa, 2026-10-20)
+- H1: `setDeviceHint(undefined)` fija `mobileHint=false` (aiSegmenter.js:80); un llamador que omita `mobile`, o un bundle viejo del hilo principal con worker nuevo, deja a un iPad «Mac» sin veredicto. Hoy las 5 llamadas lo mandan. Sugerencia: que `undefined` no pise un true.
+- H2: reloj manipulado ⇒ marca futura/vencida ignorada ⇒ computadora reintenta BiRefNet. Solo computadoras (el móvil no lee la marca). Aceptado por política.
