@@ -168,3 +168,6 @@
 - risks: i18n.js ya corregido por BUG-13 (mergeado); hits restantes del grep de condición: «Lo probamos», cifras de autor (modelo solo), histórico.
 - how to test: G1 grep de cifra → solo las 3 líneas 69 históricas; G2 grep u2netp|BiRefNet revisado a mano; rm -rf dist && npm test.
 - Push de main (BUG-12+BUG-13) aprobado por el PO: 9b42c71..1c35544, CI 39468473942.
+
+### 2026-10-20 Orquestador→nerv-web (BUG-15, diagnóstico de CI)
+- PO pusheó BUG-14 (1c35544..HEAD) y corrió IndexNow (125 URLs). CI run 39471468361 rojo 2 veces: C2 offline consistente; lienzo 16 px flaky; POST de AdSense en test de origen. Primero causa raíz (P-15, máx. 3 hipótesis), después fix con test que discrimine.
