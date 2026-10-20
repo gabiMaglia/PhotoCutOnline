@@ -35,7 +35,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "copyright": "© 2026 Your Company. All rights reserved.",
+    "copyright": "© 2026 Gabriel Maglia. MIT License.",
     "category": "Photography",
     "shortDescription": "Remove image backgrounds with interactive cutout.",
     "longDescription": "PhotoCut Studio isolates a foreground object from any photo using an interactive GrabCut engine. Mark the object, refine with brushes, and export to transparent PNG or a new background.",
