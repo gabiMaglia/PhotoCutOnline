@@ -55,3 +55,6 @@
 ## BUG-13 intento 3 — deuda de la pasada hostil (nerv-qa, 2026-10-20)
 - H1: `setDeviceHint(undefined)` fija `mobileHint=false` (aiSegmenter.js:80); un llamador que omita `mobile`, o un bundle viejo del hilo principal con worker nuevo, deja a un iPad «Mac» sin veredicto. Hoy las 5 llamadas lo mandan. Sugerencia: que `undefined` no pise un true.
 - H2: reloj manipulado ⇒ marca futura/vencida ignorada ⇒ computadora reintenta BiRefNet. Solo computadoras (el móvil no lee la marca). Aceptado por política.
+
+## BUG-16 — gate RED_PROOF_FAILED falso positivo (2026-10-20)
+- La implementación de la política (test/lib/originPolicy.mjs) vive bajo test/; el gate la copia al árbol previo y la prueba de rojo no discrimina. QA hizo rojo manual (6 fail → 13/13). Se mergea con el gate en rojo por esa causa documentada; deuda D-3: excluir test/lib/ del copiado o mover la política fuera de test/.
