@@ -106,3 +106,45 @@ Observación: una marca con fecha futura se ignora y la siguiente `markAttempt` 
 D1 [proceso, bloqueante, reabierto] engram/plans/BUG-13.md: el gate sigue rechazando con PLAN_GATE_MISSING. El sello está fuera de la sección `## CÓMO` (cae bajo `## Ampliación…`), y con el backlog real el gate computa X por reintento y también exige `## QUÉ` estampado, que el plan no tiene.
    Corrección sin tocar código: poner «Aprobado por: … [fecha]» dentro de `## CÓMO` (p. ej. mover la sección Ampliación a un `###` o repetir el sello antes de `## Ampliación`), y resolver §QUÉ (el PO decide si el nivel X por reintento exige §QUÉ o se documenta el desvío; QA no puede estampar ni inventarlo). Re-correr el gate con el backlog de main.
 Deuda (qa/_debt.md ya tiene O1/O2): G3 arriba (test de TTL a nivel aiSegmenter) y G1 (aclaración de macOS táctil en el Gherkin / test del caso Mac).
+
+---
+
+# Intento 3 — nerv-qa Adversarial (X por reintento #3) · 2026-10-20 · rama fix/BUG-13-mobile-ai @ 6987cba
+
+## Veredicto intento 3: APROBADO
+
+## §Plan
+- Gate corrido por QA desde el worktree de la rama (`NERV_TEST_CMD="npx jest"`, handoff = return intento 3 de main, `--files` = diff real vs merge-base, `--level S`):
+  base main; files == declaración (14); intento derivado #3 (2 RECHAZADO); nivel computado X (declarado S ⇒ WARN, QA revisa en X);
+  plan estampado para X; return P-1 con 4 campos; prueba de rojo OK; suite verde; `NERV-GATE: PASS`.
+- `git diff c3dfaed..HEAD -- src test` vacío: el código y los tests son los auditados en el intento 2. Entre c3dfaed y HEAD solo cambió `engram/`.
+- §QUÉ (arquitecto, post-hoc) y §CÓMO (nerv-web) declaran su carácter post-hoc sin fechas retroactivas; la tabla de conformidad cita file:line que verifiqué contra el código (aiSegmenter.js:218/224/251, backend.js:299/304/318, cutoutWorker.js:99-118, deviceClass.js).
+- G1 del Gherkin corregido («Windows táctil»): coherente con deviceClass.js (Mac+táctil ⇒ móvil; Windows táctil 1366×768 ⇒ no). Ya no hay contradicción.
+
+## §GAP
+Especificado (con implementación y test): los 7 escenarios (móvil/tablet ⇒ u2netp sin /models/birefnet-*; escritorio ⇒ BiRefNet; marca persistente + sin almacenamiento; éxito limpia; vence a los 7 días; Android sitio de escritorio / Windows táctil 1366×768; textos ES/EN/PT).
+Deducido (al PO, no se vuelve test): limpiar la marca también al abrir la sesión; marca que persiste tras falla atrapable (hasta 7 días). Definición sin implementación: ninguna.
+
+## §Casos (1:1 vs Gherkin)
+Todos CUBIERTOS (sin cambios desde el intento 2). Excepción de profundidad conocida: TTL probado en la unidad `aiAttemptMark`, no a nivel `aiSegmenter` (G3, deuda).
+
+## Pasada hostil (X)
+H-A. ¿Algún camino de IA llega a BiRefNet en un móvil sin el dato `mobile`?
+- Único módulo que abre BiRefNet: aiSegmenter.js (`openPreferred`, :249-255). Importadores en `src/`: cutoutWorker.js:15 y backend.js:108/162/168/176 (camino inline). Nada más (grep sobre src/, editor/, test/; `src-tauri` y `crates` no mencionan birefnet/onnx).
+- Entradas de producto: useCutoutSession.js:106,109; useIconStudio.js:91,106; useBatch.js:36 ⇒ todas `backend.warmupAi|aiCut|removeBg` ⇒ `{mobile: isMobileDevice()}` en backend.js:299,304,318. Worker (cutoutWorker.js:99,106,116) e inline (backend.js:160-183) llaman `setDeviceHint` antes de tocar aiSegmenter. Los comandos del worker que no son IA no abren modelo.
+- Residual 1 (H1, no bloqueante): `setDeviceHint(mobile)` hace `!!mobile`, así que un llamador futuro que omita el dato RESETEA un true previo a false (no es sticky). Hoy ningún llamador lo omite. Residual 2: un bundle viejo del hilo principal (service worker/caché) con un worker nuevo no manda `mobile`; en un iPad que se presenta como Mac el worker no lo detecta por su UA. Ventana de despliegue breve; con iPhone/Android el UA del worker alcanza (OR).
+- Los tests de `test/ai-quality-test.js` y `ai-test.js` llaman aiMatte/backend sin hint en un Chrome de escritorio: no son rutas de producto.
+H-B. Marca con TTL ante relojes manipulados (aiAttemptMark.js:53-58): `age = Date.now() - at` solo si `typeof at === "number"`; vale con `0 ≤ age ≤ 7 d`.
+- Reloj adelantado >7 d tras marcar: marca vencida ⇒ se reintenta BiRefNet (conservador: igual al vencimiento normal). Reloj atrasado (o marca escrita con reloj futuro): age < 0 ⇒ ignorada ⇒ se reintenta BiRefNet; no rompe nada y la siguiente `markAttempt` sobrescribe. `NaN`/`Infinity`/`true`/string: comparaciones falsas o `-1` ⇒ ignorada. Nunca lanza (todo en `safe`).
+- Consecuencia máxima: una computadora con reloj roto que muere en BiRefNet puede repetir el intento; solo computadoras, porque el móvil decide por dispositivo ANTES de leer la marca (aiSegmenter.js:251, `isMobile()` precede a `hasAttempt()`). Por política ya aceptada. Deuda H2.
+H-C. Sin estados imposibles hallados: `usingFallback || isMobile() || !gpu || hasAttempt` es cortocircuito; en móvil no hay pedidos a /models/birefnet-* ni acceso a IndexedDB; mark/clear ocurren dentro del rango `inFlight` (verificado en intento 1).
+
+## TDD P-18
+Rojo verificado por el gate (PASS) y a mano en intento 2 (5 tests fallan sin el fix). Sin aserciones debilitadas (solo altas). Aserciones afirman comportamiento.
+
+## §Defectos
+Ninguno.
+
+## Deuda no bloqueante (ticket de deuda, agregada a _debt.md)
+H1 `setDeviceHint` no sticky y bundle viejo sin `mobile` (hacer que `undefined` no pise el hint, o exigir el dato); H2 reloj manipulado reintenta BiRefNet en computadoras; G3 test del TTL a nivel aiSegmenter; O1/O2; R1/R2 del arquitecto.
+Verificación final de jetsam: PO en iPhone 13 con WebGPU activado. nerv-verifier ciego: lo convoca el orquestador en paralelo; este veredicto no depende de él pero el orquestador debe cruzar ambos antes de mergear. No mergeé.
