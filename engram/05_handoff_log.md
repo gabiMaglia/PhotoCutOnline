@@ -118,3 +118,8 @@
 - files touched: engram/plans/BUG-13.md, src/lib/aiAttemptMark.js (timestamp, TTL 7 días; futuro/basura ignorados), src/lib/deviceClass.js (isMobileDevice(nav, scr): táctil + Linux sin Android, o lado corto de screen 1–600 px), sus tests.
 - risks: laptop Linux táctil → u2netp (consecuencia de la heurística del Gherkin; no la decidió el PO explícitamente); heurísticas solo vía aviso del hilo principal (worker sin screen); O1/O2 abiertos; jetsam real lo verifica el PO.
 - how to test: npx jest; TEST_PORT=<libre> npm run test:web; rojo: checkout 028e44b de deviceClass.js y aiAttemptMark.js.
+
+### 2026-10-20 PO→Orquestador→nerv-arquitecto (BUG-12 y BUG-13, 2 rechazos de QA por proceso)
+- BUG-12 intento 2 RECHAZADO: reintento ⇒ gate computa X ⇒ falta §QUÉ+§CÓMO estampados. BUG-13 intento 2 RECHAZADO: sello fuera de `## CÓMO` (el gate lee solo esa sección) y falta §QUÉ (X por reintento). Código limpio en ambos. WebKit «\0asm»: artefacto de worktree (main principal verde, verificado por QA).
+- PO elige: nerv-arquitecto escribe y estampa §QUÉ de ambos desde el Gherkin aprobado, verifica que el código lo cumple; desvío (sello post-código) a qa/_debt.md. Luego nerv-web: §CÓMO de BUG-12 y sello de BUG-13 dentro de `## CÓMO`. Después gate (backlog de main) → QA → nerv-verifier (BUG-13) → merge.
+- Gherkin BUG-13 corregido por el orquestador (GAP G1): «Windows/macOS táctil» → «Windows táctil».

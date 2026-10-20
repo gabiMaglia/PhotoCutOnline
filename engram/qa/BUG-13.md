@@ -57,3 +57,52 @@ O2 Dos pestañas: la pestaña B que termina bien borra la marca que A acababa de
 O3 Android en «Sitio de escritorio» (UA sin Mobile, userAgentData.mobile=false, Linux): no se detecta como móvil y con WebGPU abre BiRefNet. El Gherkin nombra Android; decisión de PO (¿tratar táctil+Linux/Android como móvil?).
 O4 Marca huérfana en computadora sin TTL: u2netp para siempre tras un fallo catcheable/cierre en plena inferencia; considerar TTL o botón «reintentar alta calidad».
 Verificación final de jetsam: solo la puede hacer el PO en su iPhone 13 con WebGPU activado (declarado en el ticket).
+
+---
+
+# Intento 2 — nerv-qa Strong (2026-10-20) · rama fix/BUG-13-mobile-ai @ c3dfaed
+
+## Veredicto intento 2: RECHAZADO (otra vez un solo defecto de proceso; el fondo está limpio)
+
+## §Plan
+- Gate (worktree de la rama, `NERV_TEST_CMD="npx jest"`, handoff = return intento 2, `--files` = diff real vs merge-base):
+  - `--level S`: REJECTED PLAN_GATE_MISSING («falta §CÓMO estampado»). Nivel computado S (640 líneas > 400).
+  - `--level X --attempt 2`: REJECTED PLAN_GATE_MISSING (falta §CÓMO y §QUÉ). El gate computa X por «reintento #2 tras rechazo»;
+    en el worktree no lo deriva solo porque su 03_backlog.md es anterior a mi veredicto del intento 1. Con el backlog real de main (1 RECHAZADO) sí lo deriva.
+  - Causa verificada en nerv-gate.sh:189-198: `psec "CÓMO"` lee desde `^## CÓMO` hasta el siguiente `^## `. El plan tiene `## CÓMO`
+    (sin sello) y luego `## Ampliación…` (pasos 8-10); «Aprobado por: nerv-web [2026-10-20]» está al final, dentro de la sección Ampliación. No cuenta.
+  - Simulación (copia temporal, restaurada, sin cambios en la rama): con `## QUÉ` y `## CÓMO` estampados el gate da PASS (prueba de rojo OK, suite verde).
+    O sea: no hay otro bloqueo detrás del sello.
+- Orden de commits del plan (lo que se pidió mirar): c785f69 plan CÓMO < 028e44b rojo < 96fdcee fix (intento 1); b0601c0 sello+ampliación 8-10 < b904e48 rojo < c3dfaed fix (intento 2). Correcto: la ampliación se selló antes de su código.
+  El sello del CÓMO original (pasos 1-7) es post-código por decisión del PO, anotado en el plan y en qa/_debt.md; el PO ya pidió nerv-verifier ciego como control compensatorio.
+- jest: 62 suites / 439 tests verdes.
+- Prueba de rojo (hecha por mí): deviceClass.js y aiAttemptMark.js de b0601c0 (previos al fix) con los tests de b904e48 ⇒ 5 tests fallan, 21 pasan. Archivos restaurados.
+- WebKit, pedido explícito: en el checkout PRINCIPAL de main (dea7041, sin worktree), puerto libre 5421 (copia temporal del runner con otro puerto, luego borrada; sin pkill),
+  webp-test, reencode-test, filters-test y webp-retry-test [webkit] pasan todos («✓ todo verde», sin «\0asm»).
+  En el worktree de la rama (node_modules como symlink al principal) los mismos 3 fallan con «\0asm» (webp-test, reencode-test, webp-retry-test «reintento con red»).
+  Conclusión: main NO está rojo; el rojo es artefacto del worktree (symlink de node_modules / servido de .wasm por Vite). No es un defecto de BUG-13 ni de main.
+  Limitación: no corrí la rama en un árbol sin symlink; el diff no toca webp/encoder/filtros, y los archivos tocados desde el intento 1 son solo deviceClass.js y aiAttemptMark.js (+ tests).
+  Salió del ámbito: el runner de main no tiene TEST_PORT (la rama sí); si se mergea, ya queda.
+
+## §GAP (Especificado vs Deducido)
+Especificado, implementado y con test:
+- E1 «la marca vence a los 7 días»: aiAttemptMark.js (MARK_TTL_MS, hasAttempt solo true con número pasado y edad ≤ 7 días); tests: 6 días vigente, 7 días + 1 ms ignorada, futuro/`true` viejo ignorado, marca nueva tras vencimiento vale.
+- E2 «Android en sitio de escritorio»: deviceClass.js: táctil + UA Linux sin Android ⇒ móvil; táctil + lado corto ≤ 600 ⇒ móvil (borde 600 probado); laptop Windows táctil 1366×768 y 1920×1080 ⇒ no; sin táctil ⇒ no. screen llega solo del hilo principal (backend.js:299,304,318), coherente con el paso 9.
+Deducido (al PO, no se vuelve test):
+- G1 El Gherkin dice «laptop Windows/macOS táctil de 1366×768 o mayor sigue usando BiRefNet», pero la regla de iPad (Mac + táctil ⇒ móvil, escenario 1) hace que un «macOS táctil» sea móvil sin importar el tamaño; el plan paso 9 lo resuelve así (Mac táctil 1440×900 ⇒ true) pero NO hay test de ese caso (solo Windows). La frase de macOS en el Gherkin es contradictoria con iPadOS-como-Mac; PO: confirmar o quitar «macOS» de la frase. Hoy no existe laptop Mac táctil, riesgo bajo.
+- G2 TTL borde: el plan dice «edad < 7 días»; el código y el Gherkin («más de 7 días») usan ≤; solo difiere en el milisegundo exacto. Sin impacto.
+- G3 El plan (paso 8) prometía un test en aiSegmenter «marca vencida en escritorio con GPU ⇒ BiRefNet, vigente ⇒ u2netp». No existe: aiSegmenter.test mockea aiAttemptMark (hasAttempt = estado fijo), así que el TTL se prueba solo en la unidad. El cableado (hasAttempt false ⇒ BiRefNet) ya lo cubre el caso «sin marca ⇒ BiRefNet». Deuda, no bloqueante.
+Definición sin implementación: ninguna.
+
+## §Casos (1:1 vs Gherkin)
+Los 5 del intento 1: CUBIERTOS (sin cambios en aiSegmenter/backend/i18n desde entonces). Nuevos: vence a los 7 días CUBIERTO (unidad); Android sitio de escritorio CUBIERTO (unidad; ver G1).
+TDD P-18: rojo verificado (5 fallan sin el fix); toda aserción nueva afirma comportamiento (valor devuelto por hasAttempt/isMobileDevice); ninguna aserción debilitada o borrada en b0601c0..c3dfaed (solo altas).
+
+## Lente Strong
+Riesgo: sin entradas externas nuevas; `screen` y `navigator` solo se leen; la marca guarda un número, sin datos personales. Resiliencia: valores de marca no numéricos, futuros o `true` viejo ⇒ ignorados (no tumba); `screen` ausente ⇒ 0 ⇒ no es señal. Legibilidad: comentarios claros.
+Observación: una marca con fecha futura se ignora y la siguiente `markAttempt` la sobrescribe; correcto. Reloj del sistema atrasado: marca nueva puede parecer «futura» ⇒ se ignora ⇒ se reintenta BiRefNet; consecuencia leve, ya estaba cubierta por la política.
+
+## §Defectos
+D1 [proceso, bloqueante, reabierto] engram/plans/BUG-13.md: el gate sigue rechazando con PLAN_GATE_MISSING. El sello está fuera de la sección `## CÓMO` (cae bajo `## Ampliación…`), y con el backlog real el gate computa X por reintento y también exige `## QUÉ` estampado, que el plan no tiene.
+   Corrección sin tocar código: poner «Aprobado por: … [fecha]» dentro de `## CÓMO` (p. ej. mover la sección Ampliación a un `###` o repetir el sello antes de `## Ampliación`), y resolver §QUÉ (el PO decide si el nivel X por reintento exige §QUÉ o se documenta el desvío; QA no puede estampar ni inventarlo). Re-correr el gate con el backlog de main.
+Deuda (qa/_debt.md ya tiene O1/O2): G3 arriba (test de TTL a nivel aiSegmenter) y G1 (aclaración de macOS táctil en el Gherkin / test del caso Mac).
