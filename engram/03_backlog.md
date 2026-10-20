@@ -16,7 +16,7 @@
 | BUG-11 | **Comparar antes/después "no se puede cerrar"**: con el puntero encima, `.hud-btn:hover:not(:disabled)` (especificidad 0,2,0) le gana a `.hud-btn-on` (0,1,0) → texto lima sobre fondo lima = botón vacío. Escape tampoco cierra. Fix: estilo on+hover legible, Escape cierra, control de cierre visible en el overlay. | To Do |
 | GROW-36 | **Calidad del Recorte IA** → BiRefNet-lite fp16 en WebGPU + u2netp sin GPU (merge a404b31). ISNet int8 descartado (benchmark: manchas/agujeros). **Decisión PO 2026-10-16: acepta el riesgo de licencia DIS5K** (pesos MIT; dataset de entrenamiento con uso comercial restringido; mitigación: volver a u2netp es un cambio de una línea; aviso publicado en licencias). | Done (local) |
 | BUG-12 | **Editor mobile sin foto: «asfixia» (reporte PO 2026-10-20, iPhone).** Medido en WebKit iPhone 15 (390×659): `.canvas-empty` mide 311 px dentro de un `.canvas-wrap` de 237 px → borde punteado y texto recortados; topbar de 2 filas = 119 px con ☕/ⓘ a 2 px (`.topbar-icons gap:2px`) y `row-gap:6px`; `.rail` fijo 46vh muestra 6 herramientas DESACTIVADAS casi pegadas. Decisión PO: opción «sin foto: solo el CTA». Rama `fix/BUG-12-mobile-empty`. Niv A (las Gherkin son el plan). **Criterios:** ver bloque BUG-12 abajo. | To Do |
-| BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página al terminar de bajar el modelo** (reporte PO 2026-10-20). Hipótesis H1 (sin confirmar): iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → jetsam del proceso → el respaldo a u2netp nunca corre y se repite en cada intento. «Recorte automático» + export WebP en el mismo iPhone: OK. **Bloquea el lanzamiento.** Espera: prueba del PO con WebGPU desactivado + modelo/iOS. | Bloqueado (PO) |
+| BUG-13 | **iPhone/Safari: «Recorte IA» recarga la página** (reporte PO 2026-10-20). **Causa CONFIRMADA por el PO (iPhone 13):** con el flag WebGPU de Safari desactivado el recorte anda (u2netp). iOS 26 expone WebGPU+shader-f16 → `gpuUsable()` (aiSegmenter.js:84-102) elige BiRefNet 115 MB → iOS mata el proceso por memoria → el respaldo a u2netp (aiSegmenter.js:212-235) nunca corre y, como nada persiste, se repite en cada intento. **Bloquea el lanzamiento.** Rama `fix/BUG-13-mobile-ai`. Niv S (escalado por el orquestador: ruta de IA, bloqueante de lanzamiento) → CÓMO en engram/plans/BUG-13.md antes del código. **Criterios:** bloque BUG-13 abajo. | To Do |
 | GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
 | GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
 
@@ -48,6 +48,21 @@ Característica: editor mobile respirable sin foto
     Y la separación entre la fila de acciones y la tira de pestañas es de al menos 10 px
     Y ningún control de la topbar queda a menos de 12 px del borde lateral
 
+  Escenario: header prolijo (agregado por el PO 2026-10-20, tras ver las capturas)
+    Entonces la topbar tiene padding de al menos 12 px arriba y abajo y 16 px a los costados
+    Y los controles de la fila de acciones (Abrir foto, idioma, ☕, ⓘ) tienen la misma altura y la misma separación entre sí, de al menos 8 px
+    Y en móvil no hay divisor vertical suelto entre idioma y ☕
+    Y la tira de pestañas respeta el mismo margen lateral de 16 px que la fila de acciones
+    Y entre el borde inferior de la topbar y el contenido (zona vacía o lienzo) hay al menos 16 px
+
+  Escenario: controles del header con la misma forma (PO 2026-10-20)
+    Entonces en móvil el selector de idioma, ☕ e ⓘ comparten forma y radio de borde (los tres círculos o los tres cuadrados redondeados, igual tamaño 44×44)
+
+  Escenario: la pista de arrastrar/pegar solo se oculta en táctil
+    Dado una ventana de escritorio angosta (≤760 px) con mouse (pointer: fine)
+    Entonces .canvas-empty-hint se sigue mostrando
+    Y solo se oculta con pointer: coarse
+
   Escenario: escritorio sin cambios
     Dado un viewport de 1280×800
     Entonces el editor se ve igual que antes (sin foto y con foto): captura antes/después sin diferencias de layout
@@ -57,6 +72,52 @@ Característica: editor mobile respirable sin foto
 ```
 - Alcance: pestaña Recorte + topbar compartida. Las demás pestañas NO se rediseñan: si tienen el mismo problema, se reporta con captura en el return handoff.
 - Verificación: test Playwright nuevo en el harness (`npm run test:web`) que mida los criterios numéricos en WebKit y Chromium a 390×844, con prueba de rojo contra main.
+
+### BUG-13 — criterios (Gherkin)
+```gherkin
+Característica: el Recorte IA nunca tumba la pestaña en celulares
+
+  Escenario: celular o tablet con WebGPU usa u2netp
+    Dado un dispositivo táctil móvil (iPhone, iPad —incluido iPadOS que se presenta como Mac—, Android) con WebGPU y shader-f16 disponibles
+    Cuando toco «Recorte IA»
+    Entonces se descarga y usa u2netp (~6 MB), nunca las partes de BiRefNet
+    Y no se pide ninguna URL /models/birefnet-*
+
+  Escenario: computadora con GPU apta sigue usando BiRefNet
+    Dado Chrome de escritorio en macOS con GPU apta
+    Cuando toco «Recorte IA»
+    Entonces se usa BiRefNet como hoy (sin regresión de GROW-36)
+
+  Escenario: si la pestaña muere abriendo BiRefNet, la próxima vez va u2netp
+    Dado que un intento con BiRefNet empezó y la página se recargó antes de terminar (el proceso murió: no hubo error atrapable)
+    Cuando vuelvo al editor y toco «Recorte IA»
+    Entonces se usa u2netp sin volver a intentar BiRefNet
+    Y la marca persiste entre recargas y sesiones (no solo en memoria)
+    Y si el almacenamiento no está disponible (modo privado, bloqueado), el editor sigue funcionando y la decisión cae a la regla del dispositivo
+
+  Escenario: la marca vence a los 7 días (decisión PO 2026-10-20)
+    Dado una marca de intento con BiRefNet de hace más de 7 días
+    Cuando toco «Recorte IA» en una computadora con GPU apta
+    Entonces se ignora la marca y se vuelve a intentar BiRefNet
+    Y con una marca de menos de 7 días se usa u2netp
+
+  Escenario: Android en modo «Sitio de escritorio» (decisión PO 2026-10-20: cubrirlo)
+    Dado un navegador con maxTouchPoints > 1 y UA de Linux sin «Android» (así se presenta Chrome Android en ese modo)
+    O dado un navegador con maxTouchPoints > 1 cuyo lado corto de pantalla (screen) es ≤ 600 px
+    Entonces se trata como móvil y usa u2netp
+    Pero una laptop Windows táctil con pantalla de 1366×768 o mayor sigue usando BiRefNet
+    # (corrección del orquestador 2026-10-20, GAP G1 de QA: las Mac no tienen pantalla táctil —maxTouchPoints 0—; «Mac + táctil» es iPadOS y va a u2netp)
+
+  Escenario: un BiRefNet exitoso limpia la marca
+    Dado una computadora con GPU apta
+    Cuando un recorte con BiRefNet termina bien
+    Entonces la marca de «intento en curso» se borra y el próximo recorte vuelve a usar BiRefNet
+
+  Escenario: textos honestos sobre el peso
+    Entonces los textos del editor (onboarding/ayuda, ES/EN/PT) que hablan de ~120 MB dicen que eso aplica a computadoras con GPU, y que en el celular baja ~6 MB
+```
+- Verificación: tests unitarios (jest) de la decisión de modelo y de la marca persistente, con prueba de rojo contra main; una corrida Playwright WebKit/Chromium con UA de iPhone y WebGPU simulado que confirme que no se pide /models/birefnet-*. El jetsam real no se puede reproducir en CI: la verificación final es del PO en su iPhone 13 con WebGPU ACTIVADO.
+- No tocar el arnés de «Lo probamos» ni los textos de las guías (otro ticket si hace falta).
 
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10
 
@@ -392,6 +453,10 @@ responsable; la implementación queda como ticket listo para arrancar.
 ## Veredictos QA
 | Tarea | Veredicto | Defectos (si rechazo) | Fecha |
 |-------|-----------|------------------------|-------|
+| BUG-12 (intento 1) | RECHAZADO | nerv-qa Advisory (gate computa A; revisado fb13ad5). D1 [proceso] falta el return handoff P-1 de nerv-web en 05_handoff_log.md: nerv-gate REJECTED HANDOFF_INCOMPLETE (status/files touched/risks/how to test); sin gate PASS no hay aprobación. Funcional OK: los 7 escenarios del Gherkin medidos en Chromium+WebKit, rojo contra main verificado, escritorio 1280 idéntico (rects), otras pestañas a 390 sin rotura, mobile-test sin aserciones debilitadas. Deducido al PO: hint «arrastrá» oculto en móvil. Fix: registrar return handoff (+capturas y reporte de otras pestañas) y re-gate. Ver qa/BUG-12.md | 2026-10-20 |
+| BUG-12 (intento 2) | RECHAZADO | nerv-qa (d7ee4d9). **D1 [proceso, único bloqueante]** nerv-gate: con el backlog de main (1 RECHAZADO previo) el nivel P-11 computado es **X** (reintento #2), no A → `LEVEL_UNDERSTATED` y falta §CÓMO/§QUÉ estampado en engram/plans/BUG-12.md (P-19.3); sin gate PASS no hay aprobación. Con el backlog de la rama (sin veredicto) el gate da PASS nivel A, pero el repo de verdad es main. **Funcional OK, sin defectos de código**: D1 del intento 1 resuelto (return en 05_handoff_log, 4 campos); «misma forma» y «pista solo en táctil» verificados en Chromium y WebKit con emulación real hasTouch+isMobile (pointer: coarse=true → pista oculta; fine → visible; rojo de la pista probado). `npm test` 85/85; `test:web` solo falla webp/reencode/webp-retry [webkit] (artefacto del worktree, ajeno). Fix: estampar plan/§QUÉ de BUG-12 o dispensa explícita del PO a la regla de reintento, y re-gate; sin cambio de código. Ver qa/BUG-12.md | 2026-10-20 |
+| BUG-13 (intento 1) | RECHAZADO | nerv-qa Strong (gate computado S, 547 líneas). **D1 [proceso, único bloqueante]** nerv-gate RECHAZADO PLAN_GATE_MISSING: engram/plans/BUG-13.md no tiene «Aprobado por:» en §CÓMO (P-19.3); el plan está comprometido antes del código (c785f69 < 028e44b) pero sin sello. QA no puede estampar aprobaciones. Auditoría de fondo limpia: 428/428 jest, criterios 1-5 cubiertos, sin aserciones debilitadas, `webp-retry-test [webkit]` falla idéntico en main (preexistente/entorno). Deuda no bloqueante (O1-O4) en qa/BUG-13.md. Reentrega: solo sellar el plan y re-correr el gate | 2026-10-20 |
+| BUG-13 (intento 2) | RECHAZADO | nerv-qa Strong (c3dfaed). **D1 [proceso, único bloqueante, reabierto]** nerv-gate sigue en PLAN_GATE_MISSING: el sello «Aprobado por: nerv-web [2026-10-20]» quedó al pie, bajo «## Ampliación…», no dentro de «## CÓMO»; el gate lee solo la sección `## CÓMO` hasta el siguiente `## `. Además, con el backlog real (1 RECHAZADO) el gate computa X (reintento) y exige también §QUÉ estampado: el plan no tiene §QUÉ. Fondo limpio: jest 439/439; los dos escenarios nuevos (TTL 7 días, Android sitio de escritorio) cubiertos con rojo verificado (5 tests fallan con deviceClass/aiAttemptMark de b0601c0); orden de commits correcto (b0601c0 sello < b904e48 rojo < c3dfaed código). Rojos WebKit: NO son de main; en el checkout principal con puerto libre webp/reencode/filters/webp-retry [webkit] pasan 4/4 (artefacto del worktree: node_modules symlink). Reentrega: mover/duplicar el sello dentro de «## CÓMO» (y decidir con el PO qué hacer con §QUÉ al computar X) y re-correr el gate. Detalle en qa/BUG-13.md | 2026-10-20 |
 | BUG-11 (intento 1) | RECHAZADO | nerv-qa: D1 [mayor] «Salir de comparar» tapa «Después» a 390 px con foto vertical (falso verde: arnés apaisado); D2 [menor] .compare-hint limitado al 50 % del ancho. Ver qa/BUG-11.md | 2026-10-16 |
 | GROW-35 (intento 4) | APROBADO | nerv-qa Strong intento 4 (D-i3-1 corregido, mutaciones de retryVerdict atrapadas) + nerv-verifier ciego APROBÓ intento 2 (G1–G8) · nerv-gate PASS nivel X intento #4 · CI PR #4 verde (run 38330079824) · merge 965579b. Deuda: flag forceWasm para CI Linux, O1/O2, A5 Tauri y Safari/iOS físicos NO VERIFICADOS, libwebp 1.1.0 (qa/_debt.md). | 2026-10-12 |
 | GROW-35 (intento 3) | RECHAZADO | nerv-qa (gate PASS X intento 3; fix del runner D-i2-1 verificado con mutación). D-i3-1 [alta] CI del PR #4 (run 38329483132) rojo: en Linux WebKit codifica WebP nativo (`ruta=nativa`) y webp-retry-test asume la ruta WASM → «no se bloqueó ningún request del encoder». Caso previsto por la revisión del arquitecto (3c): deuda + no bloquear; el test debe reconocer la ruta nativa. QA prefiere a futuro un flag de harness que fuerce WASM en CI. | 2026-10-12 |

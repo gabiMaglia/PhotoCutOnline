@@ -73,3 +73,59 @@
 - Tarea: editor mobile sin foto — opción PO «sin foto: solo el CTA». Criterios Gherkin en 03_backlog.md (bloque BUG-12).
 - Leer SOLO: engram/03_backlog.md (fila + bloque BUG-12), src/styles.css (@media max-width 760px, .rail/.canvas-wrap/.canvas-empty/.topbar*), src/features/cutout/CutoutPage.jsx, componentes del estado vacío y de la topbar (src/components/layout/), src/lib/i18n.js.
 - Rama fix/BUG-12-mobile-empty (worktree). Return handoff P-1 (4 campos) con capturas 390×844 antes/después.
+
+### 2026-10-20 Orquestador→nerv-web (BUG-13, Strong)
+- Tarea: Recorte IA no debe usar BiRefNet en móviles + marca persistente anti-bucle. Causa confirmada por el PO (iPhone 13, flag WebGPU off ⇒ funciona). Criterios en 03_backlog.md (bloque BUG-13). CÓMO en engram/plans/BUG-13.md ANTES del código.
+- Leer SOLO: engram/03_backlog.md (fila + bloque BUG-13), engram/plans/GROW-36.md, src/lib/aiSegmenter.js, src/lib/cutoutWorker.js, src/lib/backend.js, sus tests, src/lib/i18n.js (claves de onboarding con ~120 MB).
+- Rama fix/BUG-13-mobile-ai (worktree). En paralelo corre BUG-12 (styles/CutoutPage/i18n): posible conflicto menor en i18n.js. Return handoff P-1.
+
+### 2026-10-20 Orquestador→nerv-qa (BUG-12, Advisory)
+- Revisar rama fix/BUG-12-mobile-empty (38e86a5) contra el bloque Gherkin BUG-12. Return de nerv-web: CTA reutiliza openPhoto (sin i18n nuevo), .canvas-empty-hint oculto en móvil (fuera de pedido), mobile-test.jsx ajustado (carga foto antes de medir), sin diff automático en escritorio.
+
+### 2026-10-20 Orquestador→nerv-qa (BUG-13, Strong)
+- Revisar rama fix/BUG-13-mobile-ai (96fdcee, base df54085, 14 archivos +523) contra el bloque Gherkin BUG-13 y engram/plans/BUG-13.md. Return nerv-web: deviceClass.js + aiAttemptMark.js (IndexedDB, timeout 2 s), veredicto móvil calculado en hilo principal y pasado al worker; webp-retry-test [webkit] falló en su corrida (no comparado contra main); riesgos: marca huérfana sin TTL, dos pestañas, UA de escritorio en Android.
+
+### 2026-10-20 PO→Orquestador→nerv-web (BUG-12 ajuste)
+- PO vio las capturas: «no hay espacio en el header, emprolijalo». Escenario Gherkin nuevo «header prolijo» en el bloque BUG-12. Mismo agente, misma rama; la revisión QA en curso queda desactualizada → re-QA.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-12 return, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-12-mobile-empty: 38e86a5 (estado vacío) + fb13ad5 (header prolijo).
+- files touched: src/styles.css (solo @media ≤760px), src/features/cutout/CanvasEditor.jsx, src/features/cutout/CutoutPage.jsx, test/mobile-empty-test.{html,jsx} (nuevos), test/mobile-test.jsx, test/run-tests.mjs (+ engram/03_backlog.md traído de main: a revertir en la rama).
+- risks: ad slot cut-rail desaparece sin foto en móvil; .canvas-empty-hint oculto en ≤760px también con mouse; toast "cargados" tapa los últimos controles (preexistente); Editar/Icon Studio/Color Studio sin foto siguen mostrando la bandeja desactivada (fuera de alcance → deuda).
+- how to test: mobile-empty-test + mobile-test en Chromium/WebKit 390×844. Capturas: scratchpad/antes-m390-*.png, despues-m390-*.png, despues2-m390-*.png, *-d1280-*.png. Otras pestañas: QA verificó a 390 px sin overflow (qa/BUG-12.md).
+
+### 2026-10-20 nerv-web→Orquestador (BUG-13 return, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-13-mobile-ai: c785f69 (plan CÓMO) → 028e44b (tests rojos) → 96fdcee (fix).
+- files touched: src/lib/deviceClass.js, src/lib/aiAttemptMark.js (nuevos), aiSegmenter.js, cutoutWorker.js, backend.js, i18n.js; tests deviceClass/aiAttemptMark (nuevos), aiSegmenter/backend.ai-notice/i18n/aiIdleRelease (ampliados); test/run-tests.mjs (paso UA iPhone, TEST_PORT); engram/plans/BUG-13.md.
+- risks: marca sin TTL (→ PO: 7 días); dos pestañas; Android «sitio de escritorio» no detectado (→ PO: cubrirlo); jetsam real no reproducible en CI.
+- how to test: npx jest src/lib; TEST_PORT=<libre> npm run test:web (bloque «ai-test con UA de iPhone»); manual iPhone 13 con WebGPU activado: sin /models/birefnet-* en Red.
+
+### 2026-10-20 PO→Orquestador (decisiones tras QA intento 1 de BUG-12 y BUG-13)
+- BUG-13: sellar el CÓMO ahora y anotar el desvío (sello post-código; plan commiteado antes, c785f69) · marca con TTL 7 días · cubrir Android «sitio de escritorio». BUG-12: igualar forma idioma/☕/ⓘ. Orquestador: la pista arrastrar/pegar solo se oculta con pointer: coarse (GAP de QA).
+- Lección de proceso: el orquestador no registró los return handoff en este log → gate HANDOFF_INCOMPLETE en BUG-12. Desde ahora se registran al recibirlos.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-12 return ronda 3, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-12-mobile-empty @ d7ee4d9 (sobre fb13ad5). engram/ fuera del diff de la rama.
+- files touched: src/styles.css (.lang-select círculo 44×44 en móvil; .canvas-empty-hint oculto solo con pointer: coarse), test/mobile-empty-test.jsx (2 aserciones nuevas). Acumulado: styles.css, CanvasEditor.jsx, CutoutPage.jsx, test/mobile-empty-test.{html,jsx}, test/mobile-test.jsx, test/run-tests.mjs.
+- risks: pointer: coarse no probado en navegador (solo fine); prueba de rojo de la pista no aislada (la corta la aserción de forma); npm test y test:web completos no re-corridos; ad slot cut-rail; otras pestañas con bandeja desactivada (→ deuda).
+- how to test: mobile-empty-test y mobile-test en Chromium/WebKit 390×844; capturas scratchpad/despues3-m390-{sinfoto,confoto}.png.
+
+### 2026-10-20 PO→Orquestador (BUG-13 control compensatorio)
+- PO aprueba sumar nerv-verifier ciego a BUG-13 antes del merge (además de nerv-qa Strong), por el sello post-código del CÓMO. Orden: return intento 2 → nerv-qa Strong → nerv-verifier ciego → gate → merge.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-13 return intento 2, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-13-mobile-ai: b0601c0 (CÓMO sellado + pasos 8–10) → b904e48 (5 tests rojos) → c3dfaed (fix). jest 439/439; test:web: Chrome todo verde incl. «ai-test con UA de iPhone»; WebKit webp/reencode/webp-retry rojos (\0asm, igual que main en worktree según QA intento 1).
+- files touched: engram/plans/BUG-13.md, src/lib/aiAttemptMark.js (timestamp, TTL 7 días; futuro/basura ignorados), src/lib/deviceClass.js (isMobileDevice(nav, scr): táctil + Linux sin Android, o lado corto de screen 1–600 px), sus tests.
+- risks: laptop Linux táctil → u2netp (consecuencia de la heurística del Gherkin; no la decidió el PO explícitamente); heurísticas solo vía aviso del hilo principal (worker sin screen); O1/O2 abiertos; jetsam real lo verifica el PO.
+- how to test: npx jest; TEST_PORT=<libre> npm run test:web; rojo: checkout 028e44b de deviceClass.js y aiAttemptMark.js.
+
+### 2026-10-20 PO→Orquestador→nerv-arquitecto (BUG-12 y BUG-13, 2 rechazos de QA por proceso)
+- BUG-12 intento 2 RECHAZADO: reintento ⇒ gate computa X ⇒ falta §QUÉ+§CÓMO estampados. BUG-13 intento 2 RECHAZADO: sello fuera de `## CÓMO` (el gate lee solo esa sección) y falta §QUÉ (X por reintento). Código limpio en ambos. WebKit «\0asm»: artefacto de worktree (main principal verde, verificado por QA).
+- PO elige: nerv-arquitecto escribe y estampa §QUÉ de ambos desde el Gherkin aprobado, verifica que el código lo cumple; desvío (sello post-código) a qa/_debt.md. Luego nerv-web: §CÓMO de BUG-12 y sello de BUG-13 dentro de `## CÓMO`. Después gate (backlog de main) → QA → nerv-verifier (BUG-13) → merge.
+- Gherkin BUG-13 corregido por el orquestador (GAP G1): «Windows/macOS táctil» → «Windows táctil».
+
+### 2026-10-20 nerv-arquitecto→Orquestador (BUG-12/BUG-13 return, registrado por el orquestador)
+- status: §QUÉ estampado post-hoc (ADR-009 NERV) para BUG-12 (plans/BUG-12.md) y BUG-13 (plans/BUG-13-QUE.md, a copiar en el plan de la rama). Conformidad con citas file:line; sin defectos estructurales.
+- files touched: engram/plans/BUG-12.md, engram/plans/BUG-13-QUE.md, engram/qa/_debt.md, engram/02_architecture.md (ADR-003 PROPUESTO: veredicto RECHAZADO-PROCESO no escala a X; gate lee veredictos desde la base).
+- risks: ramas deben hacer git merge main antes del re-gate (no copiar archivos: 02_architecture forzaría X); R1 PC con poca RAM muere bajando antes de la marca; R2 como-funciona/how-it-works dicen ~7 MB y no distinguen celular; G3 TTL sin test a nivel aiSegmenter.
+- how to test: tras merge main en cada rama, nerv-gate computa X (#3) y solo falta §CÓMO hasta que nerv-web lo selle dentro de ## CÓMO.
