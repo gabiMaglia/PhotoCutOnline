@@ -50,7 +50,7 @@
         {
           "@type": "Question",
           "name": "How can an AI run in the browser?",
-          "acceptedAnswer": { "@type": "Answer", "text": "With WebAssembly, which runs code at near-native speed inside the page, and ONNX Runtime, which executes the neural-network model. If your device has a GPU the browser can use (WebGPU), it runs BiRefNet-lite, which cuts out finer detail and downloads once (~120 MB); otherwise it runs u2netp, a lighter model (~7 MB with its engine). Either way it's cached after the first time. Fine segmentation also uses a GrabCut engine written in Rust and compiled to WebAssembly." }
+          "acceptedAnswer": { "@type": "Answer", "text": "With WebAssembly, which runs code at near-native speed inside the page, and ONNX Runtime, which executes the neural-network model. On a computer with a GPU the browser can use (WebGPU), it runs BiRefNet-lite, which cuts out finer detail and downloads once (~120 MB); on phones and tablets, or without a GPU, it runs u2netp, a lighter model (~6 MB with its engine). Either way it's cached after the first time. Fine segmentation also uses a GrabCut engine written in Rust and compiled to WebAssembly." }
         },
         {
           "@type": "Question",
@@ -112,11 +112,11 @@
       <h2>The cutout, in two layers</h2>
       <ul>
         <li>
-          <strong>Cutout AI:</strong> if your browser can use the GPU (WebGPU),
+          <strong>Cutout AI:</strong> if your browser can use the GPU (WebGPU) and you are on a computer,
           <em>BiRefNet-lite</em> runs with <strong>ONNX Runtime</strong> on the
           GPU: it cuts out finer detail (ears, hair, the text of a logo) and
-          weighs ~120&nbsp;MB the first time. Otherwise <em>u2netp</em> runs, a
-          lighter salient-object detection model (~7&nbsp;MB with its engine),
+          weighs ~120&nbsp;MB the first time. On phones and tablets, or without a GPU, <em>u2netp</em> runs, a
+          lighter salient-object detection model (~6&nbsp;MB with its engine),
           with ONNX Runtime compiled to WebAssembly. In my tests, with a GPU, the
           first cutout took ~23&nbsp;s (download and GPU setup) and the next ones
           ~4&nbsp;s; without a GPU, about 3&nbsp;s. It downloads only once and
@@ -152,8 +152,8 @@
       <h2>The trade-off, honestly</h2>
       <p>
         Running the model on your device has a cost: it has to
-        <strong>fit on your device</strong>. With a GPU that means a first
-        download of ~120&nbsp;MB; without one, a smaller model that loses fine
+        <strong>fit on your device</strong>. On a computer with a GPU that means a first
+        download of ~120&nbsp;MB; on phones and tablets, or without a GPU, ~6&nbsp;MB of a smaller model that loses fine
         detail (the tip of an ear, the letters of a logo). In very hard cases
         (very fine hair, busy backgrounds) a large model on a server can still
         win.

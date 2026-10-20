@@ -76,9 +76,9 @@
         <strong>entirely inside the browser</strong>, where the image never
         leaves your device. Automatic cutout uses an AI model exported to ONNX
         that runs in a <em>Web Worker</em>: <code>BiRefNet-lite</code> (MIT
-        licensed, ~115 MB) on the GPU via WebGPU when the browser can use it,
+        licensed, ~115 MB) on the GPU via WebGPU on computers when the browser can use it,
         and <code>u2netp</code> (4.6 MB, Apache-2.0 licensed) via WebAssembly
-        when it can't; the interactive cutout
+        on phones and tablets or when it can't; the interactive cutout
         relies on GrabCut compiled to WASM. There is no backend that receives
         your photos because there is simply nowhere to upload them.
       </p>
