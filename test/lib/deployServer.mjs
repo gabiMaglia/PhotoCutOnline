@@ -5,8 +5,7 @@
 // igual que Vercel, un /assets/ que no existe en el deploy activo devuelve
 // 404 text/html: es exactamente lo que rompía el worker viejo.
 //
-// Controles en `state`: deploy (clave de `roots`), down (corta el socket: lo que
-// ve el SW sin red), htmlDelay (ms, solo HTML: red lenta), missing (regex de
+// Controles en `state`: deploy (clave de `roots`), htmlDelay (ms, solo HTML: red lenta), missing (regex de
 // rutas a responder 404 aunque existan), swOverride (texto servido como /sw.js:
 // para simular el SW de una versión anterior). `log` registra cada request con su
 // estado: es la fuente de verdad de «qué se pidió a la red» en ambos motores
@@ -43,10 +42,9 @@ function cacheControl(p) {
 }
 
 export function createDeployServer({ roots, port }) {
-  const state = { deploy: Object.keys(roots)[0], down: false, htmlDelay: 0, missing: null, swOverride: null, log: [] };
+  const state = { deploy: Object.keys(roots)[0], htmlDelay: 0, missing: null, swOverride: null, log: [] };
 
   const server = http.createServer(async (req, res) => {
-    if (state.down) return req.socket.destroy();
     const url = new URL(req.url, "http://localhost");
     let p = decodeURIComponent(url.pathname);
     const deploy = state.deploy;
@@ -57,10 +55,6 @@ export function createDeployServer({ roots, port }) {
     if (p === "/editor") p = "/editor/"; // rewrite de vercel.json
     if (p.endsWith("/")) p += "index.html";
     if (p.endsWith(".html") && state.htmlDelay) await new Promise((r) => setTimeout(r, state.htmlDelay));
-    if (state.down) {
-      entry.status = -1;
-      return req.socket.destroy();
-    }
 
     if (p === "/sw.js" && state.swOverride) {
       entry.status = 200;
@@ -83,15 +77,26 @@ export function createDeployServer({ roots, port }) {
     fs.createReadStream(file).pipe(res);
   });
 
+  const listen = () => new Promise((resolve) => server.listen(port, resolve));
+  const stop = () => {
+    server.closeAllConnections?.();
+    return new Promise((resolve) => server.close(() => resolve()));
+  };
+
   return {
     state,
-    reset() {
-      Object.assign(state, { down: false, htmlDelay: 0, missing: null, swOverride: null });
+    // «Sin red» como la ve un usuario real: el puerto rechaza la conexión al
+    // instante. Aceptar y destruir el socket (lo anterior) hace que WebKit/Linux
+    // (libsoup) pierda su storage a mitad de la carga: falso rojo de BUG-16.
+    async setDown(down) {
+      if (down && server.listening) await stop();
+      else if (!down && !server.listening) await listen();
     },
-    listen: () => new Promise((resolve) => server.listen(port, resolve)),
-    close() {
-      server.closeAllConnections?.();
-      return new Promise((resolve) => server.close(resolve));
+    async reset() {
+      Object.assign(state, { htmlDelay: 0, missing: null, swOverride: null });
+      if (!server.listening) await listen();
     },
+    listen,
+    close: stop,
   };
 }
