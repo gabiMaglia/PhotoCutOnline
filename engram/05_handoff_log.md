@@ -152,3 +152,6 @@
 - files touched: public/llms.txt, public/como-funciona.html, public/en/how-it-works.html (FAQ JSON-LD + texto visible), public/autor.html, public/en/author.html, public/pt/autor.html (criterio de ruteo; fuera de cifra, decisión del TL), scripts/lastmod.json.
 - risks: src/lib/i18n.js ob.2.body* y su test dicen ~7 MB en main → ya lo corrige la rama de BUG-13 (orquestador); novedades/changelog y «Lo probamos» intactos por criterio; no existe pt/como-funciona.
 - how to test: grep -rn -I "7 MB" public → solo novedades.html:69, pt/novidades.html:69, en/changelog.html:69; git diff main -- public.
+
+### 2026-10-20 Orquestador→nerv-arquitecto (BUG-14 §QUÉ ANTES del fix)
+- QA intento 1 RECHAZADO: D1 gate computa S (public/en/author.html es path sensible) ⇒ falta plan; D2 tres guías con «si no, u2netp (~7&nbsp;MB)». El reintento computará X ⇒ §QUÉ (arquitecto) + §CÓMO (nerv-web) estampados ANTES de tocar código. Orquestador decide mantener el cambio de autor (QA: coherente; la frase vieja queda falsa tras BUG-13).
