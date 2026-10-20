@@ -46,3 +46,38 @@ Fix: registrar el return handoff con los 4 campos, declarar fb13ad5 (2º commit)
 - fb13ad5 modifica `engram/03_backlog.md` dentro de la rama de feature (Gherkin «header prolijo» + BUG-13): riesgo de conflicto al mergear con main. Resolver tomando la versión de main y re-aplicando el escenario nuevo.
 - El gate declara los archivos del diff; con fb13ad5 hay 8 (incluye el backlog).
 - QA mató por error procesos `vite dev` ajenos (BUG-13) mientras limpiaba puertos; el puerto del harness es fijo (5187), así que correr varias suites en paralelo da falsos resultados.
+
+
+---
+
+# Intento 2 (rama @ d7ee4d9, 2026-10-20)
+
+Veredicto: **RECHAZADO**, solo por proceso (D1). Funcionalmente sin defectos.
+
+## §Plan
+- Gate: en el worktree de la rama (backlog sin veredictos) `nerv-gate` da PASS nivel A y los 4 campos P-1 presentes (D1 del intento 1 resuelto: returns de rondas 1 y 3 en 05_handoff_log.md). Con el backlog de main (1 RECHAZADO de QA) deriva intento #2 -> nivel **X** -> `LEVEL_UNDERSTATED` y falta §CÓMO/§QUÉ estampado en engram/plans/BUG-12.md (P-19.3). Gana el gate. Aviso: sin NERV_TEST_CMD el gate no verifica prueba de rojo; la hice a mano.
+- `npm test`: 85/85. `npm run test:web` completo (puerto 5187 libre, sin pkill): mobile-test y mobile-empty-test OK en Chromium y WebKit; fallan webp-test/reencode-test/webp-retry-test [webkit] con «module doesn't start with \0asm» (el .wasm es válido; artefacto del worktree con node_modules enlazado; ya reportado en intento 1 como ajeno, el CI es la fuente de verdad).
+- Emulación táctil real (script propio, vite en puerto 5391): Chromium y WebKit con `hasTouch:true, isMobile:true`, 390×844 x3.
+- Rojo de la pista: inyecté el CSS viejo (hint oculto siempre) con mouse -> el test FALLA «visible=false con pointer fine». La aserción es discriminante.
+
+## §GAP
+| Comportamiento | Tipo | Nota |
+|---|---|---|
+| Pista arrastrar/pegar solo oculta con `pointer: coarse` | Especificado (escenario nuevo) | Cierra el GAP del intento 1. Medido: coarse=true -> oculta; fine a 390 px -> visible, en ambos motores |
+| Idioma/☕/ⓘ círculo 44×44 radio 99px | Especificado | Los 3 miden 44×44 y radio 99px |
+| Los 9 escenarios | Especificado | Sin criterio sin implementación, sin comportamiento sin definición nuevo |
+| Cuenta con pointer híbrido (laptop táctil con mouse) | Deducido | `pointer` refleja el dispositivo primario; fuera de pedido, no bloquea |
+
+## §Casos (nuevos del intento 2)
+| Escenario | Estado | Evidencia |
+|---|---|---|
+| Controles del header con la misma forma | Especificado, OK | [{44,44,99px} x3] Chromium y WebKit, fine y coarse |
+| Pista solo en táctil | Especificado, OK | Chromium touch: coarse/hover:none, hint oculto; WebKit touch idem; mouse 390: hint visible; 5 corridas x4 configuraciones: 20/20 OK |
+| Los 7 anteriores | OK | siguen verdes en la corrida completa; la regla de pista se movió de `max-width:760` a `pointer: coarse` sin tocar el resto |
+
+## §Defectos
+**D1 [proceso, bloqueante] nivel computado X, sin plan estampado (P-11/P-19.3).** Reproducir: en la raíz del repo (backlog de main) `nerv-gate.sh --ticket BUG-12 ... --level A` -> con el veredicto del intento 1 deriva reintento #2 -> X -> LEVEL_UNDERSTATED + falta §CÓMO/§QUÉ en engram/plans/BUG-12.md. Fix sin código: el orquestador estampa el plan/§QUÉ o el PO dispensa explícitamente la regla de reintento para un ticket Advisory de solo CSS, y se re-gatea. Aviso: este rechazo cuenta como 2º RECHAZADO (el protocolo manda nerv-arquitecto tras 2 rechazos de QA): decide el orquestador si lo invoca o pide dispensa.
+
+## Observaciones (no bloquean)
+- Flaky aislado: una corrida en WebKit táctil falló «lienzo a >= 16 px de la topbar (7.2)» (primera carga en frío del vite); 20/20 corridas siguientes verdes y el layout asentado mide 28 px (stage 161 vs topbar 133). La aserción mide apenas aparece `.canvas-stage`, posiblemente antes de que se asiente el tamaño. Deuda: esperar un frame/estabilidad antes de medir.
+- Ad slot cut-rail oculto sin foto en móvil y bandeja desactivada en Editar/Icon/Color: deuda ya anotada.
