@@ -189,3 +189,9 @@
 
 ### 2026-10-20 PO→Orquestador (verificación física)
 - iPhone 13, WebGPU activado: Recorte IA OK (no recarga), modo avión: editor abre y recorta. Launch kit desbloqueado. Show HN propuesto: jueves 2026-10-22 9 h ART.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-16 fix — return NO recibido; registrado por el orquestador con lo verificable)
+- status: commit c076a12 en fix/BUG-16-harness-offline; el TL terminó sin enviar el return pese a pedírselo. Colima apagado, ~/.cache/bug16 borrado, sin procesos colgados (verificado por el orquestador).
+- files touched: test/lib/deployServer.mjs, test/lib/originPolicy.mjs, test/sw-deploy-test.mjs, scripts/origin-policy.test.mjs (+128 −36). Sin src/ ni public/.
+- risks: NO hay evidencia del TL de la prueba rojo/verde en docker ni de test:web completo: QA la produce o la marca como faltante. La verificación definitiva del flake es el CI tras el merge.
+- how to test: node --test scripts/origin-policy.test.mjs; npm run test:web; node test/sw-deploy-test.mjs webkit; CI.
