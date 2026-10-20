@@ -129,3 +129,9 @@
 - files touched: engram/plans/BUG-12.md, engram/plans/BUG-13-QUE.md, engram/qa/_debt.md, engram/02_architecture.md (ADR-003 PROPUESTO: veredicto RECHAZADO-PROCESO no escala a X; gate lee veredictos desde la base).
 - risks: ramas deben hacer git merge main antes del re-gate (no copiar archivos: 02_architecture forzaría X); R1 PC con poca RAM muere bajando antes de la marca; R2 como-funciona/how-it-works dicen ~7 MB y no distinguen celular; G3 TTL sin test a nivel aiSegmenter.
 - how to test: tras merge main en cada rama, nerv-gate computa X (#3) y solo falta §CÓMO hasta que nerv-web lo selle dentro de ## CÓMO.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-12 return intento 3, registrado por el orquestador)
+- status: merge de main (29c1bdb) + §CÓMO post-hoc estampado dentro de ## CÓMO (b08a2c6). Sin cambios de código. El gate NO se corrió: el clasificador de auto mode le denegó el comando al Tech Lead. El orquestador no lo corre en su lugar; lo corre QA como parte de su revisión, igual que en los intentos 1 y 2.
+- files touched: engram/plans/BUG-12.md (§CÓMO). Diff de la rama vs main: engram/plans/BUG-12.md, CanvasEditor.jsx, CutoutPage.jsx, styles.css, test/mobile-empty-test.{html,jsx}, test/mobile-test.jsx, test/run-tests.mjs.
+- risks: sin salida del gate todavía; ad slot cut-rail; otras pestañas con bandeja desactivada (deuda).
+- how to test: nerv-gate desde el worktree con el handoff de scratchpad/bug12-handoff.md; mobile-empty-test y mobile-test en Chromium/WebKit.
