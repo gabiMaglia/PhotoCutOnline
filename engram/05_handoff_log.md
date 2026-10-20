@@ -87,3 +87,19 @@
 
 ### 2026-10-20 PO→Orquestador→nerv-web (BUG-12 ajuste)
 - PO vio las capturas: «no hay espacio en el header, emprolijalo». Escenario Gherkin nuevo «header prolijo» en el bloque BUG-12. Mismo agente, misma rama; la revisión QA en curso queda desactualizada → re-QA.
+
+### 2026-10-20 nerv-web→Orquestador (BUG-12 return, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-12-mobile-empty: 38e86a5 (estado vacío) + fb13ad5 (header prolijo).
+- files touched: src/styles.css (solo @media ≤760px), src/features/cutout/CanvasEditor.jsx, src/features/cutout/CutoutPage.jsx, test/mobile-empty-test.{html,jsx} (nuevos), test/mobile-test.jsx, test/run-tests.mjs (+ engram/03_backlog.md traído de main: a revertir en la rama).
+- risks: ad slot cut-rail desaparece sin foto en móvil; .canvas-empty-hint oculto en ≤760px también con mouse; toast "cargados" tapa los últimos controles (preexistente); Editar/Icon Studio/Color Studio sin foto siguen mostrando la bandeja desactivada (fuera de alcance → deuda).
+- how to test: mobile-empty-test + mobile-test en Chromium/WebKit 390×844. Capturas: scratchpad/antes-m390-*.png, despues-m390-*.png, despues2-m390-*.png, *-d1280-*.png. Otras pestañas: QA verificó a 390 px sin overflow (qa/BUG-12.md).
+
+### 2026-10-20 nerv-web→Orquestador (BUG-13 return, registrado por el orquestador)
+- status: En revisión QA. Rama fix/BUG-13-mobile-ai: c785f69 (plan CÓMO) → 028e44b (tests rojos) → 96fdcee (fix).
+- files touched: src/lib/deviceClass.js, src/lib/aiAttemptMark.js (nuevos), aiSegmenter.js, cutoutWorker.js, backend.js, i18n.js; tests deviceClass/aiAttemptMark (nuevos), aiSegmenter/backend.ai-notice/i18n/aiIdleRelease (ampliados); test/run-tests.mjs (paso UA iPhone, TEST_PORT); engram/plans/BUG-13.md.
+- risks: marca sin TTL (→ PO: 7 días); dos pestañas; Android «sitio de escritorio» no detectado (→ PO: cubrirlo); jetsam real no reproducible en CI.
+- how to test: npx jest src/lib; TEST_PORT=<libre> npm run test:web (bloque «ai-test con UA de iPhone»); manual iPhone 13 con WebGPU activado: sin /models/birefnet-* en Red.
+
+### 2026-10-20 PO→Orquestador (decisiones tras QA intento 1 de BUG-12 y BUG-13)
+- BUG-13: sellar el CÓMO ahora y anotar el desvío (sello post-código; plan commiteado antes, c785f69) · marca con TTL 7 días · cubrir Android «sitio de escritorio». BUG-12: igualar forma idioma/☕/ⓘ. Orquestador: la pista arrastrar/pegar solo se oculta con pointer: coarse (GAP de QA).
+- Lección de proceso: el orquestador no registró los return handoff en este log → gate HANDOFF_INCOMPLETE en BUG-12. Desde ahora se registran al recibirlos.

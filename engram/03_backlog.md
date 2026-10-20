@@ -55,6 +55,14 @@ Característica: editor mobile respirable sin foto
     Y la tira de pestañas respeta el mismo margen lateral de 16 px que la fila de acciones
     Y entre el borde inferior de la topbar y el contenido (zona vacía o lienzo) hay al menos 16 px
 
+  Escenario: controles del header con la misma forma (PO 2026-10-20)
+    Entonces en móvil el selector de idioma, ☕ e ⓘ comparten forma y radio de borde (los tres círculos o los tres cuadrados redondeados, igual tamaño 44×44)
+
+  Escenario: la pista de arrastrar/pegar solo se oculta en táctil
+    Dado una ventana de escritorio angosta (≤760 px) con mouse (pointer: fine)
+    Entonces .canvas-empty-hint se sigue mostrando
+    Y solo se oculta con pointer: coarse
+
   Escenario: escritorio sin cambios
     Dado un viewport de 1280×800
     Entonces el editor se ve igual que antes (sin foto y con foto): captura antes/después sin diferencias de layout
@@ -86,6 +94,18 @@ Característica: el Recorte IA nunca tumba la pestaña en celulares
     Entonces se usa u2netp sin volver a intentar BiRefNet
     Y la marca persiste entre recargas y sesiones (no solo en memoria)
     Y si el almacenamiento no está disponible (modo privado, bloqueado), el editor sigue funcionando y la decisión cae a la regla del dispositivo
+
+  Escenario: la marca vence a los 7 días (decisión PO 2026-10-20)
+    Dado una marca de intento con BiRefNet de hace más de 7 días
+    Cuando toco «Recorte IA» en una computadora con GPU apta
+    Entonces se ignora la marca y se vuelve a intentar BiRefNet
+    Y con una marca de menos de 7 días se usa u2netp
+
+  Escenario: Android en modo «Sitio de escritorio» (decisión PO 2026-10-20: cubrirlo)
+    Dado un navegador con maxTouchPoints > 1 y UA de Linux sin «Android» (así se presenta Chrome Android en ese modo)
+    O dado un navegador con maxTouchPoints > 1 cuyo lado corto de pantalla (screen) es ≤ 600 px
+    Entonces se trata como móvil y usa u2netp
+    Pero una laptop Windows/macOS táctil con pantalla de 1366×768 o mayor sigue usando BiRefNet
 
   Escenario: un BiRefNet exitoso limpia la marca
     Dado una computadora con GPU apta
@@ -432,6 +452,8 @@ responsable; la implementación queda como ticket listo para arrancar.
 ## Veredictos QA
 | Tarea | Veredicto | Defectos (si rechazo) | Fecha |
 |-------|-----------|------------------------|-------|
+| BUG-12 (intento 1) | RECHAZADO | nerv-qa Advisory (gate computa A; revisado fb13ad5). D1 [proceso] falta el return handoff P-1 de nerv-web en 05_handoff_log.md: nerv-gate REJECTED HANDOFF_INCOMPLETE (status/files touched/risks/how to test); sin gate PASS no hay aprobación. Funcional OK: los 7 escenarios del Gherkin medidos en Chromium+WebKit, rojo contra main verificado, escritorio 1280 idéntico (rects), otras pestañas a 390 sin rotura, mobile-test sin aserciones debilitadas. Deducido al PO: hint «arrastrá» oculto en móvil. Fix: registrar return handoff (+capturas y reporte de otras pestañas) y re-gate. Ver qa/BUG-12.md | 2026-10-20 |
+| BUG-13 (intento 1) | RECHAZADO | nerv-qa Strong (gate computado S, 547 líneas). **D1 [proceso, único bloqueante]** nerv-gate RECHAZADO PLAN_GATE_MISSING: engram/plans/BUG-13.md no tiene «Aprobado por:» en §CÓMO (P-19.3); el plan está comprometido antes del código (c785f69 < 028e44b) pero sin sello. QA no puede estampar aprobaciones. Auditoría de fondo limpia: 428/428 jest, criterios 1-5 cubiertos, sin aserciones debilitadas, `webp-retry-test [webkit]` falla idéntico en main (preexistente/entorno). Deuda no bloqueante (O1-O4) en qa/BUG-13.md. Reentrega: solo sellar el plan y re-correr el gate | 2026-10-20 |
 | BUG-11 (intento 1) | RECHAZADO | nerv-qa: D1 [mayor] «Salir de comparar» tapa «Después» a 390 px con foto vertical (falso verde: arnés apaisado); D2 [menor] .compare-hint limitado al 50 % del ancho. Ver qa/BUG-11.md | 2026-10-16 |
 | GROW-35 (intento 4) | APROBADO | nerv-qa Strong intento 4 (D-i3-1 corregido, mutaciones de retryVerdict atrapadas) + nerv-verifier ciego APROBÓ intento 2 (G1–G8) · nerv-gate PASS nivel X intento #4 · CI PR #4 verde (run 38330079824) · merge 965579b. Deuda: flag forceWasm para CI Linux, O1/O2, A5 Tauri y Safari/iOS físicos NO VERIFICADOS, libwebp 1.1.0 (qa/_debt.md). | 2026-10-12 |
 | GROW-35 (intento 3) | RECHAZADO | nerv-qa (gate PASS X intento 3; fix del runner D-i2-1 verificado con mutación). D-i3-1 [alta] CI del PR #4 (run 38329483132) rojo: en Linux WebKit codifica WebP nativo (`ruta=nativa`) y webp-retry-test asume la ruta WASM → «no se bloqueó ningún request del encoder». Caso previsto por la revisión del arquitecto (3c): deuda + no bloquear; el test debe reconocer la ruta nativa. QA prefiere a futuro un flag de harness que fuerce WASM en CI. | 2026-10-12 |

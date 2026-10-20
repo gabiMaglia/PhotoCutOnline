@@ -35,3 +35,6 @@
   - `webp-retry-test` imprime `SKIP: ruta=nativa — …` y termina. El runner (`retryVerdict`) acepta el salto solo fuera de darwin; en macOS lo trata como FAIL, y ahí se siguen exigiendo `ruta=wasm` y las dos fases.
   - La ruta WASM queda cubierta por jest (detección mockeada), por la corrida local en macOS y por las mutaciones de QA.
   - Pendiente: un flag del harness (p. ej. `?forceWasm=1`) que haga `canEncodeWebP()` falso solo en las páginas de test, para que CI Linux ejercite la ruta WASM y el reintento.
+
+## BUG-13 — desvío de proceso (2026-10-20)
+- El §CÓMO de engram/plans/BUG-13.md se commiteó antes del código (c785f69 < 028e44b) pero SIN sello; el Tech Lead lo sella después del código por decisión del PO. Gate intento 1: PLAN_GATE_MISSING. La ampliación (TTL 7 días, Android sitio de escritorio) sí se sella antes de su código.
