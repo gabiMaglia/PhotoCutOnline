@@ -37,3 +37,40 @@ Violan el escenario 1 («cualquier página pública… ~6 MB») y el escenario 3
 - autor.html ×3: el cambio no toca cifra, pero corrige la frase «cuando no» (condición de cuál modelo corre), que habría quedado falsa tras BUG-13. Es coherente con «páginas que explican la descarga»; se considera dentro de criterio por afirmación de ruteo, aunque sea un Deducido: el PO confirma. Es lo que dispara nivel S por path.
 - src/lib/i18n.js ob.2.body* dicen ~7 MB en esta rama: lo cubre la rama BUG-13 (declarado).
 - Cambios en HTML dejan líneas largas sin reflujo (legibilidad menor).
+
+---
+
+# QA BUG-14 — intento 2 — APROBADO
+
+Revisado: content/BUG-14-model-size @ ae224bd vs main (BUG-13 ya mergeado). Nivel X (reintento #2), computado por nerv-gate.
+
+## Plan / gate
+`nerv-gate.sh --ticket BUG-14 --attempt 2 --level A` corrido por QA desde el worktree: PASS. Base main, files == diff (12), intento #2 derivado, nivel computado X (declarado A: WARN, QA revisa en X), plan §QUÉ+§CÓMO estampados para X, return P-1 con 4 campos. WARN: sin comando de test configurado, así que la prueba de rojo la hice a mano:
+- `node --test scripts/` en la rama: 85/85 verde.
+- `public/` de 80c104f (pre-fix) + test nuevo: `not ok 13 EN/PT dicen lo mismo que ES...` (15 pass / 1 fail). Con el fix: 16/16. El test discrimina.
+- Jest no corrido (worktree sin node_modules); no hay diff en `src/`, así que no aplica regresión.
+
+## GAP
+| Escenario | Etiqueta | Estado |
+|---|---|---|
+| 3 guías: cuerpo con regla única (computadora+GPU → BiRefNet ~120 MB; celulares/tablets o sin GPU → u2netp ~6 MB) | Especificado (plan §QUÉ, D2) | Implementado ES/EN/PT |
+| como-funciona / how-it-works: visible + FAQ + description JSON-LD | Especificado | OK, FAQ = visible |
+| llms.txt | Especificado | OK |
+| Históricos y «Lo probamos» intactos | Especificado | OK; el diff de public/ no toca tested/limit/byline |
+| autor ×3 condición | Deducido, ya aceptado por el orquestador/arquitecto | OK |
+| NOTICE de licencias | sin definición | no se toca (fuera de alcance del plan) |
+
+## Casos
+- G1 cifra (perl con \xa0/\x{202f}/entidades y grep con U+00A0/U+202F): solo `novedades.html:69`, `pt/novidades.html:69`, `en/changelog.html:69`. Esperado.
+- G2 `u2netp|BiRefNet` (html+txt), cada hit: bylines y `<li>`/`.limit` de «Lo probamos» = mediciones, intactos; novedades/changelog:163 históricos; llms.txt:5, como-funciona (description, FAQ, lista), how-it-works (idem), 3 guías (cuerpo), autor ×3: todos nombran la clase de dispositivo o la dan por la cláusula u2netp «celulares y tablets o sin GPU». Sin «si no / otherwise / se não» huérfanos. llms.txt:5 condiciona BiRefNet «on the GPU via WebGPU when the browser supports it» pero lo cierra con «~120 MB on computers with a GPU», lo acepto.
+- JSON-LD: JSON.parse OK en las 5 páginas con cambios de texto.
+- (1) pruebas.test.mjs: `~7 MB` → `~6 MB` y se agrega `doesNotMatch(/~7 MB/)`; las demás aserciones no cambian. Más estricto, no débil. `~6 MB` no pasa trivialmente: falla contra el pre-fix.
+- (2) Texto vs BUG-13: celular/tablet → u2netp siempre, computadora con GPU apta → BiRefNet. Coincide con la regla única del plan y con el veredicto APROBADO de BUG-13.
+- (3) Merge a main: `src/lib/i18n.js` ya trae `ob.2.body*` ES/EN/PT con «~6 MB en el celular (~120 MB solo en computadoras con GPU)». Ninguna superficie de BUG-14 lo contradice; esta rama no toca src/.
+- Fechas: scripts/lastmod.json commiteado con [lastmod-skip]. Voseo ES sin tuteo nuevo; PT «celulares e tablets».
+
+## Defectos
+Ninguno.
+
+## Deuda (no bloqueante, ticket aparte si el PO quiere)
+`public/licenses/ai-models-NOTICE.txt:9` y `:59` dicen «devices with / without WebGPU» sin clase de dispositivo. El plan lo declara fuera de alcance (no afirma cifra ni ruteo con peso).
