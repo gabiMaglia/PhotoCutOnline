@@ -13,6 +13,7 @@ import zlib from "node:zlib";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createDeployServer } from "./lib/deployServer.mjs";
+import { foreignBodyViolation } from "./lib/originPolicy.mjs";
 import { readBuildId, renameSet, deriveDeploy } from "./lib/deploys.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -106,14 +107,15 @@ async function newContext(browser, opts = {}) {
       /* sin storage */
     }
   });
-  // editor/index.html trae AdSense fijo: los terceros se cortan (suite hermética,
-  // sin red real) y lo que se exige es la promesa de privacidad: ninguna
-  // request fuera del origen lleva cuerpo (la foto no sale del navegador).
+  // editor/index.html trae AdSense fijo: los terceros se cortan (suite hermética),
+  // pero en WebKit con el SW activo ctx.route no los ve y el script real corre.
+  // Se exige la promesa de privacidad (la foto no sale del navegador): ver
+  // lib/originPolicy.mjs, que tolera solo los pings de los anuncios declarados.
   await ctx.route((url) => url.origin !== ORIGIN, (route) => route.abort());
   const foreign = [];
   ctx.on("request", (r) => {
-    const u = r.url();
-    if (!u.startsWith(ORIGIN) && !/^(blob|data):/.test(u) && r.postDataBuffer()?.length) foreign.push(`${r.method()} ${u}`);
+    const bad = foreignBodyViolation({ origin: ORIGIN, method: r.method(), url: r.url(), body: r.postDataBuffer() });
+    if (bad) foreign.push(bad);
   });
   return { ctx, foreign };
 }
@@ -250,7 +252,9 @@ const CASES = {
         await page.goto(`${ORIGIN}/editor/?tab=text`);
         await openFilters(page);
       } catch (e) {
-        offline = e.message.split("\n")[0];
+        // el mensaje completo trae el «intercepts pointer events» / «not visible» que
+        // explica un timeout de click; la primera línea sola lo esconde (BUG-15)
+        offline = e.message.split("\n").slice(0, 8).join(" | ");
       }
       check("C2", offline === "ok", `offline: el editor arranca y abre Filtros (${offline})`);
       if (tag === "chrome") await ctx.setOffline(false);

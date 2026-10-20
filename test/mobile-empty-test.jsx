@@ -24,6 +24,29 @@ async function until(fn, label, ms = 8000) {
   throw new Error(`timeout: ${label}`);
 }
 
+// Espera a que el layout de `el` se asiente: sin animaciones en curso y el rect
+// idéntico en 5 frames seguidos. Un sleep fijo falla en runners lentos (BUG-15):
+// el lienzo se posiciona en un efecto tras medir el contenedor y entra con un
+// scale animado, y en WebKit cargado eso tarda más que cualquier margen.
+async function settled(el, ms = 8000) {
+  const t0 = Date.now();
+  const key = () => {
+    const r = el.getBoundingClientRect();
+    return `${r.top}|${r.left}|${r.width}|${r.height}`;
+  };
+  let last = "";
+  let same = 0;
+  while (Date.now() - t0 < ms) {
+    await new Promise((r) => requestAnimationFrame(r));
+    const running = el.getAnimations().some((a) => a.playState === "running");
+    const k = key();
+    same = !running && k === last ? same + 1 : 0;
+    last = k;
+    if (same >= 5) return;
+  }
+  throw new Error("timeout: el layout no se asentó");
+}
+
 async function pngFile() {
   const c = document.createElement("canvas");
   c.width = 640;
@@ -122,6 +145,7 @@ async function main() {
     if (gap < 0) continue; // otro grupo/columna
     assert(gap >= 10, `con foto: aire entre herramientas ${i} >= 10 px (${gap})`);
   }
+  await settled($(".canvas-stage"));
   const stageGap = rect($(".canvas-stage")).top - rect(top).bottom;
   assert(stageGap >= 16 - 0.5, `header: lienzo a >= 16 px de la topbar (${stageGap})`);
   rail.scrollTop = rail.scrollHeight;
