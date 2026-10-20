@@ -1952,7 +1952,7 @@ label.btn:has(.file-input-sr:focus-visible) {
   }
 
   .topbar-actions {
-    gap: 8px;
+    gap: 10px;
   }
 
   .topbar-actions .btn {
@@ -1961,9 +1961,11 @@ label.btn:has(.file-input-sr:focus-visible) {
     white-space: nowrap;
   }
 
+  /* BUG-12: sin divisor suelto; mismo gap (10 px) que el resto de la fila */
   .topbar-icons {
-    padding-left: 8px;
-    gap: 10px; /* BUG-12: ☕ e ⓘ no se pueden tocar sin rozarse */
+    padding-left: 0;
+    border-left: 0;
+    gap: 10px;
   }
 
   .lang-select {
@@ -2049,7 +2051,7 @@ label.btn:has(.file-input-sr:focus-visible) {
   }
 
   .canvas-wrap {
-    padding: 12px;
+    padding: 16px;
   }
 
   /* BUG-12: la zona vacía llena el lienzo (antes medía 311 px en un contenedor
@@ -3279,7 +3281,7 @@ label.btn:has(.file-input-sr:focus-visible) {
     flex-wrap: wrap;
     height: auto;
     row-gap: 12px;
-    padding: 8px 12px;
+    padding: 12px 16px;
   }
 
   .brand {

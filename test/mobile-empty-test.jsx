@@ -79,15 +79,22 @@ async function main() {
   const rowBottom = Math.max(rect($(".brand")).bottom, rect($(".topbar-actions")).bottom);
   const gapRows = rect($(".tabs")).top - rowBottom;
   assert(gapRows >= 10, `topbar: acciones–pestañas >= 10 px (${gapRows})`);
-  const ctrls = [...top.children, ...$(".topbar-actions").querySelectorAll(".btn, .lang-select, .btn-icon")];
-  for (const c of ctrls) {
-    const r = rect(c);
-    if (!r.width) continue;
-    assert(
-      r.left >= 12 - 0.5 && r.right <= window.innerWidth - 12 + 0.5,
-      `topbar: margen lateral >= 12 px (${String(c.className).slice(0, 24)} ${r.left.toFixed(1)}..${r.right.toFixed(1)})`
-    );
-  }
+  // BUG-12 «header prolijo»: padding 12/16, fila de acciones pareja, sin divisor
+  const cs = getComputedStyle(top);
+  assert(parseFloat(cs.paddingTop) >= 12 && parseFloat(cs.paddingBottom) >= 12, `header: padding vertical >= 12 px (${cs.paddingTop}/${cs.paddingBottom})`);
+  assert(parseFloat(cs.paddingLeft) >= 16 && parseFloat(cs.paddingRight) >= 16, `header: padding lateral >= 16 px (${cs.paddingLeft}/${cs.paddingRight})`);
+  const row = [$(".topbar-actions .btn"), $(".lang-select"), donate, about];
+  const hs = row.map((c) => rect(c).height);
+  assert(Math.max(...hs) - Math.min(...hs) <= 1, `header: controles de la fila con la misma altura (${hs.join("/")})`);
+  const gaps = row.slice(1).map((c, i) => rect(c).left - rect(row[i]).right);
+  assert(Math.min(...gaps) >= 8 && Math.max(...gaps) - Math.min(...gaps) <= 1, `header: separación pareja >= 8 px (${gaps.join("/")})`);
+  assert(parseFloat(getComputedStyle($(".topbar-icons")).borderLeftWidth) === 0, "header: sin divisor vertical entre idioma y ☕");
+  const sideL = Math.min(rect($(".tabs")).left, rect(row[0]).left, rect($(".brand")).left);
+  const sideR = window.innerWidth - Math.max(rect($(".tabs")).right, rect(about).right);
+  assert(sideL >= 16 - 0.5 && sideR >= 16 - 0.5, `header: margen lateral >= 16 px en pestañas y acciones (${sideL}/${sideR})`);
+  assert(rect($(".tabs")).right <= window.innerWidth - 16 + 0.5 && rect(about).right <= window.innerWidth - 16 + 0.5, "header: pestañas y acciones alinean a la derecha dentro de 16 px");
+  const underTop = rect(empty).top - rect(top).bottom;
+  assert(underTop >= 16 - 0.5, `header: zona vacía a >= 16 px de la topbar (${underTop})`);
 
   // --- con foto: se carga por el CTA (prueba que está cableado) ---
   const dt = new DataTransfer();
@@ -103,6 +110,8 @@ async function main() {
     if (gap < 0) continue; // otro grupo/columna
     assert(gap >= 10, `con foto: aire entre herramientas ${i} >= 10 px (${gap})`);
   }
+  const stageGap = rect($(".canvas-stage")).top - rect(top).bottom;
+  assert(stageGap >= 16 - 0.5, `header: lienzo a >= 16 px de la topbar (${stageGap})`);
   rail.scrollTop = rail.scrollHeight;
   await sleep(100);
   const ctrlsRail = [...rail.querySelectorAll("button, select, input:not(.file-input-sr), a, label.btn")].filter(
