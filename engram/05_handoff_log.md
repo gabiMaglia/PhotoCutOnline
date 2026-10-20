@@ -109,3 +109,6 @@
 - files touched: src/styles.css (.lang-select círculo 44×44 en móvil; .canvas-empty-hint oculto solo con pointer: coarse), test/mobile-empty-test.jsx (2 aserciones nuevas). Acumulado: styles.css, CanvasEditor.jsx, CutoutPage.jsx, test/mobile-empty-test.{html,jsx}, test/mobile-test.jsx, test/run-tests.mjs.
 - risks: pointer: coarse no probado en navegador (solo fine); prueba de rojo de la pista no aislada (la corta la aserción de forma); npm test y test:web completos no re-corridos; ad slot cut-rail; otras pestañas con bandeja desactivada (→ deuda).
 - how to test: mobile-empty-test y mobile-test en Chromium/WebKit 390×844; capturas scratchpad/despues3-m390-{sinfoto,confoto}.png.
+
+### 2026-10-20 PO→Orquestador (BUG-13 control compensatorio)
+- PO aprueba sumar nerv-verifier ciego a BUG-13 antes del merge (además de nerv-qa Strong), por el sello post-código del CÓMO. Orden: return intento 2 → nerv-qa Strong → nerv-verifier ciego → gate → merge.
