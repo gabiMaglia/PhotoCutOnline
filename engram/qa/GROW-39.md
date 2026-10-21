@@ -46,3 +46,39 @@ Gate nerv-gate → cotejo de cada medida con `src/lib/icons.js` → prueba en na
 - «80 % central» (maskable) vs 60 % que exporta Icon Studio: revisar el texto o la fuente.
 - Filas de la tabla nueva demasiado altas a 390 px; con una sola línea por celda entrarían 4–5 filas en el primer scroll.
 - Falta `.nerv-tdd-exempt` para tickets de contenido (el gate seguirá rechazando).
+
+
+---
+
+# Intento 2 (nerv-qa, nivel X por reintento, 2026-10-21)
+
+Rama `seo/GROW-39-impresiones` (db0b3d3). **Veredicto: APROBADO.**
+
+## §Plan
+Build limpio, rojo del test sobre e243f73, suite completa, mutación de tarjetas, revisión del diff y del §QUÉ. Nota: `nerv-gate.sh` no está en la máquina (no hallado en ~/.nerv, ~/.claude ni proyectos); se reprodujeron a mano los checks (d) prueba de rojo y (e) suite verde. El gate del Tech Lead se reporta PASS.
+
+## §GAP
+- Especificado e implementado: todo lo del Gherkin, incluida la medida de 16 px en las 3 descriptions (D3).
+- Deducido (aceptado en intento 1, sin cambios): title sin «PhotoCut Studio», tabla arriba del preámbulo, tabla resumen en medidas, cuadritos de color.
+- Test: cada caso se traza al §QUÉ del arquitecto (contrato derivado del Gherkin), no a la implementación.
+
+## §Casos
+| Punto | Resultado |
+|---|---|
+| D1 test que fija el contrato | OK: `scripts/grow39-seo.test.mjs`, 38 casos con aserciones concretas (longitudes, términos, set {16,32,48,180,192,512} derivado de icons.js, igualdades og/Article/breadcrumb, orden tabla/CTA) |
+| D2 espacio | OK: «the <strong>AI cutout</strong>»; caso «sin texto pegado» verde en las 5 páginas |
+| D3 16 px | OK x3 (es/en/pt), description, og/twitter y Article iguales |
+| D4 6 archivos | OK: 6 tarjetas + HowTo ES; grep de «5 archivos/files/arquivos» en public/: 0 |
+| Breadcrumb PT | OK: JSON-LD y `<span>` = H1 «Tamanho do favicon: medidas e HTML para copiar» |
+| Rojo (P-18) | OK: test de 0ae550b sobre e243f73 = 14 fallos (casos 4, 11, 18, 19, 23, 28, 30-35, 37, 38); en la rama 38/38 |
+| Regex del caso 31 | No debilita: pasó de `(\d+) (archivos|files|arquivos)( que| you| de que)` a la frase exacta `(\d+) (archivos que de verdad|files you really|arquivos de que)`; si la frase falta, falla con «no se encontró». Mutación 6→5 en tarjeta ES-medidas, EN index y PT index: falla cada caso de tarjeta y el barrido global (2 fallos), luego restaurado |
+| Fragilidad / dist | Sin dependencia de dist/ (lee public/ y src/lib/icons.js como texto); regex de icons.js falla fuerte si extrae vacío (caso guardián) |
+| §QUÉ restante | src/ sin diff, sin URLs/páginas nuevas, hreflang sin tocar, lastmod corrido (sin cambios), `node --test scripts/` 136/136, jest 62 suites / 439 tests |
+
+## §Defectos
+Ninguno bloqueante.
+
+## Deuda (no bloqueante)
+- Test del caso «5 archivos» global fija 3 frases literales: si se reescribe la tarjeta hay que actualizar el test (falla ruidoso, aceptable).
+- Verificación visual a 390x844 queda como la aceptada en intento 1 (el fix no mueve layout).
+- GROW-40 (maskable 80 % vs 60 %) ya abierto.
