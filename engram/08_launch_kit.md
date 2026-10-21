@@ -6,6 +6,8 @@
 > Actualizado 2026-10-14 con lo de Sprints 6–8 (mediciones reales, WebP en Safari).
 > Actualizado 2026-10-20: primer comentario de HN alineado con scripts/pruebas.json (93 peticiones, tiempos con GPU, POST de anuncios), «sin conexión» = después del primer recorte, y celulares siempre con u2netp (BUG-13).
 
+> **2026-10-21 — HN no deja publicar todavía.** HN está restringiendo los Show HN de cuentas nuevas: hay que participar un tiempo como usuario (comentar con criterio, sin promocionar) antes de poder postear. Además, las reglas de HN piden **no publicar texto generado ni editado por IA**. Los textos de este kit los redactó el agente: tomalos como **hoja de datos** y escribí el post con tus palabras, en HN y en Reddit. Orden nuevo: directorios → Reddit (r/SideProject, r/devsarg; r/webdev el sábado) → Show HN cuando la cuenta tenga historial.
+
 ## Antes de publicar (checklist)
 - [x] **Probar en un iPhone/Safari real**: exportar "Sticker WhatsApp" y abrir el
       archivo. ✅ PO 2026-10-20 (iPhone 13): sale WebP. Si falla, sacar la frase de Safari de los posts (solo está probado
