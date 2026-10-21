@@ -177,7 +177,7 @@ const CARDS = [
 ];
 for (const f of CARDS) {
   test(`${f}: la tarjeta de favicons dice 6 archivos`, () => {
-    const m = read(f).match(/(\d+) (archivos|files|arquivos)( que| you| de que)/);
+    const m = read(f).match(/(\d+) (archivos que de verdad|files you really|arquivos de que)/);
     assert.ok(m, "no se encontró la frase de la tarjeta");
     assert.equal(Number(m[1]), 6);
   });
