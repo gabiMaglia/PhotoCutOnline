@@ -55,7 +55,7 @@ Gate nerv-gate → cotejo de cada medida con `src/lib/icons.js` → prueba en na
 Rama `seo/GROW-39-impresiones` (db0b3d3). **Veredicto: APROBADO.**
 
 ## §Plan
-Build limpio, rojo del test sobre e243f73, suite completa, mutación de tarjetas, revisión del diff y del §QUÉ. Nota: `nerv-gate.sh` no está en la máquina (no hallado en ~/.nerv, ~/.claude ni proyectos); se reprodujeron a mano los checks (d) prueba de rojo y (e) suite verde. El gate del Tech Lead se reporta PASS.
+Build limpio, rojo del test sobre e243f73, suite completa, mutación de tarjetas, revisión del diff y del §QUÉ. `NERV/bin/nerv-gate.sh` corrido por QA desde el worktree: PASS (13 archivos == diff, nivel computado X, plan estampado para X, return con 4 campos). El gate no tiene comando de test configurado (WARN), así que la prueba de rojo y la suite se corrieron a mano (ver §Casos).
 
 ## §GAP
 - Especificado e implementado: todo lo del Gherkin, incluida la medida de 16 px en las 3 descriptions (D3).
