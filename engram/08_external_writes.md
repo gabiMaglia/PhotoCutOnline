@@ -15,3 +15,4 @@
 - 2026-10-20 · GitHub origin/main · push 742a089..8188a53 (BUG-15 + licencia MIT) → deploy; CI 39479330273 rojo (C2 flaky, otra corrida del mismo sha verde) · BUG-15 · PO («MIT para todo»; push anunciado tras QA)
 - 2026-10-20 · GitHub origin/main · push 8188a53..19fc563 (BUG-16, solo test/) → CI 39498402189 verde · BUG-16 · orquestador (anunciado al PO «si QA aprueba, mergeo y pusheo»)
 - 2026-10-20 · memoria Claude (adsense-low-value-recovery) + ~/.nerv/registry.md · actualizados · — · orquestador
+- 2026-10-21 · GitHub origin/main · push del PO (GROW-39 SEO + engram) → deploy; CI 39641704546 verde; title nuevo verificado en prod; IndexNow y solicitud de indexación por el PO · GROW-39 · PO
