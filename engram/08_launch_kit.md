@@ -57,7 +57,7 @@ pidiendo que voten.
 Show HN: Background remover that runs entirely in the browser (ONNX + Rust/WASM)
 ```
 ```
-Show HN: PhotoCut – a background remover where the photo never leaves your browser
+Show HN: PhotoCut – background remover where your photo never leaves the browser
 ```
 
 **URL del post:** `https://www.photocutapp.com/editor/`
