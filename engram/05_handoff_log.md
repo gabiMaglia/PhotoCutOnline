@@ -201,3 +201,6 @@
 - files touched: test/lib/deployServer.mjs, test/lib/originPolicy.mjs, test/sw-deploy-test.mjs, scripts/origin-policy.test.mjs (+128 −36). Sin src/ ni public/.
 - risks: NO hay evidencia del TL de la prueba rojo/verde en docker ni de test:web completo: QA la produce o la marca como faltante. La verificación definitiva del flake es el CI tras el merge.
 - how to test: node --test scripts/origin-policy.test.mjs; npm run test:web; node test/sw-deploy-test.mjs webkit; CI.
+
+### 2026-10-21 PO→Orquestador→nerv-web (GROW-39, Advisory)
+- PO aprueba plan SEO sobre datos de GSC: optimizar páginas con impresiones (favicons ×3 idiomas, en/tools/blue-background, medidas de iconos de app). Gherkin en bloque GROW-39. Rama seo/GROW-39-impresiones.

@@ -20,6 +20,7 @@
 | BUG-14 | **Textos públicos sobre el peso del modelo, tras BUG-13** (pedido PO 2026-10-20). Hoy dicen «con GPU ~120 MB / sin GPU ~7 MB» (p. ej. como-funciona.html:53, en/how-it-works.html:53, llms.txt), y con BUG-13 un celular SIEMPRE baja u2netp (~6 MB) aunque tenga GPU. Rama `content/BUG-14-model-size`. Niv A. **Criterios:** bloque BUG-14 abajo. Depende de BUG-13 mergeado. _[cierre: Done · en prod (push del PO) · QA X APROBADO intento 2]_ | Done (2026-10-20) |
 | BUG-15 | **CI rojo tras el push de BUG-14 (run 39471468361, 2 corridas).** (a) `sw-deploy-test` C2 «offline: el editor arranca y abre Filtros» → Timeout de locator.click en las 2 corridas; en el run anterior (39468473942, BUG-12+13) PASÓ. (b) `mobile-empty-test` «lienzo a >= 16 px de la topbar (7.2)» falla 1 de 2 (aserción flaky ya anotada por QA). (c) «origen: ninguna request fuera del origen con cuerpo» falló 1 vez por POST de pagead2.googlesyndication.com (externo). Prod OK (textos de BUG-14 publicados). Rama `fix/BUG-15-ci`. Niv A. Diagnóstico con systematic-debugging ANTES de tocar código. _[cierre: Done 2026-10-20 (nerv-qa: (b) y (c) corregidos; (a) C2 SIN causa raíz, solo diagnóstico mejorado → deuda BUG-16, ver qa/BUG-15.md)]_ | Done (2026-10-20) |
 | BUG-16 | **Deuda de BUG-15 (QA 2026-10-20).** (1) C2 offline sin causa raíz (falló en WebKit/Linux del CI, 30 s de click; candidato: overlay del AdSense real, que corre pese al ctx.route): registrar `document.elementFromPoint` del botón Filtros al fallar y cortar adsbygoogle en WebKit con init script si se confirma. (2) Quitar el `.catch` que traga `waitActive(B)`. (3) Endurecer originPolicy: path `/pagead/ping`, tope 1–2 KiB, presupuesto acumulado, más firmas (GIF/BMP/AVIF/HEIC, gzip, base64 desalineado), origin con `new URL(url).origin` (hoy `startsWith` deja pasar `localhost:5188.evil.com`). **Evidencia 2026-10-20 (run 39479330273, mensaje ampliado):** «waiting for getByRole('radio', { name: 'Filtros' })» → la pestaña NO existe: el editor offline no arrancó en WebKit/Linux (no es un overlay). **Flaky confirmado:** el MISMO sha 8188a53 dio PASS en 39479327705 y FAIL en 39479330273; 2 FAIL de 5 runs hoy, 0 de 4 antes (16/10). Posible defecto intermitente de arranque offline en WebKit → afecta la promesa «works offline» del kit: verificación manual del PO en iPhone (modo avión tras el primer recorte). **Causa raíz (diag 2026-10-20, docker x86_64 --cpus=1, 5/14 FAIL):** condición del ARNÉS. `srv.state.down` acepta la conexión y hace `socket.destroy()`; en WebKit/Linux eso dispara aserciones de libsoup (5/5 fallas, 0/9 verdes) y WebKit pierde TODO el almacenamiento del origen (registro del SW + Cache Storage) a mitad de la navegación. Cerrando el listener (rechazo como un offline real): 0/14. Safari (CFNetwork) no usa libsoup: sin evidencia de defecto de producto; Safari real queda para la prueba manual del PO. _[cierre: Done 2026-10-20 (nerv-qa nivel A; 14/14 docker a verificar en CI; ver qa/BUG-16.md)]_ | Done (2026-10-20) |
+| GROW-39 | **SEO: subir las páginas que YA tienen impresiones** (PO 2026-10-21, datos GSC 3 meses: 76 clics, 6,85 mil impresiones, posición media 58,5; 95 % de clics son de marca). `guias/favicons-medidas-y-html.html` = 3.548 impresiones («tamaño favicon», «favicon medidas», «tamaño de favicon», «dimensiones favicon»…) en posiciones 55–73 con 0 clics; `en/tools/blue-background.html` 412; `guias/medidas-de-iconos-de-app-ios-android-2026.html` 249. Rama `seo/GROW-39-impresiones`. Niv A. **Criterios:** bloque GROW-39. Medir antes/después en GSC a 4 semanas. | To Do |
 | GROW-37 | **Editar: origen por defecto** — el selector Original/Recorte existe en las 5 sub-herramientas, pero arranca en "Original" y el PO no lo encontró. Propuesta: si hay recorte, arrancar en "Recorte" y hacerlo más visible. | Decisión PO |
 | GROW-38 | **Icon Studio: poder usar la foto completa**, no solo el recorte ("Usar recorte actual" / "Abrir PNG"). Agregar "Usar foto original". | Decisión PO |
 
@@ -164,6 +165,30 @@ Característica: el arnés simula «sin red» como un usuario real
   Escenario: política de pings endurecida (deuda de BUG-15)
     Entonces originPolicy solo tolera POST a hosts de anuncios declarados con path /pagead/ping, cuerpo ≤ 2 KiB y presupuesto acumulado ≤ 8 KiB por sesión
     Y detecta además GIF/BMP/AVIF/HEIC, base64 desalineado, gzip, y compara el origen con new URL(url).origin
+```
+
+### GROW-39 — criterios (Gherkin)
+```gherkin
+Característica: las páginas con impresiones responden la búsqueda que ya les trae Google
+
+  Escenario: guía de favicons (ES y sus pares EN favicon-sizes-html / PT favicons-medidas-e-html)
+    Dado que Google la muestra para «tamaño favicon», «tamaño de favicon», «favicon medidas», «dimensiones favicon», «medidas favicon»
+    Entonces el <title> (≤ 60 caracteres) y el H1 contienen «tamaño» y «favicon» (EN: «favicon size»; PT: «tamanho do favicon»)
+    Y la meta description (≤ 155) responde la pregunta con las medidas clave (16, 32, 48, 180, 192, 512 px)
+    Y el primer párrafo responde en 1–2 frases sin preámbulo
+    Y la tabla de medidas queda visible antes del primer scroll en 390×844
+    Y hay un botón «Generar favicons» que abre Icon Studio (?tab=icons o equivalente) arriba y al final
+    Y las medidas coinciden con lo que exporta Icon Studio (sin inventar)
+
+  Escenario: herramienta de fondo azul (EN) y guía de medidas de íconos de app (ES)
+    Entonces title/H1/description responden la intención de búsqueda (EN: «blue background photo» / ES: «medidas iconos app»)
+    Y el contenido útil (la herramienta o la tabla) queda antes del primer scroll en 390×844
+
+  Escenario: sin daños colaterales
+    Entonces no se crean páginas nuevas ni se cambian URLs
+    Y JSON-LD válido y coherente con el texto visible; hreflang intacto
+    Y no se nombran competidores
+    Y se corre `npm run lastmod` y `npm run indexnow` queda para el PO tras el deploy
 ```
 
 ## Sprint 8 — Bugs de producto hallados por las mediciones (BUG-01/BUG-06) — ✅ CERRADO 2026-10-10
