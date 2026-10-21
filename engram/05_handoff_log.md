@@ -210,3 +210,6 @@
 - files touched: favicons ES/EN/PT, en/tools/blue-background, guias/medidas-de-iconos-de-app; textos de tarjetas en guias/en/pt index + foto-de-perfil-redonda + logo-con-fondo-transparente; scripts/lastmod.json (e243f73).
 - risks: .ico ahora «16 · 32 · 48» (coincide con icons.js); HowTo ES 5→6 archivos; en fav-es solo ~2 filas de tabla en el primer scroll; /editor/?tab=icons no probado abriendo el editor; tabla Android desborda 15 px a 390 (preexistente).
 - how to test: npm run lastmod; node --test scripts/; capturas scratchpad/grow39/*-before|after.png.
+
+### 2026-10-21 Orquestador→nerv-arquitecto (GROW-39 §QUÉ ANTES del fix)
+- QA intento 1 RECHAZADO con 3 defectos reales (D2–D4) + D1 sin test. El reintento computará X ⇒ §QUÉ + §CÓMO estampados ANTES del código. Fix: test en scripts/ que fije title/description/H1 y cifras de las 5 páginas + D2–D4.
