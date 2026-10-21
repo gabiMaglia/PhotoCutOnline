@@ -220,3 +220,9 @@
 - risks: hallazgo nuevo — breadcrumb PT con el título viejo; la rama debe traer el plan (merge main) y el test va primero (rojo sobre e243f73).
 - how to test: scripts/grow39-seo.test.mjs rojo antes del fix (D2, D3×3, D4×6, breadcrumb PT), verde después.
 - Orquestador: GROW-40 abierto (maskable 80 % vs 60 %).
+
+### 2026-10-21 nerv-web→Orquestador (GROW-39 return intento 2, registrado por el orquestador)
+- status: En revisión QA. nerv-gate PASS en X (plan estampado, proof of red OK, suite green). Test scripts/grow39-seo.test.mjs: rojo 14/38 sobre el intento 1 → 38/38.
+- files touched: engram/plans/GROW-39.md (§CÓMO), scripts/grow39-seo.test.mjs, scripts/lastmod.json, favicons ES/EN/PT (descriptions con 16–512; breadcrumb PT), en/tools/blue-background (D2 + og/twitter), 6 tarjetas «6 archivos».
+- risks: regex del caso 31 acotada en el commit del fix (no debilitada, según TL); dist/ viejo en worktree da rojo falso en guide-dates (npm run build antes).
+- how to test: npm run build && node --test scripts/grow39-seo.test.mjs; npm test.
