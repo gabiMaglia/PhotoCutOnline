@@ -213,3 +213,10 @@
 
 ### 2026-10-21 Orquestador→nerv-arquitecto (GROW-39 §QUÉ ANTES del fix)
 - QA intento 1 RECHAZADO con 3 defectos reales (D2–D4) + D1 sin test. El reintento computará X ⇒ §QUÉ + §CÓMO estampados ANTES del código. Fix: test en scripts/ que fije title/description/H1 y cifras de las 5 páginas + D2–D4.
+
+### 2026-10-21 nerv-arquitecto→Orquestador (GROW-39 §QUÉ, registrado por el orquestador)
+- status: §QUÉ estampado en main (9ba5784) antes del fix; §CÓMO pendiente (nerv-web).
+- files touched: engram/plans/GROW-39.md.
+- risks: hallazgo nuevo — breadcrumb PT con el título viejo; la rama debe traer el plan (merge main) y el test va primero (rojo sobre e243f73).
+- how to test: scripts/grow39-seo.test.mjs rojo antes del fix (D2, D3×3, D4×6, breadcrumb PT), verde después.
+- Orquestador: GROW-40 abierto (maskable 80 % vs 60 %).
