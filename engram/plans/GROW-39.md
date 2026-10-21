@@ -190,6 +190,18 @@ del fix del intento 2. Deriva del Gherkin aprobado por el PO y de qa/GROW-39.md.
 
 ## CÓMO — implementación (nerv-web)
 
-_Pendiente: lo escribe y lo estampa nerv-web antes de tocar `public/` o `scripts/`. Tiene que marcar qué
-pasos son independientes y cuáles son seriales (P-24). El test va primero y en serie, y su rojo queda
-demostrado antes del fix._
+Pasos (S = serial, P = paralelo, P-24):
+
+1. **S** Escribir `scripts/grow39-seo.test.mjs` según §QUÉ 4 (lee `public/` y `src/lib/icons.js` como texto, regex + `JSON.parse`, un `test()` por página y regla). Commit solo del test sobre el estado actual, sin tocar `public/`.
+2. **S** Correr `node --test scripts/grow39-seo.test.mjs`: tiene que dar rojo en D2, D3 x3, D4 x6 y breadcrumb PT. Pegar la salida en el return. Sin rojo no se avanza.
+3. **P** (archivos disjuntos, sin dependencia entre sí; un solo agente puede hacerlos en secuencia):
+   - 3a D3: description (meta, og, twitter, Article) de las 3 guías de favicons con el set {16, 32, 48, 180, 192, 512}, usando las propuestas del §QUÉ.
+   - 3b D2: espacio en `en/tools/blue-background.html` («the <strong>AI cutout</strong>»).
+   - 3c D4: «5 archivos/files/arquivos» a 6 en las 6 tarjetas de §QUÉ 3.
+   - 3d Breadcrumb PT (JSON-LD y `<span>`) igual al H1.
+4. **S** (depende de 3) Correr el test en verde. Commit de `public/`.
+5. **S** `npm run lastmod`; commit del json con [lastmod-skip]. Después `npm test` y el gate.
+
+No se toca `src/`. Verificación visual a 390x844 ya hecha en el intento 1; el fix no mueve el layout.
+
+**Aprobado por:** nerv-web [2026-10-21] · alcance: implementación del intento 2 de GROW-39 según el §QUÉ del arquitecto (9ba5784), con el test primero y su rojo demostrado antes del fix.
