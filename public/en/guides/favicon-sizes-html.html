@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Favicons in 2026: sizes, HTML and PNG to ICO conversion</title>
-    <meta name="description" content="The 5 favicon files you need in 2026 with copy-ready HTML, plus how to convert a PNG to a multi-resolution .ico for a favicon or a Windows app." />
+    <title>Favicon size: dimensions in px and HTML (2026)</title>
+    <meta name="description" content="Favicon size in 2026: 32 px for the tab, 48 px for the .ico, 180 px for iOS and 192/512 px for PWAs. Size table and copy-ready HTML." />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="canonical" href="https://www.photocutapp.com/en/guides/favicon-sizes-html.html" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.photocutapp.com/en/guides/favicon-sizes-html.html" />
-    <meta property="og:title" content="Favicons in 2026: sizes, HTML and PNG to ICO conversion" />
-    <meta property="og:description" content="The 5 favicon files you need in 2026 with copy-ready HTML, plus how to convert a PNG to a multi-resolution .ico for a favicon or a Windows app." />
+    <meta property="og:title" content="Favicon size: dimensions in px and HTML (2026)" />
+    <meta property="og:description" content="Favicon size in 2026: 32 px for the tab, 48 px for the .ico, 180 px for iOS and 192/512 px for PWAs. Size table and copy-ready HTML." />
     <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-iconos-en.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="stylesheet" href="/estaticas.css" />
@@ -18,8 +18,8 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "Favicons in 2026: the sizes you need and the HTML to copy",
-      "description": "In 2026 you cover every browser and device with 5 files and 5 lines of HTML. The essential favicon set, the ready-to-copy HTML and manifest, common mistakes, and the SVG favicon.",
+      "headline": "Favicon size: dimensions and HTML to copy",
+      "description": "Favicon size in 2026: 32 px for the tab, 48 px for the .ico, 180 px for iOS and 192/512 px for PWAs. Size table and copy-ready HTML.",
       "image": "https://www.photocutapp.com/media/guias/herramienta-iconos-en.jpg",
       "inLanguage": "en",
       "author": { "@type": "Person", "name": "Gabriel Maglia", "url": "https://www.photocutapp.com/en/author.html" },
@@ -138,7 +138,7 @@
     {
       "@type": "ListItem",
       "position": 4,
-      "name": "Favicons in 2026: the sizes you need and the HTML to copy",
+      "name": "Favicon size: dimensions and HTML to copy",
       "item": "https://www.photocutapp.com/en/guides/favicon-sizes-html.html"
     }
   ]
@@ -163,19 +163,27 @@
         <a href="/">Home</a> ›
         <a href="/en/guides/">Guides</a> ›
         <a href="/en/guides/#c6">App icons &amp; favicons</a> ›
-        <span>Favicons in 2026: the sizes you need and the HTML to copy</span>
+        <span>Favicon size: dimensions and HTML to copy</span>
       </nav>
 
 
-      <h1>Favicons in 2026: the sizes you need and the HTML to copy</h1>
+      <h1>Favicon size: dimensions and HTML to copy</h1>
       <p class="meta"><span data-updated>Updated: October 2026</span> · Reading time: 5 minutes · By <a class="author-link" href="/en/author.html">Gabriel Maglia</a></p>
 
       <p>
-        For years favicon generators produced twenty files "just in case": sizes for
-        Internet Explorer on Windows Vista, Windows 8 tiles, Safari pinned tabs… The
-        reality of 2026 is much simpler: with <strong>5 files and 5 lines of
-        HTML</strong> you cover every current browser and device.
+        The favicon size you need: <strong>32 × 32 px</strong> for the browser tab, <strong>180 px</strong> for iOS and <strong>192 and 512 px</strong> for PWAs, plus a <code>favicon.ico</code> of 16, 32 and 48&nbsp;px.
       </p>
+
+      <a class="cta" href="/editor/?tab=icons">Generate favicons →</a>
+
+      <table>
+        <tr><th>Size</th><th>File · What for</th></tr>
+        <tr><td>16 · 32 · 48</td><td><code>favicon.ico</code><br>Universal fallback: old browsers, RSS readers, bookmarks.</td></tr>
+        <tr><td>32 × 32</td><td><code>favicon-32.png</code><br>The browser tab, on normal and retina screens.</td></tr>
+        <tr><td>180 × 180</td><td><code>apple-touch-icon-180.png</code><br>iPhone and iPad home screen. No transparency.</td></tr>
+        <tr><td>192 / 512</td><td><code>icon-192.png</code> + <code>icon-512.png</code><br>PWA manifest: installed app and splash screen.</td></tr>
+        <tr><td>512 × 512</td><td><code>maskable-512.png</code><br>Android crops it: keep the art in the central 80&nbsp;%.</td></tr>
+      </table>
 
       <figure class="shot">
         <img src="/media/guias/herramienta-iconos-en.jpg" width="1600" height="1000" loading="lazy" alt="Preview of a favicon at 16, 32 and 48 px in PhotoCut Studio's Icon Studio." />
@@ -183,21 +191,13 @@
       </figure>
 
       <p>
-        It's worth the effort: a well-made favicon is the first thing a user sees
-        when they have ten tabs open, and it's usually the first thing a technical
-        SEO audit or a PWA checklist reviews. Missing or broken, it subtracts
-        professionalism even if the rest of the site is flawless.
+        For years favicon generators produced twenty files "just in case": sizes for
+        Internet Explorer on Windows Vista, Windows 8 tiles, Safari pinned tabs… In
+        2026 you need none of that. And it's worth the effort: a well-made favicon is
+        the first thing a user sees when they have ten tabs open, and it's usually the
+        first thing a technical SEO audit or a PWA checklist reviews. Missing or
+        broken, it subtracts professionalism even if the rest of the site is flawless.
       </p>
-
-      <h2>The essential files</h2>
-      <table>
-        <tr><th>File</th><th>Size</th><th>Who uses it</th></tr>
-        <tr><td><code>favicon.ico</code></td><td>48 × 48</td><td>Old browsers, RSS readers, bookmarks. It may seem prehistoric, but it's still the universal fallback: many clients request it directly at <code>/favicon.ico</code>.</td></tr>
-        <tr><td><code>favicon-32.png</code></td><td>32 × 32</td><td>The browser tab on normal and retina screens.</td></tr>
-        <tr><td><code>apple-touch-icon-180.png</code></td><td>180 × 180</td><td>iPhone and iPad when adding the site to the home screen. No transparency: iOS fills transparent areas with black.</td></tr>
-        <tr><td><code>icon-192.png</code> + <code>icon-512.png</code></td><td>192 / 512</td><td>The PWA manifest: installed app icon and splash screen on Android/desktop.</td></tr>
-        <tr><td><code>maskable-512.png</code></td><td>512 × 512</td><td>"Maskable" manifest variant: Android crops it into a circle or other shapes, so the art must fit in the central 80%.</td></tr>
-      </table>
 
       <h2>The HTML</h2>
       <pre>&lt;link rel="icon" href="/favicon.ico" sizes="48x48"&gt;
@@ -323,7 +323,7 @@
       </div>
       <!-- pruebas:end -->
 
-      <a class="cta" href="/editor/?tab=icons">Generate my favicons →</a>
+      <a class="cta" href="/editor/?tab=icons">Generate favicons →</a>
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">More guides</h2>

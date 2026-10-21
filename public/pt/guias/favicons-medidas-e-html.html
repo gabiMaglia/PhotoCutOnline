@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Favicons em 2026: tamanhos, HTML e como passar PNG para ICO</title>
-    <meta name="description" content="Os 5 arquivos de favicon de que você precisa em 2026 com o HTML pronto, e como converter um PNG em .ico multirresolução para favicon ou Windows." />
+    <title>Tamanho do favicon: medidas em px e HTML (2026)</title>
+    <meta name="description" content="Tamanho do favicon em 2026: 32 px para a aba, 48 px para o .ico, 180 px para iOS e 192/512 px para PWA. Tabela de medidas e HTML pronto." />
     <meta name="theme-color" content="#0b0d10" />
     <link rel="canonical" href="https://www.photocutapp.com/pt/guias/favicons-medidas-e-html.html" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://www.photocutapp.com/pt/guias/favicons-medidas-e-html.html" />
-    <meta property="og:title" content="Favicons em 2026: tamanhos, HTML e como passar PNG para ICO" />
-    <meta property="og:description" content="Os 5 arquivos de favicon de que você precisa em 2026 com o HTML pronto, e como converter um PNG em .ico multirresolução para favicon ou Windows." />
+    <meta property="og:title" content="Tamanho do favicon: medidas em px e HTML (2026)" />
+    <meta property="og:description" content="Tamanho do favicon em 2026: 32 px para a aba, 48 px para o .ico, 180 px para iOS e 192/512 px para PWA. Tabela de medidas e HTML pronto." />
     <meta property="og:image" content="https://www.photocutapp.com/media/guias/herramienta-iconos-pt.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="stylesheet" href="/estaticas.css" />
@@ -18,8 +18,8 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "Favicons em 2026: os tamanhos que você precisa e o HTML para copiar",
-      "description": "Em 2026 você cobre todos os navegadores e dispositivos com 5 arquivos e 5 linhas de HTML. O conjunto essencial de favicons, o HTML e o manifest prontos, erros comuns e o favicon SVG.",
+      "headline": "Tamanho do favicon: medidas e HTML para copiar",
+      "description": "Tamanho do favicon em 2026: 32 px para a aba, 48 px para o .ico, 180 px para iOS e 192/512 px para PWA. Tabela de medidas e HTML pronto.",
       "image": "https://www.photocutapp.com/media/guias/herramienta-iconos-pt.jpg",
       "inLanguage": "pt-br",
       "author": { "@type": "Person", "name": "Gabriel Maglia", "url": "https://www.photocutapp.com/pt/autor.html" },
@@ -167,16 +167,23 @@
       </nav>
 
 
-      <h1>Favicons em 2026: os tamanhos que você precisa e o HTML para copiar</h1>
+      <h1>Tamanho do favicon: medidas e HTML para copiar</h1>
       <p class="meta"><span data-updated>Atualizado: outubro de 2026</span> · Leitura: 5 minutos · Por <a class="author-link" href="/pt/autor.html">Gabriel Maglia</a></p>
 
       <p>
-        Durante anos os geradores de favicons produziam vinte arquivos "por via das
-        dúvidas": tamanhos para o Internet Explorer no Windows Vista, blocos do
-        Windows 8, pinned tabs do Safari… A realidade de 2026 é muito mais simples:
-        com <strong>5 arquivos e 5 linhas de HTML</strong> você cobre todos os
-        navegadores e dispositivos atuais.
+        O tamanho de favicon de que você precisa: <strong>32 × 32 px</strong> para a aba, <strong>180 px</strong> para iOS e <strong>192 e 512 px</strong> para PWA, mais um <code>favicon.ico</code> de 16, 32 e 48&nbsp;px.
       </p>
+
+      <a class="cta" href="/editor/?tab=icons">Gerar favicons →</a>
+
+      <table>
+        <tr><th>Tamanho</th><th>Arquivo · Para quê</th></tr>
+        <tr><td>16 · 32 · 48</td><td><code>favicon.ico</code><br>Fallback universal: navegadores antigos, leitores RSS, favoritos.</td></tr>
+        <tr><td>32 × 32</td><td><code>favicon-32.png</code><br>A aba do navegador, em telas normais e retina.</td></tr>
+        <tr><td>180 × 180</td><td><code>apple-touch-icon-180.png</code><br>iPhone e iPad na tela inicial. Sem transparência.</td></tr>
+        <tr><td>192 / 512</td><td><code>icon-192.png</code> + <code>icon-512.png</code><br>Manifest do PWA: app instalado e tela de splash.</td></tr>
+        <tr><td>512 × 512</td><td><code>maskable-512.png</code><br>O Android a recorta: a arte fica nos 80&nbsp;% centrais.</td></tr>
+      </table>
 
       <figure class="shot">
         <img src="/media/guias/herramienta-iconos-pt.jpg" width="1600" height="1000" loading="lazy" alt="Prévia de um favicon a 16, 32 e 48 px no Icon Studio do PhotoCut Studio." />
@@ -184,21 +191,14 @@
       </figure>
 
       <p>
-        Vale o esforço: um favicon bem-feito é a primeira coisa que um usuário vê
-        quando tem dez abas abertas, e costuma ser a primeira coisa que uma auditoria
-        de SEO técnico ou um checklist de PWA revisa. Faltando ou quebrado, tira
+        Durante anos os geradores de favicons produziam vinte arquivos "por via das
+        dúvidas": tamanhos para o Internet Explorer no Windows Vista, blocos do
+        Windows 8, pinned tabs do Safari… Em 2026 nada disso é necessário. E vale o
+        esforço: um favicon bem-feito é a primeira coisa que um usuário vê quando tem
+        dez abas abertas, e costuma ser a primeira coisa que uma auditoria de SEO
+        técnico ou um checklist de PWA revisa. Faltando ou quebrado, tira
         profissionalismo mesmo que o resto do site esteja impecável.
       </p>
-
-      <h2>Os arquivos indispensáveis</h2>
-      <table>
-        <tr><th>Arquivo</th><th>Tamanho</th><th>Quem usa</th></tr>
-        <tr><td><code>favicon.ico</code></td><td>48 × 48</td><td>Navegadores antigos, leitores RSS, favoritos. Mesmo parecendo jurássico, continua sendo o fallback universal: muitos clientes o pedem direto em <code>/favicon.ico</code>.</td></tr>
-        <tr><td><code>favicon-32.png</code></td><td>32 × 32</td><td>A aba do navegador em telas normais e retina.</td></tr>
-        <tr><td><code>apple-touch-icon-180.png</code></td><td>180 × 180</td><td>iPhone e iPad ao adicionar o site à tela inicial. Sem transparência: o iOS põe fundo preto no transparente.</td></tr>
-        <tr><td><code>icon-192.png</code> + <code>icon-512.png</code></td><td>192 / 512</td><td>O manifest do PWA: ícone do app instalado e tela de splash no Android/desktop.</td></tr>
-        <tr><td><code>maskable-512.png</code></td><td>512 × 512</td><td>Variante "maskable" do manifest: o Android a recorta em círculo ou outras formas, então a arte deve caber nos 80% centrais.</td></tr>
-      </table>
 
       <h2>O HTML</h2>
       <pre>&lt;link rel="icon" href="/favicon.ico" sizes="48x48"&gt;
@@ -322,7 +322,7 @@
       </div>
       <!-- pruebas:end -->
 
-      <a class="cta" href="/editor/?tab=icons">Gerar meus favicons →</a>
+      <a class="cta" href="/editor/?tab=icons">Gerar favicons →</a>
 
       <section aria-labelledby="related-heading">
         <h2 id="related-heading">Mais guias</h2>
