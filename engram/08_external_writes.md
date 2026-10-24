@@ -18,3 +18,4 @@
 - 2026-10-21 · GitHub origin/main · push del PO (GROW-39 SEO + engram) → deploy; CI 39641704546 verde; title nuevo verificado en prod; IndexNow y solicitud de indexación por el PO · GROW-39 · PO
 - 2026-10-23 · Reddit r/devsarg · post del PO (PhotoCut, texto armado con el agente) · lanzamiento · PO
 - 2026-10-24 · Reddit r/webdev (Showoff Saturday) · post del PO REMOVIDO por bot: exige cuenta ≥3 meses + karma de comentarios · lanzamiento · PO
+- 2026-10-24 · Reddit r/opensource · post del PO REMOVIDO por bot (karma insuficiente) · lanzamiento · PO
