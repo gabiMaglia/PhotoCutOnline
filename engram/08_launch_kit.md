@@ -8,6 +8,8 @@
 
 > **2026-10-21 — HN sigue en el plan** (corrección: el PO NO lo descarta). No habla inglés: arma los comentarios con el agente (él aporta la idea y la experiencia; el agente traduce y da forma) y asume el riesgo de la regla de HN sobre texto editado por IA. HN no deja publicar Show HN todavía. HN está restringiendo los Show HN de cuentas nuevas: hay que participar un tiempo como usuario (comentar con criterio, sin promocionar) antes de poder postear. Además, las reglas de HN piden **no publicar texto generado ni editado por IA**. Los textos de este kit los redactó el agente: tomalos como **hoja de datos** y escribí el post con tus palabras, en HN y en Reddit. Orden nuevo: directorios → Reddit (r/SideProject, r/devsarg; r/webdev el sábado) → Show HN cuando la cuenta tenga historial.
 
+> **2026-10-24 — r/webdev removió el post:** exige cuenta de ≥3 meses y karma de comentarios. La cuenta del PO es nueva: priorizar canales sin requisito (LinkedIn, X, directorios, grupos de Facebook, dev.to/Medium) y juntar karma comentando antes de volver a subreddits grandes.
+
 ## Antes de publicar (checklist)
 - [x] **Probar en un iPhone/Safari real**: exportar "Sticker WhatsApp" y abrir el
       archivo. ✅ PO 2026-10-20 (iPhone 13): sale WebP. Si falla, sacar la frase de Safari de los posts (solo está probado
