@@ -217,7 +217,7 @@
         <tr><td>apple-touch-icon</td><td>180 × 180</td><td>Tela inicial no iPhone/iPad.</td></tr>
         <tr><td>icon-192.png</td><td>192 × 192</td><td>PWA instalado (manifest).</td></tr>
         <tr><td>icon-512.png</td><td>512 × 512</td><td>Splash de PWA (manifest).</td></tr>
-        <tr><td>maskable-512.png</td><td>512 × 512</td><td>Variante "maskable": a arte deve caber nos 80% centrais.</td></tr>
+        <tr><td>maskable-512.png</td><td>512 × 512</td><td>Variante "maskable": a arte deve caber num círculo centralizado de 80% de diâmetro.</td></tr>
       </table>
 
       <p>
@@ -245,7 +245,7 @@
       <ul>
         <li><strong>Partir de um tamanho pequeno.</strong> Escalar um ícone de 256&nbsp;px para cima até 1024 o deixa borrado. Projete ou exporte sempre do maior arquivo disponível.</li>
         <li><strong>Deixar transparência no ícone padrão do iOS.</strong> O ícone padrão do iOS não leva transparência: se o seu PNG tem, preencha com um fundo antes de entregar, porque o que acontece com o alfa sem preenchimento depende da ferramenta de compilação.</li>
-        <li><strong>Ignorar a zona segura do adaptive/maskable.</strong> O conteúdo fora do círculo central (264&nbsp;px sobre 432 no Android, 80% central no maskable) é recortado pela forma que cada launcher usa — quadrado, círculo, squircle ou gota.</li>
+        <li><strong>Ignorar a zona segura do adaptive/maskable.</strong> O conteúdo fora do círculo central (264&nbsp;px sobre 432 no Android, círculo centralizado de 80% de diâmetro no maskable) é recortado pela forma que cada launcher usa — quadrado, círculo, squircle ou gota.</li>
         <li><strong>Um só design para dark e tinted.</strong> A variante tinted do iOS 18 aparece em escala de cinza com a cor de destaque do usuário: um ícone com muitas cores diferentes perde todo o contraste ao virar monocromático se não foi pensado para isso.</li>
         <li><strong>Nomear errado os arquivos do iconset/appiconset.</strong> O Xcode e o <code>iconutil</code> esperam nomes exatos (<code>icon_16x16@2x.png</code>, etc.); um nome diferente e o build falha ou usa o ícone padrão.</li>
       </ul>
