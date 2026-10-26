@@ -226,3 +226,6 @@
 - files touched: engram/plans/GROW-39.md (§CÓMO), scripts/grow39-seo.test.mjs, scripts/lastmod.json, favicons ES/EN/PT (descriptions con 16–512; breadcrumb PT), en/tools/blue-background (D2 + og/twitter), 6 tarjetas «6 archivos».
 - risks: regex del caso 31 acotada en el commit del fix (no debilitada, según TL); dist/ viejo en worktree da rojo falso en guide-dates (npm run build antes).
 - how to test: npm run build && node --test scripts/grow39-seo.test.mjs; npm test.
+
+### 2026-10-26 PO→Orquestador→nerv-web (GROW-40, Advisory)
+- PO pidió lanzar la corrección. Orquestador verificó la spec W3C (zona segura = círculo radio 40 %): el texto no estaba mal; re-escopado a precisar «círculo» + padding 0,2→0,22 en icons.js. Gherkin en bloque GROW-40.
