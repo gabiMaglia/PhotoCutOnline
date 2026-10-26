@@ -76,3 +76,4 @@
 | T-014 | Done previo al requisito de artefacto QA; sin engram/qa/T-014.md. Riesgo: bajo (en producción desde jul 2026). |
 | T-015 | Done previo al requisito de artefacto QA; sin engram/qa/T-015.md. Riesgo: bajo (en producción desde jul 2026). |
 | T-016 | Done previo al requisito de artefacto QA; sin engram/qa/T-016.md. Riesgo: bajo (en producción desde jul 2026). |
+- **GROW-40 (2026-10-26)** — maskable con padding 0,2 sigue en `scripts/gen-brand-assets.mjs:61` (`safeZone: 0.6`) y `public/make_icons.py:200-202` (`max(0.2, padding)`): misma causa raíz que GROW-40 (semidiagonal 42,4 % > 40 %). Además `node --test scripts/` falla con Node ≥ 22 (el CI usa 20): usar glob `scripts/**/*.test.mjs` y fijar `engines`/`.nvmrc`. El gate no distingue el return handoff por ticket.
