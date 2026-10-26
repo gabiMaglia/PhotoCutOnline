@@ -217,7 +217,7 @@
         <tr><td>apple-touch-icon</td><td>180 × 180</td><td>Home screen on iPhone/iPad.</td></tr>
         <tr><td>icon-192.png</td><td>192 × 192</td><td>Installed PWA (manifest).</td></tr>
         <tr><td>icon-512.png</td><td>512 × 512</td><td>PWA splash (manifest).</td></tr>
-        <tr><td>maskable-512.png</td><td>512 × 512</td><td>"Maskable" variant: the art must fit in the central 80%.</td></tr>
+        <tr><td>maskable-512.png</td><td>512 × 512</td><td>"Maskable" variant: the art must fit inside a centered circle of 80% diameter.</td></tr>
       </table>
 
       <p>
@@ -245,7 +245,7 @@
       <ul>
         <li><strong>Starting from a small size.</strong> Scaling a 256&nbsp;px icon up to 1024 leaves it blurry. Always design or export from the largest file available.</li>
         <li><strong>Leaving transparency in the standard iOS icon.</strong> The standard iOS icon carries no transparency: if your PNG has it, fill it with a background before handing it in, because what happens to unfilled alpha depends on the build tool.</li>
-        <li><strong>Ignoring the adaptive/maskable safe zone.</strong> Content outside the central circle (264&nbsp;px over 432 on Android, central 80% on maskable) gets cropped by whatever shape each launcher uses — square, circle, squircle or teardrop.</li>
+        <li><strong>Ignoring the adaptive/maskable safe zone.</strong> Content outside the central circle (264&nbsp;px over 432 on Android, a centered circle of 80% diameter on maskable) gets cropped by whatever shape each launcher uses — square, circle, squircle or teardrop.</li>
         <li><strong>One design for dark and tinted.</strong> The iOS 18 tinted variant shows in grayscale with the user's accent color: an icon with many different colors loses all contrast when it goes monochrome if it wasn't designed with that in mind.</li>
         <li><strong>Naming the iconset/appiconset files wrong.</strong> Xcode and <code>iconutil</code> expect exact names (<code>icon_16x16@2x.png</code>, etc.); a different name and the build fails or uses the default icon.</li>
       </ul>

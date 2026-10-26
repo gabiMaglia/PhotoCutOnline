@@ -70,6 +70,11 @@ const WEB_PNGS = [
   ["icon-512.png", 512],
 ];
 
+// Zona segura maskable (W3C): círculo centrado de radio 40 % del lado. El arte es un
+// cuadrado, así que su semidiagonal (0,5 − p)·√2 debe ser ≤ 0,4 → p ≥ 0,2172.
+export const MASKABLE_MIN_PADDING = 0.22;
+export const maskablePadding = (userPadding = 0) => Math.max(MASKABLE_MIN_PADDING, userPadding);
+
 /**
  * Dibuja el icono a un tamaño dado.
  * opts: { padding: 0..0.3, bg: null | "#rrggbb", radius: 0..0.5 }
@@ -445,12 +450,12 @@ export async function buildIconZip(source, opts = {}) {
     for (const [name, size] of WEB_PNGS) {
       files.push({ path: `app-icons/web/${name}`, data: await pngAt(source, size, render) });
     }
-    // maskable: zona segura del 20% y fondo obligatorio
+    // maskable: arte dentro del círculo seguro (radio 40 %) y fondo obligatorio
     files.push({
       path: "app-icons/web/maskable-512.png",
       data: await pngAt(source, 512, {
         ...render,
-        padding: Math.max(0.2, render.padding),
+        padding: maskablePadding(render.padding),
         bg: render.bg || "#111317",
       }),
     });
