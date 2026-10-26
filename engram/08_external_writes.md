@@ -20,3 +20,4 @@
 - 2026-10-24 · Reddit r/webdev (Showoff Saturday) · post del PO REMOVIDO por bot: exige cuenta ≥3 meses + karma de comentarios · lanzamiento · PO
 - 2026-10-24 · Reddit r/opensource · post del PO REMOVIDO por bot (karma insuficiente) · lanzamiento · PO
 - 2026-10-24 · dev.to · artículo del PO «Cómo un modelo de IA de 115 MB tumbaba Safari en el iPhone» (redactado con el agente) · lanzamiento · PO
+- 2026-10-26 · GitHub origin/main · push 1f70d5b..58645a8 (GROW-40 maskable) → deploy; CI 40333065686 verde · GROW-40 · PO («si»)
