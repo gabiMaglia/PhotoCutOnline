@@ -229,3 +229,9 @@
 
 ### 2026-10-26 PO→Orquestador→nerv-web (GROW-40, Advisory)
 - PO pidió lanzar la corrección. Orquestador verificó la spec W3C (zona segura = círculo radio 40 %): el texto no estaba mal; re-escopado a precisar «círculo» + padding 0,2→0,22 en icons.js. Gherkin en bloque GROW-40.
+
+### 2026-10-26 nerv-web→Orquestador (GROW-40 return, registrado por el orquestador)
+- status: En revisión QA. Rama fix/GROW-40-maskable (2 commits + merge main). Rojo 2/3 con padding 0,2 → verde 3/3 con 0,22; grow39 38/38; jest 442/442.
+- files touched: src/lib/icons.js (MASKABLE_MIN_PADDING 0,22, maskablePadding), src/lib/icons.maskable.test.js, 6 guías ES/EN/PT («círculo de 80 % de diámetro»), scripts/lastmod.json.
+- risks: test sobre función pura (sin canvas en jsdom); otras plataformas verificadas solo por diff; en su entorno `node --test scripts/` (forma de directorio) falla en Node 24 con MODULE_NOT_FOUND — preexistente, a confirmar.
+- how to test: npx jest src/lib/icons.maskable; node --test scripts/grow39-seo.test.mjs.
