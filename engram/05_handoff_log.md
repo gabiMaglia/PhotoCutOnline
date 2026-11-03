@@ -235,3 +235,8 @@
 - files touched: src/lib/icons.js (MASKABLE_MIN_PADDING 0,22, maskablePadding), src/lib/icons.maskable.test.js, 6 guías ES/EN/PT («círculo de 80 % de diámetro»), scripts/lastmod.json.
 - risks: test sobre función pura (sin canvas en jsdom); otras plataformas verificadas solo por diff; en su entorno `node --test scripts/` (forma de directorio) falla en Node 24 con MODULE_NOT_FOUND — preexistente, a confirmar.
 - how to test: npx jest src/lib/icons.maskable; node --test scripts/grow39-seo.test.mjs.
+
+### [2026-11-03] CIERRE — PROYECTO CONGELADO
+- PO decide dejar PhotoCut online sin tocar: tráfico 13–18/día tras el lanzamiento; la publicidad no da ingresos a ese volumen.
+- Hecho desde el último cierre: GROW-39 (SEO), GROW-40 (maskable), video y capturas de lanzamiento, LinkedIn/AlternativeTo/X/r/devsarg/dev.to.
+- Quien retoma: nerv-orquestador leyendo _state.md («Si se retoma»).

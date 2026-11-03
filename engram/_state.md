@@ -1,9 +1,8 @@
-# STATE — photocut · actualizado: 2026-10-20 18:20
-**Sprint:** 9 — Bug bash pre-lanzamiento ✅ CERRADO (BUG-08..16 Done, en prod)
-**Rama activa:** main @ 19fc563 = origin/main, CI verde (39498402189). Sin ramas de trabajo abiertas (worktrees de agentes por limpiar).
-**En curso:** nada. GROW-39 (SEO páginas con impresiones) en prod 2026-10-21, medir en GSC el 2026-11-18. Lanzamiento: LinkedIn + AlternativeTo + X hechos; siguen directorios, grupos ML, r/devsarg, r/webdev (sáb).
-**Bloqueos:** ninguno para lanzar. GROW-33 espera datos del PO; GROW-37/38, BUG-01/06 esperan decisión PO (no bloquean).
-**Próximo paso sugerido:** HN bloquea Show HN de cuentas nuevas: el PO junta historial comentando (con ayuda del agente para el inglés) y en paralelo lanza en castellano (r/devsarg, LinkedIn, directorios); medir Umami vs 86 visitantes/mes.
-**Deuda abierta:** qa/_debt.md — O1/O2/H1/H2/G3 (BUG-13), R1 aceptado, ad slot cut-rail y bandeja desactivada en otras pestañas (BUG-12), gzip/deflate y D-2/D-3 (BUG-16: gate RED_PROOF falso positivo con impl. bajo test/), NOTICE de modelos sin clase de dispositivo.
-**Preguntas abiertas al PO:** 5 (GROW-33 datos, BUG-01, BUG-06, Figma §6 heredada, ADR-003 propuesto: RECHAZADO-PROCESO no escala a X)
-**Convenciones:** commits engram `[lastmod-skip]`; tras tocar páginas `npm run lastmod`; merge sin squash; gate en ~/Documents/NERV/bin ANTES de merge; returns de agentes se registran en 05 al recibirlos; ramas de agentes hacen `git merge main` (no copiar engram).
+# STATE — photocut · actualizado: 2026-11-03
+**Modo:** CONGELADO por decisión del PO (2026-11-03): queda online sin desarrollo activo. Motivo: ~13–18 visitas/día tras el lanzamiento (antes ~3); la publicidad no alcanza para ingresos con ese volumen y el PO no quiere seguir invirtiendo tiempo.
+**Rama activa:** main = origin/main @ deploy de GROW-40, CI verde. Sin trabajo en curso.
+**En producción:** BUG-08..16, GROW-39 (SEO páginas con impresiones), GROW-40 (maskable), licencia MIT. Lanzamiento hecho: LinkedIn (post + proyecto), AlternativeTo, X, r/devsarg, dev.to. r/webdev y r/opensource removieron por cuenta nueva; HN bloquea Show HN por cuenta nueva.
+**Si se retoma:** 1) Search Console vs 2026-10-21 (76 clics/3 meses, pos. 58,5, 64 «Descubierta»); 2) Umami referrers; 3) idea no probada: lista de espera «PhotoCut Pro para vendedores» (validar disposición a pagar antes de construir); 4) canales sin usar: grupos de vendedores Mercado Libre, videos cortos, directorios restantes.
+**Deuda abierta:** qa/_debt.md (BUG-13 O1/O2/H1/H2/G3; BUG-16 D-1..D-3; GROW-40: padding 0,2 en gen-brand-assets.mjs y make_icons.py; `node --test scripts/` falla con Node ≥22 — CI usa 20). Worktrees de agentes en .claude/worktrees/ se pueden borrar.
+**Costos recurrentes:** Vercel plan gratis + dominio photocutapp.com (renovación anual).
+**Preguntas abiertas al PO:** ninguna activa (GROW-33, BUG-01/06, GROW-37/38, ADR-003 quedan en pausa).
