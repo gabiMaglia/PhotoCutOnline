@@ -21,3 +21,7 @@
 - 2026-10-24 · Reddit r/opensource · post del PO REMOVIDO por bot (karma insuficiente) · lanzamiento · PO
 - 2026-10-24 · dev.to · artículo del PO «Cómo un modelo de IA de 115 MB tumbaba Safari en el iPhone» (redactado con el agente) · lanzamiento · PO
 - 2026-10-26 · GitHub origin/main · push 1f70d5b..58645a8 (GROW-40 maskable) → deploy; CI 40333065686 verde · GROW-40 · PO («si»)
+- 2026-10-21 · LinkedIn · post del PO + proyecto en perfil (texto ES/EN y video armados con el agente) · lanzamiento · PO
+- 2026-10-21 · AlternativeTo · ficha de PhotoCut enviada por el PO (descripciones armadas con el agente) · lanzamiento · PO
+- 2026-10-21 · X · post del PO con video · lanzamiento · PO
+- 2026-11-03 · GitHub origin/main · push 58645a8..ad3a71a (engram: proyecto congelado) · — · PO («lo dejo online sin tocar»)

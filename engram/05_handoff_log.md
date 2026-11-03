@@ -3,6 +3,11 @@
 > Entradas nuevas ARRIBA. Máx. 6 líneas por entrada. Al superar 30 entradas,
 > el Orquestador mueve las más viejas a ~/.nerv/archive/[alias]-handoffs-[fecha].md
 
+### [2026-11-03] CIERRE DE SESIÓN — PROYECTO CONGELADO
+- Hecho: GROW-39 (SEO páginas con impresiones) y GROW-40 (maskable, spec W3C) en prod con QA; lanzamiento (LinkedIn, AlternativeTo, X, r/devsarg, dev.to + video/capturas). Tráfico 3 → 13–18/día. PO decide congelar: online sin desarrollo.
+- Próximo paso: ninguno activo; si se retoma, _state.md «Si se retoma».
+- Quien retoma: nerv-orquestador.
+
 ### [2026-10-20 18:20] CIERRE DE SESIÓN
 - Hecho hoy: Sprint 9 cerrado — BUG-12 (editor mobile sin foto/header), BUG-13 (Recorte IA no tumba el iPhone: u2netp en móviles + marca anti-bucle TTL 7 d), BUG-14 (textos ~120/~6 MB), BUG-15/16 (CI: flaky 16 px, política de pings, offline del arnés = libsoup), licencia MIT; todo en prod, CI verde 39498402189; PO verificó iPhone 13 (IA + modo avión); launch kit corregido y desbloqueado.
 - Próximo paso: PO publica Show HN jue 2026-10-22 9 h ART (engram/08); luego r/webdev (sáb), r/devsarg, r/privacy, r/SideProject; medir en Umami vs línea base.
@@ -235,8 +240,3 @@
 - files touched: src/lib/icons.js (MASKABLE_MIN_PADDING 0,22, maskablePadding), src/lib/icons.maskable.test.js, 6 guías ES/EN/PT («círculo de 80 % de diámetro»), scripts/lastmod.json.
 - risks: test sobre función pura (sin canvas en jsdom); otras plataformas verificadas solo por diff; en su entorno `node --test scripts/` (forma de directorio) falla en Node 24 con MODULE_NOT_FOUND — preexistente, a confirmar.
 - how to test: npx jest src/lib/icons.maskable; node --test scripts/grow39-seo.test.mjs.
-
-### [2026-11-03] CIERRE — PROYECTO CONGELADO
-- PO decide dejar PhotoCut online sin tocar: tráfico 13–18/día tras el lanzamiento; la publicidad no da ingresos a ese volumen.
-- Hecho desde el último cierre: GROW-39 (SEO), GROW-40 (maskable), video y capturas de lanzamiento, LinkedIn/AlternativeTo/X/r/devsarg/dev.to.
-- Quien retoma: nerv-orquestador leyendo _state.md («Si se retoma»).

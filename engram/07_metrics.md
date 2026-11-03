@@ -1,5 +1,8 @@
 # Métricas — photocut
 
+## §Costo (P-E.7) — 2026-11-03
+nerv-metrics: sin sesiones medidas para 'photocut' (hook PreToolUse no instalado). Sin dato de costo.
+
 ## §Costo (P-E.7) — 2026-10-20 18:20
 nerv-metrics: sin sesiones medidas para 'photocut' (no hay hook PreToolUse instalado ni cosecha en ~/.nerv/metrics). Sin dato de costo.
 
