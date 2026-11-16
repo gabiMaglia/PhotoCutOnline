@@ -4,6 +4,11 @@
 > cierre (P-10). Las lecciones de proceso que aplican a CUALQUIER proyecto se promueven
 > a ~/.nerv/playbook.md; lo específico de este proyecto queda acá.
 
+### 2026-11-16 — Consulta de monetización + CHORE-41
+✅ El skill monetizacion-anuncios dio una respuesta con números (≈0,25–0,70 USD/mes con AdSense aprobado) que cerró la duda sin abrir trabajo nuevo; el cambio se verificó en vivo tras el deploy.
+⚠️ main estuvo 13 días en rojo otra vez (2026-11-03 → 11-16) por `ubuntu-latest` → 26.04: el cierre del 11-03 no miró el CI de su último push. En zsh `$VAR` no se separa en palabras: el primer intento de edición masiva falló (usar `git grep -lz | xargs -0`).
+🎯 Fijar versiones de runner en CI (nunca `-latest` con navegadores de Playwright) y mirar `gh run list` antes de declarar cerrada una sesión.
+
 ### 2026-11-03 — Lanzamiento y congelamiento
 ✅ GROW-39/40 con plan sellado ANTES del código en el reintento (cero rechazos de proceso tras aprenderlo); QA atrapó errores reales de contenido (espacio, 16 px, «5 archivos»). Verificar la spec W3C antes de lanzar GROW-40 evitó «corregir» un texto que estaba bien. Video y capturas generados desde la app real.
 ⚠️ El kit de lanzamiento se armó sin chequear requisitos de cada canal: HN bloquea Show HN de cuentas nuevas, r/webdev y r/opensource exigen karma/antigüedad; además HN prohíbe texto de IA y el PO no habla inglés. Se ofrecieron fechas de lanzamiento que no eran alcanzables. El objetivo real del PO (ingreso extra) se explicitó recién al final: con 13–18 visitas/día los ads no rinden → proyecto congelado.

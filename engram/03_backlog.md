@@ -4,6 +4,12 @@
 > Solo nerv-qa escribe "Done". Mapear SIEMPRE el ID externo si existe.
 > Niv (P-11, nivel de revisión QA): A=Advisory (default) · S=Strong · X=Adversarial.
 
+## Mantenimiento 2026-11-16 (proyecto congelado)
+
+| ID | Título | Estado |
+|----|--------|--------|
+| CHORE-41 | Quitar el loader de AdSense de las 107 páginas estáticas (PO: ~200 visitas/mes, ninguna red paga; conservar `ads.txt` y el loader opt-in del editor) + fijar job web del CI en ubuntu-24.04 (Playwright sin webkit en 26.04). Commits 8e9aaad, 8299274, ci en main. Sin QA formal → qa/_debt.md. | Done (2026-11-16) |
+
 ## Sprint 9 — Bug bash pre-lanzamiento (reportes del PO 2026-10-16) — ✅ CERRADO 2026-10-20 (BUG-08..16 en prod, CI verde 39498402189; PO verificó iPhone 13)
 > Condición del PO: "esto tiene que andar 100 de 100 antes de salir" → el launch kit queda en espera hasta cerrar este sprint.
 > Evidencia: probes Playwright contra producción en contexto limpio (sin SW) + WebKit 26.4. Scripts y capturas en el scratchpad de la sesión (no se commitean: la foto del PO tiene GPS).

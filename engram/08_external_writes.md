@@ -25,3 +25,6 @@
 - 2026-10-21 · AlternativeTo · ficha de PhotoCut enviada por el PO (descripciones armadas con el agente) · lanzamiento · PO
 - 2026-10-21 · X · post del PO con video · lanzamiento · PO
 - 2026-11-03 · GitHub origin/main · push 58645a8..ad3a71a (engram: proyecto congelado) · — · PO («lo dejo online sin tocar»)
+- 2026-11-16 · GitHub origin/main · push 8299274 (CHORE-41: quitar loader AdSense) → deploy Vercel auto · CHORE-41 · PO («hacé todo eso»)
+- 2026-11-16 · GitHub Actions · cancelado run 43955617499 (iba a fallar por runner) · CHORE-41 · orquestador
+- 2026-11-16 · GitHub origin/main · push ci ubuntu-24.04 + engram (aee143c) → deploy · CHORE-41 · orquestador (bajo el «hacé todo» del PO)

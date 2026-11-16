@@ -3,6 +3,13 @@
 > Entradas nuevas ARRIBA. Máx. 6 líneas por entrada. Al superar 30 entradas,
 > el Orquestador mueve las más viejas a ~/.nerv/archive/[alias]-handoffs-[fecha].md
 
+### [2026-11-16 18:15] CIERRE DE SESIÓN — sigue CONGELADO
+- PO preguntó la mejor monetización (~200 visitas/mes, AdSense rechazado 7 veces) → skill monetizacion-anuncios: ninguna red; Ko-fi; AdSense recién >1.000 visitas/mes.
+- CHORE-41 (orquestador, cambio mecánico, «hacé todo eso»): loader AdSense quitado de 107 HTML (8e9aaad, merge 8299274). jest 442/442, scripts 136/136 (Node 20), build OK; en vivo 0 páginas con adsbygoogle, editor sin ca-pub.
+- CI main rojo desde 2026-11-03 (Playwright sin webkit en ubuntu 26.04) → job web fijado a ubuntu-24.04 (verde, run 43955760081).
+- Próximo paso: ninguno. Si >1.000 visitas/mes: revertir 8e9aaad y reaplicar AdSense.
+- Quien retoma: nerv-orquestador.
+
 ### [2026-11-03] CIERRE DE SESIÓN — PROYECTO CONGELADO
 - Hecho: GROW-39 (SEO páginas con impresiones) y GROW-40 (maskable, spec W3C) en prod con QA; lanzamiento (LinkedIn, AlternativeTo, X, r/devsarg, dev.to + video/capturas). Tráfico 3 → 13–18/día. PO decide congelar: online sin desarrollo.
 - Próximo paso: ninguno activo; si se retoma, _state.md «Si se retoma».
@@ -240,8 +247,3 @@
 - files touched: src/lib/icons.js (MASKABLE_MIN_PADDING 0,22, maskablePadding), src/lib/icons.maskable.test.js, 6 guías ES/EN/PT («círculo de 80 % de diámetro»), scripts/lastmod.json.
 - risks: test sobre función pura (sin canvas en jsdom); otras plataformas verificadas solo por diff; en su entorno `node --test scripts/` (forma de directorio) falla en Node 24 con MODULE_NOT_FOUND — preexistente, a confirmar.
 - how to test: npx jest src/lib/icons.maskable; node --test scripts/grow39-seo.test.mjs.
-
-## 2026-11-16 — Orquestador (sin handoff, cambio mecánico)
-- Pedido PO: «mejor opción de monetización con 200 visitas/mes y AdSense rechazado» → respuesta con skill monetizacion-anuncios: no poner ninguna red; dejar Ko-fi; AdSense recién >1.000 visitas/mes.
-- PO: «hacé todo eso» → quitado loader AdSense de 107 HTML (8e9aaad, merge 8299274). Tests: jest 442/442, node --test scripts 136/136 (Node 20), build OK. Verificado en vivo: 0 páginas con adsbygoogle; bundle del editor sin ca-pub.
-- CI main estaba rojo desde 2026-11-03 (Playwright sin webkit en ubuntu 26.04) → job web fijado a ubuntu-24.04.

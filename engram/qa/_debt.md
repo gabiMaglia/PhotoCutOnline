@@ -1,5 +1,6 @@
 # Deuda de QA / desvíos de proceso — photocut
 
+- **CHORE-41 (2026-11-16)** — hecho por el orquestador sin handoff, sin plan estampado y sin nerv-qa (proyecto congelado; cambio mecánico: borrar un bloque <script> idéntico de 107 HTML + 1 línea de CI). Control compensatorio: jest 442/442, node --test scripts 136/136 (Node 20), build OK, CI verde (43955760081) y verificación en vivo (0 páginas con adsbygoogle; bundle del editor sin ca-pub). Aprobó el PO («hacé todo eso»).
 - **GROW-34 (2026-10-10)** — mergeado y desplegado (bc88b8e) con QA Strong intento 2 APROBADO pero SIN nerv-gate. Corrido post-merge: REJECTED LEVEL_UNDERSTATED (computado X por reintento; faltó engram/plans/GROW-34.md §QUÉ+§CÓMO estampado antes del código). Causa: el orquestador asumió que el gate no existía (está en ~/Documents/NERV/bin, no en ~/.claude/nerv-bin ni bin/). Control compensatorio aprobado por el PO: nerv-verifier ciego (Opus) post-merge → resultado en qa/GROW-34-verifier.md. No se estampa plan retroactivo.
 - **Sprints 6-7 (2026-10-06)**: GROW-25..32 y D-06 tampoco pasaron por nerv-gate (misma causa). Sus veredictos QA Strong están en qa/<ID>.md; sin verificador ciego. Riesgo aceptado implícitamente: ya en producción, sin defectos reportados.
 - **GROW-35 (2026-10-10) — riesgos aceptados del encoder WebP propio** (revisión del arquitecto):
