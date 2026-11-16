@@ -12,7 +12,8 @@ on:
 jobs:
   web:
     name: Web (build + tests en Chrome)
-    runs-on: ubuntu-latest
+    # Fijado: en ubuntu-latest (26.04) Playwright no soporta webkit (CI rojo 2026-11-03).
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
