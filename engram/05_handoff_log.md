@@ -240,3 +240,8 @@
 - files touched: src/lib/icons.js (MASKABLE_MIN_PADDING 0,22, maskablePadding), src/lib/icons.maskable.test.js, 6 guías ES/EN/PT («círculo de 80 % de diámetro»), scripts/lastmod.json.
 - risks: test sobre función pura (sin canvas en jsdom); otras plataformas verificadas solo por diff; en su entorno `node --test scripts/` (forma de directorio) falla en Node 24 con MODULE_NOT_FOUND — preexistente, a confirmar.
 - how to test: npx jest src/lib/icons.maskable; node --test scripts/grow39-seo.test.mjs.
+
+## 2026-11-16 — Orquestador (sin handoff, cambio mecánico)
+- Pedido PO: «mejor opción de monetización con 200 visitas/mes y AdSense rechazado» → respuesta con skill monetizacion-anuncios: no poner ninguna red; dejar Ko-fi; AdSense recién >1.000 visitas/mes.
+- PO: «hacé todo eso» → quitado loader AdSense de 107 HTML (8e9aaad, merge 8299274). Tests: jest 442/442, node --test scripts 136/136 (Node 20), build OK. Verificado en vivo: 0 páginas con adsbygoogle; bundle del editor sin ca-pub.
+- CI main estaba rojo desde 2026-11-03 (Playwright sin webkit en ubuntu 26.04) → job web fijado a ubuntu-24.04.
